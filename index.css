@@ -1,0 +1,75 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+    :root {
+        --cream: #FDF8F1;
+        --chocolate: #3E2723;
+        --bronze: #8D6E63;
+        --gold: #C5A059;
+    }
+
+    html,
+    body {
+        @apply h-full w-full overflow-hidden bg-chocolate text-cream antialiased;
+        cursor: none;
+        /* Global custom cursor */
+    }
+
+    h1,
+    h2,
+    h3,
+    .font-serif {
+        font-family: 'Playfair Display', serif;
+    }
+}
+
+@layer components {
+    .bg-noise {
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='1'/%3E%3C/svg%3E");
+    }
+}
+
+@layer utilities {
+    .reveal-text {
+        @apply opacity-0 translate-y-8 animate-reveal-up;
+    }
+
+    .reveal-line {
+        @apply w-0 animate-grow-line;
+    }
+
+    .fade-in-down {
+        @apply opacity-0 -translate-y-4 animate-fade-in-down;
+    }
+
+    .fade-in-up {
+        @apply opacity-0 translate-y-4 animate-fade-in-up;
+    }
+
+    .delay-300 {
+        animation-delay: 300ms;
+    }
+
+    .delay-500 {
+        animation-delay: 500ms;
+    }
+
+    .delay-700 {
+        animation-delay: 700ms;
+    }
+
+    .delay-1000 {
+        animation-delay: 1000ms;
+    }
+}
+
+
+
+/* Custom Text Selection */
+::selection {
+    background-color: rgba(197, 160, 89, 0.5);
+    /* Gold */
+    color: white;
+}
