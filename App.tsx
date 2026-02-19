@@ -1,3 +1,5 @@
+import { faFacebook, faInstagram, faWhatsapp } from '@fortawesome/free-brands-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, { useEffect, useState } from 'react';
 import { Logo } from './components/Logo';
 
@@ -17,9 +19,9 @@ const App: React.FC = () => {
   // OPCIÓN 1 (ANTERIOR): Bebé con cruz - Se mantiene por si se quiere regresar
   // const bgImageUrl = "https://img.freepik.com/foto-gratis/vista-lateral-lindo-bebe-sosteniendo-cruz_23-2149453491.jpg?t=st=1771026261~exp=1771029861~hmac=d8b6dee3e13a430c6c0b590acc23d57e9fe20926fb37a17dc37f6a61371cf171";
 
-  // OPCIÓN 2 (NUEVA): Niño de traje azul
-  // NOTA: Usamos la versión "raw" de GitHub para que cargue la imagen directamente
-  const bgImageUrl = "https://raw.githubusercontent.com/proyectoNet-ia/arcangelCeremonias/d9a8db97fad8224e746dfc117386d6163641fcc7/fondo_bg.jpeg";
+  // Imágenes de fondo responsivas
+  const bgMobile = "https://raw.githubusercontent.com/proyectoNet-ia/arcangelCeremonias/d9a8db97fad8224e746dfc117386d6163641fcc7/fondo_bg.jpeg";
+  const bgDesktop = "https://github.com/proyectoNet-ia/arcangelCeremonias/blob/main/fondo-horizontal.jpeg?raw=true";
 
   return (
     <div className="relative h-[100dvh] w-full flex flex-col justify-between overflow-hidden bg-cream cursor-none selection:bg-gold/30 font-sans">
@@ -40,12 +42,24 @@ const App: React.FC = () => {
       {/* --- BACKGROUND LAYERS --- */}
 
       {/* 1. Main Image with slow zoom */}
+      {/* 1. Main Image with slow zoom */}
+      {/* Mobile Background */}
       <div
-        className="fixed inset-0 z-0 bg-cover bg-center bg-no-repeat transition-transform duration-[60s] ease-linear scale-110 motion-safe:animate-[zoom_60s_linear_infinite_alternate]"
+        className="fixed inset-0 z-0 bg-cover bg-center bg-no-repeat transition-transform duration-[60s] ease-linear scale-110 motion-safe:animate-[zoom_60s_linear_infinite_alternate] md:hidden"
         style={{
-          backgroundImage: `url('${bgImageUrl}')`,
+          backgroundImage: `url('${bgMobile}')`,
           backgroundAttachment: 'fixed',
           backgroundPosition: 'center 40%',
+          filter: 'sepia(0.2) brightness(0.9) contrast(0.95)'
+        }}
+      />
+      {/* Desktop Background */}
+      <div
+        className="fixed inset-0 z-0 bg-cover bg-center bg-no-repeat transition-transform duration-[60s] ease-linear scale-110 motion-safe:animate-[zoom_60s_linear_infinite_alternate] hidden md:block"
+        style={{
+          backgroundImage: `url('${bgDesktop}')`,
+          backgroundAttachment: 'fixed',
+          backgroundPosition: 'center center',
           filter: 'sepia(0.2) brightness(0.9) contrast(0.95)'
         }}
       />
@@ -103,7 +117,7 @@ const App: React.FC = () => {
               {/* Call Center */}
               <div className="flex flex-col items-center gap-1 md:gap-2">
                 <span className="text-[9px] md:text-xs text-cream/70 uppercase tracking-[0.2em] font-medium">
-                  Call Center
+                  Ventas / Call Center
                 </span>
                 <a
                   href="https://wa.me/523521681197"
@@ -111,7 +125,7 @@ const App: React.FC = () => {
                   rel="noopener noreferrer"
                   className="text-lg md:text-2xl text-cream font-serif tracking-widest hover:text-gold transition-colors duration-300"
                 >
-                  352 168 1197
+                  <FontAwesomeIcon icon={faWhatsapp} className="text-2xl md:text-3xl" /> 352 168 1197
                 </a>
               </div>
 
@@ -128,17 +142,28 @@ const App: React.FC = () => {
                 </a>
               </div>
             </div>
-
-            {/* Facebook */}
-            <a
-              href="https://www.facebook.com/arcangel.ceremonias/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-[9px] md:text-xs text-cream/60 uppercase tracking-[0.2em] font-medium hover:text-gold transition-colors duration-300 pb-2"
-            >
-              Facebook
-            </a>
-
+            <br></br>
+            {/* Social Media */}
+            <div className="flex flex-row items-center justify-center gap-8 pb-3">
+              <a
+                href="https://www.facebook.com/arcangel.ceremonias/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-cream/60 hover:text-gold transition-colors duration-300"
+                aria-label="Facebook"
+              >
+                <FontAwesomeIcon icon={faFacebook} className="text-2xl md:text-3xl" />
+              </a>
+              <a
+                href="https://www.instagram.com/ceremonias.arcangel/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-cream/60 hover:text-gold transition-colors duration-300"
+                aria-label="Instagram"
+              >
+                <FontAwesomeIcon icon={faInstagram} className="text-2xl md:text-3xl" />
+              </a>
+            </div>
           </div>
         </footer>
 
