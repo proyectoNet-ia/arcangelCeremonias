@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, { useEffect, useState } from 'react';
 import { Logo } from '@/components/Logo';
 import { Link } from 'react-router-dom';
-import bgMobile from '@/assets/fondo_bg.jpeg';
+import bgMobile from '@/assets/modelo_medio.png';
 import bgDesktop from '@/assets/fondo-pc.jpg';
 
 const Home: React.FC = () => {
@@ -62,12 +62,13 @@ const Home: React.FC = () => {
 
             {/* --- BACKGROUND LAYERS --- */}
             <div
-                className="fixed inset-0 z-0 bg-cover bg-center bg-no-repeat transition-transform duration-[60s] ease-linear scale-110 motion-safe:animate-[zoom_60s_linear_infinite_alternate] md:hidden"
+                className="fixed inset-0 z-0 bg-no-repeat transition-transform duration-[60s] ease-linear scale-110 motion-safe:animate-[zoom_60s_linear_infinite_alternate] md:hidden"
                 style={{
                     backgroundImage: `url('${bgMobile}')`,
                     backgroundAttachment: 'fixed',
-                    backgroundPosition: 'center 40%',
-                    filter: 'sepia(0.2) brightness(0.9) contrast(0.95)'
+                    backgroundPosition: 'right center',
+                    backgroundSize: 'contain',
+                    filter: 'sepia(0.05) brightness(0.85) contrast(1.05)'
                 }}
             />
             <div
@@ -92,8 +93,8 @@ const Home: React.FC = () => {
             <div className="relative z-10 flex flex-col min-h-[100dvh] w-full drop-shadow-lg">
 
                 {/* Top: Logo */}
-                <header className="w-full py-6 md:py-8 lg:py-10 flex justify-center fade-in-down shrink-0 px-6">
-                    <div className="w-32 md:w-48 lg:w-56 opacity-90 transition-transform duration-700 hover:scale-105 hover:opacity-100 drop-shadow-md">
+                <header className="w-full py-6 md:py-8 lg:py-10 flex justify-start md:justify-center fade-in-down shrink-0 px-6 md:px-0">
+                    <div className="w-[176px] md:w-48 lg:w-56 opacity-90 transition-transform duration-700 hover:scale-105 hover:opacity-100 drop-shadow-md">
                         <div className="invert brightness-0 contrast-200 sepia-[.3] hue-rotate-[10deg] saturate-[.5]">
                             <Logo />
                         </div>
@@ -101,9 +102,9 @@ const Home: React.FC = () => {
                 </header>
 
                 {/* Center: Main Message */}
-                <main className="flex flex-col items-center justify-center text-center flex-grow px-6 py-4 md:px-12 max-w-5xl mx-auto">
-                    <div className="flex flex-col items-center space-y-4 md:space-y-6">
-                        <h1 className="flex flex-col items-center justify-center leading-[0.85] font-serif text-cream">
+                <main className="flex flex-col items-start md:items-center justify-center text-left md:text-center flex-grow px-6 py-4 md:px-12 max-w-5xl mx-auto">
+                    <div className="flex flex-col items-start md:items-center space-y-4 md:space-y-6">
+                        <h1 className="flex flex-col items-start md:items-center justify-center leading-[0.85] font-serif text-cream">
                             <span className="block text-4xl md:text-5xl lg:text-6xl xl:text-[5rem] tracking-tighter mix-blend-overlay reveal-text delay-500 uppercase">
                                 Próximamente
                             </span>
@@ -111,7 +112,7 @@ const Home: React.FC = () => {
 
                         <div className="h-[1px] w-16 md:w-20 bg-cream/30 my-2 md:my-3 reveal-line delay-1000"></div>
 
-                        <p className="max-w-2xl text-cream/90 text-sm md:text-base font-light tracking-wide leading-relaxed reveal-text delay-1000 px-4">
+                        <p className="max-w-2xl text-cream/90 text-sm md:text-base font-light tracking-wide leading-relaxed reveal-text delay-1000 px-4 md:px-0">
                             Este año inicia una nueva etapa en Arcángel!<br /><br />
                             Nos estamos renovando para seguir creciendo con ustedes, manteniendo nuestra esencia con un compromiso aún más fuerte con la calidad y atención al detalle.
                             <span className="hidden lg:inline"><br /></span>
@@ -123,11 +124,11 @@ const Home: React.FC = () => {
                 </main>
 
                 {/* Bottom: Footer Info */}
-                <footer className="w-full py-6 md:py-8 lg:py-10 px-6 flex flex-col items-center justify-end text-center fade-in-up z-20 shrink-0">
-                    <div className="flex flex-col items-center gap-4 md:gap-6 lg:gap-8">
+                <footer className="w-full py-6 md:py-8 lg:py-10 px-6 flex flex-col items-start md:items-center justify-end text-left md:text-center fade-in-up z-20 shrink-0">
+                    <div className="flex flex-col items-start md:items-center gap-4 md:gap-6 lg:gap-8">
                         <div className="flex flex-col md:flex-row gap-6 md:gap-12 lg:gap-24">
                             {/* Call Center */}
-                            <div className="flex flex-col items-center gap-1 md:gap-2">
+                            <div className="flex flex-col items-start md:items-center gap-1 md:gap-2">
                                 <span className="text-[10px] md:text-xs text-cream/70 uppercase tracking-[0.2em] font-medium">
                                     Ventas / Call Center
                                 </span>
@@ -142,7 +143,7 @@ const Home: React.FC = () => {
                             </div>
 
                             {/* Empresa */}
-                            <div className="flex flex-col items-center gap-1 md:gap-2">
+                            <div className="flex flex-col items-start md:items-center gap-1 md:gap-2">
                                 <span className="text-[10px] md:text-xs text-cream/70 uppercase tracking-[0.2em] font-medium">
                                     Empresa
                                 </span>
@@ -156,7 +157,7 @@ const Home: React.FC = () => {
                         </div>
 
                         {/* Social Media (Mobile only, hidden on desktop because of sidebar) */}
-                        <div className="flex flex-row items-center justify-center gap-10 pt-4 md:hidden">
+                        <div className="flex flex-row items-center justify-start gap-10 pt-4 md:hidden">
                             <a
                                 href="https://www.facebook.com/arcangel.ceremonias/"
                                 target="_blank"
