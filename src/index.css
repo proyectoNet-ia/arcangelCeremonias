@@ -12,9 +12,8 @@
 
     html,
     body {
-        @apply h-full w-full overflow-hidden bg-chocolate text-cream antialiased;
-        cursor: none;
-        /* Global custom cursor */
+        @apply min-h-full w-full bg-cream text-chocolate antialiased;
+        overflow-x: hidden;
     }
 
     h1,
