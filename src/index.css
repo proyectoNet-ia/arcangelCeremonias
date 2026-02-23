@@ -1,11 +1,12 @@
 @tailwind base;
-@import url('https://fonts.googleapis.com/css2?family=Baskervville:ital@0;1&family=Inter:wght@300;400;500;600&display=swap');
 @tailwind components;
 @tailwind utilities;
 
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Inter:wght@300;400;500;600&display=swap');
+
 @layer base {
     :root {
-        --font-serif: 'Baskervville', serif;
+        --font-serif: 'Playfair Display', serif;
         --font-sans: 'Inter', sans-serif;
 
         /* Casa Solena Palette */
@@ -52,48 +53,44 @@
         @apply opacity-0 translate-y-4 animate-fade-in-up;
     }
 
-    .delay-300 {
-        animation-delay: 300ms;
+    .stagger-1 {
+        animation-delay: 0.1s;
     }
 
-    .delay-500 {
-        animation-delay: 500ms;
+    .stagger-2 {
+        animation-delay: 0.2s;
     }
 
-    .delay-700 {
-        animation-delay: 700ms;
-    }
-
-    .delay-1000 {
-        animation-delay: 1000ms;
+    .stagger-3 {
+        animation-delay: 0.3s;
     }
 
     .img-reveal {
-        @apply transition-transform duration-1000 hover:scale-105;
+        @apply relative overflow-hidden;
     }
 
-    @keyframes pulse-soft {
+    .img-reveal::after {
+        content: '';
+        @apply absolute inset-0 bg-cream translate-x-0 transition-transform duration-1000 ease-in-out;
+    }
 
-        0%,
-        100% {
-            opacity: 0.1;
-        }
-
-        50% {
-            opacity: 0.2;
-        }
+    .img-reveal.in-view::after {
+        @apply translate-x-full;
     }
 
     .animate-pulse {
-        animation: pulse-soft 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
     }
-}
 
+    @keyframes pulse {
 
+        0%,
+        100% {
+            opacity: 1;
+        }
 
-/* Custom Text Selection */
-::selection {
-    background-color: rgba(197, 160, 89, 0.5);
-    /* Gold */
-    color: white;
+        50% {
+            opacity: .5;
+        }
+    }
 }
