@@ -3,7 +3,7 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faWhatsapp } from '@fortawesome/free-brands-svg-icons';
-import { faArrowLeft, faChevronRight, faChevronLeft, faShareNodes } from '@fortawesome/free-solid-svg-icons';
+import { faArrowLeft, faChevronRight, faChevronLeft, faShareNodes, faDiamond } from '@fortawesome/free-solid-svg-icons';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
 import { Logo } from '@/components/Logo';
@@ -200,6 +200,29 @@ const ProductDetail: React.FC = () => {
                                     <div className="w-2 h-2 bg-gold/40 rounded-full" /> Envío Asegurado
                                 </div>
                             </div>
+
+                            {/* Wholesale Section */}
+                            <motion.div
+                                initial={{ opacity: 0, y: 10 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                viewport={{ once: true }}
+                                className="bg-[#FAF7F2] border border-gold/20 p-8 rounded-sm space-y-4"
+                            >
+                                <div className="flex items-center gap-3 text-gold">
+                                    <FontAwesomeIcon icon={faDiamond} className="text-[10px]" />
+                                    <h3 className="text-xs uppercase tracking-[0.3em] font-bold">Ventas al Mayoreo</h3>
+                                </div>
+                                <p className="text-sm text-chocolate/60 font-light leading-relaxed">
+                                    ¿Eres distribuidor o tienes una boutique? Ofrecemos precios especiales y atención personalizada para compras por volumen.
+                                </p>
+                                <button
+                                    onClick={() => window.open(`https://wa.me/523521681197?text=Hola, me interesa recibir información sobre precios de mayoreo para el modelo: ${product.name}`, '_blank')}
+                                    className="text-[10px] uppercase tracking-[0.2em] font-bold text-gold hover:text-chocolate transition-colors flex items-center gap-2 group"
+                                >
+                                    Solicitar catálogo de mayoreo
+                                    <FontAwesomeIcon icon={faChevronRight} className="text-[8px] group-hover:translate-x-1 transition-transform" />
+                                </button>
+                            </motion.div>
                         </div>
                     </div>
                 </div>
