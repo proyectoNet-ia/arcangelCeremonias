@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Logo } from '@/components/Logo';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { ProductCard } from '@/components/catalog/ProductCard';
 import { productService } from '@/services/productService';
 import { Product, Category } from '@/types/product';
@@ -10,10 +10,15 @@ import { faChevronDown, faFilter } from '@fortawesome/free-solid-svg-icons';
 import { Megamenu } from '@/components/layout/Megamenu';
 
 const Catalog: React.FC = () => {
+    const [searchParams, setSearchParams] = useSearchParams();
+    const categoryQuery = searchParams.get('categoria');
+    const subcategoryQuery = searchParams.get('subcategoria');
+
     const [products, setProducts] = useState<Product[]>([]);
     const [categories, setCategories] = useState<Category[]>([]);
     const [loading, setLoading] = useState(true);
     const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+    const [selectedSubcategory, setSelectedSubcategory] = useState<string | null>(null);
     const [isMegamenuOpen, setIsMegamenuOpen] = useState(false);
 
     useEffect(() => {
@@ -26,6 +31,22 @@ const Catalog: React.FC = () => {
                 ]);
                 setProducts(productsData);
                 setCategories(categoriesData);
+
+                // Match category and subcategory from URL
+                if (categoryQuery) {
+                    const matchedCat = categoriesData.find(c => c.slug === categoryQuery);
+                    if (matchedCat) {
+                        setSelectedCategory(matchedCat.id);
+                        if (subcategoryQuery) {
+                            setSelectedSubcategory(subcategoryQuery);
+                        } else {
+                            setSelectedSubcategory(null);
+                        }
+                    }
+                } else {
+                    setSelectedCategory(null);
+                    setSelectedSubcategory(null);
+                }
             } catch (error) {
                 console.error('Error fetching catalog data:', error);
             } finally {
@@ -34,11 +55,24 @@ const Catalog: React.FC = () => {
         };
 
         fetchData();
-    }, []);
+    }, [categoryQuery, subcategoryQuery]);
 
-    const filteredProducts = selectedCategory
-        ? products.filter(p => p.category_id === selectedCategory)
-        : products;
+    const handleCategoryClick = (categoryId: string | null) => {
+        setSelectedCategory(categoryId);
+        setSelectedSubcategory(null); // Clear subcategory when main category is changed
+        if (categoryId) {
+            const cat = categories.find(c => c.id === categoryId);
+            if (cat) setSearchParams({ categoria: cat.slug });
+        } else {
+            setSearchParams({});
+        }
+    };
+
+    const filteredProducts = products.filter(p => {
+        const matchesCategory = selectedCategory ? p.category_id === selectedCategory : true;
+        const matchesSubcategory = selectedSubcategory ? p.subcategory === selectedSubcategory : true;
+        return matchesCategory && matchesSubcategory;
+    });
 
     const handleSeed = async () => {
         const { seedCatalog } = await import('@/services/seedData');
@@ -112,7 +146,7 @@ const Catalog: React.FC = () => {
                     {/* CATEGORY FILTER */}
                     <div className="flex flex-wrap gap-4 items-center">
                         <button
-                            onClick={() => setSelectedCategory(null)}
+                            onClick={() => handleCategoryClick(null)}
                             className={`text-[10px] uppercase tracking-[0.2em] px-6 py-2 border transition-all duration-300 ${!selectedCategory ? 'bg-chocolate text-cream border-chocolate' : 'border-chocolate/20 text-chocolate/60 hover:border-chocolate'}`}
                         >
                             Todos
@@ -120,7 +154,7 @@ const Catalog: React.FC = () => {
                         {categories.map((cat) => (
                             <button
                                 key={cat.id}
-                                onClick={() => setSelectedCategory(cat.id)}
+                                onClick={() => handleCategoryClick(cat.id)}
                                 className={`text-[10px] uppercase tracking-[0.2em] px-6 py-2 border transition-all duration-300 ${selectedCategory === cat.id ? 'bg-chocolate text-cream border-chocolate' : 'border-chocolate/20 text-chocolate/60 hover:border-chocolate'}`}
                             >
                                 {cat.name}

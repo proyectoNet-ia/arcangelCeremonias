@@ -9,12 +9,14 @@ interface SubCategory {
 
 interface MainCategory {
     title: string;
+    slug: string;
     subcategories: SubCategory[];
 }
 
 const menuData: MainCategory[] = [
     {
         title: 'Bautizo',
+        slug: 'bautizo',
         subcategories: [
             { name: 'Ropones Niño', slug: 'ropones-nino' },
             { name: 'Ropones Niña', slug: 'ropones-nina' },
@@ -24,6 +26,7 @@ const menuData: MainCategory[] = [
     },
     {
         title: 'Primera Comunión',
+        slug: 'primera-comunion',
         subcategories: [
             { name: 'Vestidos', slug: 'vestidos-comunion' },
             { name: 'Trajes Niño', slug: 'trajes-comunion' },
@@ -33,6 +36,7 @@ const menuData: MainCategory[] = [
     },
     {
         title: 'Boda',
+        slug: 'boda',
         subcategories: [
             { name: 'Lazos', slug: 'lazos-boda' },
             { name: 'Arras', slug: 'arras-boda' },
@@ -42,6 +46,7 @@ const menuData: MainCategory[] = [
     },
     {
         title: 'Presentación',
+        slug: 'presentacion',
         subcategories: [
             { name: 'Vestidos Presentación', slug: 'vestidos-presentacion' },
             { name: 'Trajes Niño', slug: 'trajes-presentacion' },
@@ -69,7 +74,7 @@ export const Megamenu: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ i
                             {category.subcategories.map((sub) => (
                                 <li key={sub.slug}>
                                     <Link
-                                        to={`/catalogo?categoria=${sub.slug}`}
+                                        to={`/catalogo?categoria=${category.slug}&subcategoria=${sub.slug}`}
                                         className="text-sm text-chocolate/70 hover:text-gold transition-colors duration-300 font-light block"
                                         onClick={onClose}
                                     >

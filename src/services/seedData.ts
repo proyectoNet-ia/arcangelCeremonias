@@ -40,6 +40,7 @@ export const seedCatalog = async () => {
                     sizes: ['0-6 meses', '6-12 meses', '12-24 meses'],
                     main_image: 'https://images.unsplash.com/photo-1519689680058-324335c77eba?auto=format&fit=crop&q=80&w=800',
                     category_id: findCat('bautizo'),
+                    subcategory: 'ropones-nino',
                     featured: true,
                     stock_status: 'available'
                 },
@@ -55,6 +56,7 @@ export const seedCatalog = async () => {
                     sizes: ['8', '10', '12', '14'],
                     main_image: 'https://images.unsplash.com/photo-1541250848049-b4f71413cc30?auto=format&fit=crop&q=80&w=800',
                     category_id: findCat('primera-comunion'),
+                    subcategory: 'vestidos-comunion',
                     featured: true,
                     stock_status: 'available'
                 },
@@ -69,6 +71,7 @@ export const seedCatalog = async () => {
                     includes: 'Lazo y Cofre de madera grabada',
                     main_image: 'https://images.unsplash.com/photo-1511795409834-ef04bbd61622?auto=format&fit=crop&q=80&w=800',
                     category_id: findCat('boda'),
+                    subcategory: 'lazos-boda',
                     featured: false,
                     stock_status: 'on_request'
                 }

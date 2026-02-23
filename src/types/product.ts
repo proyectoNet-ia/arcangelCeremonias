@@ -7,6 +7,7 @@ export interface Product {
     price?: number;
     show_price: boolean;
     category_id: string;
+    subcategory?: string;
 
     // Características Específicas
     material?: string;
