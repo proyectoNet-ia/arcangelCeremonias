@@ -29,7 +29,7 @@ const App: React.FC = () => {
         <Route path="/producto/:slug" element={<ProductDetail />} />
         <Route path="/nosotros" element={<About />} />
         <Route path="/contacto" element={<Contact />} />
-        <Route path="/admin" element={<Admin />} />
+        <Route path="/admin/*" element={<Admin />} />
         <Route path="*" element={<Home />} />
       </Routes>
       <FloatingActions />

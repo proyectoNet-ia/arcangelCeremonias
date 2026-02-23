@@ -33,6 +33,25 @@ export const seedCatalog = async () => {
 
         const findCat = (slug: string) => categories.find(c => c.slug === slug)?.id;
 
+        // Helper para imágenes aleatorias de la carpeta local
+        const localImages = [
+            '/catalog/medium-shot-girls-holding-candles.jpg',
+            '/catalog/medium-shot-kid-praying-with-crucifix.jpg',
+            '/catalog/portrait-child-getting-ready-their-first-communion (1).jpg',
+            '/catalog/portrait-child-getting-ready-their-first-communion.jpg',
+            '/catalog/top-view-cute-baby-laying-bed.jpg',
+            '/catalog/top-view-hands-holding-baby-s-foot.jpg',
+            '/catalog/young-boy-church-experiencing-his-first-communion-ceremony (1).jpg',
+            '/catalog/young-boy-church-experiencing-his-first-communion-ceremony.jpg',
+            '/catalog/young-boy-experiencing-his-first-communion-ceremony-church.jpg'
+        ];
+
+        const getRandomImage = () => localImages[Math.floor(Math.random() * localImages.length)];
+        const getRandomGallery = (count = 3) => {
+            const shuffled = [...localImages].sort(() => 0.5 - Math.random());
+            return shuffled.slice(0, count);
+        };
+
         // 3. Crear Listado Robusto de Productos
         const productsToInsert = [
             // BAUTIZO
@@ -46,12 +65,8 @@ export const seedCatalog = async () => {
                 material: 'Shantung de Seda & Perlas',
                 category_id: findCat('bautizo'),
                 subcategory: 'ropon-nina',
-                main_image: 'https://images.unsplash.com/photo-1544123533-91899144365d?auto=format&fit=crop&q=80&w=800', // Baptism dress
-                gallery: [
-                    'https://images.unsplash.com/photo-1555252333-9f8e92e65df9?auto=format&fit=crop&q=80&w=800',
-                    'https://images.unsplash.com/photo-1617331140180-e8262094733a?auto=format&fit=crop&q=80&w=800',
-                    'https://images.unsplash.com/photo-1621451537084-482c73073a0f?auto=format&fit=crop&q=80&w=800'
-                ],
+                main_image: localImages[4], // Baby laying bed
+                gallery: getRandomGallery(4),
                 featured: true,
                 stock_status: 'available'
             },
@@ -64,12 +79,8 @@ export const seedCatalog = async () => {
                 material: 'Lino Italiano',
                 category_id: findCat('bautizo'),
                 subcategory: 'ropon-nino',
-                main_image: 'https://images.unsplash.com/photo-1519689680058-324335c77eba?auto=format&fit=crop&q=80&w=800',
-                gallery: [
-                    'https://images.unsplash.com/photo-1519689209180-143093952a63?auto=format&fit=crop&q=80&w=800',
-                    'https://images.unsplash.com/photo-1519689944250-d7373f1396b7?auto=format&fit=crop&q=80&w=800',
-                    'https://images.unsplash.com/photo-1519689423605-e4df734c3821?auto=format&fit=crop&q=80&w=800'
-                ],
+                main_image: localImages[5], // Hands holding foot
+                gallery: getRandomGallery(4),
                 featured: false,
                 stock_status: 'available'
             },
@@ -84,12 +95,8 @@ export const seedCatalog = async () => {
                 material: 'Terciopelo Premium',
                 category_id: findCat('traje-charro'),
                 subcategory: 'con-virgen-blanco',
-                main_image: 'https://images.unsplash.com/photo-1566411136140-621583021966?auto=format&fit=crop&q=80&w=800', // Mexican style details
-                gallery: [
-                    'https://images.unsplash.com/photo-1579932152917-00914902b740?auto=format&fit=crop&q=80&w=800',
-                    'https://images.unsplash.com/photo-1581447109200-bf2769116db0?auto=format&fit=crop&q=80&w=800',
-                    'https://images.unsplash.com/photo-1567303046271-9f2ea7008a0d?auto=format&fit=crop&q=80&w=800'
-                ],
+                main_image: localImages[1], // Kid praying
+                gallery: getRandomGallery(4),
                 featured: true,
                 stock_status: 'available'
             },
@@ -102,12 +109,8 @@ export const seedCatalog = async () => {
                 material: 'Lana Fina',
                 category_id: findCat('traje-charro'),
                 subcategory: 'clasico-azul-rey',
-                main_image: 'https://images.unsplash.com/photo-1582533561751-ef6f6ab93a2e?auto=format&fit=crop&q=80&w=800',
-                gallery: [
-                    'https://images.unsplash.com/photo-1582533561751-ef6f6ab93a2e?auto=format&fit=crop&q=80&w=800&q=2',
-                    'https://images.unsplash.com/photo-1582533561751-ef6f6ab93a2e?auto=format&fit=crop&q=80&w=800&q=3',
-                    'https://images.unsplash.com/photo-1582533561751-ef6f6ab93a2e?auto=format&fit=crop&q=80&w=800&q=4'
-                ],
+                main_image: localImages[8], // Young boy church
+                gallery: getRandomGallery(4),
                 featured: false,
                 stock_status: 'available'
             },
@@ -122,12 +125,8 @@ export const seedCatalog = async () => {
                 material: 'Lino de Alta Calidad',
                 category_id: findCat('guayabera'),
                 subcategory: 'tropical',
-                main_image: 'https://images.unsplash.com/photo-1594932224828-b4b059b6f6f2?auto=format&fit=crop&q=80&w=800',
-                gallery: [
-                    'https://images.unsplash.com/photo-1560060980-0a2d24660d2e?auto=format&fit=crop&q=80&w=800',
-                    'https://images.unsplash.com/photo-1516733725897-1aa73b87c8e8?auto=format&fit=crop&q=80&w=800',
-                    'https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?auto=format&fit=crop&q=80&w=800'
-                ],
+                main_image: localImages[2], // Portrait communion
+                gallery: getRandomGallery(4),
                 featured: true,
                 stock_status: 'available'
             },
@@ -140,12 +139,8 @@ export const seedCatalog = async () => {
                 material: 'Algodón Egipcio',
                 category_id: findCat('guayabera'),
                 subcategory: 'bebe',
-                main_image: 'https://images.unsplash.com/photo-1519234164452-16ef782079f9?auto=format&fit=crop&q=80&w=800',
-                gallery: [
-                    'https://images.unsplash.com/photo-1519234164452-16ef782079f9?auto=format&fit=crop&q=80&w=800&q=2',
-                    'https://images.unsplash.com/photo-1519234164452-16ef782079f9?auto=format&fit=crop&q=80&w=800&q=3',
-                    'https://images.unsplash.com/photo-1519234164452-16ef782079f9?auto=format&fit=crop&q=80&w=800&q=4'
-                ],
+                main_image: localImages[4],
+                gallery: getRandomGallery(4),
                 featured: false,
                 stock_status: 'available'
             },
@@ -160,12 +155,8 @@ export const seedCatalog = async () => {
                 material: 'Seda Habotai',
                 category_id: findCat('tunica'),
                 subcategory: 'modelo-1',
-                main_image: 'https://images.unsplash.com/photo-1515462277126-2dd0c162007a?auto=format&fit=crop&q=80&w=800', // Religious/Ceremonial style
-                gallery: [
-                    'https://images.unsplash.com/photo-1515462277126-2dd0c162007a?auto=format&fit=crop&q=80&w=800&q=2',
-                    'https://images.unsplash.com/photo-1515462277126-2dd0c162007a?auto=format&fit=crop&q=80&w=800&q=3',
-                    'https://images.unsplash.com/photo-1515462277126-2dd0c162007a?auto=format&fit=crop&q=80&w=800&q=4'
-                ],
+                main_image: localImages[3], // Portrait communion
+                gallery: getRandomGallery(4),
                 featured: false,
                 stock_status: 'on_request'
             },
@@ -180,12 +171,8 @@ export const seedCatalog = async () => {
                 material: 'Super 120s Lana',
                 category_id: findCat('esmoquin'),
                 subcategory: 'san-gabriel',
-                main_image: 'https://images.unsplash.com/photo-1593032465175-481ac7f402a1?auto=format&fit=crop&q=80&w=800', // Tuxedo
-                gallery: [
-                    'https://images.unsplash.com/photo-1594932224828-b4b059b6f6f3?auto=format&fit=crop&q=80&w=800',
-                    'https://images.unsplash.com/photo-1589182337358-2c6347515b3e?auto=format&fit=crop&q=80&w=800',
-                    'https://images.unsplash.com/photo-1594932224050-65007469a471?auto=format&fit=crop&q=80&w=800'
-                ],
+                main_image: localImages[6], // Boy church
+                gallery: getRandomGallery(4),
                 featured: true,
                 stock_status: 'available'
             },
@@ -200,12 +187,8 @@ export const seedCatalog = async () => {
                 material: 'Mezcla Cashemere & Lana',
                 category_id: findCat('traje'),
                 subcategory: 'arcangel',
-                main_image: 'https://images.unsplash.com/photo-1598808503746-f34c53b9323d?auto=format&fit=crop&q=80&w=800',
-                gallery: [
-                    'https://images.unsplash.com/photo-1617137968427-85d29c88615e?auto=format&fit=crop&q=80&w=800',
-                    'https://images.unsplash.com/photo-1534030347209-467a5b0ad3e6?auto=format&fit=crop&q=80&w=800',
-                    'https://images.unsplash.com/photo-1507679799987-c712811a1d2b?auto=format&fit=crop&q=80&w=800'
-                ],
+                main_image: localImages[7], // Boy church
+                gallery: getRandomGallery(4),
                 featured: true,
                 stock_status: 'available'
             },
@@ -220,12 +203,8 @@ export const seedCatalog = async () => {
                 material: 'Tergal Frances',
                 category_id: findCat('traje-estola'),
                 subcategory: 'uvas',
-                main_image: 'https://images.unsplash.com/photo-1523380744952-b7e00e6da3ff?auto=format&fit=crop&q=80&w=800',
-                gallery: [
-                    'https://images.unsplash.com/photo-1523380677598-646ca5ad863a?auto=format&fit=crop&q=80&w=800',
-                    'https://images.unsplash.com/photo-1523380720612-9c1692e737bd?auto=format&fit=crop&q=80&w=800',
-                    'https://images.unsplash.com/photo-1517423568366-8b83523034fd?auto=format&fit=crop&q=80&w=800'
-                ],
+                main_image: localImages[0], // Girls candles
+                gallery: getRandomGallery(4),
                 featured: false,
                 stock_status: 'available'
             }
