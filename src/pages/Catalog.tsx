@@ -7,12 +7,14 @@ import { productService } from '@/services/productService';
 import { Product, Category } from '@/types/product';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronDown, faFilter } from '@fortawesome/free-solid-svg-icons';
+import { Megamenu } from '@/components/layout/Megamenu';
 
 const Catalog: React.FC = () => {
     const [products, setProducts] = useState<Product[]>([]);
     const [categories, setCategories] = useState<Category[]>([]);
     const [loading, setLoading] = useState(true);
     const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+    const [isMegamenuOpen, setIsMegamenuOpen] = useState(false);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -52,10 +54,17 @@ const Catalog: React.FC = () => {
                     <Link to="/" className="w-28 md:w-36 hover:scale-105 transition-transform duration-500">
                         <Logo />
                     </Link>
-                    <nav className="hidden md:flex gap-12 text-[10px] uppercase tracking-[0.3em] font-medium">
-                        <Link to="/" className="hover:text-gold transition-colors">Inicio</Link>
-                        <span className="text-gold border-b border-gold/40 pb-1 cursor-default">Colección</span>
-                        <Link to="#" className="hover:text-gold transition-colors opacity-40 cursor-not-allowed">Nosotros</Link>
+                    <nav className="hidden md:flex gap-12 text-[10px] uppercase tracking-[0.3em] font-medium h-full">
+                        <Link to="/" className="hover:text-gold transition-colors flex items-center">Inicio</Link>
+                        <div
+                            className="relative h-full flex items-center group cursor-pointer"
+                            onMouseEnter={() => setIsMegamenuOpen(true)}
+                        >
+                            <span className={`${isMegamenuOpen ? 'text-gold' : 'text-chocolate'} group-hover:text-gold transition-colors flex items-center gap-2`}>
+                                Colección <FontAwesomeIcon icon={faChevronDown} className={`text-[8px] transition-transform duration-300 ${isMegamenuOpen ? 'rotate-180' : ''}`} />
+                            </span>
+                        </div>
+                        <Link to="#" className="hover:text-gold transition-colors opacity-40 cursor-not-allowed flex items-center">Nosotros</Link>
                     </nav>
                     <div className="md:hidden">
                         {/* Mobile Menu Icon (Placeholder) */}
@@ -63,6 +72,11 @@ const Catalog: React.FC = () => {
                         <div className="w-6 h-[1px] bg-chocolate"></div>
                     </div>
                 </div>
+
+                <Megamenu
+                    isOpen={isMegamenuOpen}
+                    onClose={() => setIsMegamenuOpen(false)}
+                />
             </header>
 
             {/* --- HERO SECTION --- */}
