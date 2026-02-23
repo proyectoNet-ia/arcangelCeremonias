@@ -133,11 +133,12 @@ const Catalog: React.FC = () => {
 
             {/* --- HERO SECTION --- */}
             <section className="pt-40 pb-20 px-6 md:px-12 max-w-[1600px] mx-auto">
-                <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-16">
-                    <div className="space-y-4 max-w-2xl">
+                <div className="flex flex-col gap-12 mb-16">
+                    {/* TITLE BLOCK */}
+                    <div className="space-y-4">
                         <motion.span
-                            initial={{ opacity: 0, x: -20 }}
-                            animate={{ opacity: 1, x: 0 }}
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
                             className="block text-[10px] uppercase tracking-[0.4em] text-gold font-semibold"
                         >
                             Exclusividad & Elegancia
@@ -146,30 +147,49 @@ const Catalog: React.FC = () => {
                             initial={{ opacity: 0, y: 30 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.8, delay: 0.2 }}
-                            className="text-5xl md:text-7xl font-serif leading-tight"
+                            className="text-5xl md:text-8xl font-serif leading-[1.1]"
                         >
                             Nuestro Catálogo <br />
-                            <span className="italic text-gold/80">Editorial</span>
+                            <span className="italic text-gold/80 font-light">Editorial</span>
                         </motion.h1>
+
                         {/* Botón temporal de desarrollo */}
                         {!loading && (
                             <button
                                 onClick={handleSeed}
                                 disabled={isSeeding}
-                                className={`mt-4 text-[9px] uppercase tracking-widest text-gold hover:underline ${isSeeding ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                className={`mt-2 text-[9px] uppercase tracking-widest text-gold hover:underline ${isSeeding ? 'opacity-50 cursor-not-allowed' : ''}`}
                             >
                                 {isSeeding ? '↻ Cargando datos...' : '↻ Actualizar catálogo a versión robusta (Supabase)'}
                             </button>
                         )}
                     </div>
 
-                    {/* CATEGORY FILTER & SEARCH */}
-                    <div className="flex flex-col md:items-end gap-6 w-full md:w-auto">
-                        <div className="relative w-full max-w-sm">
+                    {/* CATEGORY FILTER & SEARCH - Now positioned above the product list */}
+                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-8 border-t border-gold/10 pt-12">
+                        <div className="flex flex-wrap gap-3 items-center">
+                            <button
+                                onClick={() => handleCategoryClick(null)}
+                                className={`text-[10px] uppercase tracking-[0.2em] px-8 py-3 border transition-all duration-300 ${!selectedCategory ? 'bg-chocolate text-cream border-chocolate' : 'border-chocolate/20 text-chocolate/60 hover:border-chocolate'}`}
+                            >
+                                Todos
+                            </button>
+                            {categories.map((cat) => (
+                                <button
+                                    key={cat.id}
+                                    onClick={() => handleCategoryClick(cat.id)}
+                                    className={`text-[10px] uppercase tracking-[0.2em] px-8 py-3 border transition-all duration-300 ${selectedCategory === cat.id ? 'bg-chocolate text-cream border-chocolate' : 'border-chocolate/20 text-chocolate/60 hover:border-chocolate'}`}
+                                >
+                                    {cat.name}
+                                </button>
+                            ))}
+                        </div>
+
+                        <div className="relative w-full md:max-w-xs">
                             <FontAwesomeIcon icon={faSearch} className="absolute left-4 top-1/2 -translate-y-1/2 text-chocolate/30 text-xs" />
                             <input
                                 type="text"
-                                placeholder="Buscar modelo o material..."
+                                placeholder="Buscar modelo..."
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
                                 className="w-full bg-white/50 border border-gold/10 px-12 py-3 text-[10px] uppercase tracking-[0.2em] focus:outline-none focus:border-gold/30 transition-colors placeholder:text-chocolate/20"
@@ -182,24 +202,6 @@ const Catalog: React.FC = () => {
                                     <FontAwesomeIcon icon={faTimes} className="text-xs" />
                                 </button>
                             )}
-                        </div>
-
-                        <div className="flex flex-wrap gap-4 items-center justify-start md:justify-end">
-                            <button
-                                onClick={() => handleCategoryClick(null)}
-                                className={`text-[10px] uppercase tracking-[0.2em] px-6 py-2 border transition-all duration-300 ${!selectedCategory ? 'bg-chocolate text-cream border-chocolate' : 'border-chocolate/20 text-chocolate/60 hover:border-chocolate'}`}
-                            >
-                                Todos
-                            </button>
-                            {categories.map((cat) => (
-                                <button
-                                    key={cat.id}
-                                    onClick={() => handleCategoryClick(cat.id)}
-                                    className={`text-[10px] uppercase tracking-[0.2em] px-6 py-2 border transition-all duration-300 ${selectedCategory === cat.id ? 'bg-chocolate text-cream border-chocolate' : 'border-chocolate/20 text-chocolate/60 hover:border-chocolate'}`}
-                                >
-                                    {cat.name}
-                                </button>
-                            ))}
                         </div>
                     </div>
                 </div>
