@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFacebook, faInstagram, faWhatsapp } from '@fortawesome/free-brands-svg-icons';
+import { faDiamond } from '@fortawesome/free-solid-svg-icons';
 import { Logo } from '@/components/Logo';
 
 export const Footer: React.FC = () => {
@@ -11,7 +12,10 @@ export const Footer: React.FC = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-16 md:gap-12 lg:gap-16">
                     {/* NOSOTROS - Abstract */}
                     <div className="space-y-8 lg:col-span-1">
-                        <h3 className="font-serif text-gold text-sm md:text-base lg:text-lg uppercase tracking-[0.4em]">Nosotros</h3>
+                        <div className="flex items-center gap-4">
+                            <FontAwesomeIcon icon={faDiamond} className="text-[8px] text-gold/40" />
+                            <h3 className="font-serif text-gold text-sm md:text-base lg:text-lg uppercase tracking-[0.4em]">Nosotros</h3>
+                        </div>
                         <div className="space-y-4 text-cream/70 text-[10px] md:text-[11px] leading-relaxed font-light text-justify">
                             <p>
                                 Con más de 30 años en el ramo textil, nuestra misión es ser líderes en la fabricación y manufactura de productos ceremoniales para las nuevas generaciones, satisfaciendo las necesidades de nuestros clientes con calidad y a un precio justo.
@@ -24,27 +28,25 @@ export const Footer: React.FC = () => {
 
                     {/* UBICACIÓN */}
                     <div className="space-y-8">
-                        <h3 className="font-serif text-gold text-sm md:text-base lg:text-lg uppercase tracking-[0.4em]">Ubicación</h3>
+                        <div className="flex items-center gap-4">
+                            <FontAwesomeIcon icon={faDiamond} className="text-[8px] text-gold/40" />
+                            <h3 className="font-serif text-gold text-sm md:text-base lg:text-lg uppercase tracking-[0.4em]">Ubicación</h3>
+                        </div>
                         <div className="space-y-4 text-cream/60 text-[10px] md:text-xs uppercase tracking-[0.2em] leading-loose font-medium">
                             <p>
                                 Igualdad #200<br />
                                 Ejido de Potrerillos<br />
                                 La Piedad, Michoacán, México
                             </p>
-                            <a
-                                href="https://maps.google.com/?q=Igualdad+200,+Ejido+de+Potrerillos,+La+Piedad,+Michoacán"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="inline-block text-gold hover:text-cream transition-colors duration-300 mt-2"
-                            >
-                                Ver en Google Maps
-                            </a>
                         </div>
                     </div>
 
                     {/* CONTACTO */}
                     <div className="space-y-8">
-                        <h3 className="font-serif text-gold text-sm md:text-base lg:text-lg uppercase tracking-[0.4em]">Contacto</h3>
+                        <div className="flex items-center gap-4">
+                            <FontAwesomeIcon icon={faDiamond} className="text-[8px] text-gold/40" />
+                            <h3 className="font-serif text-gold text-sm md:text-base lg:text-lg uppercase tracking-[0.4em]">Contacto</h3>
+                        </div>
                         <div className="space-y-4 text-cream/60 text-[10px] md:text-xs uppercase tracking-[0.2em] font-medium">
                             <div className="flex flex-col gap-2">
                                 <span className="text-[8px] text-gold/50">Ventas / WhatsApp</span>
@@ -63,7 +65,10 @@ export const Footer: React.FC = () => {
 
                     {/* SOCIAL */}
                     <div className="space-y-8">
-                        <h3 className="font-serif text-gold text-sm md:text-base lg:text-lg uppercase tracking-[0.4em]">Social</h3>
+                        <div className="flex items-center gap-4">
+                            <FontAwesomeIcon icon={faDiamond} className="text-[8px] text-gold/40" />
+                            <h3 className="font-serif text-gold text-sm md:text-base lg:text-lg uppercase tracking-[0.4em]">Social</h3>
+                        </div>
                         <div className="flex gap-8 items-center">
                             <a
                                 href="https://www.facebook.com/arcangel.ceremonias/"
@@ -93,7 +98,7 @@ export const Footer: React.FC = () => {
                                 <FontAwesomeIcon icon={faWhatsapp} className="text-2xl" />
                             </a>
                         </div>
-                        <div className="pt-8 opacity-20 hover:opacity-100 transition-opacity duration-700 w-32">
+                        <div className="pt-8 opacity-20 hover:opacity-100 transition-opacity duration-700 w-40">
                             <div className="invert brightness-0">
                                 <Logo />
                             </div>

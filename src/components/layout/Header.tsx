@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faChevronDown, faBars, faTimes } from '@fortawesome/free-solid-svg-icons';
+import { faChevronDown, faBars, faTimes, faDiamond } from '@fortawesome/free-solid-svg-icons';
 import { Logo } from '@/components/Logo';
 import { Megamenu } from './Megamenu';
 
@@ -34,25 +34,26 @@ export const Header: React.FC<HeaderProps> = ({ variant = 'light' }) => {
                 {/* Desktop Navigation */}
                 <nav className="hidden md:flex gap-10 lg:gap-14 text-[10px] uppercase tracking-[0.3em] font-medium h-full items-center">
                     {navItems.map((item) => (
-                        item.hasMegamenu ? (
-                            <div
-                                key={item.name}
-                                className="relative h-full flex items-center group cursor-pointer"
-                                onMouseEnter={() => setIsMegamenuOpen(true)}
-                            >
-                                <span className={`${isMegamenuOpen || isCatalog ? 'text-gold' : (isDark ? 'text-cream' : 'text-chocolate')} group-hover:text-gold transition-colors flex items-center gap-2`}>
-                                    {item.name} <FontAwesomeIcon icon={faChevronDown} className={`text-[8px] transition-transform duration-300 ${isMegamenuOpen ? 'rotate-180' : ''}`} />
-                                </span>
-                            </div>
-                        ) : (
-                            <Link
-                                key={item.name}
-                                to={item.path}
-                                className={`${location.pathname === item.path ? 'text-gold' : (isDark ? 'text-cream' : 'text-chocolate')} hover:text-gold transition-colors flex items-center`}
-                            >
-                                {item.name}
-                            </Link>
-                        )
+                        <div key={item.name} className="flex items-center gap-3">
+                            <FontAwesomeIcon icon={faDiamond} className="text-[5px] text-gold/30" />
+                            {item.hasMegamenu ? (
+                                <div
+                                    className="relative h-full flex items-center group cursor-pointer"
+                                    onMouseEnter={() => setIsMegamenuOpen(true)}
+                                >
+                                    <span className={`${isMegamenuOpen || isCatalog ? 'text-gold' : (isDark ? 'text-cream' : 'text-chocolate')} group-hover:text-gold transition-colors flex items-center gap-2`}>
+                                        {item.name} <FontAwesomeIcon icon={faChevronDown} className={`text-[8px] transition-transform duration-300 ${isMegamenuOpen ? 'rotate-180' : ''}`} />
+                                    </span>
+                                </div>
+                            ) : (
+                                <Link
+                                    to={item.path}
+                                    className={`${location.pathname === item.path ? 'text-gold' : (isDark ? 'text-cream' : 'text-chocolate')} hover:text-gold transition-colors flex items-center`}
+                                >
+                                    {item.name}
+                                </Link>
+                            )}
+                        </div>
                     ))}
                 </nav>
 
