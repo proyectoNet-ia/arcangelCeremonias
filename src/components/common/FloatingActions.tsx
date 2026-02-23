@@ -41,10 +41,10 @@ export const FloatingActions: React.FC = () => {
                         animate={{ opacity: 1, scale: 1, y: 0 }}
                         exit={{ opacity: 0, scale: 0.5, y: 20 }}
                         onClick={scrollToTop}
-                        className="w-12 h-12 bg-white border border-gold/20 text-chocolate rounded-full shadow-lg flex items-center justify-center hover:bg-gold hover:text-white transition-all duration-300 group"
+                        className="w-14 h-14 bg-white border border-gold/20 text-chocolate rounded-full shadow-lg flex items-center justify-center hover:bg-gold hover:text-white transition-all duration-300 group"
                         title="Ir arriba"
                     >
-                        <FontAwesomeIcon icon={faChevronUp} className="text-sm group-hover:-translate-y-1 transition-transform" />
+                        <FontAwesomeIcon icon={faChevronUp} className="text-base group-hover:-translate-y-1 transition-transform" />
                     </motion.button>
                 )}
             </AnimatePresence>
