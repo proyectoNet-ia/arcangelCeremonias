@@ -1,48 +1,70 @@
 import React from 'react';
+import { motion } from 'framer-motion';
 import { Product } from '@/types/product';
-import { SHOP_CONFIG } from '@/config/shop';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faWhatsapp } from '@fortawesome/free-brands-svg-icons';
 
 interface ProductCardProps {
     product: Product;
+    index: number;
 }
 
-export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
-    const whatsappUrl = `https://wa.me/${SHOP_CONFIG.whatsappNumber}?text=Hola! Me interesa información sobre el modelo: ${product.name}`;
-
+export const ProductCard: React.FC<ProductCardProps> = ({ product, index }) => {
     return (
-        <div className="group bg-white border border-gold/10 hover:border-gold/30 transition-all duration-500 overflow-hidden flex flex-col h-full">
-            {/* Image Container */}
-            <div className="relative aspect-[3/4] overflow-hidden bg-cream">
+        <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: index * 0.1 }}
+            className="group cursor-pointer"
+        >
+            <div className="relative overflow-hidden bg-white aspect-[3/4] mb-4">
                 <img
-                    src={product.images[0]}
+                    src={product.main_image}
                     alt={product.name}
-                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                    className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
                 />
-                <div className="absolute top-4 right-4">
-                    <span className="bg-gold/90 text-white text-[10px] uppercase tracking-widest px-2 py-1">
-                        {product.category}
-                    </span>
-                </div>
+                <div className="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+
+                {/* Quick View or Badge */}
+                {product.featured && (
+                    <div className="absolute top-4 left-4">
+                        <span className="bg-gold text-white text-[10px] uppercase tracking-[0.2em] px-3 py-1 font-medium backdrop-blur-sm">
+                            Destacado
+                        </span>
+                    </div>
+                )}
             </div>
 
-            {/* Info Container */}
-            <div className="p-6 flex flex-col flex-grow">
-                <h3 className="font-serif text-xl text-chocolate mb-2">{product.name}</h3>
-                <p className="text-sm text-chocolate/60 line-clamp-2 mb-6 flex-grow">
-                    {product.description}
+            <div className="text-left space-y-1">
+                <div className="flex justify-between items-start">
+                    <h3 className="font-serif text-lg text-chocolate group-hover:text-gold transition-colors duration-300">
+                        {product.name}
+                    </h3>
+                    {product.show_price && product.price && (
+                        <span className="font-sans text-sm text-chocolate/60">
+                            ${product.price.toLocaleString()}
+                        </span>
+                    )}
+                </div>
+
+                <p className="text-xs text-chocolate/50 uppercase tracking-widest font-medium">
+                    {product.material || 'Material Premium'}
                 </p>
 
-                <div className="mt-auto pt-4 border-t border-gold/10">
-                    <a
-                        href={whatsappUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="block w-full text-center py-3 bg-chocolate text-cream text-xs uppercase tracking-[0.2em] hover:bg-gold hover:text-chocolate transition-colors duration-300"
+                <div className="pt-3 opacity-0 group-hover:opacity-100 transform translate-y-2 group-hover:translate-y-0 transition-all duration-500">
+                    <button
+                        className="w-full py-3 border border-chocolate text-chocolate text-[10px] uppercase tracking-[0.2em] hover:bg-chocolate hover:text-cream transition-all duration-300 flex items-center justify-center gap-2"
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            window.open(`https://wa.me/523521681197?text=Hola, me interesa el producto: ${product.name}`, '_blank');
+                        }}
                     >
-                        Consultar por WhatsApp
-                    </a>
+                        <FontAwesomeIcon icon={faWhatsapp} className="text-sm" />
+                        Consultar disponibilidad
+                    </button>
                 </div>
             </div>
-        </div>
+        </motion.div>
     );
 };
