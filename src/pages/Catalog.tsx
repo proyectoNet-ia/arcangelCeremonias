@@ -77,10 +77,25 @@ const Catalog: React.FC = () => {
         return matchesCategory && matchesSubcategory && matchesSearch;
     });
 
+    const [isSeeding, setIsSeeding] = useState(false);
+
     const handleSeed = async () => {
-        const { seedCatalog } = await import('@/services/seedData');
-        const success = await seedCatalog();
-        if (success) window.location.reload();
+        try {
+            setIsSeeding(true);
+            const { seedCatalog } = await import('@/services/seedData');
+            const success = await seedCatalog();
+            if (success) {
+                alert('¡Datos cargados con éxito!');
+                window.location.reload();
+            } else {
+                alert('Error al cargar datos. Revisa la consola.');
+            }
+        } catch (error) {
+            console.error('Seed error:', error);
+            alert('Error crítico al cargar datos.');
+        } finally {
+            setIsSeeding(false);
+        }
     };
 
     return (
@@ -140,9 +155,10 @@ const Catalog: React.FC = () => {
                         {!loading && (
                             <button
                                 onClick={handleSeed}
-                                className="mt-4 text-[9px] uppercase tracking-widest text-gold hover:underline"
+                                disabled={isSeeding}
+                                className={`mt-4 text-[9px] uppercase tracking-widest text-gold hover:underline ${isSeeding ? 'opacity-50 cursor-not-allowed' : ''}`}
                             >
-                                ↻ Actualizar catálogo a versión robusta (Supabase)
+                                {isSeeding ? '↻ Cargando datos...' : '↻ Actualizar catálogo a versión robusta (Supabase)'}
                             </button>
                         )}
                     </div>
