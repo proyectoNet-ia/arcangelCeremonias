@@ -8,14 +8,31 @@ export const Footer: React.FC = () => {
     return (
         <footer className="bg-chocolate text-cream py-24 px-6 md:px-12 border-t border-gold/10">
             <div className="max-w-[1600px] mx-auto">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-16 md:gap-12 lg:gap-24">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-16 md:gap-12 lg:gap-16">
+                    {/* NOSOTROS - Abstract */}
+                    <div className="space-y-8 lg:col-span-1">
+                        <h3 className="font-serif text-gold text-sm md:text-base lg:text-lg uppercase tracking-[0.4em]">Nosotros</h3>
+                        <div className="space-y-4 text-cream/70 text-[10px] md:text-[11px] leading-relaxed font-light text-justify">
+                            <p>
+                                Con más de 30 años en el ramo textil, nuestra misión es ser líderes en la fabricación y manufactura de productos ceremoniales para las nuevas generaciones, satisfaciendo las necesidades de nuestros clientes con calidad y a un precio justo.
+                            </p>
+                            <p>
+                                Creemos firmemente en el comercio justo y en la vocación de servir a nuestros clientes con valores fundamentales: calidad, honradez, amabilidad y especial atención a los detalles de cada uno de nuestros productos, que están elaborados con la dedicación y talento de muchas personas.
+                            </p>
+                        </div>
+                    </div>
+
                     {/* UBICACIÓN */}
                     <div className="space-y-8">
                         <h3 className="font-serif text-gold text-sm md:text-base lg:text-lg uppercase tracking-[0.4em]">Ubicación</h3>
                         <div className="space-y-4 text-cream/60 text-[10px] md:text-xs uppercase tracking-[0.2em] leading-loose font-medium">
-                            <p>Calle Pino Suárez #123<br />Col. Centro, CP 59300<br />La Piedad, Michoacán, México</p>
+                            <p>
+                                Igualdad #200<br />
+                                Ejido de Potrerillos<br />
+                                La Piedad, Michoacán, México
+                            </p>
                             <a
-                                href="https://maps.google.com"
+                                href="https://maps.google.com/?q=Igualdad+200,+Ejido+de+Potrerillos,+La+Piedad,+Michoacán"
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="inline-block text-gold hover:text-cream transition-colors duration-300 mt-2"

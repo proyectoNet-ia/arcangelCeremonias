@@ -145,17 +145,14 @@ const Home: React.FC = () => {
                                 </a>
                             </div>
 
-                            {/* Empresa */}
+                            {/* Ubicación */}
                             <div className="flex flex-col items-start md:items-center gap-1 md:gap-2">
                                 <span className="text-[10px] md:text-xs text-cream/70 uppercase tracking-[0.2em] font-medium">
-                                    Empresa
+                                    Ubicación
                                 </span>
-                                <a
-                                    href="tel:+523525262502"
-                                    className="text-lg md:text-xl lg:text-2xl text-cream font-serif tracking-widest hover:text-gold transition-colors duration-300"
-                                >
-                                    352 52 62502
-                                </a>
+                                <p className="text-base md:text-lg text-cream font-serif tracking-wider">
+                                    Igualdad #200, La Piedad, Mich.
+                                </p>
                             </div>
                         </div>
 
