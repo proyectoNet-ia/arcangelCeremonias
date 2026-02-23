@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { Product } from '@/types/product';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faWhatsapp } from '@fortawesome/free-brands-svg-icons';
+import { faShareNodes } from '@fortawesome/free-solid-svg-icons';
 import { Link } from 'react-router-dom';
 
 interface ProductCardProps {
@@ -31,11 +32,35 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, index }) => {
                     {/* Quick View or Badge */}
                     {product.featured && (
                         <div className="absolute top-4 left-4">
-                            <span className="bg-gold text-white text-[10px] uppercase tracking-[0.2em] px-3 py-1 font-medium backdrop-blur-sm">
+                            <span className="bg-gold text-white text-[10px] uppercase tracking-[0.2em] px-3 py-1 font-medium backdrop-blur-sm shadow-sm">
                                 Destacado
                             </span>
                         </div>
                     )}
+
+                    {/* Share Button Overlay */}
+                    <div className="absolute top-4 right-4 translate-x-4 opacity-0 group-hover:translate-x-0 group-hover:opacity-100 transition-all duration-500">
+                        <button
+                            onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                if (navigator.share) {
+                                    navigator.share({
+                                        title: `Arcángel Ceremonias - ${product.name}`,
+                                        text: `Mira este producto en Arcángel Ceremonias: ${product.name}`,
+                                        url: `${window.location.origin}/producto/${product.slug}`,
+                                    }).catch(console.error);
+                                } else {
+                                    navigator.clipboard.writeText(`${window.location.origin}/producto/${product.slug}`);
+                                    alert('¡Enlace copiado al portapapeles!');
+                                }
+                            }}
+                            className="bg-white/90 backdrop-blur-sm text-chocolate w-10 h-10 flex items-center justify-center rounded-full hover:bg-gold hover:text-white transition-all duration-300 shadow-lg"
+                            title="Compartir producto"
+                        >
+                            <FontAwesomeIcon icon={faShareNodes} className="text-sm" />
+                        </button>
+                    </div>
                 </div>
 
                 <div className="text-left space-y-1">
