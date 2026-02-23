@@ -156,19 +156,19 @@ const Catalog: React.FC = () => {
                         </div>
 
                         {/* Search Bar aligned to the top right */}
-                        <div className="relative w-full md:max-w-xs md:mt-2">
-                            <FontAwesomeIcon icon={faSearch} className="absolute left-4 top-1/2 -translate-y-1/2 text-chocolate/30 text-xs" />
+                        <div className="relative w-full md:max-w-sm md:mt-2">
+                            <FontAwesomeIcon icon={faSearch} className="absolute left-4 top-1/2 -translate-y-1/2 text-gold text-sm" />
                             <input
                                 type="text"
-                                placeholder="Buscar modelo..."
+                                placeholder="Buscar modelo o colección..."
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
-                                className="w-full bg-white/40 backdrop-blur-sm border border-gold/10 px-12 py-3 text-[10px] uppercase tracking-[0.2em] focus:outline-none focus:border-gold/30 transition-colors placeholder:text-chocolate/20"
+                                className="w-full bg-white/80 backdrop-blur-md border border-gold/30 px-12 py-4 text-[11px] uppercase tracking-[0.2em] focus:outline-none focus:border-gold focus:ring-1 focus:ring-gold/20 transition-all duration-300 placeholder:text-chocolate/40 shadow-sm"
                             />
                             {searchTerm && (
                                 <button
                                     onClick={() => setSearchTerm('')}
-                                    className="absolute right-4 top-1/2 -translate-y-1/2 text-chocolate/30 hover:text-gold transition-colors"
+                                    className="absolute right-4 top-1/2 -translate-y-1/2 text-chocolate/40 hover:text-gold transition-colors"
                                 >
                                     <FontAwesomeIcon icon={faTimes} className="text-xs" />
                                 </button>
