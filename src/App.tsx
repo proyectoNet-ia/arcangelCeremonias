@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import Home from './pages/Home';
 import Catalog from './pages/Catalog';
+import ProductDetail from './pages/ProductDetail';
 
 // Component to handle scroll to top on route change
 const ScrollToTop = () => {
@@ -21,6 +22,7 @@ const App: React.FC = () => {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/catalogo" element={<Catalog />} />
+        <Route path="/producto/:slug" element={<ProductDetail />} />
         <Route path="*" element={<Home />} />
       </Routes>
     </Router>
