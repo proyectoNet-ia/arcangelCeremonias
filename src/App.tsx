@@ -20,8 +20,7 @@ const App: React.FC = () => {
       <ScrollToTop />
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/catalogo" element={<Catalog />} />
-        {/* Fallback to Home for now */}
+        {/* <Route path="/catalogo" element={<Catalog />} /> */}
         <Route path="*" element={<Home />} />
       </Routes>
     </Router>
