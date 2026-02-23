@@ -4,20 +4,19 @@ Este archivo es un resumen actualizado para mantener la continuidad del desarrol
 
 ## 📝 Resumen Ejecutivo
 
-**Última actualización:** 21 de febrero de 2026.
-**Objetivo:** Landing page de "Próximamente" con diseño optimizado, activos de imagen finales y alineación responsiva personalizada.
+**Última actualización:** 23 de febrero de 2026.
+**Objetivo:** Landing page de "Próximamente" finalizada y activa en producción mientras se desarrolla el catálogo.
 
-## 🚀 Avances Recientes (21 de febrero de 2026)
+## 🚀 Avances Recientes (23 de febrero de 2026)
 
-### 1. Actualización de Activos Visuales
-*   **Desktop**: Se utiliza `fondo-pc.jpg` con ajuste `bg-cover` y alineación `right center`.
-*   **Mobile**: Se implementó `modelo_medio.png` con ajuste `bg-contain` y alineación `right center` para evitar recortes del sujeto y asegurar legibilidad.
+### 1. Finalización de Landing (Modo Lockdown)
+*   **Imagen Desktop**: Se cambió a `fondo-horizontal.jpeg` por petición del cliente.
+*   **Restricción de Rutas**: Se bloquearon todas las rutas externas en `App.tsx` para mostrar exclusivamente la página de construcción en el dominio principal.
+*   **Sincronización**: Proyecto sincronizado exitosamente entre múltiples dispositivos.
 
-### 2. Ajustes de Identidad y Legibilidad
-*   **Escalado de Logo**: El logo en versión móvil se incrementó un 20% (ancho final `176px`) para mayor impacto visual en pantallas pequeñas.
-*   **Alineación Responsiva Híbrida**:
-    *   **Móvil**: Todo el contenido (logo, títulos, textos y footer) está alineado a la **izquierda** para coordinarse con la nueva composición de la foto de fondo.
-    *   **Desktop**: Se mantiene la alineación **central** para el bloque de contenido principal, asegurando un look elegante y equilibrado.
+### 2. Ajustes de Identidad
+*   Logo móvil escalado al 120% y alineación a la izquierda para versión móvil.
+*   Alineación centrada para versión Desktop.
 
 ### 3. Sincronización y Despliegue
 *   **Git**: Los cambios han sido pusheados a la rama `main` para permitir la continuidad en otros dispositivos.
