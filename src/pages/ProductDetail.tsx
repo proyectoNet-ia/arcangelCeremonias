@@ -3,7 +3,7 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faWhatsapp } from '@fortawesome/free-brands-svg-icons';
-import { faArrowLeft, faChevronRight, faChevronLeft } from '@fortawesome/free-solid-svg-icons';
+import { faArrowLeft, faChevronRight, faChevronLeft, faShareNodes } from '@fortawesome/free-solid-svg-icons';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
 import { Logo } from '@/components/Logo';
@@ -163,13 +163,34 @@ const ProductDetail: React.FC = () => {
 
                         {/* Actions */}
                         <div className="pt-8 space-y-6">
-                            <button
-                                onClick={() => window.open(`https://wa.me/523521681197?text=Hola, me gustaría recibir más información y tallas sobre el modelo: ${product.name}`, '_blank')}
-                                className="w-full bg-chocolate text-cream py-6 flex items-center justify-center gap-4 group transition-all duration-500 hover:bg-gold hover:shadow-2xl hover:shadow-gold/20"
-                            >
-                                <FontAwesomeIcon icon={faWhatsapp} className="text-xl" />
-                                <span className="text-xs uppercase tracking-[0.4em] font-medium">Consultar por WhatsApp</span>
-                            </button>
+                            <div className="flex gap-4">
+                                <button
+                                    onClick={() => window.open(`https://wa.me/523521681197?text=Hola, me gustaría recibir más información y tallas sobre el modelo: ${product.name}`, '_blank')}
+                                    className="flex-grow bg-chocolate text-cream py-6 flex items-center justify-center gap-4 group transition-all duration-500 hover:bg-gold hover:shadow-2xl hover:shadow-gold/20"
+                                >
+                                    <FontAwesomeIcon icon={faWhatsapp} className="text-xl" />
+                                    <span className="text-xs uppercase tracking-[0.4em] font-medium">WhatsApp</span>
+                                </button>
+
+                                <button
+                                    onClick={() => {
+                                        if (navigator.share) {
+                                            navigator.share({
+                                                title: `Arcángel Ceremonias - ${product.name}`,
+                                                text: `Mira este producto en Arcángel Ceremonias: ${product.name}`,
+                                                url: window.location.href,
+                                            }).catch(console.error);
+                                        } else {
+                                            navigator.clipboard.writeText(window.location.href);
+                                            alert('¡Enlace copiado al portapapeles!');
+                                        }
+                                    }}
+                                    className="w-20 bg-white border border-gold/20 text-chocolate flex items-center justify-center hover:bg-gold hover:text-white transition-all duration-500 hover:shadow-xl group"
+                                    title="Compartir"
+                                >
+                                    <FontAwesomeIcon icon={faShareNodes} className="text-lg group-hover:scale-110 transition-transform" />
+                                </button>
+                            </div>
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-[9px] uppercase tracking-[0.2em] text-chocolate/40 font-medium">
                                 <div className="flex items-center gap-3 bg-white/50 p-4 border border-gold/5 rounded-sm">
