@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Logo } from '@/components/Logo';
-import { Link, useSearchParams } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
+import { Header } from '@/components/layout/Header';
 import { ProductCard } from '@/components/catalog/ProductCard';
 import { productService } from '@/services/productService';
 import { Product, Category } from '@/types/product';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faChevronDown, faFilter, faSearch, faTimes } from '@fortawesome/free-solid-svg-icons';
-import { Megamenu } from '@/components/layout/Megamenu';
+import { faSearch, faTimes } from '@fortawesome/free-solid-svg-icons';
+import { Logo } from '@/components/Logo';
 
 const Catalog: React.FC = () => {
     const [searchParams, setSearchParams] = useSearchParams();
@@ -100,36 +100,7 @@ const Catalog: React.FC = () => {
 
     return (
         <div className="min-h-screen bg-cream font-sans text-chocolate selection:bg-gold/20">
-            {/* --- PREMIUM NAVBAR --- */}
-            <header className="fixed top-0 w-full z-50 bg-cream/90 backdrop-blur-md border-b border-gold/10 px-6 py-4 md:px-12">
-                <div className="max-w-[1600px] mx-auto flex justify-between items-center">
-                    <Link to="/" className="w-28 md:w-36 hover:scale-105 transition-transform duration-500">
-                        <Logo />
-                    </Link>
-                    <nav className="hidden md:flex gap-12 text-[10px] uppercase tracking-[0.3em] font-medium h-full">
-                        <Link to="/" className="hover:text-gold transition-colors flex items-center">Inicio</Link>
-                        <div
-                            className="relative h-full flex items-center group cursor-pointer"
-                            onMouseEnter={() => setIsMegamenuOpen(true)}
-                        >
-                            <span className={`${isMegamenuOpen ? 'text-gold' : 'text-chocolate'} group-hover:text-gold transition-colors flex items-center gap-2`}>
-                                Colección <FontAwesomeIcon icon={faChevronDown} className={`text-[8px] transition-transform duration-300 ${isMegamenuOpen ? 'rotate-180' : ''}`} />
-                            </span>
-                        </div>
-                        <Link to="#" className="hover:text-gold transition-colors opacity-40 cursor-not-allowed flex items-center">Nosotros</Link>
-                    </nav>
-                    <div className="md:hidden">
-                        {/* Mobile Menu Icon (Placeholder) */}
-                        <div className="w-6 h-[1px] bg-chocolate mb-1.5"></div>
-                        <div className="w-6 h-[1px] bg-chocolate"></div>
-                    </div>
-                </div>
-
-                <Megamenu
-                    isOpen={isMegamenuOpen}
-                    onClose={() => setIsMegamenuOpen(false)}
-                />
-            </header>
+            <Header />
 
             {/* --- HERO SECTION --- */}
             <section className="pt-40 pb-20 px-6 md:px-12 max-w-[1600px] mx-auto">
@@ -142,7 +113,7 @@ const Catalog: React.FC = () => {
                                 animate={{ opacity: 1 }}
                                 className="block text-[10px] uppercase tracking-[0.4em] text-gold font-semibold"
                             >
-                                Exclusividad & Elegancia
+                                Ceremonias que se visten de elegancia
                             </motion.span>
                             <motion.h1
                                 initial={{ opacity: 0, y: 30 }}

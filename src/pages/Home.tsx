@@ -1,6 +1,8 @@
-import { faFacebook, faInstagram, faWhatsapp } from '@fortawesome/free-brands-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, { useEffect, useState } from 'react';
+import { motion } from 'framer-motion';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faFacebook, faInstagram, faWhatsapp } from '@fortawesome/free-brands-svg-icons';
+import { Header } from '@/components/layout/Header';
 import { Logo } from '@/components/Logo';
 import { Link } from 'react-router-dom';
 import bgMobile from '@/assets/modelo_medio.png';
@@ -91,15 +93,7 @@ const Home: React.FC = () => {
 
             {/* --- CONTENT --- */}
             <div className="relative z-10 flex flex-col min-h-[100dvh] w-full drop-shadow-lg">
-
-                {/* Top: Logo */}
-                <header className="w-full py-6 md:py-8 lg:py-10 flex justify-start md:justify-center fade-in-down shrink-0 px-6 md:px-0">
-                    <div className="w-[176px] md:w-48 lg:w-56 opacity-90 transition-transform duration-700 hover:scale-105 hover:opacity-100 drop-shadow-md">
-                        <div className="invert brightness-0 contrast-200 sepia-[.3] hue-rotate-[10deg] saturate-[.5]">
-                            <Logo />
-                        </div>
-                    </div>
-                </header>
+                <Header variant="dark" />
 
                 {/* Center: Main Message */}
                 <main className="flex flex-col items-start md:items-center justify-center text-left md:text-center flex-grow px-6 py-4 md:px-12 max-w-5xl mx-auto">
@@ -109,6 +103,14 @@ const Home: React.FC = () => {
                                 Próximamente
                             </span>
                         </h1>
+                        <motion.p
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            transition={{ delay: 0.8 }}
+                            className="text-[10px] md:text-xs uppercase tracking-[0.4em] text-gold font-medium reveal-text"
+                        >
+                            Ceremonias que se visten de elegancia
+                        </motion.p>
 
                         <div className="h-[1px] w-16 md:w-20 bg-cream/30 my-2 md:my-3 reveal-line delay-1000"></div>
 

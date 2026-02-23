@@ -24,6 +24,8 @@ const App: React.FC = () => {
         <Route path="/" element={<Home />} />
         <Route path="/catalogo" element={<Catalog />} />
         <Route path="/producto/:slug" element={<ProductDetail />} />
+        <Route path="/nosotros" element={<Home />} />
+        <Route path="/contacto" element={<Home />} />
         <Route path="*" element={<Home />} />
       </Routes>
       <FloatingActions />

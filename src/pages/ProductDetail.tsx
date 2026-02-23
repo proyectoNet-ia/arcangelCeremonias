@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faWhatsapp } from '@fortawesome/free-brands-svg-icons';
 import { faArrowLeft, faChevronRight, faChevronLeft } from '@fortawesome/free-solid-svg-icons';
+import { Header } from '@/components/layout/Header';
 import { Logo } from '@/components/Logo';
 import { productService } from '@/services/productService';
 import { Product } from '@/types/product';
@@ -55,22 +56,7 @@ const ProductDetail: React.FC = () => {
 
     return (
         <div className="min-h-screen bg-cream font-sans text-chocolate selection:bg-gold/20">
-            {/* Header / Navbar */}
-            <header className="fixed top-0 w-full z-50 bg-cream/90 backdrop-blur-md border-b border-gold/10 px-6 py-4 md:px-12">
-                <div className="max-w-[1600px] mx-auto flex justify-between items-center">
-                    <Link to="/catalogo" className="flex items-center gap-2 group text-[10px] uppercase tracking-[0.2em] font-medium transition-colors hover:text-gold">
-                        <FontAwesomeIcon icon={faArrowLeft} className="text-xs transition-transform group-hover:-translate-x-1" />
-                        Atrás
-                    </Link>
-                    <Link to="/" className="w-24 md:w-32 absolute left-1/2 -translate-x-1/2">
-                        <Logo />
-                    </Link>
-                    <div className="hidden md:flex gap-8 text-[10px] uppercase tracking-[0.3em] font-medium opacity-40">
-                        <span>Colección</span>
-                        <span>Nosotros</span>
-                    </div>
-                </div>
-            </header>
+            <Header />
 
             <main className="pt-32 pb-20 px-6 md:px-12 max-w-[1600px] mx-auto">
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 xl:gap-20">
