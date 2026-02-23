@@ -156,8 +156,7 @@ const Catalog: React.FC = () => {
                         </div>
 
                         {/* Search Bar aligned to the top right */}
-                        <div className="relative w-full md:max-w-sm md:mt-2">
-                            <FontAwesomeIcon icon={faSearch} className="absolute left-4 top-1/2 -translate-y-1/2 text-chocolate text-sm" />
+                        <div className="relative w-full md:max-w-sm md:mt-2 group">
                             <input
                                 type="text"
                                 placeholder="Buscar modelo o colección..."
@@ -165,10 +164,14 @@ const Catalog: React.FC = () => {
                                 onChange={(e) => setSearchTerm(e.target.value)}
                                 className="w-full bg-white/80 backdrop-blur-md border border-gold/30 px-12 py-4 text-[11px] uppercase tracking-[0.2em] focus:outline-none focus:border-gold focus:ring-1 focus:ring-gold/20 transition-all duration-300 placeholder:text-chocolate/40 shadow-sm"
                             />
+                            <FontAwesomeIcon
+                                icon={faSearch}
+                                className="absolute left-4 top-1/2 -translate-y-1/2 text-chocolate text-base z-10 pointer-events-none group-focus-within:text-gold transition-colors"
+                            />
                             {searchTerm && (
                                 <button
                                     onClick={() => setSearchTerm('')}
-                                    className="absolute right-4 top-1/2 -translate-y-1/2 text-chocolate/40 hover:text-gold transition-colors"
+                                    className="absolute right-4 top-1/2 -translate-y-1/2 text-chocolate/40 hover:text-gold transition-colors z-10"
                                 >
                                     <FontAwesomeIcon icon={faTimes} className="text-xs" />
                                 </button>
