@@ -136,12 +136,13 @@ const Catalog: React.FC = () => {
                             Nuestro Catálogo <br />
                             <span className="italic text-gold/80">Editorial</span>
                         </motion.h1>
-                        {products.length === 0 && !loading && (
+                        {/* Botón temporal de desarrollo */}
+                        {!loading && (
                             <button
                                 onClick={handleSeed}
                                 className="mt-4 text-[9px] uppercase tracking-widest text-gold hover:underline"
                             >
-                                + Inicializar catálogo de prueba (Supabase)
+                                ↻ Actualizar catálogo a versión robusta (Supabase)
                             </button>
                         )}
                     </div>
