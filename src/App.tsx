@@ -5,6 +5,7 @@ import Catalog from './pages/Catalog';
 import ProductDetail from './pages/ProductDetail';
 import About from './pages/About';
 import Contact from './pages/Contact';
+import Admin from './pages/Admin';
 import { FloatingActions } from './components/common/FloatingActions';
 
 // Component to handle scroll to top on route change
@@ -28,6 +29,7 @@ const App: React.FC = () => {
         <Route path="/producto/:slug" element={<ProductDetail />} />
         <Route path="/nosotros" element={<About />} />
         <Route path="/contacto" element={<Contact />} />
+        <Route path="/admin" element={<Admin />} />
         <Route path="*" element={<Home />} />
       </Routes>
       <FloatingActions />

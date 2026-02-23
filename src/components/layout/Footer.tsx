@@ -109,6 +109,7 @@ export const Footer: React.FC = () => {
                 <div className="mt-24 pt-8 border-t border-gold/5 flex flex-col md:flex-row justify-between items-center gap-6 text-[8px] md:text-[9px] uppercase tracking-[0.3em] font-medium text-cream/30">
                     <p>© 2026 Arcángel Ceremonias. Todos los derechos reservados.</p>
                     <div className="flex gap-8">
+                        <Link to="/admin" className="hover:text-gold transition-colors">Admin</Link>
                         <Link to="#" className="hover:text-gold transition-colors">Términos & Condiciones</Link>
                         <Link to="#" className="hover:text-gold transition-colors">Aviso de Privacidad</Link>
                     </div>

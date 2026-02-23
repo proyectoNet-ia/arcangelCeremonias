@@ -29,5 +29,26 @@ export const productService = {
 
         if (error) throw error;
         return data as (Product & { categories: Category });
+    },
+
+    async upsertProduct(product: Partial<Product>) {
+        const { data, error } = await supabase
+            .from('products')
+            .upsert(product)
+            .select()
+            .single();
+
+        if (error) throw error;
+        return data as Product;
+    },
+
+    async deleteProduct(id: string) {
+        const { error } = await supabase
+            .from('products')
+            .delete()
+            .eq('id', id);
+
+        if (error) throw error;
+        return true;
     }
 };

@@ -47,6 +47,11 @@ export const seedCatalog = async () => {
                 category_id: findCat('bautizo'),
                 subcategory: 'ropon-nina',
                 main_image: 'https://images.unsplash.com/photo-1519689680058-324335c77eba?auto=format&fit=crop&q=80&w=800',
+                gallery: [
+                    'https://images.unsplash.com/photo-1519689209180-143093952a63?auto=format&fit=crop&q=80&w=800',
+                    'https://images.unsplash.com/photo-1519689944250-d7373f1396b7?auto=format&fit=crop&q=80&w=800',
+                    'https://images.unsplash.com/photo-1519689423605-e4df734c3821?auto=format&fit=crop&q=80&w=800'
+                ],
                 featured: true,
                 stock_status: 'available'
             },
@@ -60,6 +65,11 @@ export const seedCatalog = async () => {
                 category_id: findCat('bautizo'),
                 subcategory: 'ropon-nino',
                 main_image: 'https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&q=80&w=800',
+                gallery: [
+                    'https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&q=80&w=800&q=2',
+                    'https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&q=80&w=800&q=3',
+                    'https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&q=80&w=800&q=4'
+                ],
                 featured: false,
                 stock_status: 'available'
             },
@@ -75,6 +85,11 @@ export const seedCatalog = async () => {
                 category_id: findCat('traje-charro'),
                 subcategory: 'con-virgen-blanco',
                 main_image: 'https://images.unsplash.com/photo-1511795409834-ef04bbd61622?auto=format&fit=crop&q=80&w=800',
+                gallery: [
+                    'https://images.unsplash.com/photo-1511795409834-ef04bbd61622?auto=format&fit=crop&q=80&w=800&q=2',
+                    'https://images.unsplash.com/photo-1511795409834-ef04bbd61622?auto=format&fit=crop&q=80&w=800&q=3',
+                    'https://images.unsplash.com/photo-1511795409834-ef04bbd61622?auto=format&fit=crop&q=80&w=800&q=4'
+                ],
                 featured: true,
                 stock_status: 'available'
             },
@@ -88,6 +103,11 @@ export const seedCatalog = async () => {
                 category_id: findCat('traje-charro'),
                 subcategory: 'clasico-azul-rey',
                 main_image: 'https://images.unsplash.com/photo-1507679799987-c712811a1d2b?auto=format&fit=crop&q=80&w=800',
+                gallery: [
+                    'https://images.unsplash.com/photo-1507679799987-c712811a1d2b?auto=format&fit=crop&q=80&w=800&q=2',
+                    'https://images.unsplash.com/photo-1507679799987-c712811a1d2b?auto=format&fit=crop&q=80&w=800&q=3',
+                    'https://images.unsplash.com/photo-1507679799987-c712811a1d2b?auto=format&fit=crop&q=80&w=800&q=4'
+                ],
                 featured: false,
                 stock_status: 'available'
             },
@@ -103,6 +123,11 @@ export const seedCatalog = async () => {
                 category_id: findCat('guayabera'),
                 subcategory: 'tropical',
                 main_image: 'https://images.unsplash.com/photo-1594932224828-b4b059b6f6f2?auto=format&fit=crop&q=80&w=800',
+                gallery: [
+                    'https://images.unsplash.com/photo-1594932224828-b4b059b6f6f2?auto=format&fit=crop&q=80&w=800&q=2',
+                    'https://images.unsplash.com/photo-1594932224828-b4b059b6f6f2?auto=format&fit=crop&q=80&w=800&q=3',
+                    'https://images.unsplash.com/photo-1594932224828-b4b059b6f6f2?auto=format&fit=crop&q=80&w=800&q=4'
+                ],
                 featured: true,
                 stock_status: 'available'
             },
@@ -116,6 +141,11 @@ export const seedCatalog = async () => {
                 category_id: findCat('guayabera'),
                 subcategory: 'bebe',
                 main_image: 'https://images.unsplash.com/photo-1519234164452-16ef782079f9?auto=format&fit=crop&q=80&w=800',
+                gallery: [
+                    'https://images.unsplash.com/photo-1519234164452-16ef782079f9?auto=format&fit=crop&q=80&w=800&q=2',
+                    'https://images.unsplash.com/photo-1519234164452-16ef782079f9?auto=format&fit=crop&q=80&w=800&q=3',
+                    'https://images.unsplash.com/photo-1519234164452-16ef782079f9?auto=format&fit=crop&q=80&w=800&q=4'
+                ],
                 featured: false,
                 stock_status: 'available'
             },
@@ -131,6 +161,11 @@ export const seedCatalog = async () => {
                 category_id: findCat('tunica'),
                 subcategory: 'modelo-1',
                 main_image: 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&q=80&w=800',
+                gallery: [
+                    'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&q=80&w=800&q=2',
+                    'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&q=80&w=800&q=3',
+                    'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&q=80&w=800&q=4'
+                ],
                 featured: false,
                 stock_status: 'on_request'
             },
@@ -146,6 +181,11 @@ export const seedCatalog = async () => {
                 category_id: findCat('esmoquin'),
                 subcategory: 'san-gabriel',
                 main_image: 'https://images.unsplash.com/photo-1594932224828-b4b059b6f6f3?auto=format&fit=crop&q=80&w=800',
+                gallery: [
+                    'https://images.unsplash.com/photo-1594932224828-b4b059b6f6f3?auto=format&fit=crop&q=80&w=800&q=2',
+                    'https://images.unsplash.com/photo-1594932224828-b4b059b6f6f3?auto=format&fit=crop&q=80&w=800&q=3',
+                    'https://images.unsplash.com/photo-1594932224828-b4b059b6f6f3?auto=format&fit=crop&q=80&w=800&q=4'
+                ],
                 featured: true,
                 stock_status: 'available'
             },
@@ -161,6 +201,11 @@ export const seedCatalog = async () => {
                 category_id: findCat('traje'),
                 subcategory: 'arcangel',
                 main_image: 'https://images.unsplash.com/photo-1598808503746-f34c53b9323d?auto=format&fit=crop&q=80&w=800',
+                gallery: [
+                    'https://images.unsplash.com/photo-1598808503746-f34c53b9323d?auto=format&fit=crop&q=80&w=800&q=2',
+                    'https://images.unsplash.com/photo-1598808503746-f34c53b9323d?auto=format&fit=crop&q=80&w=800&q=3',
+                    'https://images.unsplash.com/photo-1598808503746-f34c53b9323d?auto=format&fit=crop&q=80&w=800&q=4'
+                ],
                 featured: true,
                 stock_status: 'available'
             },
@@ -176,6 +221,11 @@ export const seedCatalog = async () => {
                 category_id: findCat('traje-estola'),
                 subcategory: 'uvas',
                 main_image: 'https://images.unsplash.com/photo-1523380744952-b7e00e6da3ff?auto=format&fit=crop&q=80&w=800',
+                gallery: [
+                    'https://images.unsplash.com/photo-1523380744952-b7e00e6da3ff?auto=format&fit=crop&q=80&w=800&q=2',
+                    'https://images.unsplash.com/photo-1523380744952-b7e00e6da3ff?auto=format&fit=crop&q=80&w=800&q=3',
+                    'https://images.unsplash.com/photo-1523380744952-b7e00e6da3ff?auto=format&fit=crop&q=80&w=800&q=4'
+                ],
                 featured: false,
                 stock_status: 'available'
             }
