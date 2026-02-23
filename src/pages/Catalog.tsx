@@ -38,6 +38,12 @@ const Catalog: React.FC = () => {
         ? products.filter(p => p.category_id === selectedCategory)
         : products;
 
+    const handleSeed = async () => {
+        const { seedCatalog } = await import('@/services/seedData');
+        const success = await seedCatalog();
+        if (success) window.location.reload();
+    };
+
     return (
         <div className="min-h-screen bg-cream font-sans text-chocolate selection:bg-gold/20">
             {/* --- PREMIUM NAVBAR --- */}
@@ -79,6 +85,14 @@ const Catalog: React.FC = () => {
                             Nuestro Catálogo <br />
                             <span className="italic text-gold/80">Editorial</span>
                         </motion.h1>
+                        {products.length === 0 && !loading && (
+                            <button
+                                onClick={handleSeed}
+                                className="mt-4 text-[9px] uppercase tracking-widest text-gold hover:underline"
+                            >
+                                + Inicializar catálogo de prueba (Supabase)
+                            </button>
+                        )}
                     </div>
 
                     {/* CATEGORY FILTER */}
