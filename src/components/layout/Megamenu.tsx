@@ -18,39 +18,68 @@ const menuData: MainCategory[] = [
         title: 'Bautizo',
         slug: 'bautizo',
         subcategories: [
-            { name: 'Ropones Niño', slug: 'ropones-nino' },
-            { name: 'Ropones Niña', slug: 'ropones-nina' },
-            { name: 'Velas & Conchas', slug: 'velas-conchas' },
-            { name: 'Sábanas & Accesorios', slug: 'sabanas-accesorios' },
+            { name: 'Ropón Niña', slug: 'ropon-nina' },
+            { name: 'Ropón Niño', slug: 'ropon-nino' },
         ]
     },
     {
-        title: 'Primera Comunión',
-        slug: 'primera-comunion',
+        title: 'Traje Charro',
+        slug: 'traje-charro',
         subcategories: [
-            { name: 'Vestidos', slug: 'vestidos-comunion' },
-            { name: 'Trajes Niño', slug: 'trajes-comunion' },
-            { name: 'Biblias & Velas', slug: 'biblias-velas-comunion' },
-            { name: 'Accesorios', slug: 'accesorios-comunion' },
+            { name: 'Con Virgen Blanco', slug: 'con-virgen-blanco' },
+            { name: 'Con Virgen Beige', slug: 'con-virgen-beige' },
+            { name: 'Con Virgen Negro', slug: 'con-virgen-negro' },
+            { name: 'Clásico Azul Rey', slug: 'clasico-azul-rey' },
+            { name: 'Clásico Beige', slug: 'clasico-beige' },
+            { name: 'Clásico Blanco', slug: 'clasico-blanco' },
+            { name: 'Clásico Kaki', slug: 'clasico-kaki' },
+            { name: 'Clásico Gris', slug: 'clasico-gris' },
         ]
     },
     {
-        title: 'Boda',
-        slug: 'boda',
+        title: 'Guayabera',
+        slug: 'guayabera',
         subcategories: [
-            { name: 'Lazos', slug: 'lazos-boda' },
-            { name: 'Arras', slug: 'arras-boda' },
-            { name: 'Rosarios', slug: 'rosarios-boda' },
-            { name: 'Cojines', slug: 'cojines-boda' },
+            { name: 'Tropical', slug: 'tropical' },
+            { name: 'Chazarilla', slug: 'chazarilla' },
+            { name: 'Caribeña', slug: 'caribena' },
+            { name: 'Paraíso', slug: 'paraiso' },
+            { name: 'Primavera', slug: 'primavera' },
+            { name: 'Verano', slug: 'verano' },
+            { name: 'Bebé', slug: 'bebe' },
         ]
     },
     {
-        title: 'Presentación',
-        slug: 'presentacion',
+        title: 'Túnica',
+        slug: 'tunica',
         subcategories: [
-            { name: 'Vestidos Presentación', slug: 'vestidos-presentacion' },
-            { name: 'Trajes Niño', slug: 'trajes-presentacion' },
-            { name: 'Accesorios', slug: 'accesorios-presentacion' },
+            { name: 'Modelo 1', slug: 'modelo-1' },
+            { name: 'Modelo 2', slug: 'modelo-2' },
+        ]
+    },
+    {
+        title: 'Esmoquin',
+        slug: 'esmoquin',
+        subcategories: [
+            { name: 'San Gabriel', slug: 'san-gabriel' },
+            { name: 'Celestial', slug: 'celestial' },
+        ]
+    },
+    {
+        title: 'Traje',
+        slug: 'traje',
+        subcategories: [
+            { name: 'San Pedro', slug: 'san-pedro' },
+            { name: 'San José', slug: 'san-jose' },
+            { name: 'Arcángel', slug: 'arcangel' },
+        ]
+    },
+    {
+        title: 'Traje de Estola',
+        slug: 'traje-estola',
+        subcategories: [
+            { name: 'Uvas', slug: 'uvas' },
+            { name: 'Cruz', slug: 'cruz' },
         ]
     }
 ];

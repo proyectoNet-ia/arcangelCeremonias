@@ -13,9 +13,12 @@ export const seedCatalog = async () => {
             .from('categories')
             .insert([
                 { name: 'Bautizo', slug: 'bautizo' },
-                { name: 'Primera Comunión', slug: 'primera-comunion' },
-                { name: 'Boda', slug: 'boda' },
-                { name: 'Accesorios', slug: 'accesorios' }
+                { name: 'Traje Charro', slug: 'traje-charro' },
+                { name: 'Guayabera', slug: 'guayabera' },
+                { name: 'Túnica', slug: 'tunica' },
+                { name: 'Esmoquin', slug: 'esmoquin' },
+                { name: 'Traje', slug: 'traje' },
+                { name: 'Traje de Estola', slug: 'traje-estola' }
             ])
             .select();
 
@@ -24,56 +27,48 @@ export const seedCatalog = async () => {
 
         const findCat = (slug: string) => categories.find(c => c.slug === slug)?.id;
 
-        // 3. Crear Productos de Prueba (Basados en la esencia del catálogo PDF)
+        // 3. Crear Productos de Prueba
         const { error: prodError } = await supabase
             .from('products')
             .insert([
                 {
-                    name: 'Ropón Angelical Seda',
-                    slug: 'ropon-angelical-seda',
-                    description: 'Elegante ropón de bautizo elaborado en seda natural con detalles en encaje fino.',
-                    detailed_description: 'Este ropón representa la pureza y tradición de Arcángel. Cada detalle ha sido bordado a mano por artesanos expertos, utilizando seda de la más alta calidad para asegurar la comodidad del bebé.',
-                    price: 2450,
+                    name: 'Ropón Niña Gema',
+                    slug: 'ropon-nina-gema',
+                    description: 'Hermoso ropón para niña con detalles en perla.',
+                    price: 2800,
                     show_price: true,
-                    material: 'Seda Natural & Encaje',
-                    includes: 'Ropón, Capa, Gorro y Estuche Premium',
-                    sizes: ['0-6 meses', '6-12 meses', '12-24 meses'],
-                    main_image: 'https://images.unsplash.com/photo-1519689680058-324335c77eba?auto=format&fit=crop&q=80&w=800',
+                    material: 'Shantung de Seda',
                     category_id: findCat('bautizo'),
-                    subcategory: 'ropones-nino',
+                    subcategory: 'ropon-nina',
+                    main_image: 'https://images.unsplash.com/photo-1519689680058-324335c77eba?auto=format&fit=crop&q=80&w=800',
                     featured: true,
                     stock_status: 'available'
                 },
                 {
-                    name: 'Vestido Pureza Editorial',
-                    slug: 'vestido-pureza-editorial',
-                    description: 'Vestido de primera comunión con corte princesa y aplicaciones de flores hechas a mano.',
-                    detailed_description: 'Inspirado en diseños editoriales de alta costura, el modelo Pureza destaca por su falda de tul multicapa y un corpiño delicadamente adornado.',
-                    price: 3800,
-                    show_price: false,
-                    material: 'Tul de Seda & Organza',
-                    includes: 'Vestido y Tocado a juego',
-                    sizes: ['8', '10', '12', '14'],
+                    name: 'Traje Charro Virgen Blanco',
+                    slug: 'traje-charro-virgen-blanco',
+                    description: 'Traje charro de gala con bordado de la Virgen de Guadalupe.',
+                    price: 4500,
+                    show_price: true,
+                    material: 'Terciopelo Premium',
+                    category_id: findCat('traje-charro'),
+                    subcategory: 'con-virgen-blanco',
                     main_image: 'https://images.unsplash.com/photo-1541250848049-b4f71413cc30?auto=format&fit=crop&q=80&w=800',
-                    category_id: findCat('primera-comunion'),
-                    subcategory: 'vestidos-comunion',
                     featured: true,
                     stock_status: 'available'
                 },
                 {
-                    name: 'Lazo nupcial de Cristal',
-                    slug: 'lazo-nupcial-cristal',
-                    description: 'Lazo artesanal de cristal cortado con acabados en plata.',
-                    detailed_description: 'Una pieza de reliquia para el día más importante. Este lazo combina la claridad del cristal con la elegancia de la plata ley 925.',
+                    name: 'Guayabera Tropical Lino',
+                    slug: 'guayabera-tropical-lino',
+                    description: 'Guayabera fresca de lino ideal para climas cálidos.',
                     price: 1200,
                     show_price: true,
-                    material: 'Cristal Cortado & Plata 925',
-                    includes: 'Lazo y Cofre de madera grabada',
+                    material: 'Lino 100%',
+                    category_id: findCat('guayabera'),
+                    subcategory: 'tropical',
                     main_image: 'https://images.unsplash.com/photo-1511795409834-ef04bbd61622?auto=format&fit=crop&q=80&w=800',
-                    category_id: findCat('boda'),
-                    subcategory: 'lazos-boda',
                     featured: false,
-                    stock_status: 'on_request'
+                    stock_status: 'available'
                 }
             ]);
 
