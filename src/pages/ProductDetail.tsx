@@ -5,6 +5,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faWhatsapp } from '@fortawesome/free-brands-svg-icons';
 import { faArrowLeft, faChevronRight, faChevronLeft } from '@fortawesome/free-solid-svg-icons';
 import { Header } from '@/components/layout/Header';
+import { Footer } from '@/components/layout/Footer';
 import { Logo } from '@/components/Logo';
 import { productService } from '@/services/productService';
 import { Product } from '@/types/product';
@@ -15,6 +16,7 @@ const ProductDetail: React.FC = () => {
     const [product, setProduct] = useState<Product | null>(null);
     const [loading, setLoading] = useState(true);
     const [activeImage, setActiveImage] = useState(0);
+    const [zoomPos, setZoomPos] = useState({ x: 50, y: 50 });
 
     useEffect(() => {
         const fetchProduct = async () => {
@@ -32,6 +34,13 @@ const ProductDetail: React.FC = () => {
         fetchProduct();
         window.scrollTo(0, 0);
     }, [slug]);
+
+    const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+        const { left, top, width, height } = e.currentTarget.getBoundingClientRect();
+        const x = ((e.clientX - left) / width) * 100;
+        const y = ((e.clientY - top) / height) * 100;
+        setZoomPos({ x, y });
+    };
 
     if (loading) {
         return (
@@ -63,7 +72,10 @@ const ProductDetail: React.FC = () => {
 
                     {/* Left: Image Gallery */}
                     <div className="lg:col-span-7 space-y-4">
-                        <div className="relative aspect-[3/4] overflow-hidden bg-white shadow-sm">
+                        <div
+                            className="relative aspect-[3/4] overflow-hidden bg-white shadow-sm cursor-zoom-in"
+                            onMouseMove={handleMouseMove}
+                        >
                             <AnimatePresence mode="wait">
                                 <motion.img
                                     key={activeImage}
@@ -73,6 +85,11 @@ const ProductDetail: React.FC = () => {
                                     animate={{ opacity: 1 }}
                                     exit={{ opacity: 0 }}
                                     transition={{ duration: 0.5 }}
+                                    style={{
+                                        originX: `${zoomPos.x}%`,
+                                        originY: `${zoomPos.y}%`
+                                    }}
+                                    whileHover={{ scale: 2 }}
                                     className="w-full h-full object-cover"
                                 />
                             </AnimatePresence>
@@ -113,7 +130,7 @@ const ProductDetail: React.FC = () => {
 
                             <div className="flex items-center gap-6 pt-2">
                                 {product.show_price && product.price ? (
-                                    <span className="text-2xl font-sans text-gold">${product.price.toLocaleString()}</span>
+                                    <span className="text-2xl font-sans text-gold">${product.price.toLocaleString('es-MX')}</span>
                                 ) : (
                                     <span className="text-sm uppercase tracking-widest text-gold italic font-medium">Precio bajo consulta</span>
                                 )}
@@ -160,7 +177,6 @@ const ProductDetail: React.FC = () => {
                                 </div>
                                 <div className="flex items-center gap-3 bg-white/50 p-4 border border-gold/5 rounded-sm">
                                     <div className="w-2 h-2 bg-gold/40 rounded-full" /> Envío Asegurado
-                                    2026 Arcángel Ceremonias
                                 </div>
                             </div>
                         </div>
@@ -168,15 +184,7 @@ const ProductDetail: React.FC = () => {
                 </div>
             </main>
 
-            {/* Simple Footer */}
-            <footer className="py-20 border-t border-gold/10 text-center">
-                <div className="w-20 mx-auto opacity-20 mb-6">
-                    <Logo />
-                </div>
-                <p className="text-[10px] uppercase tracking-[0.4em] text-chocolate/30">
-                    Arcángel Ceremonias &copy; 2026
-                </p>
-            </footer>
+            <Footer />
         </div>
     );
 };

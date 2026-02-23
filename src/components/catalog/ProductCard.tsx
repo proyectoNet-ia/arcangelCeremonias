@@ -45,7 +45,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, index }) => {
                         </h3>
                         {product.show_price && product.price && (
                             <span className="font-sans text-sm text-chocolate/60">
-                                ${product.price.toLocaleString()}
+                                ${product.price.toLocaleString('es-MX')}
                             </span>
                         )}
                     </div>

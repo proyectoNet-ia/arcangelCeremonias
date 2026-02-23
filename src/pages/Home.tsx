@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFacebook, faInstagram, faWhatsapp } from '@fortawesome/free-brands-svg-icons';
 import { Header } from '@/components/layout/Header';
+import { Footer } from '@/components/layout/Footer';
 import { Logo } from '@/components/Logo';
 import { Link } from 'react-router-dom';
 import bgMobile from '@/assets/modelo_medio.png';
@@ -161,15 +162,6 @@ const Home: React.FC = () => {
                         {/* Social Media (Mobile only, hidden on desktop because of sidebar) */}
                         <div className="flex flex-row items-center justify-start gap-10 pt-4 md:hidden">
                             <a
-                                href="https://www.facebook.com/arcangel.ceremonias/"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-cream/50 hover:text-gold transition-colors duration-300"
-                                aria-label="Facebook"
-                            >
-                                <FontAwesomeIcon icon={faFacebook} className="text-2xl" />
-                            </a>
-                            <a
                                 href="https://www.instagram.com/ceremonias.arcangel/"
                                 target="_blank"
                                 rel="noopener noreferrer"
@@ -182,6 +174,8 @@ const Home: React.FC = () => {
                     </div>
                 </footer>
             </div>
+
+            <Footer />
         </div>
     );
 };

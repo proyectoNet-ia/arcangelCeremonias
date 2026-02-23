@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useSearchParams } from 'react-router-dom';
 import { Header } from '@/components/layout/Header';
+import { Footer } from '@/components/layout/Footer';
 import { ProductCard } from '@/components/catalog/ProductCard';
 import { productService } from '@/services/productService';
 import { Product, Category } from '@/types/product';
@@ -221,46 +222,7 @@ const Catalog: React.FC = () => {
                 </div>
             </section>
 
-            {/* --- PREMIUM FOOTER --- */}
-            <footer className="bg-chocolate text-cream pt-24 pb-12 px-6 md:px-12 mt-20">
-                <div className="max-w-[1600px] mx-auto">
-                    <div className="grid grid-cols-1 md:grid-cols-4 gap-12 border-b border-cream/10 pb-20 mb-12">
-                        <div className="col-span-1 md:col-span-1">
-                            <div className="w-32 invert mb-8">
-                                <Logo />
-                            </div>
-                            <p className="text-sm text-cream/60 leading-relaxed font-light">
-                                Dedicados a la creación de piezas únicas para los momentos más sagrados de la vida.
-                            </p>
-                        </div>
-                        <div>
-                            <h4 className="text-[10px] uppercase tracking-[0.3em] font-bold mb-6 text-gold">Ubicación</h4>
-                            <p className="text-sm text-cream/60 font-light italic">La Piedad, Michoacán, MX.</p>
-                        </div>
-                        <div>
-                            <h4 className="text-[10px] uppercase tracking-[0.3em] font-bold mb-6 text-gold">Contacto</h4>
-                            <p className="text-sm text-cream/60 font-light">352 168 1197</p>
-                            <p className="text-sm text-cream/60 font-light">ceremoniasarcangel@gmail.com</p>
-                        </div>
-                        <div>
-                            <h4 className="text-[10px] uppercase tracking-[0.3em] font-bold mb-6 text-gold">Social</h4>
-                            <div className="flex gap-6 text-cream/40">
-                                <a href="#" className="hover:text-gold transition-colors">Instagram</a>
-                                <a href="#" className="hover:text-gold transition-colors">Facebook</a>
-                            </div>
-                        </div>
-                    </div>
-                    <div className="flex flex-col md:flex-row justify-between items-center gap-6">
-                        <span className="text-[10px] uppercase tracking-[0.3em] text-cream/30">
-                            © 2026 Arcángel Ceremonias
-                        </span>
-                        <div className="flex gap-8 text-[10px] uppercase tracking-[0.3em] text-cream/30">
-                            <a href="#" className="hover:text-cream transition-colors">Privacidad</a>
-                            <a href="#" className="hover:text-cream transition-colors">Términos</a>
-                        </div>
-                    </div>
-                </div>
-            </footer>
+            <Footer />
         </div>
     );
 };
