@@ -157,7 +157,7 @@ const Catalog: React.FC = () => {
 
                         {/* Search Bar aligned to the top right */}
                         <div className="relative w-full md:max-w-sm md:mt-2">
-                            <FontAwesomeIcon icon={faSearch} className="absolute left-4 top-1/2 -translate-y-1/2 text-gold text-sm" />
+                            <FontAwesomeIcon icon={faSearch} className="absolute left-4 top-1/2 -translate-y-1/2 text-chocolate text-sm" />
                             <input
                                 type="text"
                                 placeholder="Buscar modelo o colección..."
