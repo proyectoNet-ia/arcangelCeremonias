@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { Logo } from '@/components/Logo';
 import { Link } from 'react-router-dom';
 import bgMobile from '@/assets/modelo_medio.png';
-import bgDesktop from '@/assets/fondo-pc.jpg';
+import bgDesktop from '@/assets/fondo-horizontal.jpeg';
 
 const Home: React.FC = () => {
     const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
