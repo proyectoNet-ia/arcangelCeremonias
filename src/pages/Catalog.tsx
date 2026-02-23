@@ -6,7 +6,7 @@ import { ProductCard } from '@/components/catalog/ProductCard';
 import { productService } from '@/services/productService';
 import { Product, Category } from '@/types/product';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faChevronDown, faFilter } from '@fortawesome/free-solid-svg-icons';
+import { faChevronDown, faFilter, faSearch, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { Megamenu } from '@/components/layout/Megamenu';
 
 const Catalog: React.FC = () => {
@@ -19,6 +19,7 @@ const Catalog: React.FC = () => {
     const [loading, setLoading] = useState(true);
     const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
     const [selectedSubcategory, setSelectedSubcategory] = useState<string | null>(null);
+    const [searchTerm, setSearchTerm] = useState('');
     const [isMegamenuOpen, setIsMegamenuOpen] = useState(false);
 
     useEffect(() => {
@@ -71,7 +72,9 @@ const Catalog: React.FC = () => {
     const filteredProducts = products.filter(p => {
         const matchesCategory = selectedCategory ? p.category_id === selectedCategory : true;
         const matchesSubcategory = selectedSubcategory ? p.subcategory === selectedSubcategory : true;
-        return matchesCategory && matchesSubcategory;
+        const matchesSearch = p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            (p.material?.toLowerCase().includes(searchTerm.toLowerCase()) ?? false);
+        return matchesCategory && matchesSubcategory && matchesSearch;
     });
 
     const handleSeed = async () => {
@@ -143,23 +146,44 @@ const Catalog: React.FC = () => {
                         )}
                     </div>
 
-                    {/* CATEGORY FILTER */}
-                    <div className="flex flex-wrap gap-4 items-center">
-                        <button
-                            onClick={() => handleCategoryClick(null)}
-                            className={`text-[10px] uppercase tracking-[0.2em] px-6 py-2 border transition-all duration-300 ${!selectedCategory ? 'bg-chocolate text-cream border-chocolate' : 'border-chocolate/20 text-chocolate/60 hover:border-chocolate'}`}
-                        >
-                            Todos
-                        </button>
-                        {categories.map((cat) => (
+                    {/* CATEGORY FILTER & SEARCH */}
+                    <div className="flex flex-col md:items-end gap-6 w-full md:w-auto">
+                        <div className="relative w-full max-w-sm">
+                            <FontAwesomeIcon icon={faSearch} className="absolute left-4 top-1/2 -translate-y-1/2 text-chocolate/30 text-xs" />
+                            <input
+                                type="text"
+                                placeholder="Buscar modelo o material..."
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                                className="w-full bg-white/50 border border-gold/10 px-12 py-3 text-[10px] uppercase tracking-[0.2em] focus:outline-none focus:border-gold/30 transition-colors placeholder:text-chocolate/20"
+                            />
+                            {searchTerm && (
+                                <button
+                                    onClick={() => setSearchTerm('')}
+                                    className="absolute right-4 top-1/2 -translate-y-1/2 text-chocolate/30 hover:text-gold transition-colors"
+                                >
+                                    <FontAwesomeIcon icon={faTimes} className="text-xs" />
+                                </button>
+                            )}
+                        </div>
+
+                        <div className="flex flex-wrap gap-4 items-center justify-start md:justify-end">
                             <button
-                                key={cat.id}
-                                onClick={() => handleCategoryClick(cat.id)}
-                                className={`text-[10px] uppercase tracking-[0.2em] px-6 py-2 border transition-all duration-300 ${selectedCategory === cat.id ? 'bg-chocolate text-cream border-chocolate' : 'border-chocolate/20 text-chocolate/60 hover:border-chocolate'}`}
+                                onClick={() => handleCategoryClick(null)}
+                                className={`text-[10px] uppercase tracking-[0.2em] px-6 py-2 border transition-all duration-300 ${!selectedCategory ? 'bg-chocolate text-cream border-chocolate' : 'border-chocolate/20 text-chocolate/60 hover:border-chocolate'}`}
                             >
-                                {cat.name}
+                                Todos
                             </button>
-                        ))}
+                            {categories.map((cat) => (
+                                <button
+                                    key={cat.id}
+                                    onClick={() => handleCategoryClick(cat.id)}
+                                    className={`text-[10px] uppercase tracking-[0.2em] px-6 py-2 border transition-all duration-300 ${selectedCategory === cat.id ? 'bg-chocolate text-cream border-chocolate' : 'border-chocolate/20 text-chocolate/60 hover:border-chocolate'}`}
+                                >
+                                    {cat.name}
+                                </button>
+                            ))}
+                        </div>
                     </div>
                 </div>
 
@@ -180,9 +204,22 @@ const Catalog: React.FC = () => {
                                 <ProductCard key={product.id} product={product} index={index} />
                             ))
                         ) : (
-                            <div className="col-span-full py-20 text-center">
-                                <p className="font-serif text-2xl text-chocolate/40 italic">No se encontraron productos en esta categoría.</p>
-                            </div>
+                            <motion.div
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                className="col-span-full py-20 text-center space-y-4"
+                            >
+                                <p className="font-serif text-2xl text-chocolate/40 italic">No se encontraron piezas que coincidan con tu búsqueda</p>
+                                <button
+                                    onClick={() => {
+                                        setSearchTerm('');
+                                        handleCategoryClick(null);
+                                    }}
+                                    className="text-[10px] uppercase tracking-widest text-gold hover:underline"
+                                >
+                                    Limpiar todos los filtros
+                                </button>
+                            </motion.div>
                         )}
                     </AnimatePresence>
                 </div>
