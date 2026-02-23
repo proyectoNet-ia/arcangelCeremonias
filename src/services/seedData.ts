@@ -4,27 +4,32 @@ export const seedCatalog = async () => {
     try {
         console.log('Iniciando carga de datos robusta...');
 
-        // 1. Limpiar datos existentes para evitar duplicados en pruebas
-        // Nota: En un entorno real, esto se manejaría con cuidado.
-        await supabase.from('products').delete().neq('id', '00000000-0000-0000-0000-000000000000');
-        await supabase.from('categories').delete().neq('id', '00000000-0000-0000-0000-000000000000');
+        // 1. Limpiar datos existentes de forma más agresiva
+        console.log('Limpiando tablas...');
+        await supabase.from('products').delete().filter('id', 'neq', '00000000-0000-0000-0000-000000000000');
+        await supabase.from('categories').delete().filter('id', 'neq', '00000000-0000-0000-0000-000000000000');
 
-        // 2. Crear Categorías Basadas en la nueva estructura
+        // 2. Crear o Actualizar Categorías (usando onConflict para evitar el error 409)
+        const categoryList = [
+            { name: 'Bautizo', slug: 'bautizo' },
+            { name: 'Traje Charro', slug: 'traje-charro' },
+            { name: 'Guayabera', slug: 'guayabera' },
+            { name: 'Túnica', slug: 'tunica' },
+            { name: 'Esmoquin', slug: 'esmoquin' },
+            { name: 'Traje', slug: 'traje' },
+            { name: 'Traje de Estola', slug: 'traje-estola' }
+        ];
+
         const { data: categories, error: catError } = await supabase
             .from('categories')
-            .insert([
-                { name: 'Bautizo', slug: 'bautizo' },
-                { name: 'Traje Charro', slug: 'traje-charro' },
-                { name: 'Guayabera', slug: 'guayabera' },
-                { name: 'Túnica', slug: 'tunica' },
-                { name: 'Esmoquin', slug: 'esmoquin' },
-                { name: 'Traje', slug: 'traje' },
-                { name: 'Traje de Estola', slug: 'traje-estola' }
-            ])
+            .upsert(categoryList, { onConflict: 'slug' })
             .select();
 
-        if (catError) throw catError;
-        console.log('Categorías creadas:', categories);
+        if (catError) {
+            console.error('Error en categorías:', catError);
+            throw catError;
+        }
+        console.log('Categorías listas:', categories);
 
         const findCat = (slug: string) => categories.find(c => c.slug === slug)?.id;
 
@@ -178,7 +183,7 @@ export const seedCatalog = async () => {
 
         const { error: prodError } = await supabase
             .from('products')
-            .insert(productsToInsert);
+            .upsert(productsToInsert, { onConflict: 'slug' });
 
         if (prodError) throw prodError;
         console.log('¡Catálogo robusto cargado con éxito!');
