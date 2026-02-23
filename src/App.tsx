@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-route
 import Home from './pages/Home';
 import Catalog from './pages/Catalog';
 import ProductDetail from './pages/ProductDetail';
+import { FloatingActions } from './components/common/FloatingActions';
 
 // Component to handle scroll to top on route change
 const ScrollToTop = () => {
@@ -25,6 +26,7 @@ const App: React.FC = () => {
         <Route path="/producto/:slug" element={<ProductDetail />} />
         <Route path="*" element={<Home />} />
       </Routes>
+      <FloatingActions />
     </Router>
   );
 };
