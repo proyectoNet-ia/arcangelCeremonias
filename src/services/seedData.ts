@@ -52,170 +52,274 @@ export const seedCatalog = async () => {
             return shuffled.slice(0, count);
         };
 
-        // 3. Crear Listado Robusto de Productos
+        // 3. Crear Listado Robusto de Productos (20 total)
         const productsToInsert = [
             // BAUTIZO
             {
-                name: 'Ropón Niña Gema',
-                slug: 'ropon-nina-gema',
-                description: 'Ropón de bautizo para niña con delicados detalles en perla y encaje.',
-                detailed_description: 'Nuestra colección Gema destaca por la sutileza de sus materiales. Elaborado en shantung de seda, este ropón incluye capa desmontable y gorro a juego.',
-                price: 3200,
+                name: 'Ropón Gema Premium',
+                slug: 'ropon-gema-premium',
+                description: 'Ropón artesanal con detalles en perla.',
+                price: 3500,
                 show_price: true,
-                material: 'Shantung de Seda & Perlas',
-                category_id: findCat('bautizo'),
-                subcategory: 'ropon-nina',
                 model_code: 'GEMA-01',
-                color: 'Blanco Marfil',
-                size_variants: [
-                    { size: '0', price: 3200 },
-                    { size: '1', price: 3400 },
-                    { size: '2', price: 3600 }
-                ],
-                main_image: localImages[4], // Baby laying bed
+                color: 'Marfil',
+                material: 'Shantung de Seda',
+                category_id: findCat('bautizo'),
+                size_variants: [{ size: '0', price: 3500 }, { size: '1', price: 3700 }, { size: '2', price: 3900 }],
+                main_image: localImages[4],
                 gallery: getRandomGallery(4),
                 featured: true,
                 stock_status: 'available'
             },
             {
-                name: 'Ropón Niño Imperial',
-                slug: 'ropon-nino-imperial',
-                description: 'Ropón clásico para niño con bordados artesanales.',
-                price: 2900,
+                name: 'Ropón Imperial Niño',
+                slug: 'ropon-imperial-nino',
+                description: 'Clásico ropón desmontable.',
+                price: 2800,
                 show_price: true,
                 model_code: 'IMP-02',
                 color: 'Blanco Nieve',
                 material: 'Lino Italiano',
                 category_id: findCat('bautizo'),
-                subcategory: 'ropon-nino',
-                main_image: localImages[5], // Hands holding foot
+                size_variants: [{ size: '0', price: 2800 }, { size: '1', price: 3000 }],
+                main_image: localImages[5],
                 gallery: getRandomGallery(4),
                 featured: false,
                 stock_status: 'available'
             },
-
+            {
+                name: 'Ropón Niña Ángela',
+                slug: 'ropon-nina-angela',
+                description: 'Vestido de bautizo con encaje francés.',
+                price: 3100,
+                show_price: true,
+                model_code: 'ANG-03',
+                color: 'Hueso',
+                material: 'Organza',
+                category_id: findCat('bautizo'),
+                main_image: localImages[0],
+                gallery: getRandomGallery(3),
+                featured: true
+            },
             // TRAJE CHARRO
             {
-                name: 'Traje Charro Virgen Blanco',
-                slug: 'charro-virgen-blanco',
-                description: 'Traje charro de gala con bordado de la Virgen en hilos de plata.',
-                price: 5500,
+                name: 'Traje Charro Gala Virgen',
+                slug: 'charro-gala-virgen',
+                description: 'Bordado artesanal de la Virgen en espalda.',
+                price: 5800,
                 show_price: true,
+                model_code: 'CH-VG-01',
+                color: 'Negro/Plata',
                 material: 'Terciopelo Premium',
                 category_id: findCat('traje-charro'),
-                subcategory: 'con-virgen-blanco',
-                main_image: localImages[1], // Kid praying
+                size_variants: [{ size: '4', price: 5800 }, { size: '6', price: 6200 }, { size: '8', price: 6600 }],
+                main_image: localImages[1],
                 gallery: getRandomGallery(4),
-                featured: true,
-                stock_status: 'available'
+                featured: true
             },
             {
-                name: 'Traje Charro Clásico Azul Rey',
-                slug: 'charro-clasico-azul',
-                description: 'Elegante traje charro en tono azul rey con botonadura de lujo.',
-                price: 4800,
+                name: 'Traje Charro Infantil Clásico',
+                slug: 'charro-infantil-clasico',
+                description: 'Traje de 3 piezas para ceremonia.',
+                price: 4500,
                 show_price: true,
-                material: 'Lana Fina',
+                model_code: 'CH-CL-05',
+                color: 'Azul Rey',
                 category_id: findCat('traje-charro'),
-                subcategory: 'clasico-azul-rey',
-                main_image: localImages[8], // Young boy church
-                gallery: getRandomGallery(4),
-                featured: false,
-                stock_status: 'available'
+                main_image: localImages[8],
+                gallery: getRandomGallery(3)
             },
-
+            {
+                name: 'Traje Charro Blanco Oro',
+                slug: 'charro-blanco-oro',
+                description: 'Edición especial con bordados dorados.',
+                price: 6200,
+                show_price: true,
+                model_code: 'CH-GO-09',
+                color: 'Blanco/Oro',
+                category_id: findCat('traje-charro'),
+                main_image: localImages[7],
+                gallery: getRandomGallery(3)
+            },
             // GUAYABERA
             {
-                name: 'Guayabera Tropical Lino',
-                slug: 'guayabera-tropical-lino',
-                description: 'Guayabera presidencial de lino 100%.',
-                price: 1850,
+                name: 'Guayabera Presidencial Lino',
+                slug: 'guayabera-presidencial-lino',
+                description: '100% Lino con alforzado fino.',
+                price: 1950,
                 show_price: true,
-                material: 'Lino de Alta Calidad',
+                model_code: 'GUY-PR-01',
+                color: 'Blanco',
                 category_id: findCat('guayabera'),
-                subcategory: 'tropical',
-                main_image: localImages[2], // Portrait communion
+                size_variants: [{ size: 'CH', price: 1950 }, { size: 'M', price: 1950 }, { size: 'G', price: 2100 }],
+                main_image: localImages[2],
                 gallery: getRandomGallery(4),
-                featured: true,
-                stock_status: 'available'
+                featured: true
             },
             {
-                name: 'Guayabera Bebé Verano',
-                slug: 'guayabera-bebe-verano',
-                description: 'Frescura y comodidad para los más pequeños.',
-                price: 950,
+                name: 'Guayabera Infantil Yucatán',
+                slug: 'guayabera-infantil-yucatan',
+                description: 'Frescura para pequeños caballero.',
+                price: 1200,
                 show_price: true,
-                material: 'Algodón Egipcio',
+                model_code: 'GUY-INF-02',
+                color: 'Azul Cielo',
                 category_id: findCat('guayabera'),
-                subcategory: 'bebe',
                 main_image: localImages[4],
-                gallery: getRandomGallery(4),
-                featured: false,
-                stock_status: 'available'
+                gallery: getRandomGallery(2)
             },
-
+            {
+                name: 'Guayabera Bordada a Mano',
+                slug: 'guayabera-bordada-mano',
+                description: 'Detalles únicos en cada pieza.',
+                price: 2600,
+                show_price: true,
+                model_code: 'GUY-HM-08',
+                color: 'Beige',
+                category_id: findCat('guayabera'),
+                main_image: localImages[6],
+                gallery: getRandomGallery(3)
+            },
             // TÚNICA
             {
-                name: 'Túnica Modelo 1',
-                slug: 'tunica-modelo-1',
-                description: 'Túnica ceremonial de corte minimalista.',
-                price: 2100,
+                name: 'Túnica Ceremonial Minimal',
+                slug: 'tunica-ceremonial-minimal',
+                description: 'Corte limpio y elegante.',
+                price: 2400,
                 show_price: true,
-                material: 'Seda Habotai',
+                model_code: 'TUN-01',
+                color: 'Crema',
                 category_id: findCat('tunica'),
-                subcategory: 'modelo-1',
-                main_image: localImages[3], // Portrait communion
-                gallery: getRandomGallery(4),
-                featured: false,
-                stock_status: 'on_request'
+                main_image: localImages[3],
+                gallery: getRandomGallery(3),
+                featured: true
             },
-
+            {
+                name: 'Túnica Bordado Cruz',
+                slug: 'tunica-bordado-cruz',
+                description: 'Túnica tradicional de primera comunión.',
+                price: 2200,
+                show_price: true,
+                model_code: 'TUN-05',
+                color: 'Blanco',
+                category_id: findCat('tunica'),
+                main_image: localImages[2],
+                gallery: getRandomGallery(2)
+            },
             // ESMOQUIN
             {
-                name: 'Esmoquin San Gabriel',
-                slug: 'esmoquin-san-gabriel',
-                description: 'Esmoquin de alta etiqueta con solapa de seda.',
-                price: 6400,
+                name: 'Esmoquin San Gabriel Black',
+                slug: 'esmoquin-san-gabriel-black',
+                description: 'Alta etiqueta infantil.',
+                price: 6800,
                 show_price: true,
-                material: 'Super 120s Lana',
+                model_code: 'SM-SG-01',
+                color: 'Negro',
                 category_id: findCat('esmoquin'),
-                subcategory: 'san-gabriel',
-                main_image: localImages[6], // Boy church
-                gallery: getRandomGallery(4),
-                featured: true,
-                stock_status: 'available'
+                size_variants: [{ size: '6', price: 6800 }, { size: '10', price: 7200 }, { size: '14', price: 7800 }],
+                main_image: localImages[6],
+                gallery: getRandomGallery(5),
+                featured: true
             },
-
-            // TRAJE
             {
-                name: 'Traje Arcángel Elite',
-                slug: 'traje-arcangel-elite',
-                description: 'El traje insignia de nuestra colección, diseñado para momentos memorables.',
-                price: 7200,
+                name: 'Esmoquin Azul Midnight',
+                slug: 'esmoquin-azul-midnight',
+                description: 'Color tendencia para eventos nocturnos.',
+                price: 6500,
                 show_price: true,
-                material: 'Mezcla Cashemere & Lana',
-                category_id: findCat('traje'),
-                subcategory: 'arcangel',
-                main_image: localImages[7], // Boy church
-                gallery: getRandomGallery(4),
-                featured: true,
-                stock_status: 'available'
+                model_code: 'SM-MN-04',
+                color: 'Azul Medianoche',
+                category_id: findCat('esmoquin'),
+                main_image: localImages[1],
+                gallery: getRandomGallery(3)
             },
-
+            // TRAJE 
+            {
+                name: 'Traje Ejecutivo Arcángel',
+                slug: 'traje-ejecutivo-arcangel',
+                description: 'Corte slim fit muy moderno.',
+                price: 5200,
+                show_price: true,
+                model_code: 'TR-EX-01',
+                color: 'Gris Oxford',
+                category_id: findCat('traje'),
+                main_image: localImages[7],
+                gallery: getRandomGallery(3),
+                featured: true
+            },
+            {
+                name: 'Traje Lino Confort',
+                slug: 'traje-lino-confort',
+                description: 'Ideal para eventos en playa o jardín.',
+                price: 4900,
+                show_price: true,
+                model_code: 'TR-LN-02',
+                color: 'Arena',
+                category_id: findCat('traje'),
+                main_image: localImages[8],
+                gallery: getRandomGallery(2)
+            },
+            {
+                name: 'Traje 3 Piezas Oxford',
+                slug: 'traje-3-piezas-oxford',
+                description: 'Incluye chaleco a juego.',
+                price: 5900,
+                show_price: true,
+                model_code: 'TR-OX-09',
+                color: 'Gris Marengo',
+                category_id: findCat('traje'),
+                main_image: localImages[5],
+                gallery: getRandomGallery(3)
+            },
             // TRAJE DE ESTOLA
             {
-                name: 'Traje Estola Uvas',
-                slug: 'traje-estola-uvas',
-                description: 'Traje tradicional con estola bordada en motivos de uvas y vides.',
-                price: 3500,
+                name: 'Traje Estola Tradición',
+                slug: 'traje-estola-tradicion',
+                description: 'Bordado clásico con motivos religiosos.',
+                price: 3800,
                 show_price: true,
-                material: 'Tergal Frances',
+                model_code: 'ST-TR-01',
+                color: 'Blanco',
                 category_id: findCat('traje-estola'),
-                subcategory: 'uvas',
-                main_image: localImages[0], // Girls candles
+                main_image: localImages[0],
                 gallery: getRandomGallery(4),
-                featured: false,
-                stock_status: 'available'
+                featured: true
+            },
+            {
+                name: 'Traje Estola Uvas y Vides',
+                slug: 'traje-estola-uvas-vides',
+                description: 'Elegancia y simbolismo.',
+                price: 4100,
+                show_price: true,
+                model_code: 'ST-UV-05',
+                color: 'Marfil',
+                category_id: findCat('traje-estola'),
+                main_image: localImages[3],
+                gallery: getRandomGallery(3)
+            },
+            {
+                name: 'Traje Estola Cáliz',
+                slug: 'traje-estola-caliz',
+                description: 'Edición especial bordada.',
+                price: 4200,
+                show_price: true,
+                model_code: 'ST-CX-08',
+                color: 'Blanco',
+                category_id: findCat('traje-estola'),
+                main_image: localImages[4],
+                gallery: getRandomGallery(2)
+            },
+            {
+                name: 'Vestido Ceremonia Girasol',
+                slug: 'vestido-ceremonia-girasol',
+                description: 'Diseño floral exclusivo.',
+                price: 2900,
+                show_price: true,
+                model_code: 'VES-GS-10',
+                color: 'Crema/Amarillo',
+                category_id: findCat('bautizo'),
+                main_image: localImages[0],
+                gallery: getRandomGallery(3)
             }
         ];
 
@@ -224,11 +328,11 @@ export const seedCatalog = async () => {
             .upsert(productsToInsert, { onConflict: 'slug' });
 
         if (prodError) throw prodError;
-        console.log('¡Catálogo robusto cargado con éxito!');
+        console.log('¡Catálogo auditado de 20 productos cargado con éxito!');
         return true;
 
     } catch (err) {
-        console.error('Error al cargar datos robustos:', err);
+        console.error('Error al cargar datos auditados:', err);
         return false;
     }
 };
