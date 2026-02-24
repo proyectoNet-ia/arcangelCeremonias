@@ -169,7 +169,7 @@ const ProductDetail: React.FC = () => {
                                     className="flex-grow bg-chocolate text-cream py-6 flex items-center justify-center gap-4 group transition-all duration-500 hover:bg-gold hover:shadow-2xl hover:shadow-gold/20"
                                 >
                                     <FontAwesomeIcon icon={faWhatsapp} className="text-xl" />
-                                    <span className="text-xs uppercase tracking-[0.4em] font-medium">WhatsApp</span>
+                                    <span className="text-xs uppercase tracking-[0.4em] font-medium">Lo quiero vía WhatsApp</span>
                                 </button>
 
                                 <button
