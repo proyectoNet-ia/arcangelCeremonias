@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useSearchParams } from 'react-router-dom';
 import { Header } from '@/components/layout/Header';
@@ -9,6 +9,8 @@ import { Product, Category } from '@/types/product';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { Logo } from '@/components/Logo';
+import { RevealOnScroll } from '@/components/common/RevealOnScroll';
+import { trackSearch } from '@/services/cookieService';
 
 const Catalog: React.FC = () => {
     const [searchParams, setSearchParams] = useSearchParams();
@@ -20,8 +22,46 @@ const Catalog: React.FC = () => {
     const [loading, setLoading] = useState(true);
     const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
     const [selectedSubcategory, setSelectedSubcategory] = useState<string | null>(null);
-    const [searchTerm, setSearchTerm] = useState('');
+    const [searchTerm, setSearchTerm] = useState(searchParams.get('search') || '');
     const [isMegamenuOpen, setIsMegamenuOpen] = useState(false);
+
+    useEffect(() => {
+        const queryTerm = searchParams.get('search');
+        if (queryTerm !== null) {
+            setSearchTerm(queryTerm);
+            // Track the search in cookies if non-empty
+            if (queryTerm.trim().length >= 2) trackSearch(queryTerm.trim());
+        }
+    }, [searchParams]);
+
+    // --- Drag to Scroll Logic for PC ---
+    const scrollRef = useRef<HTMLDivElement>(null);
+    const [isDragging, setIsDragging] = useState(false);
+    const [startX, setStartX] = useState(0);
+    const [scrollLeft, setScrollLeft] = useState(0);
+
+    const handleMouseDown = (e: React.MouseEvent) => {
+        if (!scrollRef.current) return;
+        setIsDragging(true);
+        setStartX(e.pageX - scrollRef.current.offsetLeft);
+        setScrollLeft(scrollRef.current.scrollLeft);
+    };
+
+    const handleMouseLeave = () => {
+        setIsDragging(false);
+    };
+
+    const handleMouseUp = () => {
+        setIsDragging(false);
+    };
+
+    const handleMouseMove = (e: React.MouseEvent) => {
+        if (!isDragging || !scrollRef.current) return;
+        e.preventDefault();
+        const x = e.pageX - scrollRef.current.offsetLeft;
+        const walk = (x - startX) * 2; // Scroll speed
+        scrollRef.current.scrollLeft = scrollLeft - walk;
+    };
 
     useEffect(() => {
         const fetchData = async () => {
@@ -61,20 +101,31 @@ const Catalog: React.FC = () => {
 
     const handleCategoryClick = (categoryId: string | null) => {
         setSelectedCategory(categoryId);
-        setSelectedSubcategory(null); // Clear subcategory when main category is changed
+        setSelectedSubcategory(null);
+
+        const newParams: any = {};
+        const currentSearch = searchParams.get('search');
+        if (currentSearch) newParams.search = currentSearch;
+
         if (categoryId) {
             const cat = categories.find(c => c.id === categoryId);
-            if (cat) setSearchParams({ categoria: cat.slug });
-        } else {
-            setSearchParams({});
+            if (cat) newParams.categoria = cat.slug;
         }
+        setSearchParams(newParams);
     };
 
     const filteredProducts = products.filter(p => {
         const matchesCategory = selectedCategory ? p.category_id === selectedCategory : true;
         const matchesSubcategory = selectedSubcategory ? p.subcategory === selectedSubcategory : true;
-        const matchesSearch = p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            (p.material?.toLowerCase().includes(searchTerm.toLowerCase()) ?? false);
+
+        const searchLower = searchTerm.toLowerCase();
+        const matchesSearch = !searchTerm ||
+            p.name.toLowerCase().includes(searchLower) ||
+            (p.model_code?.toLowerCase().includes(searchLower) ?? false) ||
+            (p.material?.toLowerCase().includes(searchLower) ?? false) ||
+            (p.subcategory?.toLowerCase().includes(searchLower) ?? false) ||
+            (p.description?.toLowerCase().includes(searchLower) ?? false);
+
         return matchesCategory && matchesSubcategory && matchesSearch;
     });
 
@@ -104,31 +155,22 @@ const Catalog: React.FC = () => {
             <Header />
 
             {/* --- HERO SECTION --- */}
-            <section className="pt-40 pb-20 px-6 md:px-12 max-w-[1600px] mx-auto">
+            <section className="pt-40 md:pt-52 pb-20 px-6 md:px-12 max-w-[1600px] mx-auto">
                 <div className="flex flex-col gap-12 mb-16">
                     {/* TOP ROW: LOGO/STATUS & SEARCH */}
                     <div className="flex flex-col md:flex-row md:items-start justify-between gap-6">
-                        <div className="space-y-4">
-                            <motion.span
-                                initial={{ opacity: 0 }}
-                                animate={{ opacity: 1 }}
-                                className="block text-[10px] uppercase tracking-[0.4em] text-gold font-semibold"
-                            >
+                        <RevealOnScroll direction="right" className="space-y-4">
+                            <span className="block text-[10px] uppercase tracking-[0.4em] text-gold font-semibold">
                                 Ceremonias que se visten de elegancia
-                            </motion.span>
-                            <motion.h1
-                                initial={{ opacity: 0, y: 30 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ duration: 0.8, delay: 0.2 }}
-                                className="text-5xl md:text-8xl font-serif leading-[1.1]"
-                            >
+                            </span>
+                            <h1 className="text-5xl md:text-8xl font-serif leading-[1.1]">
                                 Nuestro Catálogo <br />
                                 <span className="italic text-gold/80 font-light">Editorial</span>
-                            </motion.h1>
-                        </div>
+                            </h1>
+                        </RevealOnScroll>
 
                         {/* Search Bar aligned to the top right */}
-                        <div className="relative w-full md:max-w-sm md:mt-2 group">
+                        <RevealOnScroll direction="left" delay={0.3} className="relative w-full md:max-w-sm md:mt-2 group">
                             <input
                                 type="text"
                                 placeholder="Buscar modelo o colección..."
@@ -148,7 +190,7 @@ const Catalog: React.FC = () => {
                                     <FontAwesomeIcon icon={faTimes} className="text-xs" />
                                 </button>
                             )}
-                        </div>
+                        </RevealOnScroll>
                     </div>
 
                     {/* Botón temporal de desarrollo */}
@@ -164,24 +206,77 @@ const Catalog: React.FC = () => {
                         </div>
                     )}
 
-                    {/* CATEGORY FILTER - Now solo and clean */}
-                    <div className="flex flex-wrap gap-3 items-center border-t border-gold/10 pt-12">
-                        <button
-                            onClick={() => handleCategoryClick(null)}
-                            className={`text-[10px] uppercase tracking-[0.2em] px-8 py-3 border transition-all duration-300 ${!selectedCategory ? 'bg-chocolate text-cream border-chocolate' : 'border-chocolate/20 text-chocolate/60 hover:border-chocolate'}`}
-                        >
-                            Todos
-                        </button>
-                        {categories.map((cat) => (
-                            <button
-                                key={cat.id}
-                                onClick={() => handleCategoryClick(cat.id)}
-                                className={`text-[10px] uppercase tracking-[0.2em] px-8 py-3 border transition-all duration-300 ${selectedCategory === cat.id ? 'bg-chocolate text-cream border-chocolate' : 'border-chocolate/20 text-chocolate/60 hover:border-chocolate'}`}
+                    {/* CATEGORY NAV - Optimized for Scalability & Mobile */}
+                    <RevealOnScroll direction="up" delay={0.5} className="space-y-6 border-t border-gold/10 pt-10">
+                        {/* Parent Categories - Horizontal Scroll on Mobile & Drag on PC */}
+                        <div className="flex items-center gap-4">
+                            <div
+                                ref={scrollRef}
+                                onMouseDown={handleMouseDown}
+                                onMouseLeave={handleMouseLeave}
+                                onMouseUp={handleMouseUp}
+                                onMouseMove={handleMouseMove}
+                                className={`overflow-x-auto pb-4 -mb-4 flex gap-3 no-scrollbar mask-fade-right w-full cursor-grab active:cursor-grabbing select-none pr-32`}
                             >
-                                {cat.name}
-                            </button>
-                        ))}
-                    </div>
+                                <button
+                                    onClick={() => handleCategoryClick(null)}
+                                    className={`whitespace-nowrap text-[11px] uppercase tracking-[0.2em] px-8 py-3.5 border transition-all duration-300 font-medium flex-shrink-0 ${!selectedCategory ? 'bg-chocolate text-cream border-chocolate shadow-lg' : 'border-chocolate/10 text-chocolate/70 hover:border-chocolate/40 hover:text-chocolate'}`}
+                                >
+                                    Todos
+                                </button>
+                                {categories.filter(c => !c.parent_id).map((cat) => (
+                                    <button
+                                        key={cat.id}
+                                        onClick={() => handleCategoryClick(cat.id)}
+                                        className={`whitespace-nowrap text-[11px] uppercase tracking-[0.2em] px-8 py-3.5 border transition-all duration-300 font-medium flex-shrink-0 ${selectedCategory === cat.id ? 'bg-chocolate text-cream border-chocolate shadow-lg' : 'border-chocolate/10 text-chocolate/70 hover:border-chocolate/40 hover:text-chocolate'}`}
+                                    >
+                                        {cat.name}
+                                    </button>
+                                ))}
+                                {/* Spacer for mask safety */}
+                                <div className="w-20 flex-shrink-0" />
+                            </div>
+                        </div>
+
+                        {/* Subcategories - Refined Chips (Only if parent selected) */}
+                        <AnimatePresence mode="wait">
+                            {selectedCategory && categories.some(c => c.parent_id === selectedCategory) && (
+                                <motion.div
+                                    initial={{ opacity: 0, y: -10 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    exit={{ opacity: 0, y: -10 }}
+                                    className="flex flex-wrap gap-2.5 pt-2"
+                                >
+                                    <button
+                                        onClick={() => {
+                                            setSelectedSubcategory(null);
+                                            const cat = categories.find(c => c.id === selectedCategory);
+                                            if (cat) setSearchParams({ categoria: cat.slug });
+                                        }}
+                                        className={`text-[10px] uppercase tracking-widest px-5 py-2 rounded-full border transition-all font-medium ${!selectedSubcategory ? 'bg-gold/15 border-gold text-chocolate shadow-sm' : 'border-chocolate/10 text-chocolate/50 hover:border-gold/30 hover:text-gold'}`}
+                                    >
+                                        Ver Todo {categories.find(c => c.id === selectedCategory)?.name}
+                                    </button>
+                                    {categories
+                                        .filter(c => c.parent_id === selectedCategory)
+                                        .map((sub) => (
+                                            <button
+                                                key={sub.id}
+                                                onClick={() => {
+                                                    setSelectedSubcategory(sub.slug);
+                                                    const cat = categories.find(c => c.id === selectedCategory);
+                                                    if (cat) setSearchParams({ categoria: cat.slug, subcategoria: sub.slug });
+                                                }}
+                                                className={`text-[10px] uppercase tracking-widest px-5 py-2 rounded-full border transition-all font-medium ${selectedSubcategory === sub.slug ? 'bg-gold/15 border-gold text-chocolate shadow-sm' : 'border-chocolate/10 text-chocolate/50 hover:border-gold/30 hover:text-gold'}`}
+                                            >
+                                                {sub.name}
+                                            </button>
+                                        ))
+                                    }
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
+                    </RevealOnScroll>
                 </div>
 
                 {/* --- PRODUCT GRID --- */}

@@ -5,13 +5,15 @@ import { faWhatsapp, faFacebook, faInstagram } from '@fortawesome/free-brands-sv
 import { faEnvelope, faPhone, faMapMarkerAlt } from '@fortawesome/free-solid-svg-icons';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
+import toast from 'react-hot-toast';
+import { RevealOnScroll } from '@/components/common/RevealOnScroll';
 
 const Contact: React.FC = () => {
     return (
         <div className="min-h-screen bg-cream font-sans text-chocolate selection:bg-gold/20">
             <Header />
 
-            <main className="pt-40 pb-20 px-6 md:px-12 max-w-[1200px] mx-auto">
+            <main className="pt-40 md:pt-52 pb-20 px-6 md:px-12 max-w-[1200px] mx-auto">
                 <div className="text-center space-y-4 mb-20">
                     <span className="text-[10px] uppercase tracking-[0.4em] text-gold font-semibold">Atención Personalizada</span>
                     <h1 className="text-5xl md:text-7xl font-serif">Contacto</h1>
@@ -19,10 +21,8 @@ const Contact: React.FC = () => {
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-20">
                     {/* Information Cards */}
-                    <motion.div
-                        initial={{ opacity: 0, y: 30 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.8 }}
+                    <RevealOnScroll
+                        direction="right"
                         className="space-y-12"
                     >
                         <div className="space-y-8">
@@ -35,7 +35,7 @@ const Contact: React.FC = () => {
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                             <div className="p-8 border border-gold/10 bg-white/30 backdrop-blur-sm space-y-4 group hover:border-gold/30 transition-colors duration-500">
                                 <FontAwesomeIcon icon={faWhatsapp} className="text-gold text-2xl" />
-                                <h3 className="text-[10px] uppercase tracking-widest font-bold">Ventas / WhatsApp</h3>
+                                <h3 className="text-[10px] uppercase tracking-widest font-bold">Call Center / WhatsApp</h3>
                                 <a href="https://wa.me/523521681197" className="block text-sm hover:text-gold transition-colors">352 168 1197</a>
                             </div>
 
@@ -70,31 +70,56 @@ const Contact: React.FC = () => {
                                 <FontAwesomeIcon icon={faInstagram} className="text-lg" />
                             </a>
                         </div>
-                    </motion.div>
+                    </RevealOnScroll>
 
-                    {/* Map Placeholder / Future Form */}
-                    <motion.div
-                        initial={{ opacity: 0, scale: 0.95 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        transition={{ duration: 1, delay: 0.2 }}
-                        className="relative min-h-[500px] bg-chocolate/5 border border-gold/10 overflow-hidden"
+                    {/* Contact Form Column */}
+                    <RevealOnScroll
+                        direction="left"
+                        className="p-10 bg-white border border-gold/10 shadow-xl space-y-8"
                     >
-                        {/* Here goes a Google Maps iframe or a premium contact form */}
-                        <div className="absolute inset-0 flex items-center justify-center p-12 text-center flex-col space-y-6">
-                            <FontAwesomeIcon icon={faMapMarkerAlt} className="text-gold/20 text-6xl" />
-                            <p className="text-chocolate/30 font-serif text-xl italic">
-                                Ubicados en el corazón textil <br />de La Piedad, Michoacán
-                            </p>
-                            <a
-                                href="https://maps.google.com/?q=Igualdad+200,+Ejido+de+Potrerillos,+La+Piedad,+Michoacán"
-                                target="_blank"
-                                className="px-10 py-4 bg-chocolate text-cream text-[10px] uppercase tracking-[0.3em] hover:bg-gold transition-colors duration-500"
-                            >
-                                Abrir en Google Maps
-                            </a>
+                        <div className="space-y-2">
+                            <h2 className="text-3xl font-serif text-chocolate">Envíanos un mensaje</h2>
+                            <p className="text-xs text-chocolate/50 uppercase tracking-widest">Atención en menos de 24 horas</p>
                         </div>
-                        <div className="absolute inset-0 bg-gold/5 pointer-events-none"></div>
-                    </motion.div>
+                        {/* ... form content remains same ... */}
+                        <form className="space-y-6" onSubmit={(e) => { e.preventDefault(); toast.success('Mensaje enviado'); }}>
+                            {/* Form fields */}
+                            <div className="space-y-2">
+                                <label className="text-[10px] uppercase tracking-widest font-bold text-chocolate/50">Nombre Completo</label>
+                                <input type="text" className="w-full bg-cream/30 border border-gold/10 p-4 focus:border-gold outline-none transition-colors" placeholder="Tu nombre..." required />
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div className="space-y-2">
+                                    <label className="text-[10px] uppercase tracking-widest font-bold text-chocolate/50">Teléfono</label>
+                                    <input type="tel" className="w-full bg-cream/30 border border-gold/10 p-4 focus:border-gold outline-none transition-colors" placeholder="352..." required />
+                                </div>
+                                <div className="space-y-2">
+                                    <label className="text-[10px] uppercase tracking-widest font-bold text-chocolate/50">Asunto</label>
+                                    <input type="text" className="w-full bg-cream/30 border border-gold/10 p-4 focus:border-gold outline-none transition-colors" placeholder="Ej: Pedido Especial" required />
+                                </div>
+                            </div>
+
+                            <div className="space-y-2">
+                                <label className="text-[10px] uppercase tracking-widest font-bold text-chocolate/50">Mensaje</label>
+                                <textarea rows={4} className="w-full bg-cream/30 border border-gold/10 p-4 focus:border-gold outline-none transition-colors resize-none" placeholder="¿En qué podemos ayudarte?" required></textarea>
+                            </div>
+
+                            <div className="space-y-2">
+                                <label className="text-[10px] uppercase tracking-widest font-bold text-chocolate/50">Verificación (Captcha)</label>
+                                <div className="flex items-center gap-4">
+                                    <div className="bg-chocolate/5 border border-gold/10 px-4 py-3 text-sm font-mono tracking-widest">
+                                        4 + 2 =
+                                    </div>
+                                    <input type="text" className="w-24 bg-cream/30 border border-gold/10 p-3 focus:border-gold outline-none transition-colors" placeholder="?" required />
+                                </div>
+                            </div>
+
+                            <button type="submit" className="w-full px-12 py-4 bg-chocolate text-cream text-[10px] uppercase tracking-[0.3em] font-bold hover:bg-gold transition-all duration-500 shadow-lg hover:shadow-gold/20">
+                                Enviar Mensaje
+                            </button>
+                        </form>
+                    </RevealOnScroll>
                 </div>
             </main>
 

@@ -5,7 +5,8 @@ export const productService = {
     async getProducts() {
         const { data, error } = await supabase
             .from('products')
-            .select('*, categories(*)');
+            .select('*, categories(*)')
+            .order('created_at', { ascending: false });
 
         if (error) throw error;
         return data as (Product & { categories: Category })[];

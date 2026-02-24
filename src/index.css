@@ -1,13 +1,14 @@
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400..900&family=Cormorant+Garamond:ital,wght@0,300..700;1,300..700&family=Montserrat:wght@100..700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Inter:wght@300;400;500;600&display=swap');
-
 @layer base {
     :root {
-        --font-serif: 'Playfair Display', serif;
-        --font-sans: 'Inter', sans-serif;
+        --font-serif: 'Cinzel', serif;
+        --font-serif-elegant: 'Cormorant Garamond', serif;
+        --font-sans: 'Montserrat', sans-serif;
 
         /* Casa Solena Palette */
         --color-cream: #F9F7F2;
@@ -92,5 +93,31 @@
         50% {
             opacity: .5;
         }
+    }
+
+    .no-scrollbar::-webkit-scrollbar {
+        display: none;
+    }
+
+    .no-scrollbar {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+
+    .mask-fade-right {
+        mask-image: linear-gradient(to right, black 95%, transparent 100%);
+    }
+
+    .custom-scrollbar::-webkit-scrollbar {
+        width: 4px;
+    }
+
+    .custom-scrollbar::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: #C5A059;
+        border-radius: 10px;
     }
 }

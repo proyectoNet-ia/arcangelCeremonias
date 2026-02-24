@@ -28,6 +28,7 @@ export interface Product {
 
     // Metadata
     featured?: boolean;
+    badges?: string[];
     stock_status?: 'available' | 'on_request' | 'out_of_stock';
     created_at?: string;
 }
@@ -36,7 +37,10 @@ export interface Category {
     id: string;
     name: string;
     slug: string;
+    parent_id?: string | null;
     image_url?: string;
+    icon_url?: string;
+    description?: string;
 }
 
 export interface ShopConfig {

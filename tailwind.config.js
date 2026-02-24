@@ -16,7 +16,8 @@ export default {
             },
             fontFamily: {
                 sans: ['Montserrat', 'sans-serif'],
-                serif: ['Playfair Display', 'serif'],
+                serif: ['Cinzel', 'serif'],
+                elegant: ['Cormorant Garamond', 'serif'],
             },
             animation: {
                 'reveal-up': 'revealUp 1.2s cubic-bezier(0.2, 1, 0.3, 1) forwards',
@@ -24,6 +25,7 @@ export default {
                 'fade-in-down': 'fadeInDown 1s ease-out forwards',
                 'fade-in-up': 'fadeInUp 1s ease-out forwards',
                 'zoom': 'zoom 60s linear infinite alternate',
+                'marquee': 'marquee 30s linear infinite',
             },
             keyframes: {
                 revealUp: {
@@ -41,7 +43,11 @@ export default {
                 zoom: {
                     '0%': { transform: 'scale(1.1)' },
                     '100%': { transform: 'scale(1.2)' },
-                }
+                },
+                marquee: {
+                    '0%': { transform: 'translateX(0)' },
+                    '100%': { transform: 'translateX(-50%)' },
+                },
             }
         },
     },

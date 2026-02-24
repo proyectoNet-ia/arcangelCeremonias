@@ -2,8 +2,9 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFacebook, faInstagram, faWhatsapp } from '@fortawesome/free-brands-svg-icons';
-import { faDiamond } from '@fortawesome/free-solid-svg-icons';
+import { faUsers, faLocationDot, faPhone, faShareNodes, faBriefcase, faArrowUpRightFromSquare } from '@fortawesome/free-solid-svg-icons';
 import { Logo } from '@/components/Logo';
+import { RevealOnScroll } from '@/components/common/RevealOnScroll';
 
 export const Footer: React.FC = () => {
     return (
@@ -11,10 +12,12 @@ export const Footer: React.FC = () => {
             <div className="max-w-[1600px] mx-auto">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-16 md:gap-12 lg:gap-16">
                     {/* NOSOTROS - Abstract */}
-                    <div className="space-y-8 lg:col-span-1">
+                    <RevealOnScroll className="space-y-8 lg:col-span-1">
                         <div className="flex items-center gap-4">
-                            <FontAwesomeIcon icon={faDiamond} className="text-[8px] text-gold/40" />
-                            <h3 className="font-serif text-gold text-sm md:text-base lg:text-lg uppercase tracking-[0.4em]">Nosotros</h3>
+                            <h3 className="flex items-center gap-2 font-sans text-[11px] text-gold/70 uppercase tracking-[0.5em] font-medium">
+                                <FontAwesomeIcon icon={faUsers} className="text-[10px] text-gold/50" />
+                                Nosotros
+                            </h3>
                         </div>
                         <div className="space-y-4 text-cream/70 text-[10px] md:text-[11px] leading-relaxed font-light text-justify">
                             <p>
@@ -24,32 +27,67 @@ export const Footer: React.FC = () => {
                                 Creemos firmemente en el comercio justo y en la vocación de servir a nuestros clientes con valores fundamentales: calidad, honradez, amabilidad y especial atención a los detalles de cada uno de nuestros productos, que están elaborados con la dedicación y talento de muchas personas.
                             </p>
                         </div>
-                    </div>
+                    </RevealOnScroll>
 
                     {/* UBICACIÓN */}
-                    <div className="space-y-8">
+                    <RevealOnScroll delay={0.1} className="space-y-8">
                         <div className="flex items-center gap-4">
-                            <FontAwesomeIcon icon={faDiamond} className="text-[8px] text-gold/40" />
-                            <h3 className="font-serif text-gold text-sm md:text-base lg:text-lg uppercase tracking-[0.4em]">Ubicación</h3>
+                            <h3 className="flex items-center gap-2 font-sans text-[11px] text-gold/70 uppercase tracking-[0.5em] font-medium">
+                                <FontAwesomeIcon icon={faLocationDot} className="text-[10px] text-gold/50" />
+                                Ubicación
+                            </h3>
                         </div>
-                        <div className="space-y-4 text-cream/60 text-[10px] md:text-xs uppercase tracking-[0.2em] leading-loose font-medium">
-                            <p>
-                                Igualdad #200<br />
-                                Ejido de Potrerillos<br />
-                                La Piedad, Michoacán, México
-                            </p>
+                        <div className="space-y-6 text-[10px] md:text-xs font-medium">
+                            {/* Dirección */}
+                            <div className="flex flex-col gap-2">
+                                <span className="text-[8px] text-gold/50 uppercase tracking-[0.3em]">Dirección</span>
+                                <p className="text-cream/60 uppercase tracking-[0.15em] leading-relaxed">
+                                    Igualdad #200<br />
+                                    Ejido de Potrerillos<br />
+                                    La Piedad, Michoacán, México
+                                </p>
+                            </div>
+
+                            {/* Grupo de Empresas */}
+                            <div className="flex flex-col gap-3 pt-2 border-t border-gold/10">
+                                <div className="flex items-center gap-2">
+                                    <FontAwesomeIcon icon={faBriefcase} className="text-[8px] text-gold/40" />
+                                    <span className="text-[8px] text-gold/50 uppercase tracking-[0.3em]">Grupo de Empresas</span>
+                                </div>
+                                <a
+                                    href="#"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="group flex items-center gap-2 text-cream/40 hover:text-gold transition-colors duration-300"
+                                >
+                                    <span className="text-[9px] uppercase tracking-[0.3em] font-semibold">Grupo ESBASA</span>
+                                    <FontAwesomeIcon icon={faArrowUpRightFromSquare} className="text-[7px] opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                                </a>
+                                <a
+                                    href="#"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="group flex items-center gap-2 text-cream/40 hover:text-gold transition-colors duration-300"
+                                >
+                                    <span className="text-[9px] uppercase tracking-[0.3em] font-semibold">Uniformes ESBASA</span>
+                                    <FontAwesomeIcon icon={faArrowUpRightFromSquare} className="text-[7px] opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                                </a>
+                            </div>
                         </div>
-                    </div>
+                    </RevealOnScroll>
+
 
                     {/* CONTACTO */}
-                    <div className="space-y-8">
+                    <RevealOnScroll delay={0.2} className="space-y-8">
                         <div className="flex items-center gap-4">
-                            <FontAwesomeIcon icon={faDiamond} className="text-[8px] text-gold/40" />
-                            <h3 className="font-serif text-gold text-sm md:text-base lg:text-lg uppercase tracking-[0.4em]">Contacto</h3>
+                            <h3 className="flex items-center gap-2 font-sans text-[11px] text-gold/70 uppercase tracking-[0.5em] font-medium">
+                                <FontAwesomeIcon icon={faPhone} className="text-[10px] text-gold/50" />
+                                Contacto
+                            </h3>
                         </div>
                         <div className="space-y-4 text-cream/60 text-[10px] md:text-xs uppercase tracking-[0.2em] font-medium">
                             <div className="flex flex-col gap-2">
-                                <span className="text-[8px] text-gold/50">Ventas / WhatsApp</span>
+                                <span className="text-[8px] text-gold/50">Call Center / WhatsApp</span>
                                 <a href="https://wa.me/523521681197" className="text-cream hover:text-gold transition-colors duration-300">352 168 1197</a>
                             </div>
                             <div className="flex flex-col gap-2">
@@ -61,13 +99,15 @@ export const Footer: React.FC = () => {
                                 <a href="mailto:ventas@arcangelceremonias.com" className="text-cream hover:text-gold transition-colors duration-300 lowercase tracking-widest">ventas@arcangelceremonias.com</a>
                             </div>
                         </div>
-                    </div>
+                    </RevealOnScroll>
 
                     {/* SOCIAL */}
-                    <div className="space-y-8">
+                    <RevealOnScroll delay={0.3} className="space-y-8">
                         <div className="flex items-center gap-4">
-                            <FontAwesomeIcon icon={faDiamond} className="text-[8px] text-gold/40" />
-                            <h3 className="font-serif text-gold text-sm md:text-base lg:text-lg uppercase tracking-[0.4em]">Social</h3>
+                            <h3 className="flex items-center gap-2 font-sans text-[11px] text-gold/70 uppercase tracking-[0.5em] font-medium">
+                                <FontAwesomeIcon icon={faShareNodes} className="text-[10px] text-gold/50" />
+                                Social
+                            </h3>
                         </div>
                         <div className="flex gap-8 items-center">
                             <a
@@ -103,10 +143,12 @@ export const Footer: React.FC = () => {
                                 <Logo />
                             </div>
                         </div>
-                    </div>
+                    </RevealOnScroll>
                 </div>
 
-                <div className="mt-24 pt-8 border-t border-gold/5 flex flex-col md:flex-row justify-between items-center gap-6 text-[8px] md:text-[9px] uppercase tracking-[0.3em] font-medium text-cream/30">
+
+                {/* ── Copyright bar ── */}
+                <div className="mt-10 pt-8 border-t border-gold/5 flex flex-col md:flex-row justify-between items-center gap-6 text-[8px] md:text-[9px] uppercase tracking-[0.3em] font-medium text-cream/30">
                     <p>© 2026 Arcángel Ceremonias. Todos los derechos reservados.</p>
                     <div className="flex gap-8">
                         <Link to="/admin" className="hover:text-gold transition-colors">Admin</Link>
@@ -114,7 +156,7 @@ export const Footer: React.FC = () => {
                         <Link to="#" className="hover:text-gold transition-colors">Aviso de Privacidad</Link>
                     </div>
                 </div>
-            </div>
-        </footer>
+            </div >
+        </footer >
     );
 };

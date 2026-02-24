@@ -11,6 +11,7 @@ import { productService } from '@/services/productService';
 import { seedCatalog } from '@/services/seedData';
 import { Product, Category } from '@/types/product';
 import { AdminLayout } from '@/components/admin/AdminLayout';
+import toast from 'react-hot-toast';
 
 // --- Dashboard Component ---
 const DashboardOverview: React.FC<{ products: Product[], categories: Category[] }> = ({ products, categories }) => {
@@ -189,8 +190,15 @@ const ProductsManager: React.FC<{
 
     const handleDelete = async (id: string) => {
         if (!confirm('¿Estás seguro de eliminar este producto?')) return;
-        await productService.deleteProduct(id);
-        refresh();
+        try {
+            await productService.deleteProduct(id);
+            toast.success('Producto eliminado', {
+                style: { background: '#1e293b', color: '#fff', fontSize: '12px', fontWeight: 'bold' }
+            });
+            refresh();
+        } catch (error) {
+            toast.error('Error al eliminar');
+        }
     };
 
     const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>, field: 'main' | 'gallery', index?: number) => {
@@ -211,9 +219,10 @@ const ProductsManager: React.FC<{
                 newGallery[index] = url;
                 setEditingProduct(prev => ({ ...prev, gallery: newGallery }));
             }
+            toast.success('Imagen lista', { icon: '📸' });
         } catch (error) {
             console.error('Upload Error:', error);
-            alert('Error al subir imagen. Asegúrate de que el bucket "catalog" exista en Supabase.');
+            toast.error('Error al subir imagen');
         } finally {
             setIsUploading(false);
         }
@@ -224,14 +233,24 @@ const ProductsManager: React.FC<{
         if (!editingProduct) return;
 
         try {
+            // Extraer solo los campos que existen en la tabla 'products' de la DB
+            // Removemos 'categories' (que viene del join) y campos de solo lectura para evitar el Error 400
+            const { categories: _, created_at: __, ...productData } = editingProduct as any;
+
             // Limpiar gallery de strings vacíos antes de guardar
-            const cleanedGallery = (editingProduct.gallery || []).filter(url => url.trim() !== '');
-            await productService.upsertProduct({ ...editingProduct, gallery: cleanedGallery });
+            const cleanedGallery = (productData.gallery || []).filter((url: string) => url.trim() !== '');
+
+            await productService.upsertProduct({ ...productData, gallery: cleanedGallery });
+            toast.success('Producto guardado correctamente', {
+                style: { background: '#1e293b', color: '#fff', fontSize: '12px', fontWeight: 'bold' }
+            });
             setIsModalOpen(false);
             refresh();
         } catch (error) {
             console.error('Save Error:', error);
-            alert('Error al guardar el producto');
+            toast.error('Error al guardar. Revisa la consola.', {
+                style: { background: '#ef4444', color: '#fff', fontSize: '12px', fontWeight: 'bold' }
+            });
         }
     };
 
@@ -324,15 +343,73 @@ const ProductsManager: React.FC<{
                                                 <input type="text" placeholder="Modelo / Código" value={editingProduct.model_code || ''} onChange={e => setEditingProduct({ ...editingProduct, model_code: e.target.value })} className="w-full p-4 border border-slate-100 focus:border-gold outline-none text-xs" />
                                                 <input type="text" placeholder="Color Principal" value={editingProduct.color || ''} onChange={e => setEditingProduct({ ...editingProduct, color: e.target.value })} className="w-full p-4 border border-slate-100 focus:border-gold outline-none text-xs" />
                                             </div>
+
+                                            <div className="space-y-2">
+                                                <label className="text-[9px] uppercase tracking-widest font-bold text-slate-400 pl-1">Distintivos del Producto (Selección Predefinida)</label>
+                                                <div className="flex flex-wrap gap-2">
+                                                    {['Premium', 'Edición Especial', 'Pieza Única', 'Lo más vendido'].map((badge) => {
+                                                        const isActive = editingProduct.badges?.includes(badge);
+                                                        return (
+                                                            <button
+                                                                key={badge}
+                                                                type="button"
+                                                                onClick={() => {
+                                                                    const currentBadges = editingProduct.badges || [];
+                                                                    const newBadges = isActive
+                                                                        ? currentBadges.filter(b => b !== badge)
+                                                                        : [...currentBadges, badge];
+                                                                    setEditingProduct({ ...editingProduct, badges: newBadges });
+                                                                }}
+                                                                className={`px-4 py-2 text-[10px] uppercase font-bold tracking-widest border transition-all duration-300 ${isActive
+                                                                    ? 'bg-chocolate text-gold border-gold'
+                                                                    : 'bg-white text-slate-400 border-slate-100 hover:border-gold/30'
+                                                                    }`}
+                                                            >
+                                                                {badge}
+                                                            </button>
+                                                        );
+                                                    })}
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
 
-                                    <div className="space-y-2">
-                                        <label className="text-[10px] uppercase tracking-widest font-bold text-slate-400">Precios y Categoría</label>
+                                    <div className="space-y-4">
+                                        <label className="text-[10px] uppercase tracking-widest font-bold text-slate-400">Precios y Clasificación</label>
                                         <div className="grid grid-cols-2 gap-4">
-                                            <input type="number" placeholder="Precio Base" value={editingProduct.price} onChange={e => setEditingProduct({ ...editingProduct, price: Number(e.target.value) })} className="w-full p-4 border border-slate-100 focus:border-gold outline-none" />
-                                            <select value={editingProduct.category_id} onChange={e => setEditingProduct({ ...editingProduct, category_id: e.target.value })} className="w-full p-4 border border-slate-100 focus:border-gold outline-none">
-                                                {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+                                            <div className="space-y-2">
+                                                <label className="text-[10px] uppercase tracking-widest font-bold text-slate-400">Precio Base</label>
+                                                <input type="number" placeholder="$ 0.00" value={editingProduct.price} onChange={e => setEditingProduct({ ...editingProduct, price: Number(e.target.value) })} className="w-full p-4 border border-slate-100 focus:border-gold outline-none" />
+                                            </div>
+                                            <div className="space-y-2">
+                                                <label className="text-[10px] uppercase tracking-widest font-bold text-slate-400">Categoría Padre</label>
+                                                <select
+                                                    value={editingProduct.category_id}
+                                                    onChange={e => setEditingProduct({ ...editingProduct, category_id: e.target.value, subcategory: '' })}
+                                                    className="w-full p-4 border border-slate-100 focus:border-gold outline-none"
+                                                >
+                                                    <option value="">Seleccione Categoría</option>
+                                                    {categories.filter(c => !c.parent_id).map(c => (
+                                                        <option key={c.id} value={c.id}>{c.name}</option>
+                                                    ))}
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div className="space-y-2">
+                                            <label className="text-[10px] uppercase tracking-widest font-bold text-slate-400">Subcategoría (Específica)</label>
+                                            <select
+                                                value={editingProduct.subcategory || ''}
+                                                onChange={e => setEditingProduct({ ...editingProduct, subcategory: e.target.value })}
+                                                className="w-full p-4 border border-slate-100 focus:border-gold outline-none"
+                                                disabled={!editingProduct.category_id}
+                                            >
+                                                <option value="">Ninguna / Ver Todas</option>
+                                                {categories
+                                                    .filter(c => c.parent_id === editingProduct.category_id)
+                                                    .map(c => (
+                                                        <option key={c.id} value={c.slug}>{c.name}</option>
+                                                    ))
+                                                }
                                             </select>
                                         </div>
                                     </div>

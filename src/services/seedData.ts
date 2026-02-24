@@ -19,29 +19,108 @@ export const seedCatalog = async () => {
             // No arrojamos error aquí si falla el borrado de categorías para permitir que el upsert intente arreglarlo
         }
 
-        // 2. Crear o Actualizar Categorías (usando onConflict para evitar el error 409)
-        const categoryList = [
-            { name: 'Bautizo', slug: 'bautizo' },
-            { name: 'Traje Charro', slug: 'traje-charro' },
-            { name: 'Guayabera', slug: 'guayabera' },
-            { name: 'Túnica', slug: 'tunica' },
-            { name: 'Esmoquin', slug: 'esmoquin' },
-            { name: 'Traje', slug: 'traje' },
-            { name: 'Traje de Estola', slug: 'traje-estola' }
+        // 2. Crear Categorías (Jerárquicas: Padres y luego Hijos)
+        console.log('Creando jerarquía de categorías...');
+
+        // 2a. Categorías Padre con Meta-datos Visuales (10 Categorías para Escalamiento)
+        const parentList = [
+            {
+                name: 'Bautizo',
+                slug: 'bautizo',
+                description: 'Tradición y pureza en cada detalle para el día más especial.',
+                image_url: '/catalog/top-view-cute-baby-laying-bed.jpg'
+            },
+            {
+                name: 'Traje Charro',
+                slug: 'traje-charro',
+                description: 'La elegancia de nuestra cultura plasmada en bordados artesanales.',
+                image_url: '/catalog/medium-shot-kid-praying-with-crucifix.jpg'
+            },
+            {
+                name: 'Guayabera',
+                slug: 'guayabera',
+                description: 'Frescura y distinción con el toque clásico del lino.',
+                image_url: '/catalog/portrait-child-getting-ready-their-first-communion.jpg'
+            },
+            {
+                name: 'Ceremonia Niños',
+                slug: 'ceremonia-ninos',
+                description: 'Etiqueta impecable para los pequeños caballeros en formación.',
+                image_url: '/catalog/young-boy-church-experiencing-his-first-communion-ceremony.jpg'
+            },
+            {
+                name: 'Accesorios',
+                slug: 'accesorios',
+                description: 'Complementos esenciales que dan el toque final a la ceremonia.',
+                image_url: '/catalog/medium-shot-girls-holding-candles.jpg'
+            },
+            {
+                name: 'Calzado',
+                slug: 'calzado',
+                description: 'Pasos de fe con suavidad y diseño artesanal.',
+                image_url: '/catalog/top-view-hands-holding-baby-s-foot.jpg'
+            },
+            {
+                name: 'Mantas y Velas',
+                slug: 'mantas-y-velas',
+                description: 'Símbolos de luz y calidez para la protección del pequeño.',
+                image_url: '/catalog/medium-shot-girls-holding-candles.jpg'
+            },
+            {
+                name: 'Joyería Religiosa',
+                slug: 'joyería-religiosa',
+                description: 'Recuerdos eternos en oro y plata laminada.',
+                image_url: '/catalog/medium-shot-kid-praying-with-crucifix.jpg'
+            },
+            {
+                name: 'Línea Blanca',
+                slug: 'linea-blanca',
+                description: 'Textiles premium para el confort absoluto en la ceremonia.',
+                image_url: '/catalog/portrait-child-getting-ready-their-first-communion (1).jpg'
+            },
+            {
+                name: 'Outlet',
+                slug: 'outlet',
+                description: 'Piezas únicas de temporadas anteriores con precios especiales.',
+                image_url: '/catalog/young-boy-experiencing-his-first-communion-ceremony-church.jpg'
+            }
         ];
 
-        const { data: categories, error: catError } = await supabase
+        const { data: parents, error: parentError } = await supabase
             .from('categories')
-            .upsert(categoryList, { onConflict: 'slug' })
+            .upsert(parentList, { onConflict: 'slug' })
             .select();
 
-        if (catError) {
-            console.error('Error en categorías:', catError);
-            throw catError;
-        }
-        console.log('Categorías listas:', categories);
+        if (parentError) throw parentError;
+        const findParentId = (slug: string) => parents.find(c => c.slug === slug)?.id;
 
-        const findCat = (slug: string) => categories.find(c => c.slug === slug)?.id;
+        // 2b. Subcategorías (Hijos)
+        const subList = [
+            // Subs de Bautizo
+            { name: 'Ropón Niña', slug: 'ropon-nina', parent_id: findParentId('bautizo') },
+            { name: 'Ropón Niño', slug: 'ropon-nino', parent_id: findParentId('bautizo') },
+            { name: 'Accesorios Bautizo', slug: 'accesorios-bautizo', parent_id: findParentId('bautizo') },
+            // Subs de Traje Charro
+            { name: 'Gala Individual', slug: 'gala-individual', parent_id: findParentId('traje-charro') },
+            { name: 'Charro Bebé', slug: 'charro-bebe', parent_id: findParentId('traje-charro') },
+            // Subs de Ceremonia
+            { name: 'Esmoquin', slug: 'esmoquin', parent_id: findParentId('ceremonia-ninos') },
+            { name: 'Traje de Estola', slug: 'traje-estola', parent_id: findParentId('ceremonia-ninos') },
+            { name: 'Túnicas', slug: 'tunicas', parent_id: findParentId('ceremonia-ninos') }
+        ];
+
+        const { data: fullCategories, error: subError } = await supabase
+            .from('categories')
+            .upsert(subList, { onConflict: 'slug' })
+            .select();
+
+        if (subError) throw subError;
+
+        // Combinar todos para los helpers de productos
+        const allCategories = [...parents, ...fullCategories];
+        const findCat = (slug: string) => allCategories.find(c => c.slug === slug)?.id;
+
+        console.log('Jerarquía de categorías lista.');
 
         // Helper para imágenes aleatorias de la carpeta local
         const localImages = [
@@ -75,6 +154,7 @@ export const seedCatalog = async () => {
                 color: 'Marfil',
                 material: 'Shantung de Seda',
                 category_id: findCat('bautizo'),
+                subcategory: 'ropon-nina',
                 size_variants: [{ size: '0', price: 3500 }, { size: '1', price: 3700 }, { size: '2', price: 3900 }],
                 main_image: localImages[4],
                 gallery: getRandomGallery(4),
@@ -91,6 +171,7 @@ export const seedCatalog = async () => {
                 color: 'Blanco Nieve',
                 material: 'Lino Italiano',
                 category_id: findCat('bautizo'),
+                subcategory: 'ropon-nino',
                 size_variants: [{ size: '0', price: 2800 }, { size: '1', price: 3000 }],
                 main_image: localImages[5],
                 gallery: getRandomGallery(4),
@@ -107,6 +188,7 @@ export const seedCatalog = async () => {
                 color: 'Hueso',
                 material: 'Organza',
                 category_id: findCat('bautizo'),
+                subcategory: 'ropon-nina',
                 main_image: localImages[0],
                 gallery: getRandomGallery(3),
                 featured: true
@@ -122,6 +204,7 @@ export const seedCatalog = async () => {
                 color: 'Negro/Plata',
                 material: 'Terciopelo Premium',
                 category_id: findCat('traje-charro'),
+                subcategory: 'gala-individual',
                 size_variants: [{ size: '4', price: 5800 }, { size: '6', price: 6200 }, { size: '8', price: 6600 }],
                 main_image: localImages[1],
                 gallery: getRandomGallery(4),
@@ -136,6 +219,7 @@ export const seedCatalog = async () => {
                 model_code: 'CH-CL-05',
                 color: 'Azul Rey',
                 category_id: findCat('traje-charro'),
+                subcategory: 'gala-individual',
                 main_image: localImages[8],
                 gallery: getRandomGallery(3)
             },
@@ -148,6 +232,7 @@ export const seedCatalog = async () => {
                 model_code: 'CH-GO-09',
                 color: 'Blanco/Oro',
                 category_id: findCat('traje-charro'),
+                subcategory: 'gala-individual',
                 main_image: localImages[7],
                 gallery: getRandomGallery(3)
             },
@@ -190,7 +275,7 @@ export const seedCatalog = async () => {
                 main_image: localImages[6],
                 gallery: getRandomGallery(3)
             },
-            // TÚNICA
+            // CEREMONIA NIÑOS (TÚNICA)
             {
                 name: 'Túnica Ceremonial Minimal',
                 slug: 'tunica-ceremonial-minimal',
@@ -199,7 +284,8 @@ export const seedCatalog = async () => {
                 show_price: true,
                 model_code: 'TUN-01',
                 color: 'Crema',
-                category_id: findCat('tunica'),
+                category_id: findCat('ceremonia-ninos'),
+                subcategory: 'tunicas',
                 main_image: localImages[3],
                 gallery: getRandomGallery(3),
                 featured: true
@@ -212,7 +298,8 @@ export const seedCatalog = async () => {
                 show_price: true,
                 model_code: 'TUN-05',
                 color: 'Blanco',
-                category_id: findCat('tunica'),
+                category_id: findCat('ceremonia-ninos'),
+                subcategory: 'tunicas',
                 main_image: localImages[2],
                 gallery: getRandomGallery(2)
             },
@@ -225,7 +312,8 @@ export const seedCatalog = async () => {
                 show_price: true,
                 model_code: 'SM-SG-01',
                 color: 'Negro',
-                category_id: findCat('esmoquin'),
+                category_id: findCat('ceremonia-ninos'),
+                subcategory: 'esmoquin',
                 size_variants: [{ size: '6', price: 6800 }, { size: '10', price: 7200 }, { size: '14', price: 7800 }],
                 main_image: localImages[6],
                 gallery: getRandomGallery(5),
@@ -239,7 +327,8 @@ export const seedCatalog = async () => {
                 show_price: true,
                 model_code: 'SM-MN-04',
                 color: 'Azul Medianoche',
-                category_id: findCat('esmoquin'),
+                category_id: findCat('ceremonia-ninos'),
+                subcategory: 'esmoquin',
                 main_image: localImages[1],
                 gallery: getRandomGallery(3)
             },
@@ -252,7 +341,8 @@ export const seedCatalog = async () => {
                 show_price: true,
                 model_code: 'TR-EX-01',
                 color: 'Gris Oxford',
-                category_id: findCat('traje'),
+                category_id: findCat('ceremonia-ninos'),
+                subcategory: 'esmoquin', // Reutilizando para el ejemplo
                 main_image: localImages[7],
                 gallery: getRandomGallery(3),
                 featured: true
@@ -265,21 +355,9 @@ export const seedCatalog = async () => {
                 show_price: true,
                 model_code: 'TR-LN-02',
                 color: 'Arena',
-                category_id: findCat('traje'),
+                category_id: findCat('ceremonia-ninos'),
                 main_image: localImages[8],
                 gallery: getRandomGallery(2)
-            },
-            {
-                name: 'Traje 3 Piezas Oxford',
-                slug: 'traje-3-piezas-oxford',
-                description: 'Incluye chaleco a juego.',
-                price: 5900,
-                show_price: true,
-                model_code: 'TR-OX-09',
-                color: 'Gris Marengo',
-                category_id: findCat('traje'),
-                main_image: localImages[5],
-                gallery: getRandomGallery(3)
             },
             // TRAJE DE ESTOLA
             {
@@ -290,7 +368,8 @@ export const seedCatalog = async () => {
                 show_price: true,
                 model_code: 'ST-TR-01',
                 color: 'Blanco',
-                category_id: findCat('traje-estola'),
+                category_id: findCat('ceremonia-ninos'),
+                subcategory: 'traje-estola',
                 main_image: localImages[0],
                 gallery: getRandomGallery(4),
                 featured: true
@@ -303,7 +382,8 @@ export const seedCatalog = async () => {
                 show_price: true,
                 model_code: 'ST-UV-05',
                 color: 'Marfil',
-                category_id: findCat('traje-estola'),
+                category_id: findCat('ceremonia-ninos'),
+                subcategory: 'traje-estola',
                 main_image: localImages[3],
                 gallery: getRandomGallery(3)
             },
@@ -315,7 +395,8 @@ export const seedCatalog = async () => {
                 show_price: true,
                 model_code: 'ST-CX-08',
                 color: 'Blanco',
-                category_id: findCat('traje-estola'),
+                category_id: findCat('ceremonia-ninos'),
+                subcategory: 'traje-estola',
                 main_image: localImages[4],
                 gallery: getRandomGallery(2)
             },
@@ -328,6 +409,7 @@ export const seedCatalog = async () => {
                 model_code: 'VES-GS-10',
                 color: 'Crema/Amarillo',
                 category_id: findCat('bautizo'),
+                subcategory: 'ropon-nina',
                 main_image: localImages[0],
                 gallery: getRandomGallery(3)
             }
@@ -341,8 +423,10 @@ export const seedCatalog = async () => {
         console.log('¡Catálogo auditado de 20 productos cargado con éxito!');
         return true;
 
-    } catch (err) {
-        console.error('Error al cargar datos auditados:', err);
+    } catch (err: any) {
+        console.error('Error al cargar datos auditados:', err.message || err);
+        if (err.details) console.error('Detalles:', err.details);
+        if (err.hint) console.error('Pista:', err.hint);
         return false;
     }
 };

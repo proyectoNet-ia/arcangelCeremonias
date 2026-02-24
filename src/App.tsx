@@ -6,6 +6,7 @@ import ProductDetail from './pages/ProductDetail';
 import About from './pages/About';
 import Contact from './pages/Contact';
 import Admin from './pages/Admin';
+import { Toaster } from 'react-hot-toast';
 import { FloatingActions } from './components/common/FloatingActions';
 
 // Component to handle scroll to top on route change
@@ -22,6 +23,7 @@ const ScrollToTop = () => {
 const App: React.FC = () => {
   return (
     <Router>
+      <Toaster position="top-center" reverseOrder={false} />
       <ScrollToTop />
       <Routes>
         <Route path="/" element={<Home />} />
