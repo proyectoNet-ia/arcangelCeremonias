@@ -4,10 +4,20 @@ export const seedCatalog = async () => {
     try {
         console.log('Iniciando carga de datos robusta...');
 
-        // 1. Limpiar datos existentes de forma más agresiva
-        console.log('Limpiando tablas...');
-        await supabase.from('products').delete().filter('id', 'neq', '00000000-0000-0000-0000-000000000000');
-        await supabase.from('categories').delete().filter('id', 'neq', '00000000-0000-0000-0000-000000000000');
+        // 1. Limpiar datos existentes (En orden: Productos -> Categorías)
+        console.log('Limpiando productos...');
+        const { error: delProdError } = await supabase.from('products').delete().neq('id', '00000000-0000-0000-0000-000000000000');
+        if (delProdError) {
+            console.error('Error al borrar productos:', delProdError);
+            throw delProdError;
+        }
+
+        console.log('Limpiando categorías...');
+        const { error: delCatError } = await supabase.from('categories').delete().neq('id', '00000000-0000-0000-0000-000000000000');
+        if (delCatError) {
+            console.error('Error al borrar categorías:', delCatError);
+            // No arrojamos error aquí si falla el borrado de categorías para permitir que el upsert intente arreglarlo
+        }
 
         // 2. Crear o Actualizar Categorías (usando onConflict para evitar el error 409)
         const categoryList = [

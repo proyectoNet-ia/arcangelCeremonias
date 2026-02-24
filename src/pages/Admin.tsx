@@ -65,9 +65,18 @@ const DashboardOverview: React.FC<{ products: Product[], categories: Category[] 
                         </button>
                         <button
                             onClick={async () => {
-                                if (confirm('¿Reiniciar catálogo con imágenes reales?')) {
-                                    await seedCatalog();
-                                    window.location.reload();
+                                if (confirm('¿Reiniciar catálogo con imágenes reales? (Esto borrará los productos actuales)')) {
+                                    try {
+                                        const success = await seedCatalog();
+                                        if (success) {
+                                            alert('¡Catálogo reiniciado con éxito!');
+                                            window.location.reload();
+                                        } else {
+                                            alert('Error al reiniciar catálogo. Revisa la consola para más detalles.');
+                                        }
+                                    } catch (err) {
+                                        alert('Error crítico: ' + (err as Error).message);
+                                    }
                                 }
                             }}
                             className="p-6 border border-slate-100 bg-slate-50 hover:bg-chocolate hover:text-white transition-all text-left space-y-2 group"
