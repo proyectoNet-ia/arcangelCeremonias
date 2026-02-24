@@ -5,9 +5,13 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
     faPlus, faTrash, faEdit, faSave, faTimes,
     faImage, faImages, faChevronRight, faDiamond,
-    faBox, faUsers, faEye, faChartBar, faArrowUp
+    faBox, faUsers, faEye, faChartBar, faArrowUp,
+    faCog, faGlobe, faPhone, faMapMarkerAlt, faEnvelope
 } from '@fortawesome/free-solid-svg-icons';
+import { faWhatsapp, faFacebook, faInstagram } from '@fortawesome/free-brands-svg-icons';
 import { productService } from '@/services/productService';
+import { configService, SiteConfig } from '@/services/configService';
+import { heroService, HeroSlide } from '@/services/heroService';
 import { seedCatalog } from '@/services/seedData';
 import { Product, Category } from '@/types/product';
 import { AdminLayout } from '@/components/admin/AdminLayout';
@@ -495,6 +499,421 @@ const ProductsManager: React.FC<{
     );
 };
 
+// --- Hero Manager Component ---
+const HeroManager: React.FC = () => {
+    const [slides, setSlides] = useState<HeroSlide[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [editingSlide, setEditingSlide] = useState<Partial<HeroSlide> | null>(null);
+    const [isUploading, setIsUploading] = useState(false);
+
+    const fetchSlides = async () => {
+        try {
+            setLoading(true);
+            const data = await heroService.getSlides();
+            setSlides(data);
+        } catch (error) {
+            console.error('Error fetching slides:', error);
+            toast.error('Error al cargar slides');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => { fetchSlides(); }, []);
+
+    const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>, field: 'bg' | 'mobile') => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        try {
+            setIsUploading(true);
+            const url = await productService.uploadImage(file, 'hero');
+            if (field === 'bg') setEditingSlide(prev => ({ ...prev, bg_url: url }));
+            else setEditingSlide(prev => ({ ...prev, bg_mobile_url: url }));
+            toast.success('Imagen subida');
+        } catch (error) {
+            toast.error('Error al subir imagen');
+        } finally {
+            setIsUploading(false);
+        }
+    };
+
+    const handleSave = async () => {
+        if (!editingSlide?.title_1) return toast.error('Falta el título');
+        try {
+            await heroService.upsertSlide(editingSlide);
+            toast.success('Slide guardado');
+            setEditingSlide(null);
+            fetchSlides();
+        } catch (error) {
+            toast.error('Error al guardar');
+        }
+    };
+
+    const handleDelete = async (id: string) => {
+        if (!confirm('¿Eliminar este slide?')) return;
+        try {
+            await heroService.deleteSlide(id);
+            toast.success('Slide eliminado');
+            fetchSlides();
+        } catch (error) {
+            toast.error('Error al eliminar');
+        }
+    };
+
+    if (loading && slides.length === 0) return <div className="flex justify-center py-20"><div className="w-8 h-8 border-2 border-gold border-t-transparent rounded-full animate-spin" /></div>;
+
+    return (
+        <div className="space-y-8">
+            <div className="flex justify-between items-center bg-white p-6 border border-slate-200">
+                <h2 className="text-xl font-serif">Gestión de Hero Slider</h2>
+                <button
+                    onClick={() => setEditingSlide({
+                        title_1: '', title_2: '', subtitle: '', tag: '',
+                        bg_url: '', cta_label: 'Explorar', cta_link: '/catalogo',
+                        order_index: slides.length, is_active: true
+                    })}
+                    className="bg-gold text-chocolate px-6 py-3 text-[10px] uppercase tracking-widest font-bold hover:bg-chocolate hover:text-white transition-all shadow-lg"
+                >
+                    + Nuevo Slide
+                </button>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {slides.map(slide => (
+                    <motion.div key={slide.id} layout className="bg-white border border-slate-200 group overflow-hidden flex flex-col">
+                        <div className="relative aspect-[16/9] bg-slate-100 overflow-hidden">
+                            <img src={slide.bg_url} className="w-full h-full object-cover transition-transform group-hover:scale-105" />
+                            <div className="absolute top-2 left-2 bg-black/60 text-[8px] text-white px-2 py-1 uppercase tracking-widest">{slide.tag}</div>
+                        </div>
+                        <div className="p-6 flex-grow space-y-4">
+                            <div>
+                                <h3 className="font-serif text-lg">{slide.title_1} {slide.title_2}</h3>
+                                <p className="text-xs text-slate-400 line-clamp-2">{slide.subtitle}</p>
+                            </div>
+                            <div className="flex gap-2 pt-2">
+                                <button onClick={() => setEditingSlide(slide)} className="flex-grow py-3 border border-slate-100 text-[9px] uppercase font-bold tracking-widest hover:border-gold hover:text-gold transition-all">Editar</button>
+                                <button onClick={() => handleDelete(slide.id!)} className="px-4 py-3 border border-slate-100 text-red-300 hover:text-red-500 transition-all"><FontAwesomeIcon icon={faTrash} /></button>
+                            </div>
+                        </div>
+                    </motion.div>
+                ))}
+            </div>
+
+            <AnimatePresence>
+                {editingSlide && (
+                    <div className="fixed inset-0 z-[100] flex items-center justify-center p-6">
+                        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onClick={() => setEditingSlide(null)} />
+                        <motion.div initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} className="relative bg-white w-full max-w-4xl max-h-[90vh] overflow-y-auto shadow-2xl p-10 space-y-8">
+                            <div className="flex justify-between items-center">
+                                <h2 className="text-2xl font-serif">Editar Diapositiva</h2>
+                                <button onClick={() => setEditingSlide(null)} className="text-slate-300 hover:text-chocolate transition-colors"><FontAwesomeIcon icon={faTimes} className="text-xl" /></button>
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+                                <div className="space-y-6">
+                                    <div className="space-y-4">
+                                        <label className="text-[10px] uppercase tracking-widest font-bold text-slate-400">Contenido Textual</label>
+                                        <input type="text" placeholder="Tag (Ej: Colección 2026)" value={editingSlide.tag} onChange={e => setEditingSlide({ ...editingSlide, tag: e.target.value })} className="w-full p-4 border border-slate-100 outline-none text-sm" />
+                                        <div className="flex gap-2">
+                                            <input type="text" placeholder="Título 1" value={editingSlide.title_1} onChange={e => setEditingSlide({ ...editingSlide, title_1: e.target.value })} className="w-1/2 p-4 border border-slate-100 outline-none text-sm" />
+                                            <input type="text" placeholder="Título 2" value={editingSlide.title_2} onChange={e => setEditingSlide({ ...editingSlide, title_2: e.target.value })} className="w-1/2 p-4 border border-slate-100 outline-none text-sm" />
+                                        </div>
+                                        <textarea placeholder="Descripción / Subtítulo" value={editingSlide.subtitle} onChange={e => setEditingSlide({ ...editingSlide, subtitle: e.target.value })} rows={3} className="w-full p-4 border border-slate-100 outline-none text-sm resize-none" />
+                                    </div>
+                                    <div className="space-y-4">
+                                        <label className="text-[10px] uppercase tracking-widest font-bold text-slate-400">Botón de Acción (CTA)</label>
+                                        <div className="flex gap-2">
+                                            <input type="text" placeholder="Etiqueta Botón" value={editingSlide.cta_label} onChange={e => setEditingSlide({ ...editingSlide, cta_label: e.target.value })} className="w-1/2 p-4 border border-slate-100 outline-none text-sm" />
+                                            <input type="text" placeholder="Enlace (Ej: /catalogo)" value={editingSlide.cta_link} onChange={e => setEditingSlide({ ...editingSlide, cta_link: e.target.value })} className="w-1/2 p-4 border border-slate-100 outline-none text-sm" />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="space-y-6">
+                                    <div className="space-y-4">
+                                        <label className="text-[10px] uppercase tracking-widest font-bold text-slate-400">Imagen de Fondo (Desktop)</label>
+                                        <div className="aspect-video bg-slate-50 border-2 border-dashed border-slate-100 relative group overflow-hidden flex items-center justify-center">
+                                            {editingSlide.bg_url ? (
+                                                <>
+                                                    <img src={editingSlide.bg_url} className="w-full h-full object-cover" />
+                                                    <label className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer text-white text-[10px] font-bold uppercase tracking-widest">Cambiar<input type="file" className="hidden" accept="image/*" onChange={e => handleFileUpload(e, 'bg')} /></label>
+                                                </>
+                                            ) : (
+                                                <label className="cursor-pointer flex flex-col items-center gap-2 p-4 text-center">
+                                                    <FontAwesomeIcon icon={faImage} className="text-3xl text-slate-200" />
+                                                    <span className="text-[9px] uppercase font-bold text-slate-300">Subir imagen 16:9</span>
+                                                    <input type="file" className="hidden" accept="image/*" onChange={e => handleFileUpload(e, 'bg')} />
+                                                </label>
+                                            )}
+                                        </div>
+                                    </div>
+                                    <div className="space-y-4">
+                                        <label className="text-[10px] uppercase tracking-widest font-bold text-slate-400">Imagen Mobile (Vertical)</label>
+                                        <div className="aspect-[3/4] w-32 mx-auto bg-slate-50 border-2 border-dashed border-slate-100 relative group overflow-hidden flex items-center justify-center">
+                                            {editingSlide.bg_mobile_url ? (
+                                                <>
+                                                    <img src={editingSlide.bg_mobile_url} className="w-full h-full object-cover" />
+                                                    <label className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer text-white text-[10px] font-bold uppercase tracking-widest text-center">Cambiar<input type="file" className="hidden" accept="image/*" onChange={e => handleFileUpload(e, 'mobile')} /></label>
+                                                </>
+                                            ) : (
+                                                <label className="cursor-pointer flex flex-col items-center gap-2 p-4 text-center">
+                                                    <FontAwesomeIcon icon={faImage} className="text-2xl text-slate-200" />
+                                                    <span className="text-[8px] uppercase font-bold text-slate-300">Subir Vertical</span>
+                                                    <input type="file" className="hidden" accept="image/*" onChange={e => handleFileUpload(e, 'mobile')} />
+                                                </label>
+                                            )}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="flex gap-4 pt-10 border-t border-slate-100">
+                                <button onClick={() => setEditingSlide(null)} className="px-8 py-4 text-[10px] uppercase font-bold tracking-widest text-slate-400 hover:text-chocolate transition-colors border border-slate-100">Cerrar</button>
+                                <button onClick={handleSave} className="flex-grow bg-chocolate text-gold py-4 font-bold uppercase tracking-[0.2em] hover:bg-gold hover:text-chocolate transition-all">Guardar Slide Maestro</button>
+                            </div>
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
+        </div>
+    );
+};
+
+// --- Config Manager Component ---
+const ConfigManager: React.FC = () => {
+    const [config, setConfig] = useState<SiteConfig>({
+        company_name: '',
+        whatsapp: '',
+        phone: '',
+        email: '',
+        facebook_url: '',
+        instagram_url: '',
+        address: '',
+        google_maps_url: '',
+        office_hours: ''
+    });
+    const [loading, setLoading] = useState(true);
+    const [saving, setSaving] = useState(false);
+
+    useEffect(() => {
+        const load = async () => {
+            try {
+                const data = await configService.getConfig();
+                if (data) {
+                    // Normalizar los datos para evitar nulls que rompen React Inputs
+                    setConfig({
+                        company_name: data.company_name || '',
+                        whatsapp: data.whatsapp || '',
+                        phone: data.phone || '',
+                        email: data.email || '',
+                        facebook_url: data.facebook_url || '',
+                        instagram_url: data.instagram_url || '',
+                        address: data.address || '',
+                        google_maps_url: data.google_maps_url || '',
+                        office_hours: data.office_hours || ''
+                    });
+                }
+            } catch (error) {
+                console.error('Error loading config:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
+        load();
+    }, []);
+
+    const handleSave = async (e: React.FormEvent) => {
+        e.preventDefault();
+        try {
+            setSaving(true);
+            await configService.updateConfig(config);
+            toast.success('Configuración actualizada', {
+                style: { background: '#1e293b', color: '#fff', fontSize: '12px', fontWeight: 'bold' }
+            });
+        } catch (error) {
+            console.error('Save error:', error);
+            toast.error('Error al guardar configuración');
+        } finally {
+            setSaving(false);
+        }
+    };
+
+    if (loading) return <div className="flex justify-center py-20"><div className="w-8 h-8 border-2 border-gold border-t-transparent rounded-full animate-spin" /></div>;
+
+    return (
+        <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="max-w-4xl space-y-8"
+        >
+            <div className="bg-white p-8 border border-slate-200">
+                <div className="flex items-center gap-4 mb-8">
+                    <div className="w-10 h-10 bg-gold/10 text-gold flex items-center justify-center rounded-lg">
+                        <FontAwesomeIcon icon={faCog} />
+                    </div>
+                    <div>
+                        <h2 className="text-xl font-serif">Configuración General</h2>
+                        <p className="text-[10px] uppercase tracking-widest text-slate-400 font-bold">Datos de contacto y redes sociales globales</p>
+                    </div>
+                </div>
+
+                <form onSubmit={handleSave} className="space-y-10">
+                    {/* Basic Info */}
+                    <div className="space-y-6">
+                        <h3 className="text-[10px] uppercase tracking-widest font-bold text-gold border-b border-gold/10 pb-2">Información de Identidad</h3>
+                        <div className="grid grid-cols-1 gap-6">
+                            <div className="space-y-2">
+                                <label className="text-[10px] uppercase tracking-widest font-bold text-slate-400">Nombre de la Empresa</label>
+                                <div className="relative">
+                                    <FontAwesomeIcon icon={faGlobe} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300" />
+                                    <input
+                                        type="text"
+                                        value={config.company_name}
+                                        onChange={e => setConfig({ ...config, company_name: e.target.value })}
+                                        className="w-full p-4 pl-12 border border-slate-100 focus:border-gold outline-none text-sm"
+                                        placeholder="Ej. Arcángel Ceremonias"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Contact Info */}
+                    <div className="space-y-6">
+                        <h3 className="text-[10px] uppercase tracking-widest font-bold text-gold border-b border-gold/10 pb-2">Canales de Contacto</h3>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="space-y-2">
+                                <label className="text-[10px] uppercase tracking-widest font-bold text-slate-400">WhatsApp (Número 10 dig + prefijo)</label>
+                                <div className="relative">
+                                    <FontAwesomeIcon icon={faWhatsapp} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300" />
+                                    <input
+                                        type="text"
+                                        value={config.whatsapp}
+                                        onChange={e => setConfig({ ...config, whatsapp: e.target.value })}
+                                        className="w-full p-4 pl-12 border border-slate-100 focus:border-gold outline-none text-sm"
+                                        placeholder="Ej. 523521681197"
+                                    />
+                                </div>
+                            </div>
+                            <div className="space-y-2">
+                                <label className="text-[10px] uppercase tracking-widest font-bold text-slate-400">Teléfono Oficina</label>
+                                <div className="relative">
+                                    <FontAwesomeIcon icon={faPhone} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300" />
+                                    <input
+                                        type="text"
+                                        value={config.phone}
+                                        onChange={e => setConfig({ ...config, phone: e.target.value })}
+                                        className="w-full p-4 pl-12 border border-slate-100 focus:border-gold outline-none text-sm"
+                                        placeholder="Ej. 352 52 62502"
+                                    />
+                                </div>
+                            </div>
+                            <div className="space-y-2">
+                                <label className="text-[10px] uppercase tracking-widest font-bold text-slate-400">Correo Electrónico</label>
+                                <div className="relative">
+                                    <FontAwesomeIcon icon={faEnvelope} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300" />
+                                    <input
+                                        type="email"
+                                        value={config.email}
+                                        onChange={e => setConfig({ ...config, email: e.target.value })}
+                                        className="w-full p-4 pl-12 border border-slate-100 focus:border-gold outline-none text-sm"
+                                        placeholder="info@empresa.com"
+                                    />
+                                </div>
+                            </div>
+                            <div className="space-y-2">
+                                <label className="text-[10px] uppercase tracking-widest font-bold text-slate-400">Horarios</label>
+                                <div className="relative">
+                                    <input
+                                        type="text"
+                                        value={config.office_hours || ''}
+                                        onChange={e => setConfig({ ...config, office_hours: e.target.value })}
+                                        className="w-full p-4 border border-slate-100 focus:border-gold outline-none text-sm"
+                                        placeholder="Lunes a Viernes 9:00 - 18:00"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Social Media */}
+                    <div className="space-y-6">
+                        <h3 className="text-[10px] uppercase tracking-widest font-bold text-gold border-b border-gold/10 pb-2">Redes Sociales (URLs)</h3>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="space-y-2">
+                                <label className="text-[10px] uppercase tracking-widest font-bold text-slate-400">Facebook URL</label>
+                                <div className="relative">
+                                    <FontAwesomeIcon icon={faFacebook} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300" />
+                                    <input
+                                        type="text"
+                                        value={config.facebook_url}
+                                        onChange={e => setConfig({ ...config, facebook_url: e.target.value })}
+                                        className="w-full p-4 pl-12 border border-slate-100 focus:border-gold outline-none text-sm"
+                                        placeholder="https://facebook.com/..."
+                                    />
+                                </div>
+                            </div>
+                            <div className="space-y-2">
+                                <label className="text-[10px] uppercase tracking-widest font-bold text-slate-400">Instagram URL</label>
+                                <div className="relative">
+                                    <FontAwesomeIcon icon={faInstagram} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300" />
+                                    <input
+                                        type="text"
+                                        value={config.instagram_url}
+                                        onChange={e => setConfig({ ...config, instagram_url: e.target.value })}
+                                        className="w-full p-4 pl-12 border border-slate-100 focus:border-gold outline-none text-sm"
+                                        placeholder="https://instagram.com/..."
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Physical Address */}
+                    <div className="space-y-6">
+                        <h3 className="text-[10px] uppercase tracking-widest font-bold text-gold border-b border-gold/10 pb-2">Ubicación Física</h3>
+                        <div className="grid grid-cols-1 gap-6">
+                            <div className="space-y-2">
+                                <label className="text-[10px] uppercase tracking-widest font-bold text-slate-400">Dirección Completa</label>
+                                <div className="relative">
+                                    <FontAwesomeIcon icon={faMapMarkerAlt} className="absolute left-4 top-4 text-slate-300" />
+                                    <textarea
+                                        value={config.address}
+                                        onChange={e => setConfig({ ...config, address: e.target.value })}
+                                        rows={3}
+                                        className="w-full p-4 pl-12 border border-slate-100 focus:border-gold outline-none text-sm"
+                                        placeholder="Calle, Número, Colonia, CP, Ciudad..."
+                                    />
+                                </div>
+                            </div>
+                            <div className="space-y-2">
+                                <label className="text-[10px] uppercase tracking-widest font-bold text-slate-400">Google Maps URL (Iframe o Enlace)</label>
+                                <input
+                                    type="text"
+                                    value={config.google_maps_url}
+                                    onChange={e => setConfig({ ...config, google_maps_url: e.target.value })}
+                                    className="w-full p-4 border border-slate-100 focus:border-gold outline-none text-sm"
+                                    placeholder="https://goo.gl/maps/..."
+                                />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="pt-6 border-t border-slate-100">
+                        <button
+                            type="submit"
+                            disabled={saving}
+                            className="bg-gold text-chocolate px-12 py-5 text-[10px] uppercase tracking-[0.3em] font-bold shadow-xl hover:bg-chocolate hover:text-white transition-all disabled:opacity-50"
+                        >
+                            {saving ? 'Guardando Cambios...' : 'Guardar Configuración Global'}
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </motion.div>
+    );
+};
+
 // --- Main Admin Entry Point ---
 const Admin: React.FC = () => {
     const [products, setProducts] = useState<Product[]>([]);
@@ -526,6 +945,8 @@ const Admin: React.FC = () => {
             <Routes>
                 <Route index element={<DashboardOverview products={products} categories={categories} />} />
                 <Route path="productos" element={<ProductsManager products={products} categories={categories} refresh={fetchData} />} />
+                <Route path="hero" element={<HeroManager />} />
+                <Route path="configuracion" element={<ConfigManager />} />
                 <Route path="*" element={<DashboardOverview products={products} categories={categories} />} />
             </Routes>
         </AdminLayout>

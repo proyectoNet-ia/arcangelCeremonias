@@ -3,9 +3,11 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faWhatsapp } from '@fortawesome/free-brands-svg-icons';
 import { faChevronUp } from '@fortawesome/free-solid-svg-icons';
+import { useConfig } from '@/context/ConfigContext';
 
 export const FloatingActions: React.FC = () => {
     const [isVisible, setIsVisible] = useState(false);
+    const { config } = useConfig();
 
     // Show button when page is scrolled down
     const toggleVisibility = () => {
@@ -28,7 +30,7 @@ export const FloatingActions: React.FC = () => {
         return () => window.removeEventListener('scroll', toggleVisibility);
     }, []);
 
-    const whatsappNumber = "523521681197";
+    const whatsappNumber = config?.whatsapp || "523521681197";
     const whatsappMessage = encodeURIComponent("Hola, me gustaría recibir más información sobre sus servicios.");
 
     return (

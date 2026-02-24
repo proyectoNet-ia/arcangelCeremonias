@@ -16,6 +16,7 @@ import {
     getViewedProductSlugs,
     clearAllHistory
 } from '@/services/cookieService';
+import { useConfig } from '@/context/ConfigContext';
 
 const ProductDetail: React.FC = () => {
     const { slug } = useParams<{ slug: string }>();
@@ -27,6 +28,9 @@ const ProductDetail: React.FC = () => {
     const [selectedVariant, setSelectedVariant] = useState<number | null>(null);
     const [relatedProducts, setRelatedProducts] = useState<Product[]>([]);
     const [historyProducts, setHistoryProducts] = useState<Product[]>([]);
+    const { config } = useConfig();
+    const whatsapp = config?.whatsapp || '523521681197';
+    const phone = config?.phone || '352 52 62502';
 
     useEffect(() => {
         const fetchProduct = async () => {
@@ -106,7 +110,7 @@ const ProductDetail: React.FC = () => {
         <div className="min-h-screen bg-cream font-sans text-chocolate selection:bg-gold/20">
             <Header />
 
-            <main className="pt-32 md:pt-48 pb-20 px-6 md:px-12 max-w-[1600px] mx-auto">
+            <main className="pt-28 md:pt-48 pb-20 px-6 md:px-12 max-w-[1600px] mx-auto">
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 xl:gap-20">
 
                     {/* Left: Image Gallery — slides in from left */}
@@ -117,7 +121,7 @@ const ProductDetail: React.FC = () => {
                         transition={{ duration: 0.8, ease: 'easeOut' }}
                     >
                         <div
-                            className="relative w-full h-[650px] md:h-[800px] lg:h-[950px] overflow-hidden bg-white shadow-md cursor-zoom-in rounded-sm"
+                            className="relative w-full h-[500px] md:h-[800px] lg:h-[950px] overflow-hidden bg-white shadow-md cursor-zoom-in rounded-sm"
                             onMouseMove={handleMouseMove}
                         >
                             <AnimatePresence mode="wait">
@@ -322,12 +326,12 @@ const ProductDetail: React.FC = () => {
 ${sizeDetails}
 
 Deseo recibir más información por favor.`;
-                                        window.open(`https://wa.me/523521681197?text=${encodeURIComponent(message)}`, '_blank');
+                                        window.open(`https://wa.me/${whatsapp}?text=${encodeURIComponent(message)}`, '_blank');
                                     }}
-                                    className="flex-grow bg-[#8E735B] text-cream py-5 md:py-6 px-4 flex items-center justify-center gap-3 md:gap-4 group transition-all duration-500 hover:bg-gold hover:shadow-2xl hover:shadow-gold/20"
+                                    className="flex-grow bg-[#8E735B] text-cream py-4 md:py-6 px-4 flex items-center justify-center gap-3 md:gap-4 group transition-all duration-500 hover:bg-gold hover:shadow-2xl hover:shadow-gold/20"
                                 >
                                     <FontAwesomeIcon icon={faWhatsapp} className="text-lg md:text-xl group-hover:scale-110 transition-transform duration-300" />
-                                    <span className="text-[10px] md:text-xs uppercase tracking-[0.2em] md:tracking-[0.4em] font-medium text-center leading-tight">¡Me interesa el producto!</span>
+                                    <span className="text-[10px] md:text-xs uppercase tracking-[0.2em] md:tracking-[0.4em] font-medium text-center leading-tight">Me interesa el producto</span>
                                 </motion.button>
 
                                 <motion.button
@@ -345,7 +349,7 @@ Deseo recibir más información por favor.`;
                                             alert('¡Enlace copiado al portapapeles!');
                                         }
                                     }}
-                                    className="w-20 bg-white border border-gold/20 text-chocolate flex items-center justify-center hover:bg-gold hover:text-white transition-all duration-500 hover:shadow-xl group"
+                                    className="w-16 md:w-20 bg-white border border-gold/20 text-chocolate flex items-center justify-center hover:bg-gold hover:text-white transition-all duration-500 hover:shadow-xl group"
                                     title="Compartir"
                                 >
                                     <FontAwesomeIcon icon={faShareNodes} className="text-lg group-hover:scale-110 transition-transform" />
@@ -381,8 +385,8 @@ Deseo recibir más información por favor.`;
                             >
                                 {/* Header */}
                                 <div className="space-y-1">
-                                    <span className="text-[9px] uppercase tracking-[0.4em] text-gold/50 font-bold">¿Necesitas ayuda?</span>
-                                    <h3 className="text-sm uppercase tracking-[0.25em] font-bold text-chocolate/80 font-sans">Contáctanos directamente</h3>
+                                    <span className="text-[9px] uppercase tracking-[0.4em] text-gold/50 font-bold">Ventas al Mayoreo</span>
+                                    <h3 className="text-sm uppercase tracking-[0.25em] font-bold text-chocolate/80 font-sans">Atención a Distribuidores</h3>
                                 </div>
 
                                 {/* Two contact buttons */}
@@ -391,7 +395,7 @@ Deseo recibir más información por favor.`;
                                     <motion.button
                                         whileHover={{ scale: 1.03, y: -2, boxShadow: '0 10px 30px rgba(139,100,60,0.12)' }}
                                         whileTap={{ scale: 0.97 }}
-                                        onClick={() => window.open('tel:+523525262502')}
+                                        onClick={() => window.open(`tel:${phone.replace(/\s+/g, '')}`)}
                                         className="flex flex-col items-center justify-center gap-2 py-5 bg-white border border-gold/15 text-chocolate hover:border-gold hover:text-gold transition-all duration-400 group"
                                     >
                                         <FontAwesomeIcon icon={faPhone} className="text-base text-gold group-hover:scale-110 transition-transform duration-300" />
@@ -402,7 +406,7 @@ Deseo recibir más información por favor.`;
                                     <motion.button
                                         whileHover={{ scale: 1.03, y: -2, boxShadow: '0 10px 30px rgba(37,211,102,0.15)' }}
                                         whileTap={{ scale: 0.97 }}
-                                        onClick={() => window.open(`https://wa.me/523521681197?text=Hola, tengo una consulta sobre el modelo: ${product.name}`, '_blank')}
+                                        onClick={() => window.open(`https://wa.me/${whatsapp}?text=Hola, tengo una consulta sobre el modelo: ${product.name}`, '_blank')}
                                         className="flex flex-col items-center justify-center gap-2 py-5 bg-white border border-gold/15 text-chocolate hover:border-[#25D366]/50 hover:text-[#25D366] transition-all duration-400 group"
                                     >
                                         <FontAwesomeIcon icon={faWhatsapp} className="text-base text-[#25D366] group-hover:scale-110 transition-transform duration-300" />
@@ -544,7 +548,7 @@ Deseo recibir más información por favor.`;
                                 whileHover={{ scale: 1.03, boxShadow: '0 20px 60px rgba(197,168,112,0.3)' }}
                                 whileTap={{ scale: 0.97 }}
                                 onClick={() => window.open(
-                                    `https://wa.me/523521681197?text=Hola, me interesa el producto: ${product.name}. ¿Podrían asesorarme?`,
+                                    `https://wa.me/${whatsapp}?text=Hola, me interesa el producto: ${product.name}. ¿Podrían asesorarme?`,
                                     '_blank'
                                 )}
                                 className="flex-1 bg-gold text-chocolate py-5 px-8 flex items-center justify-center gap-4 text-[10px] uppercase tracking-[0.35em] font-bold transition-all duration-500 group"
@@ -557,7 +561,7 @@ Deseo recibir más información por favor.`;
                             <motion.button
                                 whileHover={{ scale: 1.03 }}
                                 whileTap={{ scale: 0.97 }}
-                                onClick={() => window.open('tel:+523525262502')}
+                                onClick={() => window.open(`tel:${phone.replace(/\s+/g, '')}`)}
                                 className="flex-1 border border-cream/20 text-cream py-5 px-8 flex items-center justify-center gap-4 text-[10px] uppercase tracking-[0.35em] font-bold hover:border-gold hover:text-gold transition-all duration-500 group"
                             >
                                 <FontAwesomeIcon icon={faPhone} className="text-sm group-hover:rotate-12 transition-transform duration-300" />
@@ -608,7 +612,7 @@ Deseo recibir más información por favor.`;
                                     Explorar Toda la Colección
                                 </Link>
                             </div>
-                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
+                            <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 md:gap-10">
                                 {relatedProducts.map((p, idx) => (
                                     <ProductCard key={p.id} product={p} index={idx} />
                                 ))}
@@ -634,7 +638,7 @@ Deseo recibir más información por favor.`;
                                     Limpiar Historial
                                 </button>
                             </div>
-                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
+                            <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 md:gap-10">
                                 {historyProducts.map((p, idx) => (
                                     <ProductCard key={p.id} product={p} index={idx} />
                                 ))}

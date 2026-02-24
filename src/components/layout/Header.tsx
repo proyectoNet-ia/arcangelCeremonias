@@ -18,6 +18,7 @@ import {
 import { faFacebook, faInstagram, faWhatsapp } from '@fortawesome/free-brands-svg-icons';
 import { Logo } from '@/components/Logo';
 import { Megamenu } from './Megamenu';
+import { useConfig } from '@/context/ConfigContext';
 
 interface HeaderProps {
     variant?: 'light' | 'dark';
@@ -31,6 +32,13 @@ export const Header: React.FC<HeaderProps> = ({ variant = 'light' }) => {
     const [categories, setCategories] = useState<any[]>([]);
     const location = useLocation();
     const navigate = useNavigate();
+    const { config } = useConfig();
+
+    const whatsapp = config?.whatsapp || '523521681197';
+    const phone = config?.phone || '352 52 62502';
+    const email = config?.email || 'ventas@arcangelceremonias.com';
+    const facebook = config?.facebook_url || 'https://facebook.com/arcangel.ceremonias';
+    const instagram = config?.instagram_url || 'https://instagram.com/ceremonias.arcangel';
 
     const [closeTimeout, setCloseTimeout] = useState<any>(null);
 
@@ -115,20 +123,20 @@ export const Header: React.FC<HeaderProps> = ({ variant = 'light' }) => {
             <div className="hidden md:block bg-chocolate text-cream py-2 px-12 border-b border-gold/10">
                 <div className="max-w-[1600px] mx-auto flex justify-between items-center text-[9px] uppercase tracking-[0.2em] font-medium">
                     <div className="flex gap-8">
-                        <a href="https://wa.me/523521681197" target="_blank" rel="noopener noreferrer" className="hover:text-gold transition-colors flex items-center gap-2">
-                            <FontAwesomeIcon icon={faWhatsapp} className="text-gold text-[10px]" /> 352 168 1197
+                        <a href={`https://wa.me/${whatsapp}`} target="_blank" rel="noopener noreferrer" className="hover:text-gold transition-colors flex items-center gap-2">
+                            <FontAwesomeIcon icon={faWhatsapp} className="text-gold text-[10px]" /> {whatsapp.replace(/(\d{2})(\d{3})(\d{3})(\d{4})/, '+$1 $2 $3 $4')}
                         </a>
-                        <a href="tel:+523525262502" className="hover:text-gold transition-colors flex items-center gap-2">
-                            <FontAwesomeIcon icon={faPhone} className="text-gold text-[10px]" /> Oficina: 352 52 62502
+                        <a href={`tel:${phone.replace(/\s+/g, '')}`} className="hover:text-gold transition-colors flex items-center gap-2">
+                            <FontAwesomeIcon icon={faPhone} className="text-gold text-[10px]" /> Oficina: {phone}
                         </a>
                     </div>
                     <div className="flex items-center gap-6">
                         <span className="text-gold/80">Síguenos:</span>
                         <div className="flex gap-4">
-                            <a href="https://facebook.com/arcangel.ceremonias" target="_blank" rel="noopener noreferrer" className="hover:text-gold transition-all duration-300 hover:scale-125">
+                            <a href={facebook} target="_blank" rel="noopener noreferrer" className="hover:text-gold transition-all duration-300 hover:scale-125">
                                 <FontAwesomeIcon icon={faFacebook} className="text-[12px]" />
                             </a>
-                            <a href="https://instagram.com/ceremonias.arcangel" target="_blank" rel="noopener noreferrer" className="hover:text-gold transition-all duration-300 hover:scale-125">
+                            <a href={instagram} target="_blank" rel="noopener noreferrer" className="hover:text-gold transition-all duration-300 hover:scale-125">
                                 <FontAwesomeIcon icon={faInstagram} className="text-[12px]" />
                             </a>
                         </div>
@@ -266,20 +274,20 @@ export const Header: React.FC<HeaderProps> = ({ variant = 'light' }) => {
                         <div className="mt-12 pt-8 border-t border-white/5 space-y-6">
                             <p className="text-[9px] uppercase tracking-[0.3em] text-gold/50 font-semibold">Atención al Cliente</p>
                             <div className="space-y-4">
-                                <a href="https://wa.me/523521681197" target="_blank" rel="noopener noreferrer" className="flex items-center gap-4 text-cream/70 text-xs hover:text-gold transition-colors">
+                                <a href={`https://wa.me/${whatsapp}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-4 text-cream/70 text-xs hover:text-gold transition-colors">
                                     <FontAwesomeIcon icon={faWhatsapp} className="text-gold w-4" />
-                                    <span>Ventas: 352 168 1197</span>
+                                    <span>Ventas: {whatsapp.replace(/(\d{2})(\d{3})(\d{3})(\d{4})/, '+$1 $2 $3 $4')}</span>
                                 </a>
-                                <a href="tel:+523525262502" className="flex items-center gap-4 text-cream/70 text-xs hover:text-gold transition-colors">
+                                <a href={`tel:${phone.replace(/\s+/g, '')}`} className="flex items-center gap-4 text-cream/70 text-xs hover:text-gold transition-colors">
                                     <FontAwesomeIcon icon={faPhone} className="text-gold w-4" />
-                                    <span>Oficina: 352 52 62502</span>
+                                    <span>Oficina: {phone}</span>
                                 </a>
-                                <a href="mailto:ventas@arcangelceremonias.com" className="flex items-center gap-4 text-cream/70 text-xs hover:text-gold transition-colors">
+                                <a href={`mailto:${email}`} className="flex items-center gap-4 text-cream/70 text-xs hover:text-gold transition-colors">
                                     <FontAwesomeIcon icon={faEnvelope} className="text-gold w-4" />
-                                    <span>ventas@arcangelceremonias.com</span>
+                                    <span>{email}</span>
                                 </a>
                                 <a
-                                    href="https://wa.me/523521681197"
+                                    href={`https://wa.me/${whatsapp}`}
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     className="mt-6 w-full py-4 bg-gold text-chocolate font-bold text-[10px] uppercase tracking-[0.3em] flex items-center justify-center gap-3 shadow-xl hover:bg-cream transition-all duration-500 active:scale-95"

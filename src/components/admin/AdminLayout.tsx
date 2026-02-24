@@ -27,8 +27,9 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
         { name: 'Dashboard', path: '/admin', icon: faChartLine },
         { name: 'Productos', path: '/admin/productos', icon: faBox },
         { name: 'Categorías', path: '/admin/categorias', icon: faTags },
+        { name: 'Hero Slider', path: '/admin/hero', icon: faImage },
         { name: 'Galería Media', path: '/admin/galeria', icon: faImage },
-        { name: 'Personalización', path: '/admin/estilo', icon: faPalette },
+        { name: 'Configuración', path: '/admin/configuracion', icon: faPalette },
     ];
 
     return (
@@ -59,8 +60,8 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
                                 key={item.name}
                                 to={item.path}
                                 className={`flex items-center gap-4 p-3 rounded-lg transition-all duration-200 group ${isActive
-                                        ? 'bg-gold text-chocolate'
-                                        : 'hover:bg-white/5 text-slate-400'
+                                    ? 'bg-gold text-chocolate'
+                                    : 'hover:bg-white/5 text-slate-400'
                                     }`}
                                 title={!isSidebarOpen ? item.name : ''}
                             >

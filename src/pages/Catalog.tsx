@@ -155,7 +155,7 @@ const Catalog: React.FC = () => {
             <Header />
 
             {/* --- HERO SECTION --- */}
-            <section className="pt-40 md:pt-52 pb-20 px-6 md:px-12 max-w-[1600px] mx-auto">
+            <section className="pt-32 md:pt-48 pb-20 px-6 md:px-12 max-w-[1600px] mx-auto">
                 <div className="flex flex-col gap-12 mb-16">
                     {/* TOP ROW: LOGO/STATUS & SEARCH */}
                     <div className="flex flex-col md:flex-row md:items-start justify-between gap-6">
@@ -163,7 +163,7 @@ const Catalog: React.FC = () => {
                             <span className="block text-[10px] uppercase tracking-[0.4em] text-gold font-semibold">
                                 Ceremonias que se visten de elegancia
                             </span>
-                            <h1 className="text-5xl md:text-8xl font-serif leading-[1.1]">
+                            <h1 className="text-4xl md:text-8xl font-serif leading-[1.1]">
                                 Nuestro Catálogo <br />
                                 <span className="italic text-gold/80 font-light">Editorial</span>
                             </h1>
@@ -280,7 +280,7 @@ const Catalog: React.FC = () => {
                 </div>
 
                 {/* --- PRODUCT GRID --- */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-8 gap-y-16">
+                <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-4 md:gap-x-8 gap-y-10 md:gap-y-16">
                     <AnimatePresence mode='popLayout'>
                         {loading ? (
                             // SKELETON LOADERS

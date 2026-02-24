@@ -5,8 +5,20 @@ import { faFacebook, faInstagram, faWhatsapp } from '@fortawesome/free-brands-sv
 import { faUsers, faLocationDot, faPhone, faShareNodes, faBriefcase, faArrowUpRightFromSquare } from '@fortawesome/free-solid-svg-icons';
 import { Logo } from '@/components/Logo';
 import { RevealOnScroll } from '@/components/common/RevealOnScroll';
+import { useConfig } from '@/context/ConfigContext';
 
 export const Footer: React.FC = () => {
+    const { config } = useConfig();
+
+    // Default values if config is not yet loaded
+    const whatsapp = config?.whatsapp || '523521681197';
+    const phone = config?.phone || '352 52 62502';
+    const email = config?.email || 'ventas@arcangelceremonias.com';
+    const facebook = config?.facebook_url || 'https://www.facebook.com/arcangel.ceremonias/';
+    const instagram = config?.instagram_url || 'https://www.instagram.com/ceremonias.arcangel/';
+    const address = config?.address || 'Igualdad #200, Ejido de Potrerillos, La Piedad, Michoacán, México';
+    const companyName = config?.company_name || 'Arcángel Ceremonias';
+
     return (
         <footer className="bg-chocolate text-cream py-24 px-6 md:px-12 border-t border-gold/10">
             <div className="max-w-[1600px] mx-auto">
@@ -41,10 +53,8 @@ export const Footer: React.FC = () => {
                             {/* Dirección */}
                             <div className="flex flex-col gap-2">
                                 <span className="text-[8px] text-gold/50 uppercase tracking-[0.3em]">Dirección</span>
-                                <p className="text-cream/60 uppercase tracking-[0.15em] leading-relaxed">
-                                    Igualdad #200<br />
-                                    Ejido de Potrerillos<br />
-                                    La Piedad, Michoacán, México
+                                <p className="text-cream/60 uppercase tracking-[0.15em] leading-relaxed whitespace-pre-line">
+                                    {address}
                                 </p>
                             </div>
 
@@ -88,15 +98,17 @@ export const Footer: React.FC = () => {
                         <div className="space-y-4 text-cream/60 text-[10px] md:text-xs uppercase tracking-[0.2em] font-medium">
                             <div className="flex flex-col gap-2">
                                 <span className="text-[8px] text-gold/50">Call Center / WhatsApp</span>
-                                <a href="https://wa.me/523521681197" className="text-cream hover:text-gold transition-colors duration-300">352 168 1197</a>
+                                <a href={`https://wa.me/${whatsapp}`} className="text-cream hover:text-gold transition-colors duration-300">
+                                    {whatsapp.replace(/(\d{2})(\d{3})(\d{3})(\d{4})/, '+$1 $2 $3 $4')}
+                                </a>
                             </div>
                             <div className="flex flex-col gap-2">
                                 <span className="text-[8px] text-gold/50">Oficina</span>
-                                <a href="tel:+523525262502" className="text-cream hover:text-gold transition-colors duration-300">352 52 62502</a>
+                                <a href={`tel:${phone.replace(/\s+/g, '')}`} className="text-cream hover:text-gold transition-colors duration-300">{phone}</a>
                             </div>
                             <div className="flex flex-col gap-2 pt-2">
                                 <span className="text-[8px] text-gold/50">Email</span>
-                                <a href="mailto:ventas@arcangelceremonias.com" className="text-cream hover:text-gold transition-colors duration-300 lowercase tracking-widest">ventas@arcangelceremonias.com</a>
+                                <a href={`mailto:${email}`} className="text-cream hover:text-gold transition-colors duration-300 lowercase tracking-widest">{email}</a>
                             </div>
                         </div>
                     </RevealOnScroll>
@@ -111,7 +123,7 @@ export const Footer: React.FC = () => {
                         </div>
                         <div className="flex gap-8 items-center">
                             <a
-                                href="https://www.facebook.com/arcangel.ceremonias/"
+                                href={facebook}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="text-cream/40 hover:text-gold transition-all duration-300 hover:-translate-y-1"
@@ -120,7 +132,7 @@ export const Footer: React.FC = () => {
                                 <FontAwesomeIcon icon={faFacebook} className="text-2xl" />
                             </a>
                             <a
-                                href="https://www.instagram.com/ceremonias.arcangel/"
+                                href={instagram}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="text-cream/40 hover:text-gold transition-all duration-300 hover:-translate-y-1"
@@ -129,7 +141,7 @@ export const Footer: React.FC = () => {
                                 <FontAwesomeIcon icon={faInstagram} className="text-2xl" />
                             </a>
                             <a
-                                href="https://wa.me/523521681197"
+                                href={`https://wa.me/${whatsapp}`}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="text-cream/40 hover:text-gold transition-all duration-300 hover:-translate-y-1"
@@ -149,7 +161,7 @@ export const Footer: React.FC = () => {
 
                 {/* ── Copyright bar ── */}
                 <div className="mt-10 pt-8 border-t border-gold/5 flex flex-col md:flex-row justify-between items-center gap-6 text-[8px] md:text-[9px] uppercase tracking-[0.3em] font-medium text-cream/30">
-                    <p>© 2026 Arcángel Ceremonias. Todos los derechos reservados.</p>
+                    <p>© {new Date().getFullYear()} {companyName}. Todos los derechos reservados.</p>
                     <div className="flex gap-8">
                         <Link to="/admin" className="hover:text-gold transition-colors">Admin</Link>
                         <Link to="#" className="hover:text-gold transition-colors">Términos & Condiciones</Link>

@@ -12,13 +12,15 @@ import { Footer } from '@/components/layout/Footer';
 import { RevealOnScroll } from '@/components/common/RevealOnScroll';
 import { ProductCard } from '@/components/catalog/ProductCard';
 import { productService } from '@/services/productService';
+import { heroService, HeroSlide } from '@/services/heroService';
 import { Product } from '@/types/product';
+import { useConfig } from '@/context/ConfigContext';
 import bgDesktop from '@/assets/fondo-horizontal.jpeg';
 import bgMobile from '@/assets/fondo-movil.jpg';
 import bgDesktop2 from '@/assets/fondo-pc.jpg';
 
-// ─── Hero Slides ────────────────────────────────────────────────────────────
-const slides = [
+// ─── Static Hero Slides (Fallback) ───────────────────────────────────────────
+const staticSlides = [
     {
         id: 0,
         bg: bgDesktop,
@@ -73,13 +75,47 @@ const Home: React.FC = () => {
     const [activeSlide, setActiveSlide] = useState(0);
     const [products, setProducts] = useState<Product[]>([]);
     const [loadingProducts, setLoadingProducts] = useState(true);
+    const [slides, setSlides] = useState<any[]>(staticSlides);
+    const { config } = useConfig();
+
+    const whatsapp = config?.whatsapp || '523521681197';
+    const phone = config?.phone || '352 52 62502';
+    const facebook = config?.facebook_url || 'https://www.facebook.com/arcangel.ceremonias/';
+    const instagram = config?.instagram_url || 'https://www.instagram.com/ceremonias.arcangel/';
 
     // Auto-advance slider
     useEffect(() => {
+        if (slides.length <= 1) return;
         const timer = setInterval(() => {
             setActiveSlide(prev => (prev + 1) % slides.length);
         }, 6000);
         return () => clearInterval(timer);
+    }, [slides.length]);
+
+    // Fetch Hero Slides from DB
+    useEffect(() => {
+        const loadHero = async () => {
+            try {
+                const data = await heroService.getSlides();
+                if (data && data.length > 0) {
+                    const mapped = data.map(s => ({
+                        id: s.id,
+                        bg: s.bg_url,
+                        bgMobile: s.bg_mobile_url || s.bg_url,
+                        tag: s.tag,
+                        title: [s.title_1, s.title_2 || ''],
+                        subtitle: s.subtitle,
+                        cta: { label: s.cta_label, to: s.cta_link },
+                        align: 'left' as const
+                    }));
+                    setSlides(mapped);
+                    setActiveSlide(0); // Reset for safety
+                }
+            } catch (e) {
+                console.error("Error loading dynamic slides:", e);
+            }
+        };
+        loadHero();
     }, []);
 
     // Fetch featured products (first 8)
@@ -97,10 +133,10 @@ const Home: React.FC = () => {
         load();
     }, []);
 
-    const prev = useCallback(() => setActiveSlide(p => (p - 1 + slides.length) % slides.length), []);
-    const next = useCallback(() => setActiveSlide(p => (p + 1) % slides.length), []);
+    const prev = useCallback(() => setActiveSlide(p => (p - 1 + slides.length) % slides.length), [slides.length]);
+    const next = useCallback(() => setActiveSlide(p => (p + 1) % slides.length), [slides.length]);
 
-    const slide = slides[activeSlide];
+    const slide = slides[activeSlide] || slides[0];
     const alignClass = 'items-start text-left';
 
     return (
@@ -110,7 +146,7 @@ const Home: React.FC = () => {
             {/* ════════════════════════════════════════
                 1. HERO SLIDER
             ════════════════════════════════════════ */}
-            <section className="relative h-[100dvh] w-full overflow-hidden">
+            <section className="relative h-[140vh] w-full overflow-hidden">
 
                 {/* Background slides */}
                 <AnimatePresence mode="sync">
@@ -133,10 +169,10 @@ const Home: React.FC = () => {
                             style={{ backgroundImage: `url(${slide.bgMobile})` }}
                         />
                         {/* Overlay layers */}
-                        <div className="absolute inset-0 bg-black/50" />
-                        <div className="absolute inset-0 bg-chocolate/35 mix-blend-multiply" />
-                        <div className="absolute inset-0 bg-gradient-to-t from-chocolate/90 via-transparent to-chocolate/30" />
-                        <div className="absolute inset-0 bg-gradient-to-r from-chocolate/70 via-transparent to-transparent hidden md:block" />
+                        <div className="absolute inset-0 bg-black/40 md:bg-black/50" />
+                        <div className="absolute inset-0 bg-chocolate/30 md:bg-chocolate/35 mix-blend-multiply" />
+                        <div className="absolute inset-0 bg-gradient-to-t from-chocolate/95 via-chocolate/20 to-chocolate/40 md:from-chocolate/90 md:via-transparent md:to-chocolate/30" />
+                        <div className="absolute inset-0 bg-gradient-to-r from-chocolate/80 via-transparent to-transparent hidden md:block" />
                     </motion.div>
                 </AnimatePresence>
 
@@ -147,10 +183,10 @@ const Home: React.FC = () => {
                 {/* Slide content */}
                 <div className="relative z-10 h-full flex flex-col">
                     {/* Spacer for header */}
-                    <div className="h-32 md:h-48 shrink-0" />
+                    <div className="h-40 md:h-48 shrink-0" />
 
                     {/* Text content */}
-                    <div className={`flex-grow flex flex-col justify-center px-8 md:px-16 lg:px-24 xl:px-32 ${alignClass}`}>
+                    <div className={`flex-grow flex flex-col justify-center px-6 md:px-16 lg:px-24 xl:px-32 ${alignClass}`}>
                         <AnimatePresence mode="wait">
                             <motion.div
                                 key={`content-${activeSlide}`}
@@ -175,15 +211,15 @@ const Home: React.FC = () => {
 
                                 {/* Title */}
                                 <motion.h1
-                                    className="font-serif text-cream leading-[0.9] tracking-tight"
+                                    className="font-serif text-cream leading-[0.95] tracking-tight"
                                     initial={{ opacity: 0, y: 20 }}
                                     animate={{ opacity: 1, y: 0 }}
                                     transition={{ delay: 0.2 }}
                                 >
-                                    <span className="block text-5xl md:text-7xl lg:text-8xl xl:text-9xl uppercase">
+                                    <span className="block text-[2.75rem] xs:text-5xl md:text-7xl lg:text-8xl xl:text-9xl uppercase">
                                         {slide.title[0]}
                                     </span>
-                                    <span className="block text-5xl md:text-7xl lg:text-8xl xl:text-9xl uppercase text-gold/80">
+                                    <span className="block text-[2.75rem] xs:text-5xl md:text-7xl lg:text-8xl xl:text-9xl uppercase text-gold/80">
                                         {slide.title[1]}
                                     </span>
                                 </motion.h1>
@@ -214,7 +250,7 @@ const Home: React.FC = () => {
                                 >
                                     <Link
                                         to={slide.cta.to}
-                                        className="inline-flex items-center gap-4 bg-gold text-chocolate px-8 py-4 text-[10px] uppercase tracking-[0.4em] font-bold hover:bg-cream transition-all duration-500 hover:shadow-2xl hover:shadow-gold/30 group"
+                                        className="inline-flex items-center gap-4 bg-gold text-chocolate px-7 py-3.5 md:px-8 md:py-4 text-[10px] uppercase tracking-[0.4em] font-bold hover:bg-cream transition-all duration-500 hover:shadow-2xl hover:shadow-gold/30 group"
                                     >
                                         {slide.cta.label}
                                         <FontAwesomeIcon icon={faChevronRight} className="text-[8px] group-hover:translate-x-1 transition-transform" />
@@ -225,7 +261,7 @@ const Home: React.FC = () => {
                     </div>
 
                     {/* Bottom controls */}
-                    <div className="relative z-10 px-8 md:px-16 pb-10 flex items-center justify-between text-cream/60">
+                    <div className="relative z-10 px-6 md:px-16 pb-8 md:pb-10 flex items-center justify-between text-cream/60">
                         {/* Slide indicators */}
                         <div className="flex items-center gap-3">
                             {slides.map((_, i) => (
@@ -299,7 +335,7 @@ const Home: React.FC = () => {
                             ))}
                         </div>
                     ) : (
-                        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 md:gap-10">
+                        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-10">
                             {products.map((product, idx) => (
                                 <ProductCard key={product.id} product={product} index={idx} />
                             ))}
@@ -358,13 +394,13 @@ const Home: React.FC = () => {
                         viewport={{ once: true }}
                         transition={{ duration: 0.7, delay: 0.2 }}
                     >
-                        <span className="text-[9px] uppercase tracking-[0.6em] text-gold/50 font-bold block">¿Tienes alguna duda?</span>
+                        <span className="text-[9px] uppercase tracking-[0.6em] text-gold/50 font-bold block">Socios Comerciales</span>
                         <h2 className="font-serif text-3xl md:text-4xl lg:text-5xl text-cream leading-tight uppercase">
-                            Contáctanos<br />
-                            <span className="text-gold/70">Ahora Mismo</span>
+                            Venta al por mayor<br className="hidden md:block" />
+                            <span className="text-gold/70 md:ml-2">& Boutiques</span>
                         </h2>
                         <p className="text-cream/50 text-sm font-light leading-relaxed max-w-md">
-                            Nuestro equipo está disponible para asesorarte sobre modelos, tallas, precios y envíos. Respuesta inmediata.
+                            Abastecemos a las mejores boutiques de México con diseños exclusivos y calidad artesanal. Solicita nuestro catálogo de precios para negocios.
                         </p>
                     </motion.div>
 
@@ -377,7 +413,7 @@ const Home: React.FC = () => {
                         transition={{ duration: 0.7, delay: 0.35 }}
                     >
                         <motion.a
-                            href="https://wa.me/523521681197?text=Hola, me interesa recibir información sobre sus productos."
+                            href={`https://wa.me/${whatsapp}?text=${encodeURIComponent('Hola, me interesa recibir información sobre las ventas por mayoreo y el catálogo para mi Boutique/Negocio.')}`}
                             target="_blank"
                             rel="noopener noreferrer"
                             whileHover={{ scale: 1.04, boxShadow: '0 20px 50px rgba(37,211,102,0.2)' }}
@@ -385,15 +421,15 @@ const Home: React.FC = () => {
                             className="flex items-center gap-4 bg-[#25D366] text-white px-10 py-5 text-[10px] uppercase tracking-[0.4em] font-bold hover:bg-[#1ebe59] transition-all duration-400 group"
                         >
                             <FontAwesomeIcon icon={faWhatsapp} className="text-lg group-hover:scale-110 transition-transform" />
-                            WhatsApp
+                            Catálogo Mayoreo
                         </motion.a>
                         <motion.a
-                            href="tel:+523525262502"
+                            href={`tel:${phone.replace(/\s+/g, '')}`}
                             whileHover={{ scale: 1.04 }}
                             whileTap={{ scale: 0.97 }}
                             className="flex items-center gap-4 border border-cream/20 text-cream px-10 py-5 text-[10px] uppercase tracking-[0.4em] font-bold hover:border-gold hover:text-gold transition-all duration-400"
                         >
-                            Call Center
+                            Línea de Negocios
                         </motion.a>
                     </motion.div>
                 </div>
@@ -465,17 +501,17 @@ const Home: React.FC = () => {
                             <p className="text-base font-serif text-chocolate">Ceremonias que se visten de elegancia</p>
                         </div>
                         <div className="flex items-center gap-10">
-                            <a href="https://www.facebook.com/arcangel.ceremonias/" target="_blank" rel="noopener noreferrer"
+                            <a href={facebook} target="_blank" rel="noopener noreferrer"
                                 className="flex flex-col items-center gap-2 text-chocolate/40 hover:text-gold transition-all duration-300 hover:-translate-y-1 group">
                                 <FontAwesomeIcon icon={faFacebook} className="text-2xl" />
                                 <span className="text-[8px] uppercase tracking-widest">Facebook</span>
                             </a>
-                            <a href="https://www.instagram.com/ceremonias.arcangel/" target="_blank" rel="noopener noreferrer"
+                            <a href={instagram} target="_blank" rel="noopener noreferrer"
                                 className="flex flex-col items-center gap-2 text-chocolate/40 hover:text-gold transition-all duration-300 hover:-translate-y-1 group">
                                 <FontAwesomeIcon icon={faInstagram} className="text-2xl" />
                                 <span className="text-[8px] uppercase tracking-widest">Instagram</span>
                             </a>
-                            <a href="https://wa.me/523521681197" target="_blank" rel="noopener noreferrer"
+                            <a href={`https://wa.me/${whatsapp}`} target="_blank" rel="noopener noreferrer"
                                 className="flex flex-col items-center gap-2 text-chocolate/40 hover:text-[#25D366] transition-all duration-300 hover:-translate-y-1 group">
                                 <FontAwesomeIcon icon={faWhatsapp} className="text-2xl" />
                                 <span className="text-[8px] uppercase tracking-widest">WhatsApp</span>

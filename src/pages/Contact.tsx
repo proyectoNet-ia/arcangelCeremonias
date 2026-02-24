@@ -7,8 +7,17 @@ import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
 import toast from 'react-hot-toast';
 import { RevealOnScroll } from '@/components/common/RevealOnScroll';
+import { useConfig } from '@/context/ConfigContext';
 
 const Contact: React.FC = () => {
+    const { config } = useConfig();
+
+    const whatsapp = config?.whatsapp || '523521681197';
+    const phone = config?.phone || '352 52 62502';
+    const email = config?.email || 'ventas@arcangelceremonias.com';
+    const facebook = config?.facebook_url || 'https://facebook.com/arcangel.ceremonias';
+    const instagram = config?.instagram_url || 'https://instagram.com/ceremonias.arcangel';
+    const address = config?.address || 'Igualdad #200, Ejido de Potrerillos, La Piedad, Michoacán, MX.';
     return (
         <div className="min-h-screen bg-cream font-sans text-chocolate selection:bg-gold/20">
             <Header />
@@ -36,37 +45,37 @@ const Contact: React.FC = () => {
                             <div className="p-8 border border-gold/10 bg-white/30 backdrop-blur-sm space-y-4 group hover:border-gold/30 transition-colors duration-500">
                                 <FontAwesomeIcon icon={faWhatsapp} className="text-gold text-2xl" />
                                 <h3 className="text-[10px] uppercase tracking-widest font-bold">Call Center / WhatsApp</h3>
-                                <a href="https://wa.me/523521681197" className="block text-sm hover:text-gold transition-colors">352 168 1197</a>
+                                <a href={`https://wa.me/${whatsapp}`} className="block text-sm hover:text-gold transition-colors">
+                                    {whatsapp.replace(/(\d{2})(\d{3})(\d{3})(\d{4})/, '+$1 $2 $3 $4')}
+                                </a>
                             </div>
 
                             <div className="p-8 border border-gold/10 bg-white/30 backdrop-blur-sm space-y-4 group hover:border-gold/30 transition-colors duration-500">
                                 <FontAwesomeIcon icon={faPhone} className="text-gold text-xl" />
                                 <h3 className="text-[10px] uppercase tracking-widest font-bold">Oficina</h3>
-                                <a href="tel:+523525262502" className="block text-sm hover:text-gold transition-colors">352 52 62502</a>
+                                <a href={`tel:${phone.replace(/\s+/g, '')}`} className="block text-sm hover:text-gold transition-colors">{phone}</a>
                             </div>
 
                             <div className="p-8 border border-gold/10 bg-white/30 backdrop-blur-sm space-y-4 group hover:border-gold/30 transition-colors duration-500">
                                 <FontAwesomeIcon icon={faEnvelope} className="text-gold text-xl" />
                                 <h3 className="text-[10px] uppercase tracking-widest font-bold">Email</h3>
-                                <a href="mailto:ventas@arcangelceremonias.com" className="block text-sm hover:text-gold transition-colors">ventas@arcangelceremonias.com</a>
+                                <a href={`mailto:${email}`} className="block text-sm hover:text-gold transition-colors">{email}</a>
                             </div>
 
                             <div className="p-8 border border-gold/10 bg-white/30 backdrop-blur-sm space-y-4 group hover:border-gold/30 transition-colors duration-500">
                                 <FontAwesomeIcon icon={faMapMarkerAlt} className="text-gold text-xl" />
                                 <h3 className="text-[10px] uppercase tracking-widest font-bold">Dirección</h3>
-                                <p className="text-xs leading-relaxed text-chocolate/80">
-                                    Igualdad #200, <br />
-                                    Ejido de Potrerillos, <br />
-                                    La Piedad, Michoacán, MX.
+                                <p className="text-xs leading-relaxed text-chocolate/80 whitespace-pre-line">
+                                    {address}
                                 </p>
                             </div>
                         </div>
 
                         <div className="flex gap-6 pt-4">
-                            <a href="https://facebook.com/arcangel.ceremonias" target="_blank" className="w-12 h-12 flex items-center justify-center border border-gold/10 text-chocolate/40 hover:text-gold hover:border-gold/50 transition-all duration-300">
+                            <a href={facebook} target="_blank" className="w-12 h-12 flex items-center justify-center border border-gold/10 text-chocolate/40 hover:text-gold hover:border-gold/50 transition-all duration-300">
                                 <FontAwesomeIcon icon={faFacebook} className="text-lg" />
                             </a>
-                            <a href="https://instagram.com/ceremonias.arcangel" target="_blank" className="w-12 h-12 flex items-center justify-center border border-gold/10 text-chocolate/40 hover:text-gold hover:border-gold/50 transition-all duration-300">
+                            <a href={instagram} target="_blank" className="w-12 h-12 flex items-center justify-center border border-gold/10 text-chocolate/40 hover:text-gold hover:border-gold/50 transition-all duration-300">
                                 <FontAwesomeIcon icon={faInstagram} className="text-lg" />
                             </a>
                         </div>
