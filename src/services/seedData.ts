@@ -65,6 +65,8 @@ export const seedCatalog = async () => {
                 material: 'Shantung de Seda & Perlas',
                 category_id: findCat('bautizo'),
                 subcategory: 'ropon-nina',
+                model_code: 'GEMA-01',
+                color: 'Blanco Marfil',
                 main_image: localImages[4], // Baby laying bed
                 gallery: getRandomGallery(4),
                 featured: true,
@@ -76,6 +78,8 @@ export const seedCatalog = async () => {
                 description: 'Ropón clásico para niño con bordados artesanales.',
                 price: 2900,
                 show_price: true,
+                model_code: 'IMP-02',
+                color: 'Blanco Nieve',
                 material: 'Lino Italiano',
                 category_id: findCat('bautizo'),
                 subcategory: 'ropon-nino',

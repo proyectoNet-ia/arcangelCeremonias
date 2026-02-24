@@ -10,7 +10,9 @@ export interface Product {
     subcategory?: string;
 
     // Características Específicas
+    model_code?: string;
     material?: string;
+    color?: string;
     includes?: string;
     sizes?: string[];
 

@@ -212,6 +212,16 @@ const ProductsManager: React.FC<{
                                         </div>
                                         <div className="grid grid-cols-2 gap-4">
                                             <div className="space-y-2">
+                                                <label className="text-[10px] uppercase tracking-widest font-bold text-slate-400">Modelo</label>
+                                                <input type="text" value={editingProduct.model_code || ''} onChange={e => setEditingProduct({ ...editingProduct, model_code: e.target.value })} className="w-full p-4 border border-slate-100 focus:border-gold outline-none text-xs" placeholder="Ej: ARG-001" />
+                                            </div>
+                                            <div className="space-y-2">
+                                                <label className="text-[10px] uppercase tracking-widest font-bold text-slate-400">Color</label>
+                                                <input type="text" value={editingProduct.color || ''} onChange={e => setEditingProduct({ ...editingProduct, color: e.target.value })} className="w-full p-4 border border-slate-100 focus:border-gold outline-none text-xs" placeholder="Ej: Blanco" />
+                                            </div>
+                                        </div>
+                                        <div className="grid grid-cols-2 gap-4">
+                                            <div className="space-y-2">
                                                 <label className="text-[10px] uppercase tracking-widest font-bold text-slate-400">Precio</label>
                                                 <input type="number" value={editingProduct.price} onChange={e => setEditingProduct({ ...editingProduct, price: Number(e.target.value) })} className="w-full p-4 border border-slate-100 focus:border-gold outline-none" />
                                             </div>

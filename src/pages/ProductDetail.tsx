@@ -141,16 +141,20 @@ const ProductDetail: React.FC = () => {
                         {/* Product Attributes */}
                         <div className="grid grid-cols-2 gap-y-8 border-y border-gold/10 py-8">
                             <div className="space-y-2">
+                                <span className="text-[10px] uppercase tracking-[0.2em] text-chocolate/40 font-bold block">Modelo</span>
+                                <p className="text-sm font-light italic">{product.model_code || product.slug.toUpperCase()}</p>
+                            </div>
+                            <div className="space-y-2 text-right">
+                                <span className="text-[10px] uppercase tracking-[0.2em] text-chocolate/40 font-bold block">Color</span>
+                                <p className="text-sm font-light italic">{product.color || 'Blanco Ceremonial'}</p>
+                            </div>
+                            <div className="space-y-2">
                                 <span className="text-[10px] uppercase tracking-[0.2em] text-chocolate/40 font-bold block">Material</span>
                                 <p className="text-sm font-light italic">{product.material || 'Premium Fabric'}</p>
                             </div>
                             <div className="space-y-2 text-right">
                                 <span className="text-[10px] uppercase tracking-[0.2em] text-chocolate/40 font-bold block">Tallas</span>
                                 <p className="text-sm font-light italic">{product.sizes?.join(', ') || 'A medida'}</p>
-                            </div>
-                            <div className="col-span-2 space-y-2">
-                                <span className="text-[10px] uppercase tracking-[0.2em] text-chocolate/40 font-bold block">Incluye</span>
-                                <p className="text-sm font-light italic">{product.includes || 'Consulta con un asesor'}</p>
                             </div>
                         </div>
 
@@ -165,11 +169,23 @@ const ProductDetail: React.FC = () => {
                         <div className="pt-8 space-y-6">
                             <div className="flex gap-4">
                                 <button
-                                    onClick={() => window.open(`https://wa.me/523521681197?text=Hola, me gustaría recibir más información y tallas sobre el modelo: ${product.name}`, '_blank')}
+                                    onClick={() => {
+                                        const model = product.model_code || product.slug.toUpperCase();
+                                        const color = product.color || 'Blanco';
+                                        const sizes = product.sizes?.join(', ') || 'A medida';
+                                        const message = `¡Hola! Me interesa este producto:
+*Nombre:* ${product.name}
+*Modelo:* ${model}
+*Color:* ${color}
+*Tallas:* ${sizes}
+
+Deseo recibir más información por favor.`;
+                                        window.open(`https://wa.me/523521681197?text=${encodeURIComponent(message)}`, '_blank');
+                                    }}
                                     className="flex-grow bg-chocolate text-cream py-6 flex items-center justify-center gap-4 group transition-all duration-500 hover:bg-gold hover:shadow-2xl hover:shadow-gold/20"
                                 >
                                     <FontAwesomeIcon icon={faWhatsapp} className="text-xl" />
-                                    <span className="text-xs uppercase tracking-[0.4em] font-medium">Lo quiero vía WhatsApp</span>
+                                    <span className="text-xs uppercase tracking-[0.4em] font-medium">¡Me interesa el producto!</span>
                                 </button>
 
                                 <button
