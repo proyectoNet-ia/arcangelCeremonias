@@ -67,6 +67,11 @@ export const seedCatalog = async () => {
                 subcategory: 'ropon-nina',
                 model_code: 'GEMA-01',
                 color: 'Blanco Marfil',
+                size_variants: [
+                    { size: '0', price: 3200 },
+                    { size: '1', price: 3400 },
+                    { size: '2', price: 3600 }
+                ],
                 main_image: localImages[4], // Baby laying bed
                 gallery: getRandomGallery(4),
                 featured: true,

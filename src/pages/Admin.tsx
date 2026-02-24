@@ -232,6 +232,59 @@ const ProductsManager: React.FC<{
                                                 </select>
                                             </div>
                                         </div>
+                                        {/* Size Variants Editor */}
+                                        <div className="space-y-4 pt-4 border-t border-slate-100">
+                                            <div className="flex items-center justify-between">
+                                                <label className="text-[10px] uppercase tracking-widest font-bold text-slate-400">Variantes de Precio por Talla</label>
+                                                <button
+                                                    onClick={() => {
+                                                        const current = editingProduct.size_variants || [];
+                                                        setEditingProduct({ ...editingProduct, size_variants: [...current, { size: '', price: editingProduct.price || 0 }] });
+                                                    }}
+                                                    className="text-[10px] text-gold font-bold uppercase tracking-widest"
+                                                >
+                                                    + Añadir Talla
+                                                </button>
+                                            </div>
+
+                                            <div className="space-y-3">
+                                                {editingProduct.size_variants?.map((v, idx) => (
+                                                    <div key={idx} className="flex gap-2 items-center">
+                                                        <input
+                                                            type="text"
+                                                            placeholder="Talla (e.g. 4)"
+                                                            value={v.size}
+                                                            onChange={(e) => {
+                                                                const newV = [...(editingProduct.size_variants || [])];
+                                                                newV[idx].size = e.target.value;
+                                                                setEditingProduct({ ...editingProduct, size_variants: newV });
+                                                            }}
+                                                            className="w-1/3 p-3 border border-slate-100 outline-none text-xs"
+                                                        />
+                                                        <input
+                                                            type="number"
+                                                            placeholder="Precio"
+                                                            value={v.price}
+                                                            onChange={(e) => {
+                                                                const newV = [...(editingProduct.size_variants || [])];
+                                                                newV[idx].price = Number(e.target.value);
+                                                                setEditingProduct({ ...editingProduct, size_variants: newV });
+                                                            }}
+                                                            className="flex-grow p-3 border border-slate-100 outline-none text-xs"
+                                                        />
+                                                        <button
+                                                            onClick={() => {
+                                                                const newV = editingProduct.size_variants?.filter((_, i) => i !== idx);
+                                                                setEditingProduct({ ...editingProduct, size_variants: newV });
+                                                            }}
+                                                            className="text-red-400 p-2"
+                                                        >
+                                                            <FontAwesomeIcon icon={faTimes} />
+                                                        </button>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
                                     </div>
 
                                     <div className="space-y-6">

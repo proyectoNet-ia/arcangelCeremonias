@@ -1,10 +1,15 @@
+export interface SizeVariant {
+    size: string;
+    price: number;
+}
+
 export interface Product {
     id: string;
     name: string;
     slug: string;
     description: string;
     detailed_description?: string;
-    price?: number;
+    price?: number; // Base price or starting price
     show_price: boolean;
     category_id: string;
     subcategory?: string;
@@ -15,6 +20,7 @@ export interface Product {
     color?: string;
     includes?: string;
     sizes?: string[];
+    size_variants?: SizeVariant[]; // Map of sizes to specific prices
 
     // Multimedia
     main_image: string;

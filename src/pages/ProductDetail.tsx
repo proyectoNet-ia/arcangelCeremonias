@@ -17,6 +17,7 @@ const ProductDetail: React.FC = () => {
     const [loading, setLoading] = useState(true);
     const [activeImage, setActiveImage] = useState(0);
     const [zoomPos, setZoomPos] = useState({ x: 50, y: 50 });
+    const [selectedVariant, setSelectedVariant] = useState<number | null>(null);
 
     useEffect(() => {
         const fetchProduct = async () => {
@@ -25,6 +26,10 @@ const ProductDetail: React.FC = () => {
                 setLoading(true);
                 const data = await productService.getProductBySlug(slug);
                 setProduct(data);
+                // Select first variant by default if variants exist
+                if (data?.size_variants && data.size_variants.length > 0) {
+                    setSelectedVariant(0);
+                }
             } catch (error) {
                 console.error('Error fetching product:', error);
             } finally {
@@ -62,6 +67,9 @@ const ProductDetail: React.FC = () => {
     }
 
     const images = [product.main_image, ...(product.gallery || [])];
+    const currentPrice = selectedVariant !== null && product.size_variants
+        ? product.size_variants[selectedVariant].price
+        : product.price;
 
     return (
         <div className="min-h-screen bg-cream font-sans text-chocolate selection:bg-gold/20">
@@ -129,14 +137,42 @@ const ProductDetail: React.FC = () => {
                             </motion.h1>
 
                             <div className="flex items-center gap-6 pt-2">
-                                {product.show_price && product.price ? (
-                                    <span className="text-2xl font-sans text-gold">${product.price.toLocaleString('es-MX')}</span>
+                                {product.show_price && currentPrice ? (
+                                    <span className="text-2xl font-sans text-gold">
+                                        ${currentPrice.toLocaleString('es-MX')}
+                                        {selectedVariant !== null && (
+                                            <span className="text-[10px] uppercase tracking-widest text-chocolate/40 ml-4 font-bold">
+                                                Talla {product.size_variants?.[selectedVariant].size}
+                                            </span>
+                                        )}
+                                    </span>
                                 ) : (
                                     <span className="text-sm uppercase tracking-widest text-gold italic font-medium">Precio bajo consulta</span>
                                 )}
                                 <div className="h-[1px] flex-grow bg-gold/20" />
                             </div>
                         </div>
+
+                        {/* Size Selection */}
+                        {product.size_variants && product.size_variants.length > 0 && (
+                            <div className="space-y-4">
+                                <span className="text-[10px] uppercase tracking-[0.2em] text-chocolate/40 font-bold block">Seleccionar Talla (El precio varía según la talla)</span>
+                                <div className="flex flex-wrap gap-3">
+                                    {product.size_variants.map((v, idx) => (
+                                        <button
+                                            key={idx}
+                                            onClick={() => setSelectedVariant(idx)}
+                                            className={`px-6 py-3 text-xs uppercase tracking-widest transition-all duration-300 border ${selectedVariant === idx
+                                                ? 'bg-chocolate text-cream border-chocolate shadow-lg'
+                                                : 'border-gold/20 text-chocolate hover:border-gold opacity-60 hover:opacity-100'
+                                                }`}
+                                        >
+                                            {v.size}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
 
                         {/* Product Attributes */}
                         <div className="grid grid-cols-2 gap-y-8 border-y border-gold/10 py-8">
@@ -172,12 +208,21 @@ const ProductDetail: React.FC = () => {
                                     onClick={() => {
                                         const model = product.model_code || product.slug.toUpperCase();
                                         const color = product.color || 'Blanco';
-                                        const sizes = product.sizes?.join(', ') || 'A medida';
+
+                                        let sizeDetails = '';
+                                        if (selectedVariant !== null && product.size_variants) {
+                                            const v = product.size_variants[selectedVariant];
+                                            sizeDetails = `*Talla:* ${v.size}\n*Precio por talla:* $${v.price.toLocaleString('es-MX')}`;
+                                        } else {
+                                            const sizes = product.sizes?.join(', ') || 'A medida';
+                                            sizeDetails = `*Tallas:* ${sizes}`;
+                                        }
+
                                         const message = `¡Hola! Me interesa este producto:
 *Nombre:* ${product.name}
 *Modelo:* ${model}
 *Color:* ${color}
-*Tallas:* ${sizes}
+${sizeDetails}
 
 Deseo recibir más información por favor.`;
                                         window.open(`https://wa.me/523521681197?text=${encodeURIComponent(message)}`, '_blank');
