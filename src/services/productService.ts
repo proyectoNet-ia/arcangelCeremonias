@@ -54,13 +54,18 @@ export const productService = {
     },
 
     async uploadImage(file: File, path: string) {
-        const fileExt = file.name.split('.').pop();
-        const fileName = `${Math.random()}.${fileExt}`;
+        const fileExt = file.name.split('.').pop()?.toLowerCase() ?? 'jpg';
+        // Nombre limpio: timestamp + random hex (sin puntos extras en el nombre)
+        const fileName = `${Date.now()}_${Math.random().toString(36).slice(2, 8)}.${fileExt}`;
         const filePath = `${path}/${fileName}`;
 
         const { error: uploadError } = await supabase.storage
             .from('catalog')
-            .upload(filePath, file);
+            .upload(filePath, file, {
+                cacheControl: '3600',
+                upsert: false,
+                contentType: file.type || 'image/jpeg',
+            });
 
         if (uploadError) throw uploadError;
 

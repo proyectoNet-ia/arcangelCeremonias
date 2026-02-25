@@ -529,11 +529,14 @@ const HeroManager: React.FC = () => {
             const url = await productService.uploadImage(file, 'hero');
             if (field === 'bg') setEditingSlide(prev => ({ ...prev, bg_url: url }));
             else setEditingSlide(prev => ({ ...prev, bg_mobile_url: url }));
-            toast.success('Imagen subida');
-        } catch (error) {
-            toast.error('Error al subir imagen');
+            toast.success('Imagen subida correctamente');
+        } catch (error: any) {
+            console.error('[Hero upload error]', error);
+            toast.error(`Error al subir imagen: ${error?.message ?? 'Verifica permisos del bucket en Supabase'}`);
         } finally {
             setIsUploading(false);
+            // reset el input para poder volver a subir el mismo archivo
+            e.target.value = '';
         }
     };
 
@@ -646,6 +649,14 @@ const HeroManager: React.FC = () => {
                                                 </label>
                                             )}
                                         </div>
+                                        {/* Fallback: pegar URL directamente */}
+                                        <input
+                                            type="url"
+                                            placeholder="O pega aquí la URL de la imagen (https://...)..."
+                                            value={editingSlide.bg_url || ''}
+                                            onChange={e => setEditingSlide({ ...editingSlide, bg_url: e.target.value })}
+                                            className="w-full p-3 border border-slate-100 outline-none text-xs text-slate-500 font-mono"
+                                        />
                                     </div>
                                     <div className="space-y-4">
                                         <label className="text-[10px] uppercase tracking-widest font-bold text-slate-400">Imagen Mobile (Vertical)</label>
@@ -663,6 +674,14 @@ const HeroManager: React.FC = () => {
                                                 </label>
                                             )}
                                         </div>
+                                        {/* Fallback: URL manual */}
+                                        <input
+                                            type="url"
+                                            placeholder="O pega aquí la URL..."
+                                            value={editingSlide.bg_mobile_url || ''}
+                                            onChange={e => setEditingSlide({ ...editingSlide, bg_mobile_url: e.target.value })}
+                                            className="w-full p-3 border border-slate-100 outline-none text-xs text-slate-500 font-mono"
+                                        />
                                     </div>
                                 </div>
                             </div>
