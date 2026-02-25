@@ -106,6 +106,50 @@ const ProductDetail: React.FC = () => {
         ? product.size_variants[selectedVariant].price
         : product.price;
 
+    // ── Mensaje detallado para el vendedor ──────────────────────────────
+    const buildWhatsAppMessage = (context: 'interesa' | 'distribuidor' | 'asesoria' = 'interesa') => {
+        const model = product.model_code || product.slug.toUpperCase();
+        const color = product.color || 'No especificado';
+        const mat = product.material || 'No especificado';
+        const desc = product.description || '';
+        const url = window.location.href;
+
+        let tallaLinea = '';
+        if (selectedVariant !== null && product.size_variants) {
+            const v = product.size_variants[selectedVariant];
+            tallaLinea = `📐 *Talla seleccionada:* ${v.size}\n💰 *Precio (esa talla):* $${v.price.toLocaleString('es-MX')} MXN`;
+        } else if (product.sizes && product.sizes.length > 0) {
+            tallaLinea = `📐 *Tallas disponibles:* ${product.sizes.join(', ')}`;
+        } else {
+            tallaLinea = `📐 *Tallas:* A consultar`;
+        }
+
+        const badge = context === 'distribuidor'
+            ? '🏭 *Canal:* Distribuidor / Mayoreo'
+            : context === 'asesoria'
+                ? '💬 *Canal:* Asesoría general'
+                : '🛍️ *Canal:* Cliente directo';
+
+        return [
+            `¡Hola! Me interesa el siguiente producto de *Arcángel Ceremonias*:`,
+            ``,
+            `━━━━━━━━━━━━━━━━━━━━━`,
+            `🏷️ *Producto:* ${product.name}`,
+            `🔖 *Modelo:* ${model}`,
+            `🎨 *Color:* ${color}`,
+            `🧵 *Material:* ${mat}`,
+            tallaLinea,
+            ``,
+            `📝 *Descripción:* ${desc}`,
+            ``,
+            `🔗 *Ver producto:* ${url}`,
+            `━━━━━━━━━━━━━━━━━━━━━`,
+            badge,
+            ``,
+            `Por favor, ¿podrían darme más información sobre disponibilidad, tiempos de entrega y formas de pago?`,
+        ].join('\n');
+    };
+
     return (
         <div className="min-h-screen bg-cream font-sans text-chocolate selection:bg-gold/20">
             <Header />
@@ -307,26 +351,7 @@ const ProductDetail: React.FC = () => {
                                     whileHover={{ scale: 1.02, boxShadow: '0 16px 50px rgba(197,168,112,0.25)' }}
                                     whileTap={{ scale: 0.97 }}
                                     onClick={() => {
-                                        const model = product.model_code || product.slug.toUpperCase();
-                                        const color = product.color || 'Blanco';
-
-                                        let sizeDetails = '';
-                                        if (selectedVariant !== null && product.size_variants) {
-                                            const v = product.size_variants[selectedVariant];
-                                            sizeDetails = `*Talla:* ${v.size}\n*Precio por talla:* $${v.price.toLocaleString('es-MX')}`;
-                                        } else {
-                                            const sizes = product.sizes?.join(', ') || 'A medida';
-                                            sizeDetails = `*Tallas:* ${sizes}`;
-                                        }
-
-                                        const message = `¡Hola! Me interesa este producto:
-*Nombre:* ${product.name}
-*Modelo:* ${model}
-*Color:* ${color}
-${sizeDetails}
-
-Deseo recibir más información por favor.`;
-                                        window.open(`https://wa.me/${whatsapp}?text=${encodeURIComponent(message)}`, '_blank');
+                                        window.open(`https://wa.me/${whatsapp}?text=${encodeURIComponent(buildWhatsAppMessage('interesa'))}`, '_blank');
                                     }}
                                     className="flex-grow bg-[#8E735B] text-cream py-4 md:py-6 px-4 flex items-center justify-center gap-3 md:gap-4 group transition-all duration-500 hover:bg-gold hover:shadow-2xl hover:shadow-gold/20"
                                 >
@@ -406,7 +431,7 @@ Deseo recibir más información por favor.`;
                                     <motion.button
                                         whileHover={{ scale: 1.03, y: -2, boxShadow: '0 10px 30px rgba(37,211,102,0.15)' }}
                                         whileTap={{ scale: 0.97 }}
-                                        onClick={() => window.open(`https://wa.me/${whatsapp}?text=Hola, tengo una consulta sobre el modelo: ${product.name}`, '_blank')}
+                                        onClick={() => window.open(`https://wa.me/${whatsapp}?text=${encodeURIComponent(buildWhatsAppMessage('distribuidor'))}`, '_blank')}
                                         className="flex flex-col items-center justify-center gap-2 py-5 bg-white border border-gold/15 text-chocolate hover:border-[#25D366]/50 hover:text-[#25D366] transition-all duration-400 group"
                                     >
                                         <FontAwesomeIcon icon={faWhatsapp} className="text-base text-[#25D366] group-hover:scale-110 transition-transform duration-300" />
@@ -548,7 +573,7 @@ Deseo recibir más información por favor.`;
                                 whileHover={{ scale: 1.03, boxShadow: '0 20px 60px rgba(197,168,112,0.3)' }}
                                 whileTap={{ scale: 0.97 }}
                                 onClick={() => window.open(
-                                    `https://wa.me/${whatsapp}?text=Hola, me interesa el producto: ${product.name}. ¿Podrían asesorarme?`,
+                                    `https://wa.me/${whatsapp}?text=${encodeURIComponent(buildWhatsAppMessage('asesoria'))}`,
                                     '_blank'
                                 )}
                                 className="flex-1 bg-gold text-chocolate py-5 px-8 flex items-center justify-center gap-4 text-[10px] uppercase tracking-[0.35em] font-bold transition-all duration-500 group"

@@ -51,10 +51,10 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, index }) => {
                                 <span
                                     key={bIdx}
                                     className={`backdrop-blur-md text-[9px] uppercase tracking-[0.3em] px-3 py-1.5 font-bold shadow-sm border ${badge.toUpperCase() === 'NUEVO'
-                                            ? 'bg-gold text-white border-gold/20'
-                                            : badge.toUpperCase() === 'PREMIUM'
-                                                ? 'bg-chocolate text-gold border-gold/30'
-                                                : 'bg-white/90 text-chocolate border-gold/10'
+                                        ? 'bg-gold text-white border-gold/20'
+                                        : badge.toUpperCase() === 'PREMIUM'
+                                            ? 'bg-chocolate text-gold border-gold/30'
+                                            : 'bg-white/90 text-chocolate border-gold/10'
                                         }`}
                                 >
                                     {badge}
@@ -108,7 +108,25 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, index }) => {
                             onClick={(e) => {
                                 e.preventDefault();
                                 e.stopPropagation();
-                                window.open(`https://wa.me/523521681197?text=Hola, me interesa el producto: ${product.name}`, '_blank');
+                                const model = product.model_code || product.slug.toUpperCase();
+                                const color = product.color || 'No especificado';
+                                const mat = product.material || 'No especificado';
+                                const url = `${window.location.origin}/producto/${product.slug}`;
+                                const msg = [
+                                    `\u00a1Hola! Me interesa el siguiente producto de *Arc\u00e1ngel Ceremonias*:`,
+                                    ``,
+                                    `\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501`,
+                                    `\ud83c\udff7\ufe0f *Producto:* ${product.name}`,
+                                    `\ud83d\udd16 *Modelo:* ${model}`,
+                                    `\ud83c\udfa8 *Color:* ${color}`,
+                                    `\ud83e\uddf5 *Material:* ${mat}`,
+                                    `\ud83d\udd17 *Ver producto:* ${url}`,
+                                    `\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501`,
+                                    `\ud83d\udecd\ufe0f *Canal:* Cat\u00e1logo web`,
+                                    ``,
+                                    `\u00bfPodr\u00edan darme m\u00e1s informaci\u00f3n sobre disponibilidad, tallas y formas de pago?`,
+                                ].join('\n');
+                                window.open(`https://wa.me/523521681197?text=${encodeURIComponent(msg)}`, '_blank');
                             }}
                         >
                             <FontAwesomeIcon icon={faWhatsapp} className="text-sm" />
