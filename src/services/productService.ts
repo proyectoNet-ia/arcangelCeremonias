@@ -55,9 +55,19 @@ export const productService = {
 
     async uploadImage(file: File, path: string) {
         const fileExt = file.name.split('.').pop()?.toLowerCase() ?? 'jpg';
-        // Nombre limpio: timestamp + random hex (sin puntos extras en el nombre)
         const fileName = `${Date.now()}_${Math.random().toString(36).slice(2, 8)}.${fileExt}`;
         const filePath = `${path}/${fileName}`;
+
+        // ── Asegurar que el bucket existe (lo crea si no existe) ──────────
+        const { data: buckets } = await supabase.storage.listBuckets();
+        const exists = buckets?.some(b => b.name === 'catalog');
+        if (!exists) {
+            await supabase.storage.createBucket('catalog', {
+                public: true,
+                fileSizeLimit: 5 * 1024 * 1024, // 5 MB
+                allowedMimeTypes: ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/gif'],
+            });
+        }
 
         const { error: uploadError } = await supabase.storage
             .from('catalog')
