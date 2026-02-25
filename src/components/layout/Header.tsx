@@ -30,9 +30,18 @@ export const Header: React.FC<HeaderProps> = ({ variant = 'light' }) => {
     const [isSearchOpen, setIsSearchOpen] = useState(false);
     const [isMobileSubmenuOpen, setIsMobileSubmenuOpen] = useState(false);
     const [categories, setCategories] = useState<any[]>([]);
+    const [scrolled, setScrolled] = useState(false);
     const location = useLocation();
     const navigate = useNavigate();
     const { config } = useConfig();
+
+    // Detectar scroll para cambiar estilo del header
+    useEffect(() => {
+        const onScroll = () => setScrolled(window.scrollY > 60);
+        window.addEventListener('scroll', onScroll, { passive: true });
+        onScroll(); // check on mount
+        return () => window.removeEventListener('scroll', onScroll);
+    }, []);
 
     const whatsapp = config?.whatsapp || '523521681197';
     const phone = config?.phone || '352 52 62502';
@@ -75,10 +84,12 @@ export const Header: React.FC<HeaderProps> = ({ variant = 'light' }) => {
     ];
 
     const isCatalog = location.pathname === '/catalogo';
-    const isDark = variant === 'dark';
+    // En el hero (arriba): fondo transparente oscuro. Al scrollear: fondo crema sólido.
+    // variant='dark' se ignora cuando scrolled=true para garantizar legibilidad.
+    const isDark = !scrolled && variant === 'dark';
 
     return (
-        <div className={`fixed top-0 w-full z-50 transition-all duration-500 ${!isDark ? 'shadow-2xl shadow-chocolate/40' : ''}`}>
+        <div className={`fixed top-0 w-full z-50 transition-all duration-500 ${scrolled ? 'shadow-xl shadow-chocolate/20' : (!isDark ? 'shadow-2xl shadow-chocolate/40' : '')}`}>
             {/* --- SEARCH OVERLAY --- */}
             <AnimatePresence>
                 {isSearchOpen && (
@@ -145,7 +156,12 @@ export const Header: React.FC<HeaderProps> = ({ variant = 'light' }) => {
             </div>
 
             {/* --- MAIN HEADER --- */}
-            <header className={`w-full transition-colors duration-500 ${isDark ? 'bg-transparent border-b border-white/5' : 'bg-cream/90 backdrop-blur-md border-b border-gold/10'} px-6 py-6 md:py-4 md:px-12`}>
+            <header className={`w-full transition-all duration-500 ${scrolled
+                    ? 'bg-white shadow-md border-b border-gold/10 py-3'
+                    : isDark
+                        ? 'bg-transparent border-b border-white/5 py-6 md:py-4'
+                        : 'bg-cream/90 backdrop-blur-md border-b border-gold/10 py-6 md:py-4'
+                } px-6 md:px-12`}>
                 <div className="max-w-[1600px] mx-auto flex justify-between items-center">
                     <Link to="/" className="w-44 md:w-56 hover:scale-105 transition-transform duration-500">
                         <Logo variant={isDark ? 'dark' : 'light'} />
