@@ -151,10 +151,11 @@ const Home: React.FC = () => {
         <div className="min-h-screen bg-cream font-sans text-chocolate selection:bg-gold/20">
             <Header />
 
-            {/* ════════════════════════════════════════
-                1. HERO SLIDER
-            ════════════════════════════════════════ */}
-            <section className="relative h-[140vh] w-full overflow-hidden">
+            {/* 1. HERO SLIDER */}
+            <section
+                className="relative h-[90vh] w-full overflow-hidden"
+                style={{ paddingTop: 'var(--header-height, 80px)' }}
+            >
 
                 {/* Background slides */}
                 <AnimatePresence mode="sync">
@@ -189,12 +190,9 @@ const Home: React.FC = () => {
                 <div className="absolute inset-0 z-[2] opacity-[0.04] pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/marble-similar.png')]" />
 
                 {/* Slide content */}
-                <div className="relative z-10 h-full flex flex-col">
-                    {/* Spacer for header */}
-                    <div className="h-40 md:h-48 shrink-0" />
-
+                <div className="relative z-10 h-full flex flex-col justify-center px-6 md:px-16 lg:px-24 xl:px-32">
                     {/* Text content */}
-                    <div className={`flex-grow flex flex-col justify-center px-6 md:px-16 lg:px-24 xl:px-32 ${alignClass}`}>
+                    <div className={`flex flex-col ${alignClass}`}>
                         <AnimatePresence mode="wait">
                             <motion.div
                                 key={`content-${activeSlide}`}
@@ -295,15 +293,24 @@ const Home: React.FC = () => {
             </section>
 
             {/* ════════════════════════════════════════
-                2. TRUST BADGES STRIP
+                2. MARQUEE ANNOUNCEMENT (REEL DE TEXTO)
             ════════════════════════════════════════ */}
-            <section className="bg-chocolate py-6 overflow-hidden">
-                <div className="flex gap-16 animate-[marquee_25s_linear_infinite] w-max">
-                    {[...badges, ...badges].map((b, i) => (
-                        <div key={i} className="flex items-center gap-3 shrink-0 text-cream/50">
-                            <FontAwesomeIcon icon={b.icon} className="text-gold/60 text-sm" />
-                            <span className="text-[9px] uppercase tracking-[0.4em] font-medium whitespace-nowrap">{b.label}</span>
-                            <div className="w-1.5 h-1.5 rounded-full bg-gold/20" />
+            <section className="bg-chocolate py-4 overflow-hidden border-b border-gold/20 relative z-20">
+                <div className="flex whitespace-nowrap animate-marquee">
+                    {[...Array(6)].map((_, i) => (
+                        <div key={i} className="flex items-center">
+                            <span className="text-[10px] uppercase tracking-[0.4em] text-gold font-bold px-12">
+                                Fabricantes de Artículos Ceremoniales por más de 30 años
+                            </span>
+                            <FontAwesomeIcon icon={faDiamond} className="text-[8px] text-gold/40" />
+                            <span className="text-[10px] uppercase tracking-[0.4em] text-cream font-medium px-12">
+                                Envíos a todo México e Internacionales
+                            </span>
+                            <FontAwesomeIcon icon={faDiamond} className="text-[8px] text-gold/40" />
+                            <span className="text-[10px] uppercase tracking-[0.4em] text-gold font-bold px-12">
+                                Atención Personalizada y Ventas al Mayoreo
+                            </span>
+                            <FontAwesomeIcon icon={faDiamond} className="text-[8px] text-gold/40" />
                         </div>
                     ))}
                 </div>

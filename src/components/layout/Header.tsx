@@ -35,12 +35,27 @@ export const Header: React.FC<HeaderProps> = ({ variant = 'light' }) => {
     const navigate = useNavigate();
     const { config } = useConfig();
 
-    // Detectar scroll para cambiar estilo del header
+    const headerRef = React.useRef<HTMLDivElement>(null);
+
+    // Detectar altura del header dinámicamente
     useEffect(() => {
-        const onScroll = () => setScrolled(window.scrollY > 60);
-        window.addEventListener('scroll', onScroll, { passive: true });
-        onScroll(); // check on mount
-        return () => window.removeEventListener('scroll', onScroll);
+        const updateHeight = () => {
+            if (headerRef.current) {
+                const height = headerRef.current.offsetHeight;
+                document.documentElement.style.setProperty('--header-height', `${height}px`);
+            }
+        };
+
+        const resizeObserver = new ResizeObserver(updateHeight);
+        if (headerRef.current) resizeObserver.observe(headerRef.current);
+
+        updateHeight();
+        window.addEventListener('scroll', () => {
+            setScrolled(window.scrollY > 60);
+            updateHeight();
+        }, { passive: true });
+
+        return () => resizeObserver.disconnect();
     }, []);
 
     const whatsapp = config?.whatsapp || '523521681197';
@@ -84,12 +99,11 @@ export const Header: React.FC<HeaderProps> = ({ variant = 'light' }) => {
     ];
 
     const isCatalog = location.pathname === '/catalogo';
-    // En el hero (arriba): fondo transparente oscuro. Al scrollear: fondo crema sólido.
-    // variant='dark' se ignora cuando scrolled=true para garantizar legibilidad.
-    const isDark = !scrolled && variant === 'dark';
+    // Header ahora siempre sólido para máxima visibilidad según petición del usuario
+    const isDark = false;
 
     return (
-        <div className={`fixed top-0 w-full z-50 transition-all duration-500 ${scrolled ? 'shadow-xl shadow-chocolate/20' : (!isDark ? 'shadow-2xl shadow-chocolate/40' : '')}`}>
+        <div ref={headerRef} className="w-full z-50 sticky top-0 bg-white">
             {/* --- SEARCH OVERLAY --- */}
             <AnimatePresence>
                 {isSearchOpen && (
@@ -130,25 +144,26 @@ export const Header: React.FC<HeaderProps> = ({ variant = 'light' }) => {
                 )}
             </AnimatePresence>
 
+
             {/* --- TOP BAR (Desktop Only) --- */}
-            <div className="hidden md:block bg-chocolate text-cream py-2 px-12 border-b border-gold/10">
-                <div className="max-w-[1600px] mx-auto flex justify-between items-center text-[9px] uppercase tracking-[0.2em] font-medium">
-                    <div className="flex gap-8">
+            <div className="hidden md:block bg-white text-chocolate py-2.5 px-12 border-b border-gold/10">
+                <div className="max-w-[1600px] mx-auto flex justify-between items-center text-[9px] uppercase tracking-[0.2em] font-semibold">
+                    <div className="flex gap-10">
                         <a href={`https://wa.me/${whatsapp}`} target="_blank" rel="noopener noreferrer" className="hover:text-gold transition-colors flex items-center gap-2">
-                            <FontAwesomeIcon icon={faWhatsapp} className="text-gold text-[10px]" /> {whatsapp.replace(/(\d{2})(\d{3})(\d{3})(\d{4})/, '+$1 $2 $3 $4')}
+                            <FontAwesomeIcon icon={faWhatsapp} className="text-gold text-[11px]" /> {whatsapp.replace(/(\d{2})(\d{3})(\d{3})(\d{4})/, '+$1 $2 $3 $4')}
                         </a>
                         <a href={`tel:${phone.replace(/\s+/g, '')}`} className="hover:text-gold transition-colors flex items-center gap-2">
-                            <FontAwesomeIcon icon={faPhone} className="text-gold text-[10px]" /> Oficina: {phone}
+                            <FontAwesomeIcon icon={faPhone} className="text-gold text-[11px]" /> Oficina: {phone}
                         </a>
                     </div>
                     <div className="flex items-center gap-6">
-                        <span className="text-gold/80">Síguenos:</span>
-                        <div className="flex gap-4">
+                        <span className="text-chocolate/60">Síguenos:</span>
+                        <div className="flex gap-5">
                             <a href={facebook} target="_blank" rel="noopener noreferrer" className="hover:text-gold transition-all duration-300 hover:scale-125">
-                                <FontAwesomeIcon icon={faFacebook} className="text-[12px]" />
+                                <FontAwesomeIcon icon={faFacebook} className="text-[13px]" />
                             </a>
                             <a href={instagram} target="_blank" rel="noopener noreferrer" className="hover:text-gold transition-all duration-300 hover:scale-125">
-                                <FontAwesomeIcon icon={faInstagram} className="text-[12px]" />
+                                <FontAwesomeIcon icon={faInstagram} className="text-[13px]" />
                             </a>
                         </div>
                     </div>
@@ -156,15 +171,10 @@ export const Header: React.FC<HeaderProps> = ({ variant = 'light' }) => {
             </div>
 
             {/* --- MAIN HEADER --- */}
-            <header className={`w-full transition-all duration-500 ${scrolled
-                    ? 'bg-white shadow-md border-b border-gold/10 py-3'
-                    : isDark
-                        ? 'bg-transparent border-b border-white/5 py-6 md:py-4'
-                        : 'bg-cream/90 backdrop-blur-md border-b border-gold/10 py-6 md:py-4'
-                } px-6 md:px-12`}>
+            <header className="w-full bg-white py-3 md:py-4 px-6 md:px-12 border-b border-gold/10 shadow-sm">
                 <div className="max-w-[1600px] mx-auto flex justify-between items-center">
                     <Link to="/" className="w-44 md:w-56 hover:scale-105 transition-transform duration-500">
-                        <Logo variant={isDark ? 'dark' : 'light'} />
+                        <Logo variant="light" />
                     </Link>
 
                     {/* Desktop Navigation */}
@@ -173,7 +183,7 @@ export const Header: React.FC<HeaderProps> = ({ variant = 'light' }) => {
                             <div key={item.name} className="flex items-center gap-3">
                                 <FontAwesomeIcon
                                     icon={item.icon}
-                                    className={`text-[13px] ${location.pathname === item.path || (item.hasMegamenu && isCatalog) ? 'text-gold' : 'text-gold/50'} transition-colors duration-300`}
+                                    className={`text-[13px] ${location.pathname === item.path || (item.hasMegamenu && isCatalog) ? 'text-gold' : (isDark ? 'text-white/40' : 'text-gold/50')} transition-colors duration-300`}
                                 />
                                 {item.hasMegamenu ? (
                                     <div
@@ -181,14 +191,14 @@ export const Header: React.FC<HeaderProps> = ({ variant = 'light' }) => {
                                         onMouseEnter={openMegamenu}
                                         onMouseLeave={closeMegamenu}
                                     >
-                                        <span className={`${isMegamenuOpen || isCatalog ? 'text-gold' : (isDark ? 'text-cream/60' : 'text-chocolate/60')} group-hover:text-chocolate transition-colors flex items-center gap-2 group-hover:text-gold`}>
+                                        <span className={`${isMegamenuOpen || isCatalog ? 'text-gold' : (isDark ? 'text-white' : 'text-chocolate/60')} group-hover:text-gold transition-colors flex items-center gap-2 font-bold`}>
                                             {item.name} <FontAwesomeIcon icon={faChevronDown} className={`text-[9px] transition-transform duration-300 ${isMegamenuOpen ? 'rotate-180' : ''}`} />
                                         </span>
                                     </div>
                                 ) : (
                                     <Link
                                         to={item.path}
-                                        className={`${location.pathname === item.path ? 'text-gold' : (isDark ? 'text-cream/60' : 'text-chocolate/60')} hover:text-gold transition-colors flex items-center`}
+                                        className={`${location.pathname === item.path ? 'text-gold' : (isDark ? 'text-white' : 'text-chocolate/60')} hover:text-gold transition-colors flex items-center font-bold`}
                                     >
                                         {item.name}
                                     </Link>
@@ -200,10 +210,10 @@ export const Header: React.FC<HeaderProps> = ({ variant = 'light' }) => {
                         <div className="flex items-center pl-6 border-l border-gold/10 ml-4 group">
                             <button
                                 onClick={() => setIsSearchOpen(true)}
-                                className={`flex items-center gap-3 transition-colors ${isDark ? 'text-cream/60' : 'text-chocolate/60'} hover:text-gold`}
+                                className={`flex items-center gap-3 transition-colors ${isDark ? 'text-white' : 'text-chocolate/60'} hover:text-gold`}
                             >
                                 <FontAwesomeIcon icon={faSearch} className="text-[13px]" />
-                                <span className="text-[11px] uppercase tracking-[0.3em] font-medium hidden lg:block opacity-70 group-hover:opacity-100 transition-opacity">Buscar</span>
+                                <span className="text-[11px] uppercase tracking-[0.3em] font-bold hidden lg:block opacity-70 group-hover:opacity-100 transition-opacity">Buscar</span>
                             </button>
                         </div>
                     </nav>
@@ -211,13 +221,13 @@ export const Header: React.FC<HeaderProps> = ({ variant = 'light' }) => {
                     {/* Mobile Actions */}
                     <div className="flex items-center gap-2 md:hidden">
                         <button
-                            className={`p-2 ${isDark ? 'text-cream/70' : 'text-chocolate/70'}`}
+                            className={`p-2 ${isDark ? 'text-white' : 'text-chocolate/70'}`}
                             onClick={() => setIsSearchOpen(true)}
                         >
                             <FontAwesomeIcon icon={faSearch} className="text-2xl" />
                         </button>
                         <button
-                            className={`p-2 ${isDark ? 'text-cream/70' : 'text-chocolate/70'}`}
+                            className={`p-2 ${isDark ? 'text-white' : 'text-chocolate/70'}`}
                             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                         >
                             <FontAwesomeIcon icon={isMobileMenuOpen ? faTimes : faBars} className="text-3xl" />
