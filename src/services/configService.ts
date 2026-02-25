@@ -2,6 +2,7 @@ import { supabase } from '../lib/supabase';
 
 export interface SiteConfig {
     id?: string;
+    // ── Contacto ──────────────────────────────────────
     company_name: string;
     whatsapp: string;
     phone: string;
@@ -11,6 +12,35 @@ export interface SiteConfig {
     address: string;
     google_maps_url: string;
     office_hours?: string;
+    // ── Identidad Visual ──────────────────────────────
+    primary_color?: string;
+    secondary_color?: string;
+    accent_color?: string;
+    logo_light_url?: string;
+    logo_dark_url?: string;
+    // ── Página Nosotros ───────────────────────────────
+    about_title?: string;
+    about_subtitle?: string;
+    about_quote?: string;
+    about_body_1?: string;
+    about_body_2?: string;
+    about_body_3?: string;
+    about_image_url?: string;
+    about_stat_1_value?: string;
+    about_stat_1_label?: string;
+    about_stat_2_value?: string;
+    about_stat_2_label?: string;
+    about_stat_3_value?: string;
+    about_stat_3_label?: string;
+    about_stat_4_value?: string;
+    about_stat_4_label?: string;
+    // ── Banner CTA Home (Mayoreo) ─────────────────────
+    cta_banner_title?: string;
+    cta_banner_subtitle?: string;
+    cta_banner_tag?: string;
+    cta_banner_body?: string;
+    cta_banner_btn1_label?: string;
+    cta_banner_btn2_label?: string;
 }
 
 export const configService = {
@@ -33,7 +63,6 @@ export const configService = {
     },
 
     async updateConfig(config: Partial<SiteConfig>) {
-        // Extraemos el id para asegurar que no se sobrescriba el ID fijo 'config_1'
         const { id, ...configData } = config;
 
         const { data, error } = await supabase

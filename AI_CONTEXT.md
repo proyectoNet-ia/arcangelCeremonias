@@ -5,91 +5,97 @@ Este archivo es un resumen actualizado para mantener la continuidad del desarrol
 
 ---
 
+## ⚠️ REGLA CRÍTICA — Leer Antes de Cualquier Acción
+
+> **ESTAMOS EN FASE DE DESARROLLO LOCAL.**
+> El sitio de producción `https://www.ceremoniasarcangel.com` está mostrando una **página de "Próximamente"** al público.
+> **NO realizar `git push`, `vercel deploy`, ni ningún despliegue** hasta que el cliente apruebe explícitamente hacerlo.
+> Todo el trabajo se desarrolla y prueba en `http://localhost:3000` únicamente.
+
+---
+
 ## 📝 Resumen Ejecutivo
 
-**Última actualización:** 24 de febrero de 2026 — 16:10 hrs  
-**Rama activa:** `main` (Sincronizada con GitHub)  
-**Objetivo actual:** Dinamización total del sitio mediante CMS y optimización de la experiencia de usuario B2B.
+**Última actualización:** 25 de febrero de 2026 — 11:45 hrs
+**Rama activa:** `main` (local, NO sincronizada con GitHub intencionalmente)
+**Entorno activo:** `http://localhost:3000` (desarrollo local)
+**Producción:** `https://www.ceremoniasarcangel.com` — ⛔ Mostrando página "Próximamente", NO tocar.
 
 ---
 
 ## 🏗️ Arquitectura del Proyecto
 
 - **Stack:** React 19 + Vite + TypeScript + Tailwind CSS + Framer Motion + FontAwesome
-- **Backend:** Supabase (PostgreSQL) — tablas: `products`, `categories`, `users`, `site_config`, `hero_slides`
-- **Gestión de Estado:** React Context API (`ConfigContext`) para configuraciones globales.
-- **Autenticación:** Supabase Auth (admin panel protegido)
+- **Backend:** Supabase (PostgreSQL) — mismo proyecto Supabase para dev y prod (usar con cuidado)
+- **Gestión de Estado:** React Context API (`ConfigContext`) — inyecta colores y config al DOM
+- **Autenticación:** Supabase Auth (admin panel en `/admin`)
 - **Repositorio:** `https://github.com/proyectoNet-ia/arcangelCeremonias`
-- **Producción:** `https://www.ceremoniasarcangel.com` (Vercel)
+- **Servidor local:** `npm run dev` → `http://localhost:3000`
 
 ---
 
-## 🚀 Avances de la Sesión (24 de febrero de 2026)
+## 🧩 Estado del CMS Admin — Completado al 25/02/2026
 
-### 1. Sistema de Configuración Global (Dinamización Total)
-- **Base de Datos:** Creada tabla `site_config` para centralizar datos de la empresa.
-- **Servicio & Contexto:** Implementado `configService.ts` y `ConfigContext.tsx`. Ahora toda la aplicación consume datos en tiempo real de Supabase.
-- **Integración UI:** Los siguientes componentes ahora son 100% dinámicos:
-    - **Header:** Teléfonos, WhatsApp, Email y Redes Sociales.
-    - **Footer:** Información de contacto y links sociales.
-    - **Contacto:** Dirección, horarios, mapas y canales de comunicación.
-    - **FloatingActions:** Botón flotante de WhatsApp.
-    - **ProductDetail:** Botones de consulta por producto.
+### ✅ Secciones implementadas y funcionales:
 
-### 2. Gestión de Hero Slider desde CMS
-- **Módulo HeroManager:** Implementado en el panel Admin para permitir:
-    - Carga de imágenes Desktop (16:9) y Mobile (Vertical).
-    - Edición de títulos (divididos en dos partes), subtítulos y etiquetas (tags).
-    - Configuración de botones CTA (texto y link).
-    - Gestión de orden y estado activo.
-- **Home UI:** Integración dinámica en `Home.tsx`. Si no hay slides en la DB, usa un catálogo estático de respaldo.
-- **Ajuste Estético:** Se incrementó la altura del Hero a **140vh** para una estética más editorial e impactante.
+| Sección Admin | Ruta | Descripción |
+|---------------|------|-------------|
+| Dashboard | `/admin` | Estadísticas generales (algunas son placeholder) |
+| Productos | `/admin/productos` | CRUD completo + upload de imágenes a Supabase Storage |
+| Categorías | `/admin/productos` | Gestión de categorías incluida en Productos |
+| Hero Slider | `/admin/hero` | CRUD de diapositivas con imagen, textos, alineación y botones |
+| Configuración | `/admin/configuracion` | Todo lo de abajo ↓ |
 
-### 3. Enfoque Comercial B2B (Mayoreo)
-- **Home CTA:** Refocalizado el banner de contacto hacia "Ventas al por mayor & Boutiques".
-- **Copy:** Actualizado para atraer socios comerciales: *"Abastecemos a las mejores boutiques de México..."*.
-- **Pre-mensajes:** El botón de WhatsApp ahora solicita específicamente el catálogo para negocios.
+### Dentro de `/admin/configuracion` (5 secciones):
 
-### 4. Estabilidad y Bugfixes
-- **Security:** Corregidos errores 401 y 42501 (RLS) en Supabase mediante ajustes de políticas y desactivación temporal en tablas de configuración para desarrollo.
-- **React:** Eliminados warnings de "uncontrolled inputs" en los formularios del Admin.
-- **UX:** Solucionado error de "undefined slide" y preloader infinito en Home.tsx mediante protecciones de carga y reset de estado.
+1. **Identidad Visual y Colores** — Color Primario (chocolate/oscuro), Secundario (gold/detalles), Acento (cream/fondos). Se aplican en todo el sitio vía CSS variables `var(--color-*)`.
+2. **Logos** — Logo para fondos claros y Logo para fondos oscuros. Upload a Supabase Storage, fallback automático al SVG original si no hay imagen.
+3. **Información de Identidad** — Nombre empresa, WhatsApp, teléfono, email, redes sociales.
+4. **Página "Nosotros"** — Subtítulo, título, cita destacada, 3 párrafos, URL de imagen, 4 estadísticas (valor + etiqueta).
+5. **Banner CTA Mayoreo (Home)** — Etiqueta, título, subtítulo dorado, cuerpo del texto, texto de botón 1 (WhatsApp) y botón 2 (teléfono).
 
 ---
 
-## 📁 Archivos Clave Añadidos/Modificados
+## 📄 Páginas Públicas — Estado
 
-| Archivo | Función |
-|---------|--------|
-| `src/services/configService.ts` | CRUD de configuración general |
-| `src/services/heroService.ts` | CRUD de diapositivas del banner |
-| `src/context/ConfigContext.tsx` | Proveedor global de datos de sitio |
-| `src/pages/Admin.tsx` | Añadidos `ConfigManager` y `HeroManager` |
-| `src/pages/Home.tsx` | Dinamización de Hero y ajuste de altura (140vh) |
+| Página | Ruta | Estado | Dinámica desde CMS |
+|--------|------|--------|--------------------|
+| Home | `/` | ✅ Funcional | Hero, CTA Mayoreo, Productos Destacados |
+| Catálogo | `/catalogo` | ✅ Funcional | Productos y categorías desde Supabase |
+| Detalle Producto | `/catalogo/:slug` | ✅ Funcional | Galería, variantes, WhatsApp |
+| Nosotros | `/nosotros` | ✅ Funcional | Todos los textos e imagen desde CMS |
+| Contacto | `/contacto` | ✅ Funcional | Datos desde ConfigContext |
 
 ---
 
-## 🧩 Estado del CMS Admin
+## 🐛 Issues Conocidos (por resolver)
 
-### Secciones CMS **ya implementadas**:
-- ✅ **Gestión de Productos**
-- ✅ **Gestión de Categorías**
-- ✅ **Configuración General** (Datos de contacto, redes, empresa)
-- ✅ **Gestión de Hero/Sliders** (Imágenes y textos dinámicos del banner)
+| ID | Descripción | Severidad | Estado |
+|----|-------------|-----------|--------|
+| B-01 | Stats del Dashboard (visitas, consultas) son valores ficticios | Medio | Pendiente |
+| B-04 | Verificar protección de ruta `/admin` (auth guard) | Alto | Pendiente revisión |
+| B-05 | Catálogo PDF no integrado en el sitio | Bajo | Pendiente |
 
-### Secciones CMS **pendientes**:
-- ❌ **Gestión de Banners Secundarios** (CTA de medio cuerpo en Home)
-- ❌ **Gestión de Contenido "Nosotros"** (Historia y valores editables)
-- ❌ **Galería Media Centralizada** (Explorador de archivos de Supabase Storage)
+---
+
+## 🛠️ Próximos Pasos (Ordenados por Prioridad)
+
+1. **🟡 MEDIO:** Galería Media Centralizada — explorador de archivos Supabase Storage en Admin para reutilizar imágenes ya subidas
+2. **🟡 MEDIO:** Revisar y reforzar protección de ruta `/admin` con auth guard
+3. **🟢 BAJO:** Integrar link/descarga del Catálogo PDF desde algún punto del sitio
+4. **🟢 BAJO:** Mejorar Dashboard con estadísticas reales (visitas de Supabase Analytics o similar)
+5. **⏳ CUANDO EL CLIENTE APRUEBE:** Realizar `git push` y deployment en Vercel para lanzar el sitio completo
 
 ---
 
 ## 🛠️ Notas Técnicas Importantes
 
-- **Supabase RLS:** Las tablas `site_config` y `hero_slides` tienen RLS deshabilitado temporalmente para facilitar la edición sin login complejo mientras se termina el sistema.
-- **Optimización de Imágenes:** El Admin optimiza automáticamente las imágenes a 800px de ancho antes de subirlas para mantener el performance.
-- **Sincronización:** Se ha hecho `git push` a `origin/main`. Para retomar en otra PC, realizar `git pull` y verificar que las variables `.env` (Supabase) estén presentes.
+- **CSS Variables:** `--color-primary` = color oscuro/chocolate, `--color-secondary` = gold/detalles, `--color-accent` = fondo claro/cream. Tailwind usa `var(--color-*)` con fallbacks hardcodeados.
+- **Logo Fallback:** Si `logo_light_url` o `logo_dark_url` están vacíos en Supabase, el componente `Logo.tsx` muestra el SVG original. El SVG respeta la variante (`dark` = color gold, `light` = color chocolate).
+- **Supabase Compartido:** Dev y Prod usan el mismo proyecto Supabase. Los cambios en `site_config` afectan la "Próximamente" en producción también. Esto es normal y esperado.
+- **Migraciones ejecutadas:** `sql_migration_branding.sql` y `sql_migration_content.sql` ya aplicadas en Supabase.
+- **TypeScript limpio:** `npx tsc --noEmit` → exit 0, sin errores.
 
 ---
 
-*Creado por Antigravity — Agente IA de desarrollo. Última actualización: 24/02/2026 16:10 hrs*
+*Actualizado por Antigravity — Agente IA de desarrollo. Última actualización: 25/02/2026 11:45 hrs*

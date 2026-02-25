@@ -147,8 +147,8 @@ export const Header: React.FC<HeaderProps> = ({ variant = 'light' }) => {
             {/* --- MAIN HEADER --- */}
             <header className={`w-full transition-colors duration-500 ${isDark ? 'bg-transparent border-b border-white/5' : 'bg-cream/90 backdrop-blur-md border-b border-gold/10'} px-6 py-6 md:py-4 md:px-12`}>
                 <div className="max-w-[1600px] mx-auto flex justify-between items-center">
-                    <Link to="/" className={`w-44 md:w-56 hover:scale-105 transition-transform duration-500 ${isDark ? 'invert brightness-0 contrast-200 sepia-[.3] hue-rotate-[10deg] saturate-[.5]' : ''}`}>
-                        <Logo />
+                    <Link to="/" className="w-44 md:w-56 hover:scale-105 transition-transform duration-500">
+                        <Logo variant={isDark ? 'dark' : 'light'} />
                     </Link>
 
                     {/* Desktop Navigation */}

@@ -151,9 +151,7 @@ export const Footer: React.FC = () => {
                             </a>
                         </div>
                         <div className="pt-8 opacity-20 hover:opacity-100 transition-opacity duration-700 w-40">
-                            <div className="invert brightness-0">
-                                <Logo />
-                            </div>
+                            <Logo variant="dark" />
                         </div>
                     </RevealOnScroll>
                 </div>

@@ -9,10 +9,10 @@ export default {
     theme: {
         extend: {
             colors: {
-                cream: '#FDF8F1',
-                chocolate: '#3E2723',
+                cream: 'var(--color-accent, #FDF8F1)',
+                chocolate: 'var(--color-primary, #3E2723)',
                 bronze: '#8D6E63',
-                gold: '#C5A059',
+                gold: 'var(--color-secondary, #C5A059)',
             },
             fontFamily: {
                 sans: ['Montserrat', 'sans-serif'],

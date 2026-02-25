@@ -83,6 +83,14 @@ const Home: React.FC = () => {
     const facebook = config?.facebook_url || 'https://www.facebook.com/arcangel.ceremonias/';
     const instagram = config?.instagram_url || 'https://www.instagram.com/ceremonias.arcangel/';
 
+    // CTA Banner (Mayoreo)
+    const ctaTag = config?.cta_banner_tag || 'Socios Comerciales';
+    const ctaTitle = config?.cta_banner_title || 'Venta al por mayor';
+    const ctaSubtitle = config?.cta_banner_subtitle || '& Boutiques';
+    const ctaBody = config?.cta_banner_body || 'Abastecemos a las mejores boutiques de México con diseños exclusivos y calidad artesanal. Solicita nuestro catálogo de precios para negocios.';
+    const ctaBtn1 = config?.cta_banner_btn1_label || 'Catálogo Mayoreo';
+    const ctaBtn2 = config?.cta_banner_btn2_label || 'Línea de Negocios';
+
     // Auto-advance slider
     useEffect(() => {
         if (slides.length <= 1) return;
@@ -394,13 +402,13 @@ const Home: React.FC = () => {
                         viewport={{ once: true }}
                         transition={{ duration: 0.7, delay: 0.2 }}
                     >
-                        <span className="text-[9px] uppercase tracking-[0.6em] text-gold/50 font-bold block">Socios Comerciales</span>
+                        <span className="text-[9px] uppercase tracking-[0.6em] text-gold/50 font-bold block">{ctaTag}</span>
                         <h2 className="font-serif text-3xl md:text-4xl lg:text-5xl text-cream leading-tight uppercase">
-                            Venta al por mayor<br className="hidden md:block" />
-                            <span className="text-gold/70 md:ml-2">& Boutiques</span>
+                            {ctaTitle}<br className="hidden md:block" />
+                            <span className="text-gold/70 md:ml-2">{ctaSubtitle}</span>
                         </h2>
                         <p className="text-cream/50 text-sm font-light leading-relaxed max-w-md">
-                            Abastecemos a las mejores boutiques de México con diseños exclusivos y calidad artesanal. Solicita nuestro catálogo de precios para negocios.
+                            {ctaBody}
                         </p>
                     </motion.div>
 
@@ -421,7 +429,7 @@ const Home: React.FC = () => {
                             className="flex items-center gap-4 bg-[#25D366] text-white px-10 py-5 text-[10px] uppercase tracking-[0.4em] font-bold hover:bg-[#1ebe59] transition-all duration-400 group"
                         >
                             <FontAwesomeIcon icon={faWhatsapp} className="text-lg group-hover:scale-110 transition-transform" />
-                            Catálogo Mayoreo
+                            {ctaBtn1}
                         </motion.a>
                         <motion.a
                             href={`tel:${phone.replace(/\s+/g, '')}`}
@@ -429,7 +437,7 @@ const Home: React.FC = () => {
                             whileTap={{ scale: 0.97 }}
                             className="flex items-center gap-4 border border-cream/20 text-cream px-10 py-5 text-[10px] uppercase tracking-[0.4em] font-bold hover:border-gold hover:text-gold transition-all duration-400"
                         >
-                            Línea de Negocios
+                            {ctaBtn2}
                         </motion.a>
                     </motion.div>
                 </div>

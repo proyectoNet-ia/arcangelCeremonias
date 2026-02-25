@@ -690,7 +690,29 @@ const ConfigManager: React.FC = () => {
         instagram_url: '',
         address: '',
         google_maps_url: '',
-        office_hours: ''
+        office_hours: '',
+        primary_color: '#3E2723',
+        secondary_color: '#C5A059',
+        accent_color: '#FDF8F1',
+        logo_light_url: '',
+        logo_dark_url: '',
+        about_title: '',
+        about_subtitle: '',
+        about_quote: '',
+        about_body_1: '',
+        about_body_2: '',
+        about_body_3: '',
+        about_image_url: '',
+        about_stat_1_value: '', about_stat_1_label: '',
+        about_stat_2_value: '', about_stat_2_label: '',
+        about_stat_3_value: '', about_stat_3_label: '',
+        about_stat_4_value: '', about_stat_4_label: '',
+        cta_banner_title: '',
+        cta_banner_subtitle: '',
+        cta_banner_tag: '',
+        cta_banner_body: '',
+        cta_banner_btn1_label: '',
+        cta_banner_btn2_label: '',
     });
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
@@ -710,7 +732,29 @@ const ConfigManager: React.FC = () => {
                         instagram_url: data.instagram_url || '',
                         address: data.address || '',
                         google_maps_url: data.google_maps_url || '',
-                        office_hours: data.office_hours || ''
+                        office_hours: data.office_hours || '',
+                        primary_color: data.primary_color || '#3E2723',
+                        secondary_color: data.secondary_color || '#C5A059',
+                        accent_color: data.accent_color || '#FDF8F1',
+                        logo_light_url: data.logo_light_url || '',
+                        logo_dark_url: data.logo_dark_url || '',
+                        about_title: data.about_title || '',
+                        about_subtitle: data.about_subtitle || '',
+                        about_quote: data.about_quote || '',
+                        about_body_1: data.about_body_1 || '',
+                        about_body_2: data.about_body_2 || '',
+                        about_body_3: data.about_body_3 || '',
+                        about_image_url: data.about_image_url || '',
+                        about_stat_1_value: data.about_stat_1_value || '', about_stat_1_label: data.about_stat_1_label || '',
+                        about_stat_2_value: data.about_stat_2_value || '', about_stat_2_label: data.about_stat_2_label || '',
+                        about_stat_3_value: data.about_stat_3_value || '', about_stat_3_label: data.about_stat_3_label || '',
+                        about_stat_4_value: data.about_stat_4_value || '', about_stat_4_label: data.about_stat_4_label || '',
+                        cta_banner_title: data.cta_banner_title || '',
+                        cta_banner_subtitle: data.cta_banner_subtitle || '',
+                        cta_banner_tag: data.cta_banner_tag || '',
+                        cta_banner_body: data.cta_banner_body || '',
+                        cta_banner_btn1_label: data.cta_banner_btn1_label || '',
+                        cta_banner_btn2_label: data.cta_banner_btn2_label || '',
                     });
                 }
             } catch (error) {
@@ -721,6 +765,22 @@ const ConfigManager: React.FC = () => {
         };
         load();
     }, []);
+
+    const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>, type: 'light' | 'dark') => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        try {
+            setSaving(true);
+            const url = await productService.uploadImage(file, 'branding');
+            if (type === 'light') setConfig(prev => ({ ...prev, logo_light_url: url }));
+            else setConfig(prev => ({ ...prev, logo_dark_url: url }));
+            toast.success('Logo cargado correctamente');
+        } catch (error) {
+            toast.error('Error al subir el logo');
+        } finally {
+            setSaving(false);
+        }
+    };
 
     const handleSave = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -758,6 +818,71 @@ const ConfigManager: React.FC = () => {
                 </div>
 
                 <form onSubmit={handleSave} className="space-y-10">
+                    {/* Brand & Colors */}
+                    <div className="space-y-8">
+                        <h3 className="text-[10px] uppercase tracking-widest font-bold text-gold border-b border-gold/10 pb-2">Identidad Visual y Colores</h3>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <div className="space-y-2">
+                                <label className="text-[10px] uppercase tracking-widest font-bold text-slate-400">Color Primario (Textos/Oscuros)</label>
+                                <div className="flex gap-2">
+                                    <input type="color" value={config.primary_color} onChange={e => setConfig({ ...config, primary_color: e.target.value })} className="h-12 w-12 border border-slate-200 cursor-pointer" />
+                                    <input type="text" value={config.primary_color} onChange={e => setConfig({ ...config, primary_color: e.target.value })} className="flex-grow p-4 border border-slate-100 outline-none text-xs font-mono" />
+                                </div>
+                            </div>
+                            <div className="space-y-2">
+                                <label className="text-[10px] uppercase tracking-widest font-bold text-slate-400">Color Secundario (Gold/Detalles)</label>
+                                <div className="flex gap-2">
+                                    <input type="color" value={config.secondary_color} onChange={e => setConfig({ ...config, secondary_color: e.target.value })} className="h-12 w-12 border border-slate-200 cursor-pointer" />
+                                    <input type="text" value={config.secondary_color} onChange={e => setConfig({ ...config, secondary_color: e.target.value })} className="flex-grow p-4 border border-slate-100 outline-none text-xs font-mono" />
+                                </div>
+                            </div>
+                            <div className="space-y-2">
+                                <label className="text-[10px] uppercase tracking-widest font-bold text-slate-400">Color de Acento (Fondo Claro)</label>
+                                <div className="flex gap-2">
+                                    <input type="color" value={config.accent_color} onChange={e => setConfig({ ...config, accent_color: e.target.value })} className="h-12 w-12 border border-slate-200 cursor-pointer" />
+                                    <input type="text" value={config.accent_color} onChange={e => setConfig({ ...config, accent_color: e.target.value })} className="flex-grow p-4 border border-slate-100 outline-none text-xs font-mono" />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-4">
+                            <div className="space-y-4">
+                                <label className="text-[10px] uppercase tracking-widest font-bold text-slate-400">Logo para Fondos Claros (Versión Oscura)</label>
+                                <div className="aspect-video bg-slate-50 border-2 border-dashed border-slate-100 relative group overflow-hidden flex items-center justify-center">
+                                    {config.logo_light_url ? (
+                                        <>
+                                            <img src={config.logo_light_url} className="max-h-full object-contain p-4" />
+                                            <label className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer text-white text-[10px] font-bold uppercase tracking-widest">Cambiar<input type="file" className="hidden" accept="image/*" onChange={e => handleLogoUpload(e, 'light')} /></label>
+                                        </>
+                                    ) : (
+                                        <label className="cursor-pointer flex flex-col items-center gap-2 p-4 text-center">
+                                            <FontAwesomeIcon icon={faImage} className="text-3xl text-slate-200" />
+                                            <span className="text-[9px] uppercase font-bold text-slate-300">Subir Logo (Claro)</span>
+                                            <input type="file" className="hidden" accept="image/*" onChange={e => handleLogoUpload(e, 'light')} />
+                                        </label>
+                                    )}
+                                </div>
+                            </div>
+                            <div className="space-y-4">
+                                <label className="text-[10px] uppercase tracking-widest font-bold text-slate-400">Logo para Fondos Oscuros (Versión Blanca/Gold)</label>
+                                <div className="aspect-video bg-chocolate border-2 border-dashed border-white/10 relative group overflow-hidden flex items-center justify-center">
+                                    {config.logo_dark_url ? (
+                                        <>
+                                            <img src={config.logo_dark_url} className="max-h-full object-contain p-4" />
+                                            <label className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer text-white text-[10px] font-bold uppercase tracking-widest">Cambiar<input type="file" className="hidden" accept="image/*" onChange={e => handleLogoUpload(e, 'dark')} /></label>
+                                        </>
+                                    ) : (
+                                        <label className="cursor-pointer flex flex-col items-center gap-2 p-4 text-center">
+                                            <FontAwesomeIcon icon={faImage} className="text-3xl text-white/20" />
+                                            <span className="text-[9px] uppercase font-bold text-white/30">Subir Logo (Oscuro)</span>
+                                            <input type="file" className="hidden" accept="image/*" onChange={e => handleLogoUpload(e, 'dark')} />
+                                        </label>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     {/* Basic Info */}
                     <div className="space-y-6">
                         <h3 className="text-[10px] uppercase tracking-widest font-bold text-gold border-b border-gold/10 pb-2">Información de Identidad</h3>
@@ -895,6 +1020,85 @@ const ConfigManager: React.FC = () => {
                                     className="w-full p-4 border border-slate-100 focus:border-gold outline-none text-sm"
                                     placeholder="https://goo.gl/maps/..."
                                 />
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* ── Nosotros ── */}
+                    <div className="space-y-6">
+                        <h3 className="text-[10px] uppercase tracking-widest font-bold text-gold border-b border-gold/10 pb-2">Página "Nosotros"</h3>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="space-y-2">
+                                <label className="text-[10px] uppercase tracking-widest font-bold text-slate-400">Subtítulo (Etiqueta superior)</label>
+                                <input type="text" value={config.about_subtitle || ''} onChange={e => setConfig({ ...config, about_subtitle: e.target.value })} className="w-full p-4 border border-slate-100 focus:border-gold outline-none text-sm" placeholder="Ej: Nuestra Historia" />
+                            </div>
+                            <div className="space-y-2">
+                                <label className="text-[10px] uppercase tracking-widest font-bold text-slate-400">Título Principal</label>
+                                <input type="text" value={config.about_title || ''} onChange={e => setConfig({ ...config, about_title: e.target.value })} className="w-full p-4 border border-slate-100 focus:border-gold outline-none text-sm" placeholder="Ej: Más de 30 años de tradición" />
+                            </div>
+                        </div>
+                        <div className="space-y-2">
+                            <label className="text-[10px] uppercase tracking-widest font-bold text-slate-400">Frase Destacada (Cita en itálica)</label>
+                            <textarea rows={2} value={config.about_quote || ''} onChange={e => setConfig({ ...config, about_quote: e.target.value })} className="w-full p-4 border border-slate-100 focus:border-gold outline-none text-sm" placeholder="Nuestra misión es..." />
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <div className="space-y-2">
+                                <label className="text-[10px] uppercase tracking-widest font-bold text-slate-400">Párrafo 1</label>
+                                <textarea rows={4} value={config.about_body_1 || ''} onChange={e => setConfig({ ...config, about_body_1: e.target.value })} className="w-full p-4 border border-slate-100 focus:border-gold outline-none text-sm" />
+                            </div>
+                            <div className="space-y-2">
+                                <label className="text-[10px] uppercase tracking-widest font-bold text-slate-400">Párrafo 2</label>
+                                <textarea rows={4} value={config.about_body_2 || ''} onChange={e => setConfig({ ...config, about_body_2: e.target.value })} className="w-full p-4 border border-slate-100 focus:border-gold outline-none text-sm" />
+                            </div>
+                            <div className="space-y-2">
+                                <label className="text-[10px] uppercase tracking-widest font-bold text-slate-400">Párrafo 3</label>
+                                <textarea rows={4} value={config.about_body_3 || ''} onChange={e => setConfig({ ...config, about_body_3: e.target.value })} className="w-full p-4 border border-slate-100 focus:border-gold outline-none text-sm" />
+                            </div>
+                        </div>
+                        <div className="space-y-2">
+                            <label className="text-[10px] uppercase tracking-widest font-bold text-slate-400">URL de Imagen Principal</label>
+                            <input type="text" value={config.about_image_url || ''} onChange={e => setConfig({ ...config, about_image_url: e.target.value })} className="w-full p-4 border border-slate-100 focus:border-gold outline-none text-sm" placeholder="/catalog/portrait-child.jpg o URL de Supabase" />
+                        </div>
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                            {([1, 2, 3, 4] as const).map(n => (
+                                <div key={n} className="space-y-2 p-4 border border-slate-100">
+                                    <label className="text-[9px] uppercase tracking-widest font-bold text-slate-400">Estadística {n}</label>
+                                    <input type="text" value={(config as any)[`about_stat_${n}_value`] || ''} onChange={e => setConfig({ ...config, [`about_stat_${n}_value`]: e.target.value })} className="w-full p-2 border border-slate-100 focus:border-gold outline-none text-sm font-bold" placeholder="30+" />
+                                    <input type="text" value={(config as any)[`about_stat_${n}_label`] || ''} onChange={e => setConfig({ ...config, [`about_stat_${n}_label`]: e.target.value })} className="w-full p-2 border border-slate-100 focus:border-gold outline-none text-xs" placeholder="Años de Experiencia" />
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* ── CTA Banner (Mayoreo) ── */}
+                    <div className="space-y-6">
+                        <h3 className="text-[10px] uppercase tracking-widest font-bold text-gold border-b border-gold/10 pb-2">Banner CTA — Venta al por Mayor (Home)</h3>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <div className="space-y-2">
+                                <label className="text-[10px] uppercase tracking-widest font-bold text-slate-400">Etiqueta Superior</label>
+                                <input type="text" value={config.cta_banner_tag || ''} onChange={e => setConfig({ ...config, cta_banner_tag: e.target.value })} className="w-full p-4 border border-slate-100 focus:border-gold outline-none text-sm" placeholder="Socios Comerciales" />
+                            </div>
+                            <div className="space-y-2">
+                                <label className="text-[10px] uppercase tracking-widest font-bold text-slate-400">Título</label>
+                                <input type="text" value={config.cta_banner_title || ''} onChange={e => setConfig({ ...config, cta_banner_title: e.target.value })} className="w-full p-4 border border-slate-100 focus:border-gold outline-none text-sm" placeholder="Venta al por mayor" />
+                            </div>
+                            <div className="space-y-2">
+                                <label className="text-[10px] uppercase tracking-widest font-bold text-slate-400">Subtítulo (Dorado)</label>
+                                <input type="text" value={config.cta_banner_subtitle || ''} onChange={e => setConfig({ ...config, cta_banner_subtitle: e.target.value })} className="w-full p-4 border border-slate-100 focus:border-gold outline-none text-sm" placeholder="& Boutiques" />
+                            </div>
+                        </div>
+                        <div className="space-y-2">
+                            <label className="text-[10px] uppercase tracking-widest font-bold text-slate-400">Texto del Banner</label>
+                            <textarea rows={3} value={config.cta_banner_body || ''} onChange={e => setConfig({ ...config, cta_banner_body: e.target.value })} className="w-full p-4 border border-slate-100 focus:border-gold outline-none text-sm" placeholder="Descripción para socios..." />
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="space-y-2">
+                                <label className="text-[10px] uppercase tracking-widest font-bold text-slate-400">Texto Botón 1 (WhatsApp/Verde)</label>
+                                <input type="text" value={config.cta_banner_btn1_label || ''} onChange={e => setConfig({ ...config, cta_banner_btn1_label: e.target.value })} className="w-full p-4 border border-slate-100 focus:border-gold outline-none text-sm" placeholder="Catálogo Mayoreo" />
+                            </div>
+                            <div className="space-y-2">
+                                <label className="text-[10px] uppercase tracking-widest font-bold text-slate-400">Texto Botón 2 (Teléfono/Outline)</label>
+                                <input type="text" value={config.cta_banner_btn2_label || ''} onChange={e => setConfig({ ...config, cta_banner_btn2_label: e.target.value })} className="w-full p-4 border border-slate-100 focus:border-gold outline-none text-sm" placeholder="Línea de Negocios" />
                             </div>
                         </div>
                     </div>
