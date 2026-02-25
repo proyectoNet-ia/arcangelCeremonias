@@ -106,6 +106,12 @@ const ProductDetail: React.FC = () => {
         ? product.size_variants[selectedVariant].price
         : product.price;
 
+    // ── Abre WhatsApp (mismo comportamiento en los 3 botones) ──────────────
+    const waOpen = (msg: string) => {
+        const phone = whatsapp.replace(/\D/g, ''); // solo dígitos, sin espacios ni guiones
+        window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, '_blank', 'noopener,noreferrer');
+    };
+
     // ── Mensaje detallado para el vendedor ──────────────────────────────
     const buildWhatsAppMessage = (context: 'interesa' | 'distribuidor' | 'asesoria' = 'interesa') => {
         const model = product.model_code || product.slug.toUpperCase();
@@ -350,9 +356,7 @@ const ProductDetail: React.FC = () => {
                                 <motion.button
                                     whileHover={{ scale: 1.02, boxShadow: '0 16px 50px rgba(197,168,112,0.25)' }}
                                     whileTap={{ scale: 0.97 }}
-                                    onClick={() => {
-                                        window.open(`https://wa.me/${whatsapp}?text=${encodeURIComponent(buildWhatsAppMessage('interesa'))}`, '_blank');
-                                    }}
+                                    onClick={() => waOpen(buildWhatsAppMessage('interesa'))}
                                     className="flex-grow bg-[#8E735B] text-cream py-4 md:py-6 px-4 flex items-center justify-center gap-3 md:gap-4 group transition-all duration-500 hover:bg-gold hover:shadow-2xl hover:shadow-gold/20"
                                 >
                                     <FontAwesomeIcon icon={faWhatsapp} className="text-lg md:text-xl group-hover:scale-110 transition-transform duration-300" />
@@ -431,7 +435,7 @@ const ProductDetail: React.FC = () => {
                                     <motion.button
                                         whileHover={{ scale: 1.03, y: -2, boxShadow: '0 10px 30px rgba(37,211,102,0.15)' }}
                                         whileTap={{ scale: 0.97 }}
-                                        onClick={() => window.open(`https://wa.me/${whatsapp}?text=${encodeURIComponent(buildWhatsAppMessage('distribuidor'))}`, '_blank')}
+                                        onClick={() => waOpen(buildWhatsAppMessage('distribuidor'))}
                                         className="flex flex-col items-center justify-center gap-2 py-5 bg-white border border-gold/15 text-chocolate hover:border-[#25D366]/50 hover:text-[#25D366] transition-all duration-400 group"
                                     >
                                         <FontAwesomeIcon icon={faWhatsapp} className="text-base text-[#25D366] group-hover:scale-110 transition-transform duration-300" />
@@ -572,10 +576,7 @@ const ProductDetail: React.FC = () => {
                             <motion.button
                                 whileHover={{ scale: 1.03, boxShadow: '0 20px 60px rgba(197,168,112,0.3)' }}
                                 whileTap={{ scale: 0.97 }}
-                                onClick={() => window.open(
-                                    `https://wa.me/${whatsapp}?text=${encodeURIComponent(buildWhatsAppMessage('asesoria'))}`,
-                                    '_blank'
-                                )}
+                                onClick={() => waOpen(buildWhatsAppMessage('asesoria'))}
                                 className="flex-1 bg-gold text-chocolate py-5 px-8 flex items-center justify-center gap-4 text-[10px] uppercase tracking-[0.35em] font-bold transition-all duration-500 group"
                             >
                                 <FontAwesomeIcon icon={faWhatsapp} className="text-xl group-hover:scale-110 transition-transform duration-300" />
