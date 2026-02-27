@@ -20,7 +20,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, index }) => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: index * 0.1 }}
-            className="group cursor-pointer"
+            className="group cursor-pointer relative"
         >
             <Link to={`/producto/${product.slug}`}>
                 <div className="relative overflow-hidden bg-slate-50 aspect-[3/4] mb-5 shadow-sm group-hover:shadow-xl transition-shadow duration-700">

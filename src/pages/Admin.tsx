@@ -6,24 +6,104 @@ import {
     faPlus, faTrash, faEdit, faSave, faTimes,
     faImage, faImages, faChevronRight, faDiamond,
     faBox, faUsers, faEye, faChartBar, faArrowUp,
-    faCog, faGlobe, faPhone, faMapMarkerAlt, faEnvelope
+    faCog, faGlobe, faPhone, faMapMarkerAlt, faEnvelope,
+    faFilePdf, faFileUpload, faMagic, faInbox, faCheckCircle,
+    faUserShield, faUserEdit, faUserMinus, faUserPlus
 } from '@fortawesome/free-solid-svg-icons';
 import { faWhatsapp, faFacebook, faInstagram } from '@fortawesome/free-brands-svg-icons';
 import { productService } from '@/services/productService';
 import { configService, SiteConfig } from '@/services/configService';
+import { contactService, ContactMessage } from '@/services/contactService';
 import { heroService, HeroSlide } from '@/services/heroService';
 import { seedCatalog } from '@/services/seedData';
+import { statsService } from '@/services/statsService';
+import { userService, Profile } from '@/services/userService';
+import { useAuth } from '@/context/AuthContext';
 import { Product, Category } from '@/types/product';
 import { AdminLayout } from '@/components/admin/AdminLayout';
+import { MediaGallery } from '@/components/admin/MediaGallery';
+import { MediaSelectorModal } from '@/components/admin/MediaSelectorModal';
+import { ConfirmModal } from '@/components/admin/ConfirmModal';
 import toast from 'react-hot-toast';
+const generateSlug = (name: string) => {
+    return name
+        .toLowerCase()
+        .trim()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "") // Eliminar acentos
+        .replace(/[^a-z0-9\s-]/g, "")    // Eliminar caracteres especiales
+        .replace(/[\s_]+/g, "-")          // Espacios a guiones
+        .replace(/-+/g, "-");             // Evitar guiones dobles
+};
+
+const smartFormatTitle = (val: string) => {
+    if (!val) return '';
+    const minorWords = ['de', 'del', 'la', 'las', 'el', 'los', 'y', 'en', 'para', 'con', 'por', 'a', 'un', 'una', 'unas', 'unos'];
+    return val
+        .split(' ')
+        .map((word, index) => {
+            if (!word) return '';
+            const lowerWord = word.toLowerCase();
+            if (index > 0 && minorWords.includes(lowerWord)) {
+                return lowerWord;
+            }
+            return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+        })
+        .join(' ');
+};
 
 // --- Dashboard Component ---
-const DashboardOverview: React.FC<{ products: Product[], categories: Category[] }> = ({ products, categories }) => {
+const DashboardOverview: React.FC<{ products: Product[], categories: Category[], refresh: () => void }> = ({ products, categories, refresh }) => {
+    const [isStandardizing, setIsStandardizing] = useState(false);
+    const [whatsappClicks, setWhatsappClicks] = useState<number | string>('...');
+
+    useEffect(() => {
+        const fetchStats = async () => {
+            const count = await statsService.getWhatsAppClicksCount();
+            setWhatsappClicks(count);
+        };
+        fetchStats();
+    }, []);
+
+    const handleStandardizeTitles = async () => {
+        if (!confirm('¿Deseas aplicar el nuevo formato "Smart Title Case" (Ej: Toalla para Bautizo) a todos los productos y categorías existentes? Esta acción actualizará la base de datos.')) return;
+
+        try {
+            setIsStandardizing(true);
+            const toastId = toast.loading('Estandarizando catálogo...');
+
+            // 1. Estandarizar Categorías
+            for (const cat of categories) {
+                const newName = smartFormatTitle(cat.name);
+                if (newName !== cat.name) {
+                    await productService.upsertCategory({ ...cat, name: newName });
+                }
+            }
+
+            // 2. Estandarizar Productos
+            for (const prod of products) {
+                const newName = smartFormatTitle(prod.name);
+                if (newName !== prod.name) {
+                    // Removemos campos de join para el upsert
+                    const { categories: _, created_at: __, ...prodData } = prod as any;
+                    await productService.upsertProduct({ ...prodData, name: newName });
+                }
+            }
+
+            toast.success('¡Catálogo estandarizado con éxito!', { id: toastId });
+            refresh();
+        } catch (error) {
+            console.error(error);
+            toast.error('Error durante la estandarización');
+        } finally {
+            setIsStandardizing(false);
+        }
+    };
     const stats = [
         { label: 'Productos Totales', value: products.length, icon: faBox, color: 'text-blue-500', bg: 'bg-blue-50' },
         { label: 'Categorías', value: categories.length, icon: faChartBar, color: 'text-purple-500', bg: 'bg-purple-50' },
         { label: 'Visitas Hoy', value: '1,284', icon: faEye, color: 'text-gold', bg: 'bg-gold/5', trend: '+12%' },
-        { label: 'Consultas WhatsApp', value: '42', icon: faUsers, color: 'text-green-500', bg: 'bg-green-50', trend: '+5%' },
+        { label: 'Consultas WhatsApp', value: whatsappClicks.toLocaleString(), icon: faUsers, color: 'text-green-500', bg: 'bg-green-50', trend: '+5%' },
     ];
 
     return (
@@ -69,25 +149,13 @@ const DashboardOverview: React.FC<{ products: Product[], categories: Category[] 
                             <p className="text-xs uppercase tracking-widest font-bold">Nuevo Producto</p>
                         </button>
                         <button
-                            onClick={async () => {
-                                if (confirm('¿Reiniciar catálogo con imágenes reales? (Esto borrará los productos actuales)')) {
-                                    try {
-                                        const success = await seedCatalog();
-                                        if (success) {
-                                            alert('¡Catálogo reiniciado con éxito!');
-                                            window.location.reload();
-                                        } else {
-                                            alert('Error al reiniciar catálogo. Revisa la consola para más detalles.');
-                                        }
-                                    } catch (err) {
-                                        alert('Error crítico: ' + (err as Error).message);
-                                    }
-                                }
-                            }}
-                            className="p-6 border border-slate-100 bg-slate-50 hover:bg-chocolate hover:text-white transition-all text-left space-y-2 group"
+                            onClick={handleStandardizeTitles}
+                            disabled={isStandardizing}
+                            className="p-6 border border-slate-100 bg-slate-50 hover:bg-gold hover:text-white transition-all text-left space-y-2 group disabled:opacity-50"
                         >
-                            <FontAwesomeIcon icon={faBox} className="text-gold group-hover:text-white" />
-                            <p className="text-xs uppercase tracking-widest font-bold">Reiniciar Datos</p>
+                            <FontAwesomeIcon icon={faMagic} className={`text-gold group-hover:text-white ${isStandardizing ? 'animate-spin' : ''}`} />
+                            <p className="text-xs uppercase tracking-widest font-bold">Estandarizar Títulos</p>
+                            <p className="text-[8px] opacity-60">Corrige mayúsculas en todo el catálogo</p>
                         </button>
                     </div>
                 </div>
@@ -174,6 +242,29 @@ const ProductsManager: React.FC<{
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isUploading, setIsUploading] = useState(false);
     const [errors, setErrors] = useState<Record<string, string>>({});
+    const [mediaSelector, setMediaSelector] = useState<{ isOpen: boolean, field: 'main' | 'gallery', index?: number }>({
+        isOpen: false,
+        field: 'main'
+    });
+    const [confirmDelete, setConfirmDelete] = useState<{ isOpen: boolean, id: string | null }>({
+        isOpen: false,
+        id: null
+    });
+    const [isSlugCustomized, setIsSlugCustomized] = useState(false);
+    const [focusedField, setFocusedField] = useState<string | null>(null);
+
+    const getPriceDisplay = (val: number | undefined, fieldId: string) => {
+        const num = val || 0;
+        if (focusedField === fieldId) {
+            return num === 0 ? '' : num.toString();
+        }
+        return num === 0 ? '' : new Intl.NumberFormat('es-MX', {
+            style: 'currency',
+            currency: 'MXN',
+            minimumFractionDigits: 2
+        }).format(num);
+    };
+
 
     const validateForm = () => {
         const newErrors: Record<string, string> = {};
@@ -190,18 +281,18 @@ const ProductsManager: React.FC<{
         setEditingProduct({ ...product });
         setIsModalOpen(true);
         setErrors({});
+        setIsSlugCustomized(true);
     };
 
-    const handleDelete = async (id: string) => {
-        if (!confirm('¿Estás seguro de eliminar este producto?')) return;
+    const handleDelete = async () => {
+        if (!confirmDelete.id) return;
         try {
-            await productService.deleteProduct(id);
-            toast.success('Producto eliminado', {
-                style: { background: '#1e293b', color: '#fff', fontSize: '12px', fontWeight: 'bold' }
-            });
+            await productService.deleteProduct(confirmDelete.id);
+            toast.success('Producto eliminado definitivamente');
             refresh();
+            setConfirmDelete({ isOpen: false, id: null });
         } catch (error) {
-            toast.error('Error al eliminar');
+            toast.error('Error al eliminar el producto');
         }
     };
 
@@ -224,9 +315,9 @@ const ProductsManager: React.FC<{
                 setEditingProduct(prev => ({ ...prev, gallery: newGallery }));
             }
             toast.success('Imagen lista', { icon: '📸' });
-        } catch (error) {
+        } catch (error: any) {
             console.error('Upload Error:', error);
-            toast.error('Error al subir imagen');
+            toast.error(error.message || 'Error al subir imagen');
         } finally {
             setIsUploading(false);
         }
@@ -266,10 +357,11 @@ const ProductsManager: React.FC<{
                     onClick={() => {
                         setEditingProduct({
                             name: '', slug: '', description: '', price: 0,
-                            show_price: true, main_image: '', gallery: ['', '', ''],
-                            category_id: categories[0]?.id || '', stock_status: 'available'
+                            category_id: categories[0]?.id, images: [], gallery: [],
+                            stock: 10, is_active: true
                         });
                         setIsModalOpen(true);
+                        setIsSlugCustomized(false);
                         setErrors({});
                     }}
                     className="bg-gold text-chocolate px-6 py-3 text-[10px] uppercase tracking-widest font-bold hover:bg-chocolate hover:text-white transition-all shadow-lg"
@@ -309,7 +401,7 @@ const ProductsManager: React.FC<{
                                         <button onClick={() => handleEdit(prod)} className="p-2 border border-slate-100 hover:bg-gold hover:text-white transition-all rounded shadow-sm">
                                             <FontAwesomeIcon icon={faEdit} className="text-xs" />
                                         </button>
-                                        <button onClick={() => handleDelete(prod.id)} className="p-2 border border-slate-100 hover:bg-red-500 hover:text-white transition-all rounded shadow-sm">
+                                        <button onClick={() => setConfirmDelete({ isOpen: true, id: prod.id })} className="p-2 border border-slate-100 hover:bg-red-500 hover:text-white transition-all rounded shadow-sm">
                                             <FontAwesomeIcon icon={faTrash} className="text-xs" />
                                         </button>
                                     </div>
@@ -338,10 +430,45 @@ const ProductsManager: React.FC<{
                                     <div className="space-y-2">
                                         <label className="text-[10px] uppercase tracking-widest font-bold text-slate-400">Información Principal</label>
                                         <div className="space-y-4">
-                                            <input type="text" placeholder="Nombre del Producto *" value={editingProduct.name} onChange={e => setEditingProduct({ ...editingProduct, name: e.target.value })} className={`w-full p-4 border border-slate-100 focus:border-gold outline-none ${errors.name ? 'border-red-400' : ''}`} />
+                                            <input
+                                                type="text"
+                                                placeholder="Nombre del Producto *"
+                                                value={editingProduct.name}
+                                                onChange={e => {
+                                                    const newName = e.target.value;
+                                                    const updates: any = { name: newName };
+                                                    if (!isSlugCustomized) {
+                                                        updates.slug = generateSlug(newName);
+                                                    }
+                                                    setEditingProduct({ ...editingProduct, ...updates });
+                                                }}
+                                                onBlur={e => {
+                                                    const formatted = smartFormatTitle(e.target.value);
+                                                    const updates: any = { name: formatted };
+                                                    if (!isSlugCustomized) {
+                                                        updates.slug = generateSlug(formatted);
+                                                    }
+                                                    setEditingProduct({ ...editingProduct, ...updates });
+                                                }}
+                                                className={`w-full p-4 border border-slate-100 focus:border-gold outline-none ${errors.name ? 'border-red-400' : ''}`}
+                                            />
                                             {errors.name && <p className="text-red-400 text-[10px] font-bold uppercase">{errors.name}</p>}
 
-                                            <input type="text" placeholder="Slug (URL Amigable) *" value={editingProduct.slug} onChange={e => setEditingProduct({ ...editingProduct, slug: e.target.value })} className={`w-full p-4 border border-slate-100 focus:border-gold outline-none font-mono text-xs ${errors.slug ? 'border-red-400' : ''}`} />
+                                            <div className="relative">
+                                                <input
+                                                    type="text"
+                                                    placeholder="Slug (URL Amigable) *"
+                                                    value={editingProduct.slug}
+                                                    onChange={e => {
+                                                        setEditingProduct({ ...editingProduct, slug: e.target.value });
+                                                        setIsSlugCustomized(true);
+                                                    }}
+                                                    className={`w-full p-4 border border-slate-100 focus:border-gold outline-none font-mono text-xs ${errors.slug ? 'border-red-400' : ''}`}
+                                                />
+                                                {!isSlugCustomized && editingProduct.name && (
+                                                    <span className="absolute right-4 top-1/2 -translate-y-1/2 text-[8px] text-gold font-bold uppercase tracking-tighter bg-white px-1">Auto</span>
+                                                )}
+                                            </div>
 
                                             <div className="grid grid-cols-2 gap-4">
                                                 <input type="text" placeholder="Modelo / Código" value={editingProduct.model_code || ''} onChange={e => setEditingProduct({ ...editingProduct, model_code: e.target.value })} className="w-full p-4 border border-slate-100 focus:border-gold outline-none text-xs" />
@@ -383,7 +510,18 @@ const ProductsManager: React.FC<{
                                         <div className="grid grid-cols-2 gap-4">
                                             <div className="space-y-2">
                                                 <label className="text-[10px] uppercase tracking-widest font-bold text-slate-400">Precio Base</label>
-                                                <input type="number" placeholder="$ 0.00" value={editingProduct.price} onChange={e => setEditingProduct({ ...editingProduct, price: Number(e.target.value) })} className="w-full p-4 border border-slate-100 focus:border-gold outline-none" />
+                                                <input
+                                                    type="text"
+                                                    placeholder="$ 0.00"
+                                                    value={getPriceDisplay(editingProduct.price, 'base_price')}
+                                                    onChange={e => {
+                                                        const val = e.target.value.replace(/[^0-9.]/g, '');
+                                                        setEditingProduct({ ...editingProduct, price: Number(val) });
+                                                    }}
+                                                    onFocus={() => setFocusedField('base_price')}
+                                                    onBlur={() => setFocusedField(null)}
+                                                    className="w-full p-4 border border-slate-100 focus:border-gold outline-none"
+                                                />
                                             </div>
                                             <div className="space-y-2">
                                                 <label className="text-[10px] uppercase tracking-widest font-bold text-slate-400">Categoría Padre</label>
@@ -431,11 +569,20 @@ const ProductsManager: React.FC<{
                                                         newV[idx].size = e.target.value;
                                                         setEditingProduct({ ...editingProduct, size_variants: newV });
                                                     }} className="w-1/3 p-3 border border-slate-100 outline-none text-xs" />
-                                                    <input type="number" placeholder="Precio" value={v.price} onChange={e => {
-                                                        const newV = [...(editingProduct.size_variants || [])];
-                                                        newV[idx].price = Number(e.target.value);
-                                                        setEditingProduct({ ...editingProduct, size_variants: newV });
-                                                    }} className="flex-grow p-3 border border-slate-100 outline-none text-xs" />
+                                                    <input
+                                                        type="text"
+                                                        placeholder="Precio"
+                                                        value={getPriceDisplay(v.price, `variant_${idx}`)}
+                                                        onChange={e => {
+                                                            const val = e.target.value.replace(/[^0-9.]/g, '');
+                                                            const newV = [...(editingProduct.size_variants || [])];
+                                                            newV[idx].price = Number(val);
+                                                            setEditingProduct({ ...editingProduct, size_variants: newV });
+                                                        }}
+                                                        onFocus={() => setFocusedField(`variant_${idx}`)}
+                                                        onBlur={() => setFocusedField(null)}
+                                                        className="flex-grow p-3 border border-slate-100 outline-none text-xs"
+                                                    />
                                                     <button onClick={() => setEditingProduct({ ...editingProduct, size_variants: editingProduct.size_variants?.filter((_, i) => i !== idx) })} className="text-slate-300 hover:text-red-400 p-2"><FontAwesomeIcon icon={faTimes} /></button>
                                                 </div>
                                             ))}
@@ -464,6 +611,13 @@ const ProductsManager: React.FC<{
                                                 </label>
                                             )}
                                         </div>
+                                        <button
+                                            type="button"
+                                            onClick={() => setMediaSelector({ isOpen: true, field: 'main' })}
+                                            className="w-full py-3 border border-slate-200 text-[10px] uppercase font-bold tracking-widest hover:bg-slate-50 transition-all flex items-center justify-center gap-2"
+                                        >
+                                            <FontAwesomeIcon icon={faImages} className="text-gold" /> Elegir de Galería existante
+                                        </button>
                                     </div>
 
                                     <div className="space-y-4">
@@ -477,6 +631,15 @@ const ProductsManager: React.FC<{
                                                         <label className="cursor-pointer flex items-center justify-center w-full h-full"><FontAwesomeIcon icon={faPlus} className="text-slate-200" /><input type="file" className="hidden" onChange={e => handleFileUpload(e, 'gallery', idx)} /></label>
                                                     )}
                                                     {url && <button onClick={() => { const g = [...(editingProduct.gallery || [])]; g[idx] = ''; setEditingProduct({ ...editingProduct, gallery: g }); }} className="absolute top-1 right-1 bg-white/80 w-5 h-5 flex items-center justify-center text-[10px] rounded-full text-red-500 shadow-sm"><FontAwesomeIcon icon={faTimes} /></button>}
+                                                    {!url && (
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => setMediaSelector({ isOpen: true, field: 'gallery', index: idx })}
+                                                            className="absolute bottom-1 right-1 bg-white/80 w-5 h-5 flex items-center justify-center text-[10px] rounded-full text-gold shadow-sm hover:scale-110 transition-transform"
+                                                        >
+                                                            <FontAwesomeIcon icon={faImages} />
+                                                        </button>
+                                                    )}
                                                 </div>
                                             ))}
                                             <button onClick={() => setEditingProduct({ ...editingProduct, gallery: [...(editingProduct.gallery || []), ''] })} className="aspect-square border-2 border-dashed border-slate-100 flex items-center justify-center text-slate-200 hover:text-gold hover:border-gold transition-all"><FontAwesomeIcon icon={faPlus} /></button>
@@ -495,6 +658,298 @@ const ProductsManager: React.FC<{
                     </div>
                 )}
             </AnimatePresence>
+
+            <MediaSelectorModal
+                isOpen={mediaSelector.isOpen}
+                onClose={() => setMediaSelector({ ...mediaSelector, isOpen: false })}
+                onSelect={(url) => {
+                    if (mediaSelector.field === 'main') {
+                        setEditingProduct(prev => ({ ...prev, main_image: url }));
+                    } else if (mediaSelector.field === 'gallery' && mediaSelector.index !== undefined) {
+                        const newGallery = [...(editingProduct?.gallery || [])];
+                        newGallery[mediaSelector.index] = url;
+                        setEditingProduct(prev => ({ ...prev, gallery: newGallery }));
+                    }
+                    toast.success('Imagen vinculada desde la galería');
+                }}
+            />
+
+            <ConfirmModal
+                isOpen={confirmDelete.isOpen}
+                onClose={() => setConfirmDelete({ isOpen: false, id: null })}
+                onConfirm={handleDelete}
+                title="Eliminar Producto"
+                message="¿Estás seguro de que quieres eliminar este producto? Esta acción es irreversible."
+            />
+        </div>
+    );
+};
+
+// --- Categories Manager Component ---
+const CategoriesManager: React.FC<{
+    categories: Category[],
+    refresh: () => void
+}> = ({ categories, refresh }) => {
+    const [editingCategory, setEditingCategory] = useState<Partial<Category> | null>(null);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isSlugCustomized, setIsSlugCustomized] = useState(false);
+    const [mediaSelector, setMediaSelector] = useState<{ isOpen: boolean, field: 'image' }>({
+        isOpen: false,
+        field: 'image'
+    });
+    const [confirmDelete, setConfirmDelete] = useState<{ isOpen: boolean, id: string | null }>({
+        isOpen: false,
+        id: null
+    });
+
+
+    const handleEdit = (category: Category) => {
+        setEditingCategory({ ...category });
+        setIsModalOpen(true);
+        setIsSlugCustomized(true);
+    };
+
+    const handleDelete = async () => {
+        if (!confirmDelete.id) return;
+        try {
+            await productService.deleteCategory(confirmDelete.id);
+            toast.success('Categoría eliminada');
+            refresh();
+            setConfirmDelete({ isOpen: false, id: null });
+        } catch (error: any) {
+            toast.error(error.message || 'Error al eliminar');
+        }
+    };
+
+    const handleSave = async () => {
+        if (!editingCategory?.name || !editingCategory?.slug) {
+            toast.error('Nombre y Slug son obligatorios');
+            return;
+        }
+
+        try {
+            await productService.upsertCategory(editingCategory);
+            toast.success('Categoría guardada');
+            setIsModalOpen(false);
+            refresh();
+        } catch (error) {
+            toast.error('Error al guardar');
+        }
+    };
+
+    return (
+        <div className="space-y-8">
+            <div className="flex justify-between items-center bg-white p-6 border border-slate-200">
+                <h2 className="text-xl font-serif">Gestión de Categorías</h2>
+                <button
+                    onClick={() => {
+                        setEditingCategory({ name: '', slug: '', description: '', image_url: '' });
+                        setIsModalOpen(true);
+                        setIsSlugCustomized(false);
+                    }}
+                    className="bg-gold text-chocolate px-6 py-3 text-[10px] uppercase tracking-widest font-bold hover:bg-chocolate hover:text-white transition-all shadow-lg"
+                >
+                    + Nueva Categoría
+                </button>
+            </div>
+
+            <div className="bg-white border border-slate-200 overflow-hidden">
+                <table className="w-full text-left border-collapse">
+                    <thead>
+                        <tr className="bg-slate-50 border-b border-slate-100">
+                            <th className="px-8 py-4 text-[10px] uppercase tracking-widest font-bold text-slate-400">Imagen</th>
+                            <th className="px-8 py-4 text-[10px] uppercase tracking-widest font-bold text-slate-400">Nombre / URL</th>
+                            <th className="px-8 py-4 text-[10px] uppercase tracking-widest font-bold text-slate-400">Descripción</th>
+                            <th className="px-8 py-4 text-[10px] uppercase tracking-widest font-bold text-slate-400 text-right">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-100">
+                        {categories.map(cat => {
+                            const parent = categories.find(c => c.id === cat.parent_id);
+                            return (
+                                <tr key={cat.id} className="hover:bg-slate-50/50 transition-colors">
+                                    <td className="px-8 py-4">
+                                        <div className="w-12 h-12 bg-slate-100 flex items-center justify-center overflow-hidden rounded border border-slate-200">
+                                            {cat.image_url ? (
+                                                <img src={cat.image_url} alt={cat.name} className="w-full h-full object-cover" />
+                                            ) : (
+                                                <FontAwesomeIcon icon={faImages} className="text-slate-300 text-xs" />
+                                            )}
+                                        </div>
+                                    </td>
+                                    <td className="px-8 py-4">
+                                        <div className="flex items-center gap-2">
+                                            {cat.parent_id && <span className="text-slate-300">└</span>}
+                                            <p className={`text-sm font-serif font-bold ${cat.parent_id ? 'text-slate-500' : 'text-slate-800'}`}>
+                                                {cat.name}
+                                            </p>
+                                        </div>
+                                        <div className="flex gap-2 items-center mt-1">
+                                            <p className="text-[10px] text-gold font-mono uppercase tracking-tighter">/{cat.slug}</p>
+                                            {parent && (
+                                                <span className="text-[8px] bg-slate-100 text-slate-400 px-2 py-0.5 rounded-full uppercase font-bold tracking-widest">
+                                                    Sub de: {parent.name}
+                                                </span>
+                                            )}
+                                            {!cat.parent_id && (
+                                                <span className="text-[8px] bg-gold/10 text-gold px-2 py-0.5 rounded-full uppercase font-bold tracking-widest">
+                                                    Padre
+                                                </span>
+                                            )}
+                                        </div>
+                                    </td>
+                                    <td className="px-8 py-4">
+                                        <p className="text-xs text-slate-400 line-clamp-1 italic">{cat.description || 'Sin descripción'}</p>
+                                    </td>
+                                    <td className="px-8 py-4">
+                                        <div className="flex justify-end gap-3">
+                                            <button onClick={() => handleEdit(cat)} className="p-2 border border-slate-100 hover:bg-gold hover:text-white transition-all rounded shadow-sm">
+                                                <FontAwesomeIcon icon={faEdit} className="text-xs" />
+                                            </button>
+                                            <button onClick={() => setConfirmDelete({ isOpen: true, id: cat.id })} className="p-2 border border-slate-100 hover:bg-red-500 hover:text-white transition-all rounded shadow-sm">
+                                                <FontAwesomeIcon icon={faTrash} className="text-xs" />
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            );
+                        })}
+                    </tbody>
+                </table>
+            </div>
+
+            <AnimatePresence>
+                {isModalOpen && editingCategory && (
+                    <div className="fixed inset-0 z-[100] flex items-center justify-center p-6">
+                        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onClick={() => setIsModalOpen(false)} />
+                        <motion.div initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} className="relative bg-white w-full max-w-2xl shadow-2xl border border-gold/20 flex flex-col">
+                            <div className="p-8 border-b border-slate-100 flex justify-between items-center">
+                                <h2 className="text-2xl font-serif">Editar Categoría</h2>
+                                <button onClick={() => setIsModalOpen(false)} className="text-slate-300 hover:text-chocolate transition-colors"><FontAwesomeIcon icon={faTimes} className="text-xl" /></button>
+                            </div>
+
+                            <div className="p-10 space-y-8">
+                                <div className="space-y-4">
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <div className="space-y-2">
+                                            <label className="text-[10px] uppercase tracking-widest font-bold text-slate-400">Nombre de la Categoría</label>
+                                            <input
+                                                type="text"
+                                                value={editingCategory.name}
+                                                onChange={e => {
+                                                    const newName = e.target.value;
+                                                    const updates: any = { name: newName };
+                                                    if (!isSlugCustomized) updates.slug = generateSlug(newName);
+                                                    setEditingCategory({ ...editingCategory, ...updates });
+                                                }}
+                                                onBlur={e => {
+                                                    const formatted = smartFormatTitle(e.target.value);
+                                                    const updates: any = { name: formatted };
+                                                    if (!isSlugCustomized) updates.slug = generateSlug(formatted);
+                                                    setEditingCategory({ ...editingCategory, ...updates });
+                                                }}
+                                                className="w-full p-4 border border-slate-100 focus:border-gold outline-none text-sm"
+                                                placeholder="Ej: Ceremonia de Bodas"
+                                            />
+                                        </div>
+
+                                        <div className="space-y-2">
+                                            <label className="text-[10px] uppercase tracking-widest font-bold text-slate-400">Jerarquía (¿Es Subcategoría?)</label>
+                                            <select
+                                                value={editingCategory.parent_id || ''}
+                                                onChange={e => setEditingCategory({ ...editingCategory, parent_id: e.target.value || null })}
+                                                className="w-full p-4 border border-slate-100 focus:border-gold outline-none text-sm bg-white"
+                                            >
+                                                <option value="">Ninguna (Es Categoría Padre/Principal)</option>
+                                                {categories
+                                                    .filter(c => c.id !== editingCategory.id && !c.parent_id)
+                                                    .map(c => (
+                                                        <option key={c.id} value={c.id}>Hija de: {c.name}</option>
+                                                    ))
+                                                }
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div className="space-y-2">
+                                        <label className="text-[10px] uppercase tracking-widest font-bold text-slate-400">Slug (URL)</label>
+                                        <div className="relative">
+                                            <input
+                                                type="text"
+                                                value={editingCategory.slug}
+                                                onChange={e => {
+                                                    setEditingCategory({ ...editingCategory, slug: e.target.value });
+                                                    setIsSlugCustomized(true);
+                                                }}
+                                                className="w-full p-4 border border-slate-100 focus:border-gold outline-none font-mono text-xs"
+                                                placeholder="url-amigable"
+                                            />
+                                            {!isSlugCustomized && editingCategory.name && (
+                                                <span className="absolute right-4 top-1/2 -translate-y-1/2 text-[8px] text-gold font-bold uppercase tracking-tighter bg-white px-1">Auto</span>
+                                            )}
+                                        </div>
+                                    </div>
+
+                                    <div className="space-y-2">
+                                        <label className="text-[10px] uppercase tracking-widest font-bold text-slate-400">Descripción Corta</label>
+                                        <textarea
+                                            value={editingCategory.description || ''}
+                                            onChange={e => setEditingCategory({ ...editingCategory, description: e.target.value })}
+                                            className="w-full p-4 border border-slate-100 focus:border-gold outline-none text-sm"
+                                            rows={2}
+                                            placeholder="Una breve descripción para la página de catálogo..."
+                                        />
+                                    </div>
+
+                                    {!editingCategory.parent_id && (
+                                        <div className="space-y-2">
+                                            <label className="text-[10px] uppercase tracking-widest font-bold text-slate-400">Imagen Representativa (Solo Padres)</label>
+                                            <div className="flex gap-2">
+                                                <input
+                                                    type="text"
+                                                    value={editingCategory.image_url || ''}
+                                                    onChange={e => setEditingCategory({ ...editingCategory, image_url: e.target.value })}
+                                                    className="flex-grow p-4 border border-slate-100 focus:border-gold outline-none text-sm"
+                                                    placeholder="Selecciona desde la galería"
+                                                />
+                                                <button onClick={() => setMediaSelector({ isOpen: true, field: 'image' })} className="px-6 py-4 border border-slate-200 hover:bg-slate-50 text-gold transition-all">
+                                                    <FontAwesomeIcon icon={faImages} />
+                                                </button>
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+
+                            <div className="p-8 border-t border-slate-100 flex gap-4 bg-slate-50">
+                                <button onClick={() => setIsModalOpen(false)} className="px-8 py-4 text-[10px] uppercase tracking-widest font-bold text-slate-400 hover:text-chocolate transition-colors border border-slate-200">Cancelar</button>
+                                <button onClick={handleSave} className="flex-grow bg-gold text-chocolate py-4 font-bold uppercase tracking-[0.2em] shadow-xl hover:bg-chocolate hover:text-white transition-all">
+                                    Guardar Categoría
+                                </button>
+                            </div>
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
+
+            <MediaSelectorModal
+                isOpen={mediaSelector.isOpen}
+                onClose={() => setMediaSelector({ ...mediaSelector, isOpen: false })}
+                onSelect={(url) => {
+                    setEditingCategory(prev => ({ ...prev, image_url: url }));
+                    toast.success('Imagen seleccionada');
+                }}
+            />
+
+            <ConfirmModal
+                isOpen={confirmDelete.isOpen}
+                title="Eliminar Categoría"
+                message="¿Estás seguro de que deseas eliminar esta categoría? Si tiene productos asociados, la acción será bloqueada por seguridad."
+                confirmLabel="Eliminar Definitivamente"
+                onConfirm={handleDelete}
+                onCancel={() => setConfirmDelete({ isOpen: false, id: null })}
+                variant="danger"
+            />
         </div>
     );
 };
@@ -505,6 +960,14 @@ const HeroManager: React.FC = () => {
     const [loading, setLoading] = useState(true);
     const [editingSlide, setEditingSlide] = useState<Partial<HeroSlide> | null>(null);
     const [isUploading, setIsUploading] = useState(false);
+    const [mediaSelector, setMediaSelector] = useState<{ isOpen: boolean, field: 'bg' | 'mobile' }>({
+        isOpen: false,
+        field: 'bg'
+    });
+    const [confirmDelete, setConfirmDelete] = useState<{ isOpen: boolean, id: string | null }>({
+        isOpen: false,
+        id: null
+    });
 
     const fetchSlides = async () => {
         try {
@@ -552,14 +1015,15 @@ const HeroManager: React.FC = () => {
         }
     };
 
-    const handleDelete = async (id: string) => {
-        if (!confirm('¿Eliminar este slide?')) return;
+    const handleDelete = async () => {
+        if (!confirmDelete.id) return;
         try {
-            await heroService.deleteSlide(id);
-            toast.success('Slide eliminado');
+            await heroService.deleteSlide(confirmDelete.id);
+            toast.success('Diapositiva eliminada');
             fetchSlides();
+            setConfirmDelete({ isOpen: false, id: null });
         } catch (error) {
-            toast.error('Error al eliminar');
+            toast.error('Error al intentar eliminar');
         }
     };
 
@@ -588,14 +1052,14 @@ const HeroManager: React.FC = () => {
                             <img src={slide.bg_url} className="w-full h-full object-cover transition-transform group-hover:scale-105" />
                             <div className="absolute top-2 left-2 bg-black/60 text-[8px] text-white px-2 py-1 uppercase tracking-widest">{slide.tag}</div>
                         </div>
-                        <div className="p-6 flex-grow space-y-4">
-                            <div>
-                                <h3 className="font-serif text-lg">{slide.title_1} {slide.title_2}</h3>
-                                <p className="text-xs text-slate-400 line-clamp-2">{slide.subtitle}</p>
+                        <div className="p-6 flex-grow space-y-4 flex flex-col justify-between">
+                            <div className="space-y-2">
+                                <h3 className="font-serif text-lg leading-tight">{slide.title_1} {slide.title_2}</h3>
+                                <p className="text-xs text-slate-400 line-clamp-2 leading-relaxed">{slide.subtitle}</p>
                             </div>
-                            <div className="flex gap-2 pt-2">
+                            <div className="flex bg-slate-50 p-1 mt-2">
                                 <button onClick={() => setEditingSlide(slide)} className="flex-grow py-3 border border-slate-100 text-[9px] uppercase font-bold tracking-widest hover:border-gold hover:text-gold transition-all">Editar</button>
-                                <button onClick={() => handleDelete(slide.id!)} className="px-4 py-3 border border-slate-100 text-red-300 hover:text-red-500 transition-all"><FontAwesomeIcon icon={faTrash} /></button>
+                                <button onClick={() => setConfirmDelete({ isOpen: true, id: slide.id })} className="px-4 py-3 border border-slate-100 text-red-300 hover:text-red-500 transition-all"><FontAwesomeIcon icon={faTrash} /></button>
                             </div>
                         </div>
                     </motion.div>
@@ -657,6 +1121,13 @@ const HeroManager: React.FC = () => {
                                             onChange={e => setEditingSlide({ ...editingSlide, bg_url: e.target.value })}
                                             className="w-full p-3 border border-slate-100 outline-none text-xs text-slate-500 font-mono"
                                         />
+                                        <button
+                                            type="button"
+                                            onClick={() => setMediaSelector({ isOpen: true, field: 'bg' })}
+                                            className="w-full py-2 border border-slate-100 text-[9px] uppercase font-bold tracking-widest hover:bg-slate-50 transition-all flex items-center justify-center gap-2"
+                                        >
+                                            <FontAwesomeIcon icon={faImages} className="text-gold" /> Galería de Medios
+                                        </button>
                                     </div>
                                     <div className="space-y-4">
                                         <label className="text-[10px] uppercase tracking-widest font-bold text-slate-400">Imagen Mobile (Vertical)</label>
@@ -682,6 +1153,13 @@ const HeroManager: React.FC = () => {
                                             onChange={e => setEditingSlide({ ...editingSlide, bg_mobile_url: e.target.value })}
                                             className="w-full p-3 border border-slate-100 outline-none text-xs text-slate-500 font-mono"
                                         />
+                                        <button
+                                            type="button"
+                                            onClick={() => setMediaSelector({ isOpen: true, field: 'mobile' })}
+                                            className="w-full py-2 border border-slate-100 text-[9px] uppercase font-bold tracking-widest hover:bg-slate-50 transition-all flex items-center justify-center gap-2"
+                                        >
+                                            <FontAwesomeIcon icon={faImages} className="text-gold" /> Galería de Medios
+                                        </button>
                                     </div>
                                 </div>
                             </div>
@@ -694,6 +1172,29 @@ const HeroManager: React.FC = () => {
                     </div>
                 )}
             </AnimatePresence>
+
+            <MediaSelectorModal
+                isOpen={mediaSelector.isOpen}
+                onClose={() => setMediaSelector({ ...mediaSelector, isOpen: false })}
+                onSelect={(url) => {
+                    if (mediaSelector.field === 'bg') {
+                        setEditingSlide(prev => ({ ...prev, bg_url: url }));
+                    } else {
+                        setEditingSlide(prev => ({ ...prev, bg_mobile_url: url }));
+                    }
+                    toast.success('Imagen vinculada');
+                }}
+            />
+
+            <ConfirmModal
+                isOpen={confirmDelete.isOpen}
+                title="Eliminar Diapositiva"
+                message="¿Estás seguro de que deseas eliminar esta diapositiva del carrusel principal? Esta acción no se puede deshacer."
+                confirmLabel="Eliminar Diapositiva"
+                onConfirm={handleDelete}
+                onCancel={() => setConfirmDelete({ isOpen: false, id: null })}
+                variant="danger"
+            />
         </div>
     );
 };
@@ -732,9 +1233,15 @@ const ConfigManager: React.FC = () => {
         cta_banner_body: '',
         cta_banner_btn1_label: '',
         cta_banner_btn2_label: '',
+        catalog_pdf_url: '',
     });
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
+    const [activeTab, setActiveTab] = useState<'identity' | 'contact' | 'about' | 'marketing'>('identity');
+    const [mediaSelector, setMediaSelector] = useState<{ isOpen: boolean, field: 'logo_light' | 'logo_dark' | 'pdf' | 'about' }>({
+        isOpen: false,
+        field: 'logo_light'
+    });
 
     useEffect(() => {
         const load = async () => {
@@ -774,6 +1281,10 @@ const ConfigManager: React.FC = () => {
                         cta_banner_body: data.cta_banner_body || '',
                         cta_banner_btn1_label: data.cta_banner_btn1_label || '',
                         cta_banner_btn2_label: data.cta_banner_btn2_label || '',
+                        cta_banner_bg_color: data.cta_banner_bg_color || '#1B1411',
+                        cta_banner_bg_image_url: data.cta_banner_bg_image_url || '',
+                        cta_banner_bg_opacity: data.cta_banner_bg_opacity ?? 0.85,
+                        catalog_pdf_url: data.catalog_pdf_url || '',
                     });
                 }
             } catch (error) {
@@ -785,6 +1296,23 @@ const ConfigManager: React.FC = () => {
         load();
     }, []);
 
+    const handlePdfUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        try {
+            setSaving(true);
+            const url = await productService.uploadFile(file, 'catalog', 'files', ['application/pdf']);
+            setConfig(prev => ({ ...prev, catalog_pdf_url: url }));
+            toast.success('Catálogo PDF actualizado');
+        } catch (error: any) {
+            console.error('PDF Upload Error:', error);
+            toast.error(error.message || 'Error al subir el catálogo');
+        } finally {
+            setSaving(false);
+        }
+    };
+
     const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>, type: 'light' | 'dark') => {
         const file = e.target.files?.[0];
         if (!file) return;
@@ -794,8 +1322,8 @@ const ConfigManager: React.FC = () => {
             if (type === 'light') setConfig(prev => ({ ...prev, logo_light_url: url }));
             else setConfig(prev => ({ ...prev, logo_dark_url: url }));
             toast.success('Logo cargado correctamente');
-        } catch (error) {
-            toast.error('Error al subir el logo');
+        } catch (error: any) {
+            toast.error(error.message || 'Error al subir el logo');
         } finally {
             setSaving(false);
         }
@@ -821,329 +1349,745 @@ const ConfigManager: React.FC = () => {
 
     return (
         <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="max-w-4xl space-y-8"
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            className="w-full space-y-8"
         >
-            <div className="bg-white p-8 border border-slate-200">
-                <div className="flex items-center gap-4 mb-8">
-                    <div className="w-10 h-10 bg-gold/10 text-gold flex items-center justify-center rounded-lg">
-                        <FontAwesomeIcon icon={faCog} />
-                    </div>
-                    <div>
-                        <h2 className="text-xl font-serif">Configuración General</h2>
-                        <p className="text-[10px] uppercase tracking-widest text-slate-400 font-bold">Datos de contacto y redes sociales globales</p>
-                    </div>
+            <div className="flex flex-col lg:flex-row gap-8">
+                {/* Sidebar Navigation */}
+                <div className="lg:w-1/4 space-y-2">
+                    {[
+                        { id: 'identity', label: 'Identidad Visual', icon: faDiamond },
+                        { id: 'contact', label: 'Contacto & Redes', icon: faPhone },
+                        { id: 'about', label: 'Sección Nosotros', icon: faUsers },
+                        { id: 'marketing', label: 'Marketing & PDF', icon: faChartBar },
+                    ].map(tab => (
+                        <button
+                            key={tab.id}
+                            type="button"
+                            onClick={() => setActiveTab(tab.id as any)}
+                            className={`w-full flex items-center gap-3 p-4 text-[10px] uppercase tracking-widest font-bold transition-all border ${activeTab === tab.id
+                                ? 'bg-chocolate text-white border-chocolate shadow-lg'
+                                : 'bg-white text-slate-400 border-slate-100 hover:border-gold/50 text-left'
+                                }`}
+                        >
+                            <FontAwesomeIcon icon={tab.icon} className={activeTab === tab.id ? 'text-gold' : 'text-slate-300'} />
+                            {tab.label}
+                        </button>
+                    ))}
+
+                    <button
+                        type="submit"
+                        form="config-form"
+                        disabled={saving}
+                        className="w-full mt-6 bg-gold text-chocolate p-4 text-[10px] uppercase tracking-widest font-bold hover:bg-chocolate hover:text-white transition-all shadow-xl disabled:opacity-50 flex items-center justify-center gap-2"
+                    >
+                        {saving ? <FontAwesomeIcon icon={faCog} className="animate-spin" /> : <FontAwesomeIcon icon={faSave} />}
+                        Guardar Cambios
+                    </button>
                 </div>
 
-                <form onSubmit={handleSave} className="space-y-10">
-                    {/* Brand & Colors */}
-                    <div className="space-y-8">
-                        <h3 className="text-[10px] uppercase tracking-widest font-bold text-gold border-b border-gold/10 pb-2">Identidad Visual y Colores</h3>
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                            <div className="space-y-2">
-                                <label className="text-[10px] uppercase tracking-widest font-bold text-slate-400">Color Primario (Textos/Oscuros)</label>
-                                <div className="flex gap-2">
-                                    <input type="color" value={config.primary_color} onChange={e => setConfig({ ...config, primary_color: e.target.value })} className="h-12 w-12 border border-slate-200 cursor-pointer" />
-                                    <input type="text" value={config.primary_color} onChange={e => setConfig({ ...config, primary_color: e.target.value })} className="flex-grow p-4 border border-slate-100 outline-none text-xs font-mono" />
-                                </div>
-                            </div>
-                            <div className="space-y-2">
-                                <label className="text-[10px] uppercase tracking-widest font-bold text-slate-400">Color Secundario (Gold/Detalles)</label>
-                                <div className="flex gap-2">
-                                    <input type="color" value={config.secondary_color} onChange={e => setConfig({ ...config, secondary_color: e.target.value })} className="h-12 w-12 border border-slate-200 cursor-pointer" />
-                                    <input type="text" value={config.secondary_color} onChange={e => setConfig({ ...config, secondary_color: e.target.value })} className="flex-grow p-4 border border-slate-100 outline-none text-xs font-mono" />
-                                </div>
-                            </div>
-                            <div className="space-y-2">
-                                <label className="text-[10px] uppercase tracking-widest font-bold text-slate-400">Color de Acento (Fondo Claro)</label>
-                                <div className="flex gap-2">
-                                    <input type="color" value={config.accent_color} onChange={e => setConfig({ ...config, accent_color: e.target.value })} className="h-12 w-12 border border-slate-200 cursor-pointer" />
-                                    <input type="text" value={config.accent_color} onChange={e => setConfig({ ...config, accent_color: e.target.value })} className="flex-grow p-4 border border-slate-100 outline-none text-xs font-mono" />
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-4">
-                            <div className="space-y-4">
-                                <label className="text-[10px] uppercase tracking-widest font-bold text-slate-400">Logo para Fondos Claros (Versión Oscura)</label>
-                                <div className="aspect-video bg-slate-50 border-2 border-dashed border-slate-100 relative group overflow-hidden flex items-center justify-center">
-                                    {config.logo_light_url ? (
-                                        <>
-                                            <img src={config.logo_light_url} className="max-h-full object-contain p-4" />
-                                            <label className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer text-white text-[10px] font-bold uppercase tracking-widest">Cambiar<input type="file" className="hidden" accept="image/*" onChange={e => handleLogoUpload(e, 'light')} /></label>
-                                        </>
-                                    ) : (
-                                        <label className="cursor-pointer flex flex-col items-center gap-2 p-4 text-center">
-                                            <FontAwesomeIcon icon={faImage} className="text-3xl text-slate-200" />
-                                            <span className="text-[9px] uppercase font-bold text-slate-300">Subir Logo (Claro)</span>
-                                            <input type="file" className="hidden" accept="image/*" onChange={e => handleLogoUpload(e, 'light')} />
-                                        </label>
-                                    )}
-                                </div>
-                            </div>
-                            <div className="space-y-4">
-                                <label className="text-[10px] uppercase tracking-widest font-bold text-slate-400">Logo para Fondos Oscuros (Versión Blanca/Gold)</label>
-                                <div className="aspect-video bg-chocolate border-2 border-dashed border-white/10 relative group overflow-hidden flex items-center justify-center">
-                                    {config.logo_dark_url ? (
-                                        <>
-                                            <img src={config.logo_dark_url} className="max-h-full object-contain p-4" />
-                                            <label className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer text-white text-[10px] font-bold uppercase tracking-widest">Cambiar<input type="file" className="hidden" accept="image/*" onChange={e => handleLogoUpload(e, 'dark')} /></label>
-                                        </>
-                                    ) : (
-                                        <label className="cursor-pointer flex flex-col items-center gap-2 p-4 text-center">
-                                            <FontAwesomeIcon icon={faImage} className="text-3xl text-white/20" />
-                                            <span className="text-[9px] uppercase font-bold text-white/30">Subir Logo (Oscuro)</span>
-                                            <input type="file" className="hidden" accept="image/*" onChange={e => handleLogoUpload(e, 'dark')} />
-                                        </label>
-                                    )}
-                                </div>
-                            </div>
-                        </div>
+                {/* Content Area */}
+                <div className="lg:w-3/4 bg-white p-8 lg:p-12 border border-slate-200 shadow-sm min-h-[600px]">
+                    <div className="mb-10 border-b border-slate-50 pb-6">
+                        <h2 className="text-2xl font-serif text-slate-800">
+                            {activeTab === 'identity' && 'Identidad de Marca'}
+                            {activeTab === 'contact' && 'Canales de Comunicación'}
+                            {activeTab === 'about' && 'Contenido "Nosotros"'}
+                            {activeTab === 'marketing' && 'Estrategia & Catálogo'}
+                        </h2>
+                        <p className="text-[10px] uppercase tracking-widest text-slate-400 font-bold mt-1">
+                            {activeTab === 'identity' && 'Logos, colores y esencia visual del sitio'}
+                            {activeTab === 'contact' && 'Atención al cliente, redes sociales y ubicación'}
+                            {activeTab === 'about' && 'Personaliza la historia y estadísticas de tu empresa'}
+                            {activeTab === 'marketing' && 'Configura el catálogo descargable y banners promocionales'}
+                        </p>
                     </div>
 
-                    {/* Basic Info */}
-                    <div className="space-y-6">
-                        <h3 className="text-[10px] uppercase tracking-widest font-bold text-gold border-b border-gold/10 pb-2">Información de Identidad</h3>
-                        <div className="grid grid-cols-1 gap-6">
-                            <div className="space-y-2">
-                                <label className="text-[10px] uppercase tracking-widest font-bold text-slate-400">Nombre de la Empresa</label>
-                                <div className="relative">
-                                    <FontAwesomeIcon icon={faGlobe} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300" />
-                                    <input
-                                        type="text"
-                                        value={config.company_name}
-                                        onChange={e => setConfig({ ...config, company_name: e.target.value })}
-                                        className="w-full p-4 pl-12 border border-slate-100 focus:border-gold outline-none text-sm"
-                                        placeholder="Ej. Arcángel Ceremonias"
-                                    />
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    <form id="config-form" onSubmit={handleSave} className="space-y-12">
+                        {activeTab === 'identity' && (
+                            <div className="space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                                {/* Brand & Colors */}
+                                <div className="space-y-8">
+                                    <h3 className="text-[10px] uppercase tracking-widest font-bold text-gold flex items-center gap-2">
+                                        <div className="w-1 h-1 rounded-full bg-gold" /> Paleta de Colores
+                                    </h3>
+                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                        <div className="space-y-2">
+                                            <label className="text-[10px] uppercase tracking-widest font-bold text-slate-400">Color Primario</label>
+                                            <div className="flex gap-2">
+                                                <input type="color" value={config.primary_color} onChange={e => setConfig({ ...config, primary_color: e.target.value })} className="h-12 w-12 border border-slate-200 cursor-pointer" />
+                                                <input type="text" value={config.primary_color} onChange={e => setConfig({ ...config, primary_color: e.target.value })} className="flex-grow p-4 border border-slate-100 outline-none text-xs font-mono" />
+                                            </div>
+                                        </div>
+                                        <div className="space-y-2">
+                                            <label className="text-[10px] uppercase tracking-widest font-bold text-slate-400">Color Secundario</label>
+                                            <div className="flex gap-2">
+                                                <input type="color" value={config.secondary_color} onChange={e => setConfig({ ...config, secondary_color: e.target.value })} className="h-12 w-12 border border-slate-200 cursor-pointer" />
+                                                <input type="text" value={config.secondary_color} onChange={e => setConfig({ ...config, secondary_color: e.target.value })} className="flex-grow p-4 border border-slate-100 outline-none text-xs font-mono" />
+                                            </div>
+                                        </div>
+                                        <div className="space-y-2">
+                                            <label className="text-[10px] uppercase tracking-widest font-bold text-slate-400">Color de Acento</label>
+                                            <div className="flex gap-2">
+                                                <input type="color" value={config.accent_color} onChange={e => setConfig({ ...config, accent_color: e.target.value })} className="h-12 w-12 border border-slate-200 cursor-pointer" />
+                                                <input type="text" value={config.accent_color} onChange={e => setConfig({ ...config, accent_color: e.target.value })} className="flex-grow p-4 border border-slate-100 outline-none text-xs font-mono" />
+                                            </div>
+                                        </div>
+                                    </div>
 
-                    {/* Contact Info */}
-                    <div className="space-y-6">
-                        <h3 className="text-[10px] uppercase tracking-widest font-bold text-gold border-b border-gold/10 pb-2">Canales de Contacto</h3>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div className="space-y-2">
-                                <label className="text-[10px] uppercase tracking-widest font-bold text-slate-400">WhatsApp (Número 10 dig + prefijo)</label>
-                                <div className="relative">
-                                    <FontAwesomeIcon icon={faWhatsapp} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300" />
-                                    <input
-                                        type="text"
-                                        value={config.whatsapp}
-                                        onChange={e => setConfig({ ...config, whatsapp: e.target.value })}
-                                        className="w-full p-4 pl-12 border border-slate-100 focus:border-gold outline-none text-sm"
-                                        placeholder="Ej. 523521681197"
-                                    />
-                                </div>
-                            </div>
-                            <div className="space-y-2">
-                                <label className="text-[10px] uppercase tracking-widest font-bold text-slate-400">Teléfono Oficina</label>
-                                <div className="relative">
-                                    <FontAwesomeIcon icon={faPhone} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300" />
-                                    <input
-                                        type="text"
-                                        value={config.phone}
-                                        onChange={e => setConfig({ ...config, phone: e.target.value })}
-                                        className="w-full p-4 pl-12 border border-slate-100 focus:border-gold outline-none text-sm"
-                                        placeholder="Ej. 352 52 62502"
-                                    />
-                                </div>
-                            </div>
-                            <div className="space-y-2">
-                                <label className="text-[10px] uppercase tracking-widest font-bold text-slate-400">Correo Electrónico</label>
-                                <div className="relative">
-                                    <FontAwesomeIcon icon={faEnvelope} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300" />
-                                    <input
-                                        type="email"
-                                        value={config.email}
-                                        onChange={e => setConfig({ ...config, email: e.target.value })}
-                                        className="w-full p-4 pl-12 border border-slate-100 focus:border-gold outline-none text-sm"
-                                        placeholder="info@empresa.com"
-                                    />
-                                </div>
-                            </div>
-                            <div className="space-y-2">
-                                <label className="text-[10px] uppercase tracking-widest font-bold text-slate-400">Horarios</label>
-                                <div className="relative">
-                                    <input
-                                        type="text"
-                                        value={config.office_hours || ''}
-                                        onChange={e => setConfig({ ...config, office_hours: e.target.value })}
-                                        className="w-full p-4 border border-slate-100 focus:border-gold outline-none text-sm"
-                                        placeholder="Lunes a Viernes 9:00 - 18:00"
-                                    />
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-4">
+                                        <div className="space-y-4">
+                                            <label className="text-[10px] uppercase tracking-widest font-bold text-slate-400">Logo (Modo Claro)</label>
+                                            <div className="aspect-video bg-slate-50 border-2 border-dashed border-slate-100 relative group overflow-hidden flex items-center justify-center">
+                                                {config.logo_light_url ? (
+                                                    <>
+                                                        <img src={config.logo_light_url} className="max-h-full object-contain p-4" />
+                                                        <label className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer text-white text-[10px] font-bold uppercase tracking-widest">Cambiar<input type="file" className="hidden" accept="image/*" onChange={e => handleLogoUpload(e, 'light')} /></label>
+                                                    </>
+                                                ) : (
+                                                    <label className="cursor-pointer flex flex-col items-center gap-2 p-4 text-center">
+                                                        <FontAwesomeIcon icon={faImage} className="text-3xl text-slate-200" />
+                                                        <span className="text-[9px] uppercase font-bold text-slate-300">Subir Logo</span>
+                                                        <input type="file" className="hidden" accept="image/*" onChange={e => handleLogoUpload(e, 'light')} />
+                                                    </label>
+                                                )}
+                                            </div>
+                                            <button type="button" onClick={() => setMediaSelector({ isOpen: true, field: 'logo_light' })} className="w-full py-2 border border-slate-100 text-[9px] uppercase font-bold tracking-widest hover:bg-slate-50 transition-all flex items-center justify-center gap-2">
+                                                <FontAwesomeIcon icon={faImages} className="text-gold" /> Galería de Medios
+                                            </button>
+                                        </div>
+                                        <div className="space-y-4">
+                                            <label className="text-[10px] uppercase tracking-widest font-bold text-slate-400">Logo (Modo Oscuro)</label>
+                                            <div className="aspect-video bg-chocolate border-2 border-dashed border-white/10 relative group overflow-hidden flex items-center justify-center">
+                                                {config.logo_dark_url ? (
+                                                    <>
+                                                        <img src={config.logo_dark_url} className="max-h-full object-contain p-4" />
+                                                        <label className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer text-white text-[10px] font-bold uppercase tracking-widest">Cambiar<input type="file" className="hidden" accept="image/*" onChange={e => handleLogoUpload(e, 'dark')} /></label>
+                                                    </>
+                                                ) : (
+                                                    <label className="cursor-pointer flex flex-col items-center gap-2 p-4 text-center">
+                                                        <FontAwesomeIcon icon={faImage} className="text-3xl text-white/20" />
+                                                        <span className="text-[9px] uppercase font-bold text-white/30">Subir Logo</span>
+                                                        <input type="file" className="hidden" accept="image/*" onChange={e => handleLogoUpload(e, 'dark')} />
+                                                    </label>
+                                                )}
+                                            </div>
+                                            <button type="button" onClick={() => setMediaSelector({ isOpen: true, field: 'logo_dark' })} className="w-full py-2 border border-slate-100 text-[9px] uppercase font-bold tracking-widest hover:bg-chocolate hover:text-white transition-all flex items-center justify-center gap-2">
+                                                <FontAwesomeIcon icon={faImages} className="text-gold" /> Galería de Medios
+                                            </button>
+                                        </div>
+                                    </div>
 
-                    {/* Social Media */}
-                    <div className="space-y-6">
-                        <h3 className="text-[10px] uppercase tracking-widest font-bold text-gold border-b border-gold/10 pb-2">Redes Sociales (URLs)</h3>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div className="space-y-2">
-                                <label className="text-[10px] uppercase tracking-widest font-bold text-slate-400">Facebook URL</label>
-                                <div className="relative">
-                                    <FontAwesomeIcon icon={faFacebook} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300" />
-                                    <input
-                                        type="text"
-                                        value={config.facebook_url}
-                                        onChange={e => setConfig({ ...config, facebook_url: e.target.value })}
-                                        className="w-full p-4 pl-12 border border-slate-100 focus:border-gold outline-none text-sm"
-                                        placeholder="https://facebook.com/..."
-                                    />
+                                    <div className="pt-6">
+                                        <div className="space-y-2">
+                                            <label className="text-[10px] uppercase tracking-widest font-bold text-slate-400">Nombre de la Empresa</label>
+                                            <div className="relative">
+                                                <FontAwesomeIcon icon={faGlobe} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300" />
+                                                <input
+                                                    type="text"
+                                                    value={config.company_name}
+                                                    onChange={e => setConfig({ ...config, company_name: e.target.value })}
+                                                    className="w-full p-4 pl-12 border border-slate-100 focus:border-gold outline-none text-sm"
+                                                    placeholder="Ej. Arcángel Ceremonias"
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                            <div className="space-y-2">
-                                <label className="text-[10px] uppercase tracking-widest font-bold text-slate-400">Instagram URL</label>
-                                <div className="relative">
-                                    <FontAwesomeIcon icon={faInstagram} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300" />
-                                    <input
-                                        type="text"
-                                        value={config.instagram_url}
-                                        onChange={e => setConfig({ ...config, instagram_url: e.target.value })}
-                                        className="w-full p-4 pl-12 border border-slate-100 focus:border-gold outline-none text-sm"
-                                        placeholder="https://instagram.com/..."
-                                    />
+                        )}
+
+                        {activeTab === 'contact' && (
+                            <div className="space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                                {/* Contact Info */}
+                                <div className="space-y-6">
+                                    <h3 className="text-[10px] uppercase tracking-widest font-bold text-gold flex items-center gap-2">
+                                        <div className="w-1 h-1 rounded-full bg-gold" /> Canales Directos
+                                    </h3>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <div className="space-y-2">
+                                            <label className="text-[10px] uppercase tracking-widest font-bold text-slate-400">WhatsApp</label>
+                                            <div className="relative">
+                                                <FontAwesomeIcon icon={faWhatsapp} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300" />
+                                                <input type="text" value={config.whatsapp} onChange={e => setConfig({ ...config, whatsapp: e.target.value })} className="w-full p-4 pl-12 border border-slate-100 focus:border-gold outline-none text-sm" placeholder="Ej. 523521681197" />
+                                            </div>
+                                        </div>
+                                        <div className="space-y-2">
+                                            <label className="text-[10px] uppercase tracking-widest font-bold text-slate-400">Teléfono Oficina</label>
+                                            <div className="relative">
+                                                <FontAwesomeIcon icon={faPhone} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300" />
+                                                <input type="text" value={config.phone} onChange={e => setConfig({ ...config, phone: e.target.value })} className="w-full p-4 pl-12 border border-slate-100 focus:border-gold outline-none text-sm" placeholder="Ej. 352 52 62502" />
+                                            </div>
+                                        </div>
+                                        <div className="space-y-2">
+                                            <label className="text-[10px] uppercase tracking-widest font-bold text-slate-400">Correo Electrónico</label>
+                                            <div className="relative">
+                                                <FontAwesomeIcon icon={faEnvelope} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300" />
+                                                <input type="email" value={config.email} onChange={e => setConfig({ ...config, email: e.target.value })} className="w-full p-4 pl-12 border border-slate-100 focus:border-gold outline-none text-sm" placeholder="info@empresa.com" />
+                                            </div>
+                                        </div>
+                                        <div className="space-y-2">
+                                            <label className="text-[10px] uppercase tracking-widest font-bold text-slate-400">Horarios de Atención</label>
+                                            <input type="text" value={config.office_hours || ''} onChange={e => setConfig({ ...config, office_hours: e.target.value })} className="w-full p-4 border border-slate-100 focus:border-gold outline-none text-sm" placeholder="Lunes a Viernes 9:00 - 18:00" />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Social & Maps */}
+                                <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                                    <div className="space-y-6">
+                                        <h3 className="text-[10px] uppercase tracking-widest font-bold text-gold flex items-center gap-2">
+                                            <div className="w-1 h-1 rounded-full bg-gold" /> Redes Sociales
+                                        </h3>
+                                        <div className="space-y-4">
+                                            <div className="space-y-2">
+                                                <label className="text-[10px] uppercase tracking-widest font-bold text-slate-400">Facebook URL</label>
+                                                <div className="relative">
+                                                    <FontAwesomeIcon icon={faFacebook} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300" />
+                                                    <input type="text" value={config.facebook_url} onChange={e => setConfig({ ...config, facebook_url: e.target.value })} className="w-full p-4 pl-12 border border-slate-100 focus:border-gold outline-none text-sm" placeholder="https://facebook.com/..." />
+                                                </div>
+                                            </div>
+                                            <div className="space-y-2">
+                                                <label className="text-[10px] uppercase tracking-widest font-bold text-slate-400">Instagram URL</label>
+                                                <div className="relative">
+                                                    <FontAwesomeIcon icon={faInstagram} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300" />
+                                                    <input type="text" value={config.instagram_url} onChange={e => setConfig({ ...config, instagram_url: e.target.value })} className="w-full p-4 pl-12 border border-slate-100 focus:border-gold outline-none text-sm" placeholder="https://instagram.com/..." />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div className="space-y-6">
+                                        <h3 className="text-[10px] uppercase tracking-widest font-bold text-gold flex items-center gap-2">
+                                            <div className="w-1 h-1 rounded-full bg-gold" /> Ubicación Física
+                                        </h3>
+                                        <div className="space-y-4">
+                                            <div className="space-y-2">
+                                                <label className="text-[10px] uppercase tracking-widest font-bold text-slate-400">Dirección Completa</label>
+                                                <textarea value={config.address} onChange={e => setConfig({ ...config, address: e.target.value })} rows={2} className="w-full p-4 border border-slate-100 focus:border-gold outline-none text-sm" placeholder="Calle, Número, Colonia..." />
+                                            </div>
+                                            <div className="space-y-2">
+                                                <label className="text-[10px] uppercase tracking-widest font-bold text-slate-400">Google Maps URL</label>
+                                                <input type="text" value={config.google_maps_url} onChange={e => setConfig({ ...config, google_maps_url: e.target.value })} className="w-full p-4 border border-slate-100 focus:border-gold outline-none text-sm" placeholder="https://goo.gl/maps/..." />
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    </div>
+                        )}
 
-                    {/* Physical Address */}
-                    <div className="space-y-6">
-                        <h3 className="text-[10px] uppercase tracking-widest font-bold text-gold border-b border-gold/10 pb-2">Ubicación Física</h3>
-                        <div className="grid grid-cols-1 gap-6">
-                            <div className="space-y-2">
-                                <label className="text-[10px] uppercase tracking-widest font-bold text-slate-400">Dirección Completa</label>
-                                <div className="relative">
-                                    <FontAwesomeIcon icon={faMapMarkerAlt} className="absolute left-4 top-4 text-slate-300" />
-                                    <textarea
-                                        value={config.address}
-                                        onChange={e => setConfig({ ...config, address: e.target.value })}
-                                        rows={3}
-                                        className="w-full p-4 pl-12 border border-slate-100 focus:border-gold outline-none text-sm"
-                                        placeholder="Calle, Número, Colonia, CP, Ciudad..."
-                                    />
+                        {activeTab === 'about' && (
+                            <div className="space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                                {/* Nosotros */}
+                                <div className="space-y-6">
+                                    <h3 className="text-[10px] uppercase tracking-widest font-bold text-gold flex items-center gap-2">
+                                        <div className="w-1 h-1 rounded-full bg-gold" /> Historia y Narrativa
+                                    </h3>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <div className="space-y-2">
+                                            <label className="text-[10px] uppercase tracking-widest font-bold text-slate-400">Subtítulo Descriptivo</label>
+                                            <input type="text" value={config.about_subtitle || ''} onChange={e => setConfig({ ...config, about_subtitle: e.target.value })} className="w-full p-4 border border-slate-100 focus:border-gold outline-none text-sm" placeholder="Ej: Nuestra Historia" />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <label className="text-[10px] uppercase tracking-widest font-bold text-slate-400">Título Principal</label>
+                                            <input type="text" value={config.about_title || ''} onChange={e => setConfig({ ...config, about_title: e.target.value })} className="w-full p-4 border border-slate-100 focus:border-gold outline-none text-sm" placeholder="Ej: Más de 30 años de tradición" />
+                                        </div>
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-[10px] uppercase tracking-widest font-bold text-slate-400">Frase Destacada (Cita)</label>
+                                        <textarea rows={2} value={config.about_quote || ''} onChange={e => setConfig({ ...config, about_quote: e.target.value })} className="w-full p-4 border border-slate-100 focus:border-gold outline-none text-sm font-serif italic" placeholder="Nuestra misión es..." />
+                                    </div>
+                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                        {[1, 2, 3].map(n => (
+                                            <div key={n} className="space-y-2">
+                                                <label className="text-[10px] uppercase tracking-widest font-bold text-slate-400">Párrafo {n}</label>
+                                                <textarea rows={6} value={(config as any)[`about_body_${n}`] || ''} onChange={e => setConfig({ ...config, [`about_body_${n}`]: e.target.value })} className="w-full p-4 border border-slate-100 focus:border-gold outline-none text-xs leading-relaxed text-slate-500" />
+                                            </div>
+                                        ))}
+                                    </div>
+
+                                    <div className="pt-6">
+                                        <label className="text-[10px] uppercase tracking-widest font-bold text-slate-400 mb-2 block">Cifras Relevantes (Estadísticas)</label>
+                                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                            {([1, 2, 3, 4] as const).map(n => (
+                                                <div key={n} className="space-y-2 p-4 border border-slate-50 bg-slate-50/50">
+                                                    <input type="text" value={(config as any)[`about_stat_${n}_value`] || ''} onChange={e => setConfig({ ...config, [`about_stat_${n}_value`]: e.target.value })} className="w-full p-2 bg-transparent border-b border-gold/10 focus:border-gold outline-none text-sm font-serif text-gold text-center" placeholder="30+" />
+                                                    <input type="text" value={(config as any)[`about_stat_${n}_label`] || ''} onChange={e => setConfig({ ...config, [`about_stat_${n}_label`]: e.target.value })} className="w-full p-2 bg-transparent border-none outline-none text-[8px] uppercase tracking-wider font-bold text-slate-400 text-center" placeholder="Años Experiencia" />
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+
+                                    <div className="space-y-4 pt-6">
+                                        <label className="text-[10px] uppercase tracking-widest font-bold text-slate-400">Imagen de Portada "Nosotros"</label>
+                                        <div className="flex gap-2">
+                                            <input type="text" value={config.about_image_url || ''} onChange={e => setConfig({ ...config, about_image_url: e.target.value })} className="flex-grow p-4 border border-slate-100 focus:border-gold outline-none text-xs" placeholder="URL de la imagen..." />
+                                            <button type="button" onClick={() => setMediaSelector({ isOpen: true, field: 'about' })} className="px-6 bg-slate-50 hover:bg-gold hover:text-white transition-all text-gold flex items-center justify-center">
+                                                <FontAwesomeIcon icon={faImages} />
+                                            </button>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                            <div className="space-y-2">
-                                <label className="text-[10px] uppercase tracking-widest font-bold text-slate-400">Google Maps URL (Iframe o Enlace)</label>
-                                <input
-                                    type="text"
-                                    value={config.google_maps_url}
-                                    onChange={e => setConfig({ ...config, google_maps_url: e.target.value })}
-                                    className="w-full p-4 border border-slate-100 focus:border-gold outline-none text-sm"
-                                    placeholder="https://goo.gl/maps/..."
-                                />
-                            </div>
-                        </div>
-                    </div>
+                        )}
 
-                    {/* ── Nosotros ── */}
-                    <div className="space-y-6">
-                        <h3 className="text-[10px] uppercase tracking-widest font-bold text-gold border-b border-gold/10 pb-2">Página "Nosotros"</h3>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div className="space-y-2">
-                                <label className="text-[10px] uppercase tracking-widest font-bold text-slate-400">Subtítulo (Etiqueta superior)</label>
-                                <input type="text" value={config.about_subtitle || ''} onChange={e => setConfig({ ...config, about_subtitle: e.target.value })} className="w-full p-4 border border-slate-100 focus:border-gold outline-none text-sm" placeholder="Ej: Nuestra Historia" />
-                            </div>
-                            <div className="space-y-2">
-                                <label className="text-[10px] uppercase tracking-widest font-bold text-slate-400">Título Principal</label>
-                                <input type="text" value={config.about_title || ''} onChange={e => setConfig({ ...config, about_title: e.target.value })} className="w-full p-4 border border-slate-100 focus:border-gold outline-none text-sm" placeholder="Ej: Más de 30 años de tradición" />
-                            </div>
-                        </div>
-                        <div className="space-y-2">
-                            <label className="text-[10px] uppercase tracking-widest font-bold text-slate-400">Frase Destacada (Cita en itálica)</label>
-                            <textarea rows={2} value={config.about_quote || ''} onChange={e => setConfig({ ...config, about_quote: e.target.value })} className="w-full p-4 border border-slate-100 focus:border-gold outline-none text-sm" placeholder="Nuestra misión es..." />
-                        </div>
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                            <div className="space-y-2">
-                                <label className="text-[10px] uppercase tracking-widest font-bold text-slate-400">Párrafo 1</label>
-                                <textarea rows={4} value={config.about_body_1 || ''} onChange={e => setConfig({ ...config, about_body_1: e.target.value })} className="w-full p-4 border border-slate-100 focus:border-gold outline-none text-sm" />
-                            </div>
-                            <div className="space-y-2">
-                                <label className="text-[10px] uppercase tracking-widest font-bold text-slate-400">Párrafo 2</label>
-                                <textarea rows={4} value={config.about_body_2 || ''} onChange={e => setConfig({ ...config, about_body_2: e.target.value })} className="w-full p-4 border border-slate-100 focus:border-gold outline-none text-sm" />
-                            </div>
-                            <div className="space-y-2">
-                                <label className="text-[10px] uppercase tracking-widest font-bold text-slate-400">Párrafo 3</label>
-                                <textarea rows={4} value={config.about_body_3 || ''} onChange={e => setConfig({ ...config, about_body_3: e.target.value })} className="w-full p-4 border border-slate-100 focus:border-gold outline-none text-sm" />
-                            </div>
-                        </div>
-                        <div className="space-y-2">
-                            <label className="text-[10px] uppercase tracking-widest font-bold text-slate-400">URL de Imagen Principal</label>
-                            <input type="text" value={config.about_image_url || ''} onChange={e => setConfig({ ...config, about_image_url: e.target.value })} className="w-full p-4 border border-slate-100 focus:border-gold outline-none text-sm" placeholder="/catalog/portrait-child.jpg o URL de Supabase" />
-                        </div>
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                            {([1, 2, 3, 4] as const).map(n => (
-                                <div key={n} className="space-y-2 p-4 border border-slate-100">
-                                    <label className="text-[9px] uppercase tracking-widest font-bold text-slate-400">Estadística {n}</label>
-                                    <input type="text" value={(config as any)[`about_stat_${n}_value`] || ''} onChange={e => setConfig({ ...config, [`about_stat_${n}_value`]: e.target.value })} className="w-full p-2 border border-slate-100 focus:border-gold outline-none text-sm font-bold" placeholder="30+" />
-                                    <input type="text" value={(config as any)[`about_stat_${n}_label`] || ''} onChange={e => setConfig({ ...config, [`about_stat_${n}_label`]: e.target.value })} className="w-full p-2 border border-slate-100 focus:border-gold outline-none text-xs" placeholder="Años de Experiencia" />
+                        {activeTab === 'marketing' && (
+                            <div className="space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                                {/* Banner CTA */}
+                                <div className="space-y-6">
+                                    <h3 className="text-[10px] uppercase tracking-widest font-bold text-gold flex items-center gap-2">
+                                        <div className="w-1 h-1 rounded-full bg-gold" /> Banner — Venta al por Mayor
+                                    </h3>
+                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                        <div className="space-y-2">
+                                            <label className="text-[10px] uppercase tracking-widest font-bold text-slate-400">Etiqueta Superior</label>
+                                            <input type="text" value={config.cta_banner_tag || ''} onChange={e => setConfig({ ...config, cta_banner_tag: e.target.value })} className="w-full p-4 border border-slate-100 focus:border-gold outline-none text-sm" placeholder="Socios Comerciales" />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <label className="text-[10px] uppercase tracking-widest font-bold text-slate-400">Título Principal</label>
+                                            <input type="text" value={config.cta_banner_title || ''} onChange={e => setConfig({ ...config, cta_banner_title: e.target.value })} className="w-full p-4 border border-slate-100 focus:border-gold outline-none text-sm" placeholder="Venta al por mayor" />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <label className="text-[10px] uppercase tracking-widest font-bold text-slate-400">Destaque (Dorado)</label>
+                                            <input type="text" value={config.cta_banner_subtitle || ''} onChange={e => setConfig({ ...config, cta_banner_subtitle: e.target.value })} className="w-full p-4 border border-slate-100 focus:border-gold outline-none text-sm" placeholder="& Boutiques" />
+                                        </div>
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-[10px] uppercase tracking-widest font-bold text-slate-400">Cuerpo del Mensaje</label>
+                                        <textarea rows={3} value={config.cta_banner_body || ''} onChange={e => setConfig({ ...config, cta_banner_body: e.target.value })} className="w-full p-4 border border-slate-100 focus:border-gold outline-none text-sm" />
+                                    </div>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <div className="space-y-2">
+                                            <label className="text-[10px] uppercase tracking-widest font-bold text-slate-400">Botón Primario (WhatsApp)</label>
+                                            <input type="text" value={config.cta_banner_btn1_label || ''} onChange={e => setConfig({ ...config, cta_banner_btn1_label: e.target.value })} className="w-full p-4 border border-slate-100 focus:border-gold outline-none text-sm" placeholder="Consultar Mayoreo" />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <label className="text-[10px] uppercase tracking-widest font-bold text-slate-400">Botón Secundario (Teléfono)</label>
+                                            <input type="text" value={config.cta_banner_btn2_label || ''} onChange={e => setConfig({ ...config, cta_banner_btn2_label: e.target.value })} className="w-full p-4 border border-slate-100 focus:border-gold outline-none text-sm" placeholder="Llamar hoy" />
+                                        </div>
+                                    </div>
+                                    {/* Visual Customization */}
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 p-6 bg-slate-50 border border-slate-100 rounded-xl">
+                                        <div className="space-y-4">
+                                            <h4 className="text-[10px] uppercase tracking-widest font-bold text-slate-400">Personalización Visual</h4>
+                                            <div className="flex items-center gap-6">
+                                                <div className="space-y-2 flex-grow">
+                                                    <label className="text-[10px] font-bold text-slate-500">Color de Fondo</label>
+                                                    <div className="flex gap-3">
+                                                        <input type="color" value={config.cta_banner_bg_color || '#1B1411'} onChange={e => setConfig({ ...config, cta_banner_bg_color: e.target.value })} className="w-12 h-12 rounded cursor-pointer border-none bg-transparent" />
+                                                        <input type="text" value={config.cta_banner_bg_color || '#1B1411'} onChange={e => setConfig({ ...config, cta_banner_bg_color: e.target.value })} className="flex-grow p-3 border border-slate-200 text-xs outline-none focus:border-gold" />
+                                                    </div>
+                                                </div>
+                                                <div className="space-y-2 w-32">
+                                                    <label className="text-[10px] font-bold text-slate-500">Opacidad ({Math.round((config.cta_banner_bg_opacity ?? 0.85) * 100)}%)</label>
+                                                    <input
+                                                        type="range"
+                                                        min="0"
+                                                        max="1"
+                                                        step="0.05"
+                                                        value={config.cta_banner_bg_opacity ?? 0.85}
+                                                        onChange={e => setConfig({ ...config, cta_banner_bg_opacity: parseFloat(e.target.value) })}
+                                                        className="w-full accent-gold"
+                                                    />
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className="space-y-4">
+                                            <h4 className="text-[10px] uppercase tracking-widest font-bold text-slate-400">Imagen de Fondo</h4>
+                                            <div className="flex items-center gap-4">
+                                                <div className="w-16 h-16 bg-white border border-slate-200 rounded flex items-center justify-center overflow-hidden">
+                                                    {config.cta_banner_bg_image_url ? (
+                                                        <img src={config.cta_banner_bg_image_url} alt="CTA Bg" className="w-full h-full object-cover" />
+                                                    ) : (
+                                                        <FontAwesomeIcon icon={faImage} className="text-slate-200 text-xl" />
+                                                    )}
+                                                </div>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => setMediaSelector({ isOpen: true, field: 'cta_bg' })}
+                                                    className="px-4 py-2 bg-white border border-slate-200 text-[10px] font-bold uppercase tracking-widest hover:border-gold hover:text-gold transition-all"
+                                                >
+                                                    Seleccionar Imagen
+                                                </button>
+                                                {config.cta_banner_bg_image_url && (
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => setConfig({ ...config, cta_banner_bg_image_url: '' })}
+                                                        className="text-red-400 hover:text-red-600 text-[10px] font-bold uppercase tracking-widest"
+                                                    >
+                                                        Quitar
+                                                    </button>
+                                                )}
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
-                            ))}
-                        </div>
-                    </div>
 
-                    {/* ── CTA Banner (Mayoreo) ── */}
-                    <div className="space-y-6">
-                        <h3 className="text-[10px] uppercase tracking-widest font-bold text-gold border-b border-gold/10 pb-2">Banner CTA — Venta al por Mayor (Home)</h3>
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                            <div className="space-y-2">
-                                <label className="text-[10px] uppercase tracking-widest font-bold text-slate-400">Etiqueta Superior</label>
-                                <input type="text" value={config.cta_banner_tag || ''} onChange={e => setConfig({ ...config, cta_banner_tag: e.target.value })} className="w-full p-4 border border-slate-100 focus:border-gold outline-none text-sm" placeholder="Socios Comerciales" />
+                                {/* Catálogo PDF */}
+                                <div className="space-y-6 pt-6 border-t border-slate-100">
+                                    <h3 className="text-[10px] uppercase tracking-widest font-bold text-gold flex items-center gap-2">
+                                        <div className="w-1 h-1 rounded-full bg-gold" /> Catálogo Digital (PDF)
+                                    </h3>
+                                    <div className="p-8 bg-slate-50 border border-slate-100 flex flex-col md:flex-row items-center gap-8">
+                                        <div className={`w-20 h-20 ${config.catalog_pdf_url ? 'bg-white text-red-500 shadow-sm' : 'bg-slate-200 text-slate-400'} flex items-center justify-center rounded-xl text-3xl transition-all border border-slate-100`}>
+                                            <FontAwesomeIcon icon={faFilePdf} />
+                                        </div>
+                                        <div className="flex-grow text-center md:text-left">
+                                            <h4 className="text-sm font-serif mb-1">Archivo de Catálogo General</h4>
+                                            <p className="text-[10px] text-slate-400 uppercase tracking-widest font-bold mb-4">
+                                                {config.catalog_pdf_url ? 'Archivo listo para descarga' : 'No se ha subido ningún catálogo'}
+                                            </p>
+                                            <div className="flex flex-wrap gap-3 justify-center md:justify-start">
+                                                <label className="cursor-pointer bg-chocolate text-white px-6 py-3 text-[10px] font-bold uppercase tracking-widest hover:bg-gold hover:text-chocolate transition-all flex items-center gap-2">
+                                                    <FontAwesomeIcon icon={faFileUpload} />
+                                                    {config.catalog_pdf_url ? 'Reemplazar PDF' : 'Subir Catálogo PDF'}
+                                                    <input type="file" className="hidden" accept="application/pdf" onChange={handlePdfUpload} />
+                                                </label>
+                                                {config.catalog_pdf_url && (
+                                                    <a href={config.catalog_pdf_url} target="_blank" rel="noopener noreferrer" className="bg-white text-slate-400 border border-slate-200 px-6 py-3 text-[10px] font-bold uppercase tracking-widest hover:border-gold hover:text-gold transition-all flex items-center gap-2">
+                                                        <FontAwesomeIcon icon={faEye} />
+                                                        Ver Actual
+                                                    </a>
+                                                )}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-                            <div className="space-y-2">
-                                <label className="text-[10px] uppercase tracking-widest font-bold text-slate-400">Título</label>
-                                <input type="text" value={config.cta_banner_title || ''} onChange={e => setConfig({ ...config, cta_banner_title: e.target.value })} className="w-full p-4 border border-slate-100 focus:border-gold outline-none text-sm" placeholder="Venta al por mayor" />
-                            </div>
-                            <div className="space-y-2">
-                                <label className="text-[10px] uppercase tracking-widest font-bold text-slate-400">Subtítulo (Dorado)</label>
-                                <input type="text" value={config.cta_banner_subtitle || ''} onChange={e => setConfig({ ...config, cta_banner_subtitle: e.target.value })} className="w-full p-4 border border-slate-100 focus:border-gold outline-none text-sm" placeholder="& Boutiques" />
-                            </div>
-                        </div>
-                        <div className="space-y-2">
-                            <label className="text-[10px] uppercase tracking-widest font-bold text-slate-400">Texto del Banner</label>
-                            <textarea rows={3} value={config.cta_banner_body || ''} onChange={e => setConfig({ ...config, cta_banner_body: e.target.value })} className="w-full p-4 border border-slate-100 focus:border-gold outline-none text-sm" placeholder="Descripción para socios..." />
-                        </div>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div className="space-y-2">
-                                <label className="text-[10px] uppercase tracking-widest font-bold text-slate-400">Texto Botón 1 (WhatsApp/Verde)</label>
-                                <input type="text" value={config.cta_banner_btn1_label || ''} onChange={e => setConfig({ ...config, cta_banner_btn1_label: e.target.value })} className="w-full p-4 border border-slate-100 focus:border-gold outline-none text-sm" placeholder="Catálogo Mayoreo" />
-                            </div>
-                            <div className="space-y-2">
-                                <label className="text-[10px] uppercase tracking-widest font-bold text-slate-400">Texto Botón 2 (Teléfono/Outline)</label>
-                                <input type="text" value={config.cta_banner_btn2_label || ''} onChange={e => setConfig({ ...config, cta_banner_btn2_label: e.target.value })} className="w-full p-4 border border-slate-100 focus:border-gold outline-none text-sm" placeholder="Línea de Negocios" />
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="pt-6 border-t border-slate-100">
-                        <button
-                            type="submit"
-                            disabled={saving}
-                            className="bg-gold text-chocolate px-12 py-5 text-[10px] uppercase tracking-[0.3em] font-bold shadow-xl hover:bg-chocolate hover:text-white transition-all disabled:opacity-50"
-                        >
-                            {saving ? 'Guardando Cambios...' : 'Guardar Configuración Global'}
-                        </button>
-                    </div>
-                </form>
+                        )}
+                    </form>
+                </div>
             </div>
-        </motion.div>
+
+            <MediaSelectorModal
+                isOpen={mediaSelector.isOpen}
+                onClose={() => setMediaSelector({ ...mediaSelector, isOpen: false })}
+                onSelect={(url) => {
+                    const field = mediaSelector.field;
+                    if (field === 'logo_light') setConfig(prev => ({ ...prev, logo_light_url: url }));
+                    else if (field === 'logo_dark') setConfig(prev => ({ ...prev, logo_dark_url: url }));
+                    else if (field === 'about') setConfig(prev => ({ ...prev, about_image_url: url }));
+                    else if (field === 'cta_bg') setConfig(prev => ({ ...prev, cta_banner_bg_image_url: url }));
+                    else if (field === 'pdf') setConfig(prev => ({ ...prev, catalog_pdf_url: url }));
+                    toast.success('Cambio aplicado');
+                }}
+            />
+        </motion.div >
+    );
+};
+
+// --- Messages Manager Component ---
+const MessagesManager: React.FC = () => {
+    const [messages, setMessages] = useState<ContactMessage[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [selectedMessage, setSelectedMessage] = useState<ContactMessage | null>(null);
+
+    const fetchMessages = async () => {
+        try {
+            setLoading(true);
+            const data = await contactService.getMessages();
+            setMessages(data);
+        } catch (error) {
+            console.error(error);
+            toast.error('Error al cargar mensajes');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchMessages();
+    }, []);
+
+    const handleMarkAsRead = async (id: string) => {
+        try {
+            await contactService.markAsRead(id);
+            setMessages(prev => prev.map(m => m.id === id ? { ...m, is_read: true } : m));
+            if (selectedMessage?.id === id) {
+                setSelectedMessage({ ...selectedMessage, is_read: true });
+            }
+        } catch (error) {
+            toast.error('Error al actualizar mensaje');
+        }
+    };
+
+    const handleDelete = async (id: string) => {
+        if (!confirm('¿Seguro que deseas eliminar este mensaje?')) return;
+        try {
+            await contactService.deleteMessage(id);
+            setMessages(prev => prev.filter(m => m.id !== id));
+            if (selectedMessage?.id === id) setSelectedMessage(null);
+            toast.success('Mensaje eliminado');
+        } catch (error) {
+            toast.error('Error al eliminar mensaje');
+        }
+    };
+
+    if (loading) return <div className="flex justify-center py-20"><div className="w-8 h-8 border-2 border-gold border-t-transparent rounded-full animate-spin" /></div>;
+
+    return (
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            {/* Inbox List */}
+            <div className="lg:col-span-5 bg-white border border-slate-200 shadow-sm overflow-hidden flex flex-col h-[700px]">
+                <div className="p-6 border-b border-slate-100 bg-slate-50 flex justify-between items-center">
+                    <h2 className="text-xs uppercase tracking-widest font-bold text-slate-500">Bandeja de Entrada</h2>
+                    <span className="bg-gold/10 text-gold text-[10px] px-2 py-1 rounded font-bold">
+                        {messages.filter(m => !m.is_read).length} nuevos
+                    </span>
+                </div>
+                <div className="flex-grow overflow-y-auto">
+                    {messages.length === 0 ? (
+                        <div className="flex flex-col items-center justify-center h-full text-slate-300 space-y-4">
+                            <FontAwesomeIcon icon={faInbox} className="text-4xl" />
+                            <p className="text-[10px] uppercase tracking-widest font-bold">Sin mensajes</p>
+                        </div>
+                    ) : (
+                        messages.map(msg => (
+                            <div
+                                key={msg.id}
+                                onClick={() => {
+                                    setSelectedMessage(msg);
+                                    if (!msg.is_read && msg.id) handleMarkAsRead(msg.id);
+                                }}
+                                className={`p-6 border-b border-slate-50 cursor-pointer transition-all hover:bg-slate-50 ${selectedMessage?.id === msg.id ? 'bg-gold/5 border-l-4 border-l-gold' : ''} ${!msg.is_read ? 'bg-white font-bold' : 'opacity-70'}`}
+                            >
+                                <div className="flex justify-between items-start mb-2">
+                                    <span className="text-[10px] uppercase tracking-wider text-slate-400">
+                                        {msg.name}
+                                    </span>
+                                    <span className="text-[9px] text-slate-300">
+                                        {msg.created_at ? new Date(msg.created_at).toLocaleDateString('es-MX', { day: '2-digit', month: 'short' }) : ''}
+                                    </span>
+                                </div>
+                                <h3 className="text-sm truncate mb-1">{msg.subject}</h3>
+                                <p className="text-xs text-slate-400 line-clamp-1">{msg.message}</p>
+                            </div>
+                        ))
+                    )}
+                </div>
+            </div>
+
+            {/* Message Detail */}
+            <div className="lg:col-span-7 bg-white border border-slate-200 shadow-sm flex flex-col h-[700px]">
+                {selectedMessage ? (
+                    <motion.div
+                        initial={{ opacity: 0, x: 10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        className="flex flex-col h-full"
+                    >
+                        <div className="p-8 border-b border-slate-100 flex justify-between items-start gap-4">
+                            <div>
+                                <h1 className="text-2xl font-serif text-slate-800 mb-2">{selectedMessage.subject}</h1>
+                                <div className="flex items-center gap-3 text-xs text-slate-500">
+                                    <span className="font-bold text-slate-700">{selectedMessage.name}</span>
+                                    <span>•</span>
+                                    <span>{selectedMessage.phone}</span>
+                                </div>
+                            </div>
+                            <div className="flex gap-2">
+                                <button
+                                    onClick={() => handleDelete(selectedMessage.id!)}
+                                    className="p-3 text-slate-300 hover:text-red-500 transition-colors"
+                                >
+                                    <FontAwesomeIcon icon={faTrash} />
+                                </button>
+                            </div>
+                        </div>
+                        <div className="p-8 flex-grow overflow-y-auto">
+                            <div className="bg-slate-50 p-6 rounded-lg border border-slate-100 italic text-slate-600 leading-relaxed">
+                                {selectedMessage.message}
+                            </div>
+
+                            <div className="mt-12 space-y-4">
+                                <h4 className="text-[10px] uppercase font-bold tracking-widest text-slate-400">Datos de seguimiento</h4>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="p-4 border border-slate-100 rounded">
+                                        <p className="text-[9px] text-slate-400 uppercase mb-1">Enviado el</p>
+                                        <p className="text-sm">{selectedMessage.created_at ? new Date(selectedMessage.created_at).toLocaleString() : '-'}</p>
+                                    </div>
+                                    <div className="p-4 border border-slate-100 rounded">
+                                        <p className="text-[9px] text-slate-400 uppercase mb-1">Email Resend</p>
+                                        <p className="text-xs">
+                                            {selectedMessage.email_sent ? (
+                                                <span className="text-green-500 flex items-center gap-2">
+                                                    <FontAwesomeIcon icon={faCheckCircle} /> Enviado con éxito
+                                                </span>
+                                            ) : (
+                                                <span className="text-slate-400">No enviado (Solo DB)</span>
+                                            )}
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="p-8 bg-slate-50 border-t border-slate-100">
+                            <a
+                                href={`https://wa.me/${selectedMessage.phone.replace(/[^0-9]/g, '')}?text=Hola ${selectedMessage.name}, gracias por escribirnos desde el sitio web de Arcangel Ceremonias...`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="w-full bg-green-500 text-white flex items-center justify-center gap-3 py-4 rounded font-bold text-xs uppercase tracking-widest hover:bg-green-600 transition-all shadow-md"
+                            >
+                                <FontAwesomeIcon icon={faWhatsapp} className="text-lg" />
+                                Responder por WhatsApp
+                            </a>
+                        </div>
+                    </motion.div>
+                ) : (
+                    <div className="flex flex-col items-center justify-center h-full text-slate-300 space-y-6">
+                        <div className="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center">
+                            <FontAwesomeIcon icon={faEnvelope} className="text-4xl" />
+                        </div>
+                        <p className="text-[10px] uppercase tracking-widest font-bold">Selecciona un mensaje para leerlo</p>
+                    </div>
+                )}
+            </div>
+        </div>
+    );
+};
+
+const UsersManager: React.FC = () => {
+    const { isAdmin } = useAuth();
+    const [users, setUsers] = useState<Profile[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    const fetchUsers = async () => {
+        setLoading(true);
+        const data = await userService.getProfiles();
+        setUsers(data);
+        setLoading(false);
+    };
+
+    useEffect(() => {
+        if (isAdmin) fetchUsers();
+    }, [isAdmin]);
+
+    const handleUpdateRole = async (userId: string, currentRole: 'admin' | 'editor') => {
+        const newRole = currentRole === 'admin' ? 'editor' : 'admin';
+        if (!confirm(`¿Deseas cambiar el rol de este usuario a ${newRole.toUpperCase()}?`)) return;
+
+        const success = await userService.updateRole(userId, newRole);
+        if (success) {
+            toast.success('Rol actualizado con éxito');
+            fetchUsers();
+        } else {
+            toast.error('Error al actualizar rol');
+        }
+    };
+
+    if (!isAdmin) {
+        return (
+            <div className="flex flex-col items-center justify-center p-20 text-center">
+                <FontAwesomeIcon icon={faUserShield} className="text-6xl text-slate-200 mb-6" />
+                <h2 className="font-serif text-2xl text-slate-400 mb-2">Acceso Restringido</h2>
+                <p className="text-slate-400 text-sm">Solo los administradores generales pueden gestionar usuarios.</p>
+            </div>
+        );
+    }
+
+    return (
+        <div className="space-y-8 animate-in fade-in duration-700">
+            <div className="flex justify-between items-end">
+                <div className="space-y-2">
+                    <h2 className="text-3xl font-serif text-slate-800">Gestión de Usuarios</h2>
+                    <p className="text-xs uppercase tracking-widest text-slate-400 font-bold">Control de accesos y roles (Admin / Editor)</p>
+                </div>
+                {/* Nota: La creación de usuarios se hace vía Supabase Auth Dashboard o invitación */}
+                <div className="text-[10px] uppercase text-gold bg-gold/5 px-4 py-2 border border-gold/10 font-bold">
+                    Crea usuarios desde el Panel de Supabase
+                </div>
+            </div>
+
+            <div className="bg-white border border-slate-200 overflow-hidden shadow-sm">
+                <table className="w-full text-left">
+                    <thead>
+                        <tr className="bg-slate-50 border-b border-slate-200">
+                            <th className="px-8 py-4 text-[10px] uppercase tracking-widest font-bold text-slate-400">Usuario</th>
+                            <th className="px-8 py-4 text-[10px] uppercase tracking-widest font-bold text-slate-400">Rol Corriente</th>
+                            <th className="px-8 py-4 text-[10px] uppercase tracking-widest font-bold text-slate-400">Fecha Registro</th>
+                            <th className="px-8 py-4 text-[10px] uppercase tracking-widest font-bold text-slate-400 text-right">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-100">
+                        {loading ? (
+                            <tr><td colSpan={4} className="p-12 text-center text-slate-300">Cargando usuarios...</td></tr>
+                        ) : users.length === 0 ? (
+                            <tr><td colSpan={4} className="p-12 text-center text-slate-300">No hay usuarios registrados</td></tr>
+                        ) : users.map(user => (
+                            <tr key={user.id} className="hover:bg-slate-50/50 transition-colors">
+                                <td className="px-8 py-6">
+                                    <div className="flex items-center gap-4">
+                                        <div className="w-10 h-10 bg-gold/10 text-gold rounded-full flex items-center justify-center font-bold">
+                                            {user.email[0].toUpperCase()}
+                                        </div>
+                                        <div>
+                                            <p className="font-bold text-slate-700">{user.full_name || 'Sin nombre'}</p>
+                                            <p className="text-xs text-slate-400">{user.email}</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td className="px-8 py-6">
+                                    <span className={`px-3 py-1 rounded-full text-[9px] font-bold uppercase tracking-widest ${user.role === 'admin' ? 'bg-gold/10 text-gold' : 'bg-slate-100 text-slate-500'
+                                        }`}>
+                                        {user.role}
+                                    </span>
+                                </td>
+                                <td className="px-8 py-6 text-xs text-slate-400">
+                                    {new Date(user.created_at).toLocaleDateString()}
+                                </td>
+                                <td className="px-8 py-6 text-right">
+                                    <button
+                                        onClick={() => handleUpdateRole(user.id, user.role)}
+                                        className="text-[10px] uppercase tracking-widest font-bold text-gold hover:text-chocolate transition-colors border-b border-gold/30 hover:border-chocolate"
+                                    >
+                                        Cambiar a {user.role === 'admin' ? 'Editor' : 'Admin'}
+                                    </button>
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </div>
+
+            <div className="bg-slate-50 p-8 border border-slate-200 space-y-4">
+                <h4 className="text-xs uppercase tracking-widest font-bold text-slate-800 flex items-center gap-2">
+                    <FontAwesomeIcon icon={faUserShield} className="text-gold" />
+                    Guía de Permisos
+                </h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div className="space-y-2">
+                        <p className="text-[10px] font-bold text-gold uppercase">Administrador</p>
+                        <p className="text-xs text-slate-500 leading-relaxed">
+                            Acceso total al sistema. Puede gestionar productos, categorías, banners, mensajes y **otros usuarios / permisos**.
+                        </p>
+                    </div>
+                    <div className="space-y-2">
+                        <p className="text-[10px] font-bold text-slate-400 uppercase">Editor</p>
+                        <p className="text-xs text-slate-500 leading-relaxed">
+                            Acceso limitado. Puede gestionar el contenido del sitio (catálogo, galería, banners) pero no tiene acceso a la configuración de usuarios ni seguridad.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
     );
 };
 
 // --- Main Admin Entry Point ---
 const Admin: React.FC = () => {
+    const { isAdmin } = useAuth();
     const [products, setProducts] = useState<Product[]>([]);
     const [categories, setCategories] = useState<Category[]>([]);
     const [loading, setLoading] = useState(true);
 
     const fetchData = async () => {
+        const timeoutId = setTimeout(() => {
+            if (loading) {
+                console.warn('Admin fetchData timed out');
+                setLoading(false);
+            }
+        }, 10000); // 10 seconds safety
+
         try {
             setLoading(true);
             const [prods, cats] = await Promise.all([
@@ -1153,8 +2097,10 @@ const Admin: React.FC = () => {
             setProducts(prods);
             setCategories(cats);
         } catch (error) {
-            console.error(error);
+            console.error('Error fetching admin data:', error);
+            toast.error('Error al cargar datos del panel');
         } finally {
+            clearTimeout(timeoutId);
             setLoading(false);
         }
     };
@@ -1166,11 +2112,15 @@ const Admin: React.FC = () => {
     return (
         <AdminLayout>
             <Routes>
-                <Route index element={<DashboardOverview products={products} categories={categories} />} />
+                <Route index element={<DashboardOverview products={products} categories={categories} refresh={fetchData} />} />
                 <Route path="productos" element={<ProductsManager products={products} categories={categories} refresh={fetchData} />} />
+                <Route path="categorias" element={<CategoriesManager categories={categories} refresh={fetchData} />} />
                 <Route path="hero" element={<HeroManager />} />
+                <Route path="galeria" element={<MediaGallery />} />
+                <Route path="mensajes" element={<MessagesManager />} />
+                <Route path="usuarios" element={<UsersManager />} />
                 <Route path="configuracion" element={<ConfigManager />} />
-                <Route path="*" element={<DashboardOverview products={products} categories={categories} />} />
+                <Route path="*" element={<DashboardOverview products={products} categories={categories} refresh={fetchData} />} />
             </Routes>
         </AdminLayout>
     );

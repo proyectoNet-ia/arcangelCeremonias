@@ -129,26 +129,7 @@ const Catalog: React.FC = () => {
         return matchesCategory && matchesSubcategory && matchesSearch;
     });
 
-    const [isSeeding, setIsSeeding] = useState(false);
 
-    const handleSeed = async () => {
-        try {
-            setIsSeeding(true);
-            const { seedCatalog } = await import('@/services/seedData');
-            const success = await seedCatalog();
-            if (success) {
-                alert('¡Datos cargados con éxito!');
-                window.location.reload();
-            } else {
-                alert('Error al cargar datos. Revisa la consola.');
-            }
-        } catch (error) {
-            console.error('Seed error:', error);
-            alert('Error crítico al cargar datos.');
-        } finally {
-            setIsSeeding(false);
-        }
-    };
 
     return (
         <div className="min-h-screen bg-cream font-sans text-chocolate selection:bg-gold/20">
@@ -193,18 +174,7 @@ const Catalog: React.FC = () => {
                         </RevealOnScroll>
                     </div>
 
-                    {/* Botón temporal de desarrollo */}
-                    {!loading && (
-                        <div className="-mt-8">
-                            <button
-                                onClick={handleSeed}
-                                disabled={isSeeding}
-                                className={`text-[9px] uppercase tracking-widest text-gold hover:underline ${isSeeding ? 'opacity-50 cursor-not-allowed' : ''}`}
-                            >
-                                {isSeeding ? '↻ Cargando datos...' : '↻ Actualizar catálogo a versión robusta (Supabase)'}
-                            </button>
-                        </div>
-                    )}
+
 
                     {/* CATEGORY NAV - Optimized for Scalability & Mobile */}
                     <RevealOnScroll direction="up" delay={0.5} className="space-y-6 border-t border-gold/10 pt-10">

@@ -1,5 +1,6 @@
 import { supabase } from '../lib/supabase';
 import { Product, Category } from '../types/product';
+import { mediaService, MAX_FILE_SIZE } from './mediaService';
 
 export const productService = {
     async getProducts() {
@@ -53,34 +54,77 @@ export const productService = {
         return true;
     },
 
+    async upsertCategory(category: Partial<Category>) {
+        const { data, error } = await supabase
+            .from('categories')
+            .upsert(category)
+            .select()
+            .single();
+
+        if (error) throw error;
+        return data as Category;
+    },
+
+    async deleteCategory(id: string) {
+        // Primero verificar si hay productos vinculados
+        const { count, error: checkError } = await supabase
+            .from('products')
+            .select('*', { count: 'exact', head: true })
+            .eq('category_id', id);
+
+        if (checkError) throw checkError;
+        if (count && count > 0) {
+            throw new Error(`No se puede eliminar: Esta categoría tiene ${count} productos vinculados.`);
+        }
+
+        const { error } = await supabase
+            .from('categories')
+            .delete()
+            .eq('id', id);
+
+        if (error) throw error;
+        return true;
+    },
+
     async uploadImage(file: File, path: string) {
-        const fileExt = file.name.split('.').pop()?.toLowerCase() ?? 'jpg';
+        return this.uploadFile(file, 'catalog', path, ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/gif', 'image/svg+xml']);
+    },
+
+    async uploadFile(file: File, bucket: string, path: string, allowedMimeTypes: string[] = []) {
+        // ── Validación de seguridad (Centralizada) ────────
+        try {
+            mediaService.validateFile(file);
+        } catch (err: any) {
+            throw new Error(err.message);
+        }
+
+        const fileExt = file.name.split('.').pop()?.toLowerCase() ?? 'bin';
         const fileName = `${Date.now()}_${Math.random().toString(36).slice(2, 8)}.${fileExt}`;
         const filePath = `${path}/${fileName}`;
 
-        // ── Asegurar que el bucket existe (lo crea si no existe) ──────────
+        // ── Asegurar que el bucket existe ──────────
         const { data: buckets } = await supabase.storage.listBuckets();
-        const exists = buckets?.some(b => b.name === 'catalog');
+        const exists = buckets?.some(b => b.name === bucket);
         if (!exists) {
-            await supabase.storage.createBucket('catalog', {
+            await supabase.storage.createBucket(bucket, {
                 public: true,
-                fileSizeLimit: 5 * 1024 * 1024, // 5 MB
-                allowedMimeTypes: ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/gif'],
+                fileSizeLimit: MAX_FILE_SIZE,
+                allowedMimeTypes: allowedMimeTypes.length > 0 ? allowedMimeTypes : undefined,
             });
         }
 
         const { error: uploadError } = await supabase.storage
-            .from('catalog')
+            .from(bucket)
             .upload(filePath, file, {
                 cacheControl: '3600',
                 upsert: false,
-                contentType: file.type || 'image/jpeg',
+                contentType: file.type || 'application/octet-stream',
             });
 
         if (uploadError) throw uploadError;
 
         const { data } = supabase.storage
-            .from('catalog')
+            .from(bucket)
             .getPublicUrl(filePath);
 
         return data.publicUrl;

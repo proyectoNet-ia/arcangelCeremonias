@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import { useAuth } from '@/context/AuthContext';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
     faChartLine,
@@ -12,7 +13,9 @@ import {
     faSignOutAlt,
     faExternalLinkAlt,
     faDiamond,
-    faBars
+    faBars,
+    faInbox,
+    faUsersCog
 } from '@fortawesome/free-solid-svg-icons';
 
 interface AdminLayoutProps {
@@ -20,6 +23,7 @@ interface AdminLayoutProps {
 }
 
 export const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
+    const { user, profile, isAdmin, signOut } = useAuth();
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
     const location = useLocation();
 
@@ -29,7 +33,9 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
         { name: 'Categorías', path: '/admin/categorias', icon: faTags },
         { name: 'Hero Slider', path: '/admin/hero', icon: faImage },
         { name: 'Galería Media', path: '/admin/galeria', icon: faImage },
+        { name: 'Mensajes', path: '/admin/mensajes', icon: faInbox },
         { name: 'Configuración', path: '/admin/configuracion', icon: faPalette },
+        ...(isAdmin ? [{ name: 'Usuarios', path: '/admin/usuarios', icon: faUsersCog }] : []),
     ];
 
     return (
@@ -108,12 +114,23 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
 
                     <div className="flex items-center gap-6">
                         <div className="flex flex-col items-end">
-                            <span className="text-xs font-bold text-slate-700">Administrador</span>
-                            <span className="text-[10px] text-gold uppercase tracking-tighter">Acceso Total</span>
+                            <span className="text-xs font-bold text-slate-700">{profile?.full_name || user?.email?.split('@')[0] || 'Administrador'}</span>
+                            <div className="flex items-center gap-2">
+                                <span className={`text-[8px] uppercase tracking-tighter px-2 py-0.5 rounded-full font-bold ${isAdmin ? 'bg-gold/10 text-gold' : 'bg-slate-100 text-slate-400'}`}>
+                                    {profile?.role || 'Visitante'}
+                                </span>
+                                <span className="text-[10px] text-slate-400 uppercase tracking-tighter truncate max-w-[150px]">{user?.email}</span>
+                            </div>
                         </div>
-                        <div className="w-10 h-10 bg-slate-100 rounded-full flex items-center justify-center border border-slate-200">
-                            <FontAwesomeIcon icon={faSignOutAlt} className="text-slate-400 hover:text-red-500 cursor-pointer transition-colors" />
-                        </div>
+                        <button
+                            onClick={() => {
+                                if (confirm('¿Cerrar sesión?')) signOut();
+                            }}
+                            className="w-10 h-10 bg-slate-100 rounded-full flex items-center justify-center border border-slate-200 hover:bg-slate-200 transition-colors"
+                            title="Cerrar Sesión"
+                        >
+                            <FontAwesomeIcon icon={faSignOutAlt} className="text-slate-400 hover:text-red-500" />
+                        </button>
                     </div>
                 </header>
 

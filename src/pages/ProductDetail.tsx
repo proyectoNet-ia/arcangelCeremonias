@@ -17,6 +17,7 @@ import {
     clearAllHistory
 } from '@/services/cookieService';
 import { useConfig } from '@/context/ConfigContext';
+import { statsService } from '@/services/statsService';
 
 const ProductDetail: React.FC = () => {
     const { slug } = useParams<{ slug: string }>();
@@ -109,6 +110,7 @@ const ProductDetail: React.FC = () => {
     // ── Abre WhatsApp (mismo comportamiento en los 3 botones) ──────────────
     const waOpen = (msg: string) => {
         const phone = whatsapp.replace(/\D/g, ''); // solo dígitos, sin espacios ni guiones
+        statsService.trackWhatsAppClick(window.location.href, product.id);
         window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, '_blank', 'noopener,noreferrer');
     };
 
@@ -505,7 +507,7 @@ const ProductDetail: React.FC = () => {
                             whileInView={{ opacity: 1, scale: 1 }}
                             viewport={{ once: true }}
                             transition={{ duration: 0.6, delay: 0.1 }}
-                            className="flex items-center gap-3"
+                            className="relative flex items-center gap-3"
                         >
                             {[...Array(5)].map((_, i) => (
                                 <motion.div
@@ -526,7 +528,7 @@ const ProductDetail: React.FC = () => {
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
                             transition={{ duration: 0.6, delay: 0.2 }}
-                            className="text-[10px] uppercase tracking-[0.5em] text-gold/60 font-bold"
+                            className="relative text-[10px] uppercase tracking-[0.5em] text-gold/60 font-bold"
                         >
                             Atención Personalizada · Desde 1998
                         </motion.span>
@@ -537,7 +539,7 @@ const ProductDetail: React.FC = () => {
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
                             transition={{ duration: 0.7, delay: 0.3 }}
-                            className="font-serif text-cream text-4xl md:text-6xl xl:text-7xl max-w-4xl leading-[1.1] tracking-wide"
+                            className="relative font-serif text-cream text-4xl md:text-6xl xl:text-7xl max-w-4xl leading-[1.1] tracking-wide"
                         >
                             ¿Lista para lucir
                             <span className="text-gold italic"> perfecta</span>
@@ -550,7 +552,7 @@ const ProductDetail: React.FC = () => {
                             whileInView={{ scaleX: 1 }}
                             viewport={{ once: true }}
                             transition={{ duration: 0.8, delay: 0.5 }}
-                            className="w-24 h-[1px] bg-gold/40"
+                            className="relative w-24 h-[1px] bg-gold/40"
                         />
 
                         {/* Subtitle */}
@@ -559,7 +561,7 @@ const ProductDetail: React.FC = () => {
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
                             transition={{ duration: 0.6, delay: 0.55 }}
-                            className="text-cream/50 text-base md:text-lg font-light leading-relaxed max-w-2xl"
+                            className="relative text-cream/50 text-base md:text-lg font-light leading-relaxed max-w-2xl"
                         >
                             Nuestros asesores te ayudan a encontrar la pieza ideal para tu ocasión especial. Atención directa, sin compromiso.
                         </motion.p>
@@ -570,7 +572,7 @@ const ProductDetail: React.FC = () => {
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
                             transition={{ duration: 0.6, delay: 0.65 }}
-                            className="flex flex-col sm:flex-row gap-4 w-full max-w-lg mt-4"
+                            className="relative flex flex-col sm:flex-row gap-4 w-full max-w-lg mt-4"
                         >
                             {/* Primary: WhatsApp */}
                             <motion.button

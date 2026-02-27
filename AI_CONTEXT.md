@@ -15,9 +15,9 @@ Este archivo es un resumen actualizado para mantener la continuidad del desarrol
 ---
 
 ## 📝 Resumen Ejecutivo
-
-**Última actualización:** 25 de febrero de 2026 — 11:45 hrs
-**Rama activa:** `main` (local, NO sincronizada con GitHub intencionalmente)
+ 
+**Última actualización:** 26 de febrero de 2026 — 15:35 hrs
+**Rama activa:** `main` (local, sincronizada vía OneDrive)
 **Entorno activo:** `http://localhost:3000` (desarrollo local)
 **Producción:** `https://www.ceremoniasarcangel.com` — ⛔ Mostrando página "Próximamente", NO tocar.
 
@@ -74,7 +74,7 @@ Este archivo es un resumen actualizado para mantener la continuidad del desarrol
 |----|-------------|-----------|--------|
 | B-01 | Stats del Dashboard (visitas, consultas) son valores ficticios | Medio | Pendiente |
 | B-04 | Verificar protección de ruta `/admin` (auth guard) | Alto | Pendiente revisión |
-| B-05 | Catálogo PDF no integrado en el sitio | Bajo | Pendiente |
+| B-05 | Catálogo PDF integrado en Panel Admin | Bajo | ✅ Completado |
 
 ---
 
@@ -82,7 +82,7 @@ Este archivo es un resumen actualizado para mantener la continuidad del desarrol
 
 1. **🟡 MEDIO:** Galería Media Centralizada — explorador de archivos Supabase Storage en Admin para reutilizar imágenes ya subidas
 2. **🟡 MEDIO:** Revisar y reforzar protección de ruta `/admin` con auth guard
-3. **🟢 BAJO:** Integrar link/descarga del Catálogo PDF desde algún punto del sitio
+3. **🟢 BAJO:** Integrar link/descarga del Catálogo PDF en el sitio público (ya se puede subir desde Admin)
 4. **🟢 BAJO:** Mejorar Dashboard con estadísticas reales (visitas de Supabase Analytics o similar)
 5. **⏳ CUANDO EL CLIENTE APRUEBE:** Realizar `git push` y deployment en Vercel para lanzar el sitio completo
 
@@ -90,12 +90,13 @@ Este archivo es un resumen actualizado para mantener la continuidad del desarrol
 
 ## 🛠️ Notas Técnicas Importantes
 
-- **CSS Variables:** `--color-primary` = color oscuro/chocolate, `--color-secondary` = gold/detalles, `--color-accent` = fondo claro/cream. Tailwind usa `var(--color-*)` con fallbacks hardcodeados.
-- **Logo Fallback:** Si `logo_light_url` o `logo_dark_url` están vacíos en Supabase, el componente `Logo.tsx` muestra el SVG original. El SVG respeta la variante (`dark` = color gold, `light` = color chocolate).
-- **Supabase Compartido:** Dev y Prod usan el mismo proyecto Supabase. Los cambios en `site_config` afectan la "Próximamente" en producción también. Esto es normal y esperado.
-- **Migraciones ejecutadas:** `sql_migration_branding.sql` y `sql_migration_content.sql` ya aplicadas en Supabase.
-- **TypeScript limpio:** `npx tsc --noEmit` → exit 0, sin errores.
+-   **CSS Variables:** `--color-primary` = color oscuro/chocolate, `--color-secondary` = gold/detalles, `--color-accent` = fondo claro/cream. Tailwind usa `var(--color-*)` con fallbacks hardcodeados.
+-   **Logo Fallback:** Si `logo_light_url` o `logo_dark_url` están vacíos en Supabase, el componente `Logo.tsx` muestra el SVG original. El SVG respeta la variante (`dark` = color gold, `light` = color chocolate).
+-   **Supabase Compartido:** Dev y Prod usan el mismo proyecto Supabase. Los cambios en `site_config` afectan la "Próximamente" en producción también. Esto es normal y esperado.
+-   **Migraciones ejecutadas:** `sql_migration_branding.sql` y `sql_migration_content.sql` ya aplicadas en Supabase.
+-   **TypeScript limpio:** `npx tsc --noEmit` → exit 0, sin errores.
+-   **Servicio de Carga:** Se implementó `uploadFile` en `productService` que soporta validación de tamaño (15MB para PDF) y tipos de archivo genéricos.
 
 ---
 
-*Actualizado por Antigravity — Agente IA de desarrollo. Última actualización: 25/02/2026 11:45 hrs*
+*Actualizado por Antigravity — Agente IA de desarrollo. Última actualización: 26/02/2026 15:35 hrs*

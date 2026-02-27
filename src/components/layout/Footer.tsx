@@ -2,10 +2,11 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFacebook, faInstagram, faWhatsapp } from '@fortawesome/free-brands-svg-icons';
-import { faUsers, faLocationDot, faPhone, faShareNodes, faBriefcase, faArrowUpRightFromSquare } from '@fortawesome/free-solid-svg-icons';
+import { faUsers, faLocationDot, faPhone, faShareNodes, faBriefcase, faArrowUpRightFromSquare, faLock } from '@fortawesome/free-solid-svg-icons';
 import { Logo } from '@/components/Logo';
 import { RevealOnScroll } from '@/components/common/RevealOnScroll';
 import { useConfig } from '@/context/ConfigContext';
+import { statsService } from '@/services/statsService';
 
 export const Footer: React.FC = () => {
     const { config } = useConfig();
@@ -18,6 +19,13 @@ export const Footer: React.FC = () => {
     const instagram = config?.instagram_url || 'https://www.instagram.com/ceremonias.arcangel/';
     const address = config?.address || 'Igualdad #200, Ejido de Potrerillos, La Piedad, Michoacán, México';
     const companyName = config?.company_name || 'Arcángel Ceremonias';
+
+    const handleWhatsAppClick = (msg?: string) => {
+        statsService.trackWhatsAppClick(window.location.href);
+        const phone = whatsapp.replace(/\D/g, '');
+        const url = `https://wa.me/${phone}${msg ? `?text=${encodeURIComponent(msg)}` : ''}`;
+        window.open(url, '_blank', 'noopener,noreferrer');
+    };
 
     return (
         <footer className="bg-chocolate text-cream py-24 px-6 md:px-12 border-t border-gold/10">
@@ -98,9 +106,12 @@ export const Footer: React.FC = () => {
                         <div className="space-y-4 text-cream/60 text-[10px] md:text-xs uppercase tracking-[0.2em] font-medium">
                             <div className="flex flex-col gap-2">
                                 <span className="text-[8px] text-gold/50">Call Center / WhatsApp</span>
-                                <a href={`https://wa.me/${whatsapp}`} className="text-cream hover:text-gold transition-colors duration-300">
+                                <button
+                                    onClick={() => handleWhatsAppClick()}
+                                    className="text-cream hover:text-gold transition-colors duration-300 text-left"
+                                >
                                     {whatsapp.replace(/(\d{2})(\d{3})(\d{3})(\d{4})/, '+$1 $2 $3 $4')}
-                                </a>
+                                </button>
                             </div>
                             <div className="flex flex-col gap-2">
                                 <span className="text-[8px] text-gold/50">Oficina</span>
@@ -140,15 +151,13 @@ export const Footer: React.FC = () => {
                             >
                                 <FontAwesomeIcon icon={faInstagram} className="text-2xl" />
                             </a>
-                            <a
-                                href={`https://wa.me/${whatsapp}`}
-                                target="_blank"
-                                rel="noopener noreferrer"
+                            <button
+                                onClick={() => handleWhatsAppClick()}
                                 className="text-cream/40 hover:text-gold transition-all duration-300 hover:-translate-y-1"
                                 aria-label="WhatsApp"
                             >
                                 <FontAwesomeIcon icon={faWhatsapp} className="text-2xl" />
-                            </a>
+                            </button>
                         </div>
                         <div className="pt-8 opacity-20 hover:opacity-100 transition-opacity duration-700 w-40">
                             <Logo variant="dark" />
@@ -160,8 +169,15 @@ export const Footer: React.FC = () => {
                 {/* ── Copyright bar ── */}
                 <div className="mt-10 pt-8 border-t border-gold/5 flex flex-col md:flex-row justify-between items-center gap-6 text-[8px] md:text-[9px] uppercase tracking-[0.3em] font-medium text-cream/30">
                     <p>© {new Date().getFullYear()} {companyName}. Todos los derechos reservados.</p>
-                    <div className="flex gap-8">
-                        <Link to="/admin" className="hover:text-gold transition-colors">Admin</Link>
+                    <div className="flex gap-8 items-center">
+                        <Link
+                            to="/admin/login"
+                            className="text-cream/10 hover:text-gold transition-colors duration-500 flex items-center gap-1 group"
+                            title="Acceso Administrativo"
+                        >
+                            <FontAwesomeIcon icon={faLock} className="text-[7px] group-hover:scale-110 transition-transform" />
+                            <span className="opacity-0 group-hover:opacity-100 transition-opacity duration-500 scale-75 origin-left">Acceso</span>
+                        </Link>
                         <Link to="#" className="hover:text-gold transition-colors">Términos & Condiciones</Link>
                         <Link to="#" className="hover:text-gold transition-colors">Aviso de Privacidad</Link>
                     </div>

@@ -8,16 +8,18 @@ interface RevealOnScrollProps {
     direction?: 'up' | 'down' | 'left' | 'right' | 'none';
     duration?: number;
     distance?: number;
+    style?: React.CSSProperties;
 }
 
-export const RevealOnScroll: React.FC<RevealOnScrollProps> = ({
+export const RevealOnScroll = React.forwardRef<HTMLDivElement, RevealOnScrollProps>(({
     children,
     className = '',
     delay = 0,
     direction = 'up',
     duration = 0.8,
-    distance = 30
-}) => {
+    distance = 30,
+    style = {}
+}, ref) => {
     const variants = {
         hidden: {
             opacity: 0,
@@ -38,13 +40,15 @@ export const RevealOnScroll: React.FC<RevealOnScrollProps> = ({
 
     return (
         <motion.div
-            className={className}
+            ref={ref}
+            className={`relative ${className}`}
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, margin: "-100px" }}
             variants={variants}
+            style={style}
         >
             {children}
         </motion.div>
     );
-};
+});

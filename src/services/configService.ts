@@ -41,6 +41,11 @@ export interface SiteConfig {
     cta_banner_body?: string;
     cta_banner_btn1_label?: string;
     cta_banner_btn2_label?: string;
+    cta_banner_bg_color?: string;
+    cta_banner_bg_image_url?: string;
+    cta_banner_bg_opacity?: number;
+    // ── Extras / Archivos ──────────────────────────────
+    catalog_pdf_url?: string;
 }
 
 export const configService = {

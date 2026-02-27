@@ -1,6 +1,6 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
     faChevronRight, faChevronLeft,
@@ -143,6 +143,14 @@ const Home: React.FC = () => {
 
     const prev = useCallback(() => setActiveSlide(p => (p - 1 + slides.length) % slides.length), [slides.length]);
     const next = useCallback(() => setActiveSlide(p => (p + 1) % slides.length), [slides.length]);
+
+    // Parallax Effect for CTA
+    const ctaRef = useRef(null);
+    const { scrollYProgress } = useScroll({
+        target: ctaRef,
+        offset: ["start end", "end start"]
+    });
+    const ctaY = useTransform(scrollYProgress, [0, 1], ["-15%", "15%"]);
 
     const slide = slides[activeSlide] || slides[0];
     const alignClass = 'items-start text-left';
@@ -374,24 +382,47 @@ const Home: React.FC = () => {
                 4. CTA WHATSAPP BANNER
             ════════════════════════════════════════ */}
             <motion.section
-                className="relative overflow-hidden bg-chocolate"
+                ref={ctaRef}
+                className="relative overflow-hidden"
+                style={{ backgroundColor: config?.cta_banner_bg_color || '#1B1411' }}
                 initial={{ opacity: 0 }}
                 whileInView={{ opacity: 1 }}
                 viewport={{ once: true, amount: 0.3 }}
                 transition={{ duration: 0.8 }}
             >
+                {/* Background Image with Parallax & Translucent Overlay */}
+                {config?.cta_banner_bg_image_url && (
+                    <motion.div
+                        className="absolute inset-x-0 -top-[20%] h-[140%] z-0 bg-cover bg-center bg-no-repeat"
+                        style={{
+                            backgroundImage: `url(${config.cta_banner_bg_image_url})`,
+                            y: ctaY
+                        }}
+                    >
+                        {/* Overlay with dynamic opacity from CMS */}
+                        <div
+                            className="absolute inset-0 z-0"
+                            style={{
+                                backgroundColor: config?.cta_banner_bg_color || '#1B1411',
+                                opacity: config?.cta_banner_bg_opacity ?? 0.85
+                            }}
+                        />
+                    </motion.div>
+                )}
+
                 {/* Shimmer */}
                 <motion.div
-                    className="absolute inset-0 pointer-events-none"
+                    className="absolute inset-0 pointer-events-none z-[1]"
                     style={{ background: 'linear-gradient(105deg, transparent 40%, rgba(197,168,112,0.07) 50%, transparent 60%)' }}
                     animate={{ x: ['-100%', '200%'] }}
                     transition={{ duration: 4, repeat: Infinity, ease: 'linear', repeatDelay: 3 }}
                 />
+
                 {/* Floating diamonds */}
                 {[...Array(5)].map((_, i) => (
                     <motion.div
                         key={i}
-                        className="absolute text-gold/5"
+                        className="absolute text-gold/5 z-[1]"
                         style={{ top: `${15 + i * 18}%`, left: `${5 + i * 19}%`, fontSize: `${20 + (i % 3) * 14}px` }}
                         animate={{ y: [0, -20, 0], rotate: [0, 25, 0], opacity: [0.03, 0.1, 0.03] }}
                         transition={{ duration: 5 + i, repeat: Infinity, ease: 'easeInOut', delay: i * 0.8 }}
@@ -403,25 +434,25 @@ const Home: React.FC = () => {
                 <div className="relative z-10 py-24 md:py-32 px-8 md:px-20 flex flex-col md:flex-row items-center justify-between gap-12 max-w-[1600px] mx-auto">
                     {/* Text */}
                     <motion.div
-                        className="space-y-6 text-center md:text-left"
+                        className="relative space-y-6 text-center md:text-left"
                         initial={{ opacity: 0, x: -30 }}
                         whileInView={{ opacity: 1, x: 0 }}
                         viewport={{ once: true }}
                         transition={{ duration: 0.7, delay: 0.2 }}
                     >
-                        <span className="text-[9px] uppercase tracking-[0.6em] text-gold/50 font-bold block">{ctaTag}</span>
-                        <h2 className="font-serif text-3xl md:text-4xl lg:text-5xl text-cream leading-tight uppercase">
+                        <span className="text-[11px] md:text-xs uppercase tracking-[0.5em] text-white font-bold block mb-2">{ctaTag}</span>
+                        <h2 className="font-serif text-4xl md:text-5xl lg:text-7xl text-cream leading-none uppercase">
                             {ctaTitle}<br className="hidden md:block" />
-                            <span className="text-gold/70 md:ml-2">{ctaSubtitle}</span>
+                            <span className="text-gold md:ml-2">{ctaSubtitle}</span>
                         </h2>
-                        <p className="text-cream/50 text-sm font-light leading-relaxed max-w-md">
+                        <p className="text-white text-lg md:text-xl font-normal leading-relaxed max-w-2xl">
                             {ctaBody}
                         </p>
                     </motion.div>
 
                     {/* Buttons */}
                     <motion.div
-                        className="flex flex-col sm:flex-row gap-4"
+                        className="relative flex flex-col sm:flex-row gap-4"
                         initial={{ opacity: 0, x: 30 }}
                         whileInView={{ opacity: 1, x: 0 }}
                         viewport={{ once: true }}
