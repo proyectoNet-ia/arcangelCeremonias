@@ -31,15 +31,15 @@ export const Footer: React.FC = () => {
         <footer className="bg-chocolate text-cream py-24 px-6 md:px-12 border-t border-gold/10">
             <div className="max-w-[1600px] mx-auto">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-16 md:gap-12 lg:gap-16">
-                    {/* NOSOTROS - Abstract */}
-                    <RevealOnScroll className="space-y-8 lg:col-span-1">
+                    {/* NOSOTROS - Abstract - Hidden on mobile per user request */}
+                    <RevealOnScroll className="hidden md:block space-y-8 lg:col-span-1">
                         <div className="flex items-center gap-4">
                             <h3 className="flex items-center gap-2 font-sans text-[11px] text-gold/70 uppercase tracking-[0.5em] font-medium">
                                 <FontAwesomeIcon icon={faUsers} className="text-[10px] text-gold/50" />
                                 Nosotros
                             </h3>
                         </div>
-                        <div className="space-y-4 text-cream/70 text-[10px] md:text-[11px] leading-relaxed font-light text-justify">
+                        <div className="space-y-4 text-white md:text-cream/70 text-[10px] md:text-[11px] leading-relaxed font-light text-justify">
                             <p>
                                 Con más de 30 años en el ramo textil, nuestra misión es ser líderes en la fabricación y manufactura de productos ceremoniales para las nuevas generaciones, satisfaciendo las necesidades de nuestros clientes con calidad y a un precio justo.
                             </p>
@@ -52,16 +52,16 @@ export const Footer: React.FC = () => {
                     {/* UBICACIÓN */}
                     <RevealOnScroll delay={0.1} className="space-y-8">
                         <div className="flex items-center gap-4">
-                            <h3 className="flex items-center gap-2 font-sans text-[11px] text-gold/70 uppercase tracking-[0.5em] font-medium">
-                                <FontAwesomeIcon icon={faLocationDot} className="text-[10px] text-gold/50" />
+                            <h3 className="flex items-center gap-2 font-sans text-[16px] md:text-[13px] text-gold/70 uppercase tracking-[0.5em] font-medium">
+                                <FontAwesomeIcon icon={faLocationDot} className="text-[12px] text-gold/50" />
                                 Ubicación
                             </h3>
                         </div>
-                        <div className="space-y-6 text-[10px] md:text-xs font-medium">
+                        <div className="space-y-6 text-[11px] md:text-xs font-normal">
                             {/* Dirección */}
                             <div className="flex flex-col gap-2">
-                                <span className="text-[8px] text-gold/50 uppercase tracking-[0.3em]">Dirección</span>
-                                <p className="text-cream/60 uppercase tracking-[0.15em] leading-relaxed whitespace-pre-line">
+                                <span className="text-[12px] md:text-[10px] text-gold/50 tracking-[0.3em] font-bold uppercase">Dirección</span>
+                                <p className="text-cream/70 text-[14px] md:text-[13px] tracking-[0.05em] leading-relaxed whitespace-pre-line">
                                     {address}
                                 </p>
                             </div>
@@ -69,8 +69,8 @@ export const Footer: React.FC = () => {
                             {/* Grupo de Empresas */}
                             <div className="flex flex-col gap-3 pt-2 border-t border-gold/10">
                                 <div className="flex items-center gap-2">
-                                    <FontAwesomeIcon icon={faBriefcase} className="text-[8px] text-gold/40" />
-                                    <span className="text-[8px] text-gold/50 uppercase tracking-[0.3em]">Grupo de Empresas</span>
+                                    <FontAwesomeIcon icon={faBriefcase} className="text-[11px] md:text-[9px] text-gold/40" />
+                                    <span className="text-[12px] md:text-[10px] text-gold/50 uppercase tracking-[0.3em]">Grupo de Empresas</span>
                                 </div>
                                 <a
                                     href="#"
@@ -78,7 +78,7 @@ export const Footer: React.FC = () => {
                                     rel="noopener noreferrer"
                                     className="group flex items-center gap-2 text-cream/40 hover:text-gold transition-colors duration-300"
                                 >
-                                    <span className="text-[9px] uppercase tracking-[0.3em] font-semibold">Grupo ESBASA</span>
+                                    <span className="text-[11px] md:text-[9px] tracking-[0.1em] font-normal">Grupo ESBASA</span>
                                     <FontAwesomeIcon icon={faArrowUpRightFromSquare} className="text-[7px] opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                                 </a>
                                 <a
@@ -87,7 +87,7 @@ export const Footer: React.FC = () => {
                                     rel="noopener noreferrer"
                                     className="group flex items-center gap-2 text-cream/40 hover:text-gold transition-colors duration-300"
                                 >
-                                    <span className="text-[9px] uppercase tracking-[0.3em] font-semibold">Uniformes ESBASA</span>
+                                    <span className="text-[11px] md:text-[9px] tracking-[0.1em] font-normal">Uniformes ESBASA</span>
                                     <FontAwesomeIcon icon={faArrowUpRightFromSquare} className="text-[7px] opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                                 </a>
                             </div>
@@ -98,27 +98,27 @@ export const Footer: React.FC = () => {
                     {/* CONTACTO */}
                     <RevealOnScroll delay={0.2} className="space-y-8">
                         <div className="flex items-center gap-4">
-                            <h3 className="flex items-center gap-2 font-sans text-[11px] text-gold/70 uppercase tracking-[0.5em] font-medium">
-                                <FontAwesomeIcon icon={faPhone} className="text-[10px] text-gold/50" />
+                            <h3 className="flex items-center gap-2 font-sans text-[16px] md:text-[13px] text-gold/70 uppercase tracking-[0.5em] font-medium">
+                                <FontAwesomeIcon icon={faPhone} className="text-[12px] text-gold/50" />
                                 Contacto
                             </h3>
                         </div>
-                        <div className="space-y-4 text-cream/60 text-[10px] md:text-xs uppercase tracking-[0.2em] font-medium">
+                        <div className="space-y-4 text-cream/70 text-[14px] md:text-[13px] font-normal">
                             <div className="flex flex-col gap-2">
-                                <span className="text-[8px] text-gold/50">Call Center / WhatsApp</span>
+                                <span className="text-[12px] md:text-[10px] text-gold/50 tracking-[0.2em] font-bold uppercase">Call Center / WhatsApp</span>
                                 <button
                                     onClick={() => handleWhatsAppClick()}
-                                    className="text-cream hover:text-gold transition-colors duration-300 text-left"
+                                    className="text-cream hover:text-gold transition-colors duration-300 text-left font-medium"
                                 >
                                     {whatsapp.replace(/(\d{2})(\d{3})(\d{3})(\d{4})/, '+$1 $2 $3 $4')}
                                 </button>
                             </div>
                             <div className="flex flex-col gap-2">
-                                <span className="text-[8px] text-gold/50">Oficina</span>
-                                <a href={`tel:${phone.replace(/\s+/g, '')}`} className="text-cream hover:text-gold transition-colors duration-300">{phone}</a>
+                                <span className="text-[12px] md:text-[10px] text-gold/50 tracking-[0.2em] font-bold uppercase">Oficina</span>
+                                <a href={`tel:${phone.replace(/\s+/g, '')}`} className="text-cream hover:text-gold transition-colors duration-300 font-medium">{phone}</a>
                             </div>
                             <div className="flex flex-col gap-2 pt-2">
-                                <span className="text-[8px] text-gold/50">Email</span>
+                                <span className="text-[12px] md:text-[10px] text-gold/50 tracking-[0.2em] font-bold uppercase">Email</span>
                                 <a href={`mailto:${email}`} className="text-cream hover:text-gold transition-colors duration-300 lowercase tracking-widest">{email}</a>
                             </div>
                         </div>
@@ -127,8 +127,8 @@ export const Footer: React.FC = () => {
                     {/* SOCIAL */}
                     <RevealOnScroll delay={0.3} className="space-y-8">
                         <div className="flex items-center gap-4">
-                            <h3 className="flex items-center gap-2 font-sans text-[11px] text-gold/70 uppercase tracking-[0.5em] font-medium">
-                                <FontAwesomeIcon icon={faShareNodes} className="text-[10px] text-gold/50" />
+                            <h3 className="flex items-center gap-2 font-sans text-[16px] md:text-[13px] text-gold/70 uppercase tracking-[0.5em] font-medium">
+                                <FontAwesomeIcon icon={faShareNodes} className="text-[12px] text-gold/50" />
                                 Social
                             </h3>
                         </div>
@@ -167,19 +167,19 @@ export const Footer: React.FC = () => {
 
 
                 {/* ── Copyright bar ── */}
-                <div className="mt-10 pt-8 border-t border-gold/5 flex flex-col md:flex-row justify-between items-center gap-6 text-[8px] md:text-[9px] uppercase tracking-[0.3em] font-medium text-cream/30">
+                <div className="mt-10 pt-8 border-t border-gold/5 flex flex-col md:flex-row justify-between items-start md:items-center gap-6 text-[12px] md:text-[10px] tracking-[0.1em] font-medium text-cream/30">
                     <p>© {new Date().getFullYear()} {companyName}. Todos los derechos reservados.</p>
-                    <div className="flex gap-8 items-center">
+                    <div className="flex flex-wrap gap-x-8 gap-y-4 items-center">
+                        <Link to="#" className="hover:text-gold transition-colors">Términos & Condiciones</Link>
+                        <Link to="#" className="hover:text-gold transition-colors">Aviso de Privacidad</Link>
                         <Link
                             to="/admin/login"
                             className="text-cream/10 hover:text-gold transition-colors duration-500 flex items-center gap-1 group"
                             title="Acceso Administrativo"
                         >
-                            <FontAwesomeIcon icon={faLock} className="text-[7px] group-hover:scale-110 transition-transform" />
+                            <FontAwesomeIcon icon={faLock} className="text-[12px] group-hover:scale-110 transition-transform" />
                             <span className="opacity-0 group-hover:opacity-100 transition-opacity duration-500 scale-75 origin-left">Acceso</span>
                         </Link>
-                        <Link to="#" className="hover:text-gold transition-colors">Términos & Condiciones</Link>
-                        <Link to="#" className="hover:text-gold transition-colors">Aviso de Privacidad</Link>
                     </div>
                 </div>
             </div >

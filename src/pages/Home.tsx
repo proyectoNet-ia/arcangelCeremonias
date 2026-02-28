@@ -86,7 +86,7 @@ const Home: React.FC = () => {
     // CTA Banner (Mayoreo)
     const ctaTag = config?.cta_banner_tag || 'Socios Comerciales';
     const ctaTitle = config?.cta_banner_title || 'Venta al por mayor';
-    const ctaSubtitle = config?.cta_banner_subtitle || '& Boutiques';
+    const ctaSubtitle = config?.cta_banner_subtitle || ' & Boutiques';
     const ctaBody = config?.cta_banner_body || 'Abastecemos a las mejores boutiques de México con diseños exclusivos y calidad artesanal. Solicita nuestro catálogo de precios para negocios.';
     const ctaBtn1 = config?.cta_banner_btn1_label || 'Catálogo Mayoreo';
     const ctaBtn2 = config?.cta_banner_btn2_label || 'Línea de Negocios';
@@ -131,9 +131,11 @@ const Home: React.FC = () => {
         const load = async () => {
             try {
                 const data = await productService.getProducts();
-                setProducts(data.slice(0, 8));
-            } catch (e) {
-                console.error(e);
+                if (data) {
+                    setProducts(data.slice(0, 8));
+                }
+            } catch (e: any) {
+                console.error("Products load error:", e.message || e);
             } finally {
                 setLoadingProducts(false);
             }
@@ -186,8 +188,8 @@ const Home: React.FC = () => {
                             style={{ backgroundImage: `url(${slide.bgMobile})` }}
                         />
                         {/* Overlay layers */}
-                        <div className="absolute inset-0 bg-black/40 md:bg-black/50" />
-                        <div className="absolute inset-0 bg-chocolate/30 md:bg-chocolate/35 mix-blend-multiply" />
+                        <div className="absolute inset-0 bg-black/80 md:bg-black/50" />
+                        <div className="absolute inset-0 bg-chocolate/10 md:bg-chocolate/35 mix-blend-multiply md:block hidden" />
                         <div className="absolute inset-0 bg-gradient-to-t from-chocolate/95 via-chocolate/20 to-chocolate/40 md:from-chocolate/90 md:via-transparent md:to-chocolate/30" />
                         <div className="absolute inset-0 bg-gradient-to-r from-chocolate/80 via-transparent to-transparent hidden md:block" />
                     </motion.div>
@@ -198,9 +200,9 @@ const Home: React.FC = () => {
                 <div className="absolute inset-0 z-[2] opacity-[0.04] pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/marble-similar.png')]" />
 
                 {/* Slide content */}
-                <div className="relative z-10 h-full flex flex-col justify-center px-6 md:px-16 lg:px-24 xl:px-32">
-                    {/* Text content */}
-                    <div className={`flex flex-col ${alignClass}`}>
+                <div className="relative z-10 h-full flex flex-col px-6 md:px-16 lg:px-24 xl:px-32">
+                    {/* Text content - flex-1 with justify-center to center vertically */}
+                    <div className={`flex-1 flex flex-col justify-center ${alignClass}`}>
                         <AnimatePresence mode="wait">
                             <motion.div
                                 key={`content-${activeSlide}`}
@@ -217,7 +219,7 @@ const Home: React.FC = () => {
                                     animate={{ opacity: 1, x: 0 }}
                                     transition={{ delay: 0.1 }}
                                 >
-                                    <div className="w-8 h-[1px] bg-gold/60" />
+                                    <div className="w-6 h-[2px] bg-gold" />
                                     <span className="text-[10px] uppercase tracking-[0.5em] text-gold font-bold">
                                         {slide.tag}
                                     </span>
@@ -230,10 +232,10 @@ const Home: React.FC = () => {
                                     animate={{ opacity: 1, y: 0 }}
                                     transition={{ delay: 0.2 }}
                                 >
-                                    <span className="block text-[2.75rem] xs:text-5xl md:text-7xl lg:text-8xl xl:text-9xl uppercase">
+                                    <span className="block text-4xl xs:text-5xl md:text-7xl lg:text-8xl xl:text-9xl uppercase">
                                         {slide.title[0]}
                                     </span>
-                                    <span className="block text-[2.75rem] xs:text-5xl md:text-7xl lg:text-8xl xl:text-9xl uppercase text-gold/80">
+                                    <span className="block text-4xl xs:text-5xl md:text-7xl lg:text-8xl xl:text-9xl uppercase text-gold/80">
                                         {slide.title[1]}
                                     </span>
                                 </motion.h1>
@@ -248,7 +250,7 @@ const Home: React.FC = () => {
 
                                 {/* Subtitle */}
                                 <motion.p
-                                    className="text-cream/70 text-sm md:text-base font-light leading-relaxed max-w-md"
+                                    className="text-white md:text-cream/70 text-sm md:text-base font-light leading-relaxed max-w-md"
                                     initial={{ opacity: 0 }}
                                     animate={{ opacity: 1 }}
                                     transition={{ delay: 0.4 }}
@@ -275,27 +277,18 @@ const Home: React.FC = () => {
                     </div>
 
                     {/* Bottom controls */}
-                    <div className="relative z-10 px-6 md:px-16 pb-8 md:pb-10 flex items-center justify-between text-cream/60">
+                    <div className="pb-8 md:pb-12 flex items-center justify-between text-cream/60">
                         {/* Slide indicators */}
                         <div className="flex items-center gap-3">
                             {slides.map((_, i) => (
                                 <button
                                     key={i}
                                     onClick={() => setActiveSlide(i)}
-                                    className={`transition-all duration-500 ${i === activeSlide ? 'w-8 h-[2px] bg-gold' : 'w-3 h-[1px] bg-cream/30 hover:bg-cream/60'}`}
+                                    className={`transition-all duration-500 ${i === activeSlide ? 'w-10 h-[2px] bg-gold' : 'w-4 h-[1px] bg-white/15 hover:bg-white/40'}`}
                                 />
                             ))}
                         </div>
 
-                        {/* Prev / Next */}
-                        <div className="flex items-center gap-4">
-                            <button onClick={prev} className="w-10 h-10 border border-cream/20 flex items-center justify-center hover:border-gold hover:text-gold transition-all duration-300">
-                                <FontAwesomeIcon icon={faChevronLeft} className="text-xs" />
-                            </button>
-                            <button onClick={next} className="w-10 h-10 border border-cream/20 flex items-center justify-center hover:border-gold hover:text-gold transition-all duration-300">
-                                <FontAwesomeIcon icon={faChevronRight} className="text-xs" />
-                            </button>
-                        </div>
                     </div>
                 </div>
             </section>
@@ -326,17 +319,17 @@ const Home: React.FC = () => {
 
             {/* ════════════════════════════════════════
                 3. FEATURED PRODUCTS
-            ════════════════════════════════════════ */}
-            <section className="py-28 md:py-40 px-6 md:px-12 max-w-[1600px] mx-auto">
+            {/* 3. FEATURED PRODUCTS */}
+            <section className="relative py-28 md:py-40 px-6 md:px-12 max-w-[1600px] mx-auto overflow-hidden">
                 <RevealOnScroll className="space-y-16">
                     {/* Section header */}
                     <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 border-b border-gold/10 pb-12">
                         <div className="space-y-4">
                             <div className="flex items-center gap-3">
-                                <div className="w-8 h-[1px] bg-gold/40" />
+                                <div className="w-6 h-[2px] bg-gold" />
                                 <span className="text-[9px] uppercase tracking-[0.5em] text-gold font-bold">Colección</span>
                             </div>
-                            <h2 className="font-serif text-4xl md:text-5xl lg:text-6xl text-chocolate uppercase leading-tight">
+                            <h2 className="font-serif text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-chocolate uppercase leading-tight">
                                 Artículos<br />
                                 <span className="text-gold/70">Destacados</span>
                             </h2>
@@ -434,7 +427,7 @@ const Home: React.FC = () => {
                 <div className="relative z-10 py-24 md:py-32 px-8 md:px-20 flex flex-col md:flex-row items-center justify-between gap-12 max-w-[1600px] mx-auto">
                     {/* Text */}
                     <motion.div
-                        className="relative space-y-6 text-center md:text-left"
+                        className="relative space-y-6 text-left"
                         initial={{ opacity: 0, x: -30 }}
                         whileInView={{ opacity: 1, x: 0 }}
                         viewport={{ once: true }}
@@ -452,7 +445,7 @@ const Home: React.FC = () => {
 
                     {/* Buttons */}
                     <motion.div
-                        className="relative flex flex-col sm:flex-row gap-4"
+                        className="relative flex flex-col sm:flex-row gap-4 w-full sm:w-auto"
                         initial={{ opacity: 0, x: 30 }}
                         whileInView={{ opacity: 1, x: 0 }}
                         viewport={{ once: true }}
@@ -464,7 +457,7 @@ const Home: React.FC = () => {
                             rel="noopener noreferrer"
                             whileHover={{ scale: 1.04, boxShadow: '0 20px 50px rgba(37,211,102,0.2)' }}
                             whileTap={{ scale: 0.97 }}
-                            className="flex items-center gap-4 bg-[#25D366] text-white px-10 py-5 text-[10px] uppercase tracking-[0.4em] font-bold hover:bg-[#1ebe59] transition-all duration-400 group"
+                            className="flex items-center justify-center sm:justify-start gap-4 bg-[#25D366] text-white px-10 py-5 text-[10px] uppercase tracking-[0.4em] font-bold hover:bg-[#1ebe59] transition-all duration-400 group"
                         >
                             <FontAwesomeIcon icon={faWhatsapp} className="text-lg group-hover:scale-110 transition-transform" />
                             {ctaBtn1}
@@ -473,7 +466,7 @@ const Home: React.FC = () => {
                             href={`tel:${phone.replace(/\s+/g, '')}`}
                             whileHover={{ scale: 1.04 }}
                             whileTap={{ scale: 0.97 }}
-                            className="flex items-center gap-4 border border-cream/20 text-cream px-10 py-5 text-[10px] uppercase tracking-[0.4em] font-bold hover:border-gold hover:text-gold transition-all duration-400"
+                            className="flex items-center justify-center sm:justify-start gap-4 border border-cream/20 text-cream px-10 py-5 text-[10px] uppercase tracking-[0.4em] font-bold hover:border-gold hover:text-gold transition-all duration-400"
                         >
                             {ctaBtn2}
                         </motion.a>
@@ -483,18 +476,18 @@ const Home: React.FC = () => {
 
             {/* ════════════════════════════════════════
                 5. EMPRESA INFO + VALORES
-            ════════════════════════════════════════ */}
-            <section className="py-28 md:py-40 px-6 md:px-12 max-w-[1600px] mx-auto">
+            {/* 5. EMPRESA INFO + VALORES */}
+            <section className="relative py-28 md:py-40 px-6 md:px-12 max-w-[1600px] mx-auto overflow-hidden">
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 xl:gap-40 items-center">
 
                     {/* Left: Story */}
                     <RevealOnScroll className="space-y-10">
                         <div className="space-y-4">
                             <div className="flex items-center gap-3">
-                                <div className="w-8 h-[1px] bg-gold/40" />
+                                <div className="w-6 h-[2px] bg-gold" />
                                 <span className="text-[9px] uppercase tracking-[0.5em] text-gold font-bold">Nuestra Historia</span>
                             </div>
-                            <h2 className="font-serif text-4xl md:text-5xl text-chocolate uppercase leading-tight">
+                            <h2 className="font-serif text-3xl sm:text-4xl md:text-5xl text-chocolate uppercase leading-tight">
                                 Más de 30 Años<br />
                                 <span className="text-gold/70">de Tradición</span>
                             </h2>
@@ -541,7 +534,7 @@ const Home: React.FC = () => {
             ════════════════════════════════════════ */}
             <RevealOnScroll>
                 <section className="py-16 border-t border-b border-gold/10 bg-white/30">
-                    <div className="max-w-[1600px] mx-auto px-6 md:px-12 flex flex-col md:flex-row items-center justify-between gap-8">
+                    <div className="max-w-[1600px] mx-auto px-6 md:px-12 flex flex-col md:flex-row items-start md:items-center justify-between gap-8">
                         <div className="space-y-2">
                             <span className="text-[9px] uppercase tracking-[0.5em] text-gold font-bold block">Síguenos</span>
                             <p className="text-base font-serif text-chocolate">Ceremonias que se visten de elegancia</p>

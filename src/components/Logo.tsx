@@ -27,12 +27,12 @@ export const Logo: React.FC<LogoProps> = ({ className = "w-full max-w-[400px]", 
 
   // Fallback: SVG original
   return (
-    <div className={`${className} mb-4 reveal`} style={{ animationDelay: '0s' }}>
+    <div className={`${className} reveal`} style={{ animationDelay: '0s' }}>
       <svg
         viewBox="0 0 944.88 375"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
-        preserveAspectRatio="xMidYMid meet"
+        preserveAspectRatio="xMinYMid meet"
         className="w-full h-auto drop-shadow-sm"
       >
         {/* Color cambia según variante: oscuro en fondos claros, claro/gold en fondos oscuros */}
