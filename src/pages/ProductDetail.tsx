@@ -162,7 +162,24 @@ const ProductDetail: React.FC = () => {
         <div className="min-h-screen bg-cream font-sans text-chocolate selection:bg-gold/20">
             <Header />
 
-            <main className="pt-28 md:pt-48 pb-20 px-6 md:px-12 max-w-[1600px] mx-auto">
+            <main className="pt-24 md:pt-32 pb-20 px-6 md:px-12 max-w-[1600px] mx-auto">
+                {/* Breadcrumb moved to top for better orientation */}
+                <nav className="flex items-center gap-2 text-[9px] uppercase tracking-[0.3em] text-chocolate/30 mb-8 md:mb-12 font-medium">
+                    <Link to="/" className="hover:text-gold transition-colors">Inicio</Link>
+                    <FontAwesomeIcon icon={faChevronRight} className="text-[5px]" />
+                    <Link to="/catalogo" className="hover:text-gold transition-colors">Colección</Link>
+                    <FontAwesomeIcon icon={faChevronRight} className="text-[5px]" />
+                    <span className="text-gold/60">{product.name}</span>
+                </nav>
+
+                {/* Editorial Product Name (Visible on mobile to fill the gap) */}
+                <div className="mb-10 lg:hidden">
+                    <span className="block text-[10px] uppercase tracking-[0.4em] text-gold font-bold mb-2">Colección Editorial</span>
+                    <h2 className="text-4xl font-serif text-chocolate leading-tight italic">
+                        {product.name}
+                    </h2>
+                </div>
+
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 xl:gap-20">
 
                     {/* Left: Image Gallery — slides in from left */}
@@ -234,11 +251,9 @@ const ProductDetail: React.FC = () => {
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.5, delay: 0.25 }}
                         >
-                            <nav className="flex items-center gap-2 text-[10px] uppercase tracking-[0.2em] text-chocolate/40 mb-8 font-medium">
-                                <Link to="/catalogo" className="hover:text-gold transition-colors">Colección</Link>
-                                <FontAwesomeIcon icon={faChevronRight} className="text-[6px]" />
-                                <span className="text-chocolate/60">{product.name}</span>
-                            </nav>
+                            <div className="hidden lg:block">
+                                <span className="text-[10px] uppercase tracking-[0.4em] text-gold font-bold mb-2 block">Detalles de la Pieza</span>
+                            </div>
 
                             <motion.div
                                 initial={{ opacity: 0, y: 20 }}
@@ -500,7 +515,7 @@ const ProductDetail: React.FC = () => {
                     {/* Horizontal gold line top */}
                     <div className="h-[1px] w-full bg-gradient-to-r from-transparent via-gold/40 to-transparent" />
 
-                    <div className="relative z-10 px-8 md:px-20 py-20 md:py-28 flex flex-col items-center text-center gap-10">
+                    <div className="relative z-10 px-8 md:px-20 py-12 md:py-28 flex flex-col items-center text-center gap-6 md:gap-10">
                         {/* Star row */}
                         <motion.div
                             initial={{ opacity: 0, scale: 0.8 }}
@@ -528,7 +543,7 @@ const ProductDetail: React.FC = () => {
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
                             transition={{ duration: 0.6, delay: 0.2 }}
-                            className="relative text-[10px] uppercase tracking-[0.5em] text-gold/60 font-bold"
+                            className="relative text-[10px] uppercase tracking-[0.5em] text-gold font-bold"
                         >
                             Atención Personalizada · Desde 1998
                         </motion.span>
@@ -561,7 +576,7 @@ const ProductDetail: React.FC = () => {
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
                             transition={{ duration: 0.6, delay: 0.55 }}
-                            className="relative text-cream/50 text-base md:text-lg font-light leading-relaxed max-w-2xl"
+                            className="relative text-cream/90 text-sm md:text-lg font-light leading-relaxed max-w-2xl"
                         >
                             Nuestros asesores te ayudan a encontrar la pieza ideal para tu ocasión especial. Atención directa, sin compromiso.
                         </motion.p>
@@ -572,7 +587,7 @@ const ProductDetail: React.FC = () => {
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
                             transition={{ duration: 0.6, delay: 0.65 }}
-                            className="relative flex flex-col sm:flex-row gap-4 w-full max-w-lg mt-4"
+                            className="relative flex flex-col sm:flex-row gap-2 md:gap-4 w-full max-w-lg md:mt-4"
                         >
                             {/* Primary: WhatsApp */}
                             <motion.button
@@ -603,7 +618,7 @@ const ProductDetail: React.FC = () => {
                             whileInView={{ opacity: 1 }}
                             viewport={{ once: true }}
                             transition={{ duration: 0.6, delay: 0.8 }}
-                            className="flex flex-wrap items-center justify-center gap-8 mt-6 text-[9px] uppercase tracking-[0.3em] text-cream/30 font-medium"
+                            className="flex flex-wrap items-center justify-center gap-4 md:gap-8 md:mt-6 text-[9px] uppercase tracking-[0.3em] text-cream/80 font-medium"
                         >
                             <span className="flex items-center gap-2">
                                 <FontAwesomeIcon icon={faDiamond} className="text-gold/40 text-[8px]" />
@@ -640,9 +655,12 @@ const ProductDetail: React.FC = () => {
                                     Explorar Toda la Colección
                                 </Link>
                             </div>
-                            <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 md:gap-10">
+                            {/* Horizontal scroll on mobile, grid on desktop */}
+                            <div className="flex overflow-x-auto pb-8 snap-x snap-mandatory hide-scrollbar gap-6 lg:grid lg:grid-cols-4 lg:gap-10 -mx-6 px-6 md:mx-0 md:px-0">
                                 {relatedProducts.map((p, idx) => (
-                                    <ProductCard key={p.id} product={p} index={idx} />
+                                    <div key={p.id} className="min-w-[85%] sm:min-w-[280px] lg:min-w-0 snap-center">
+                                        <ProductCard product={p} index={idx} />
+                                    </div>
                                 ))}
                             </div>
                         </section>
@@ -666,9 +684,12 @@ const ProductDetail: React.FC = () => {
                                     Limpiar Historial
                                 </button>
                             </div>
-                            <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 md:gap-10">
+                            {/* Horizontal scroll on mobile, grid on desktop */}
+                            <div className="flex overflow-x-auto pb-8 snap-x snap-mandatory hide-scrollbar gap-6 lg:grid lg:grid-cols-4 lg:gap-10 -mx-6 px-6 md:mx-0 md:px-0">
                                 {historyProducts.map((p, idx) => (
-                                    <ProductCard key={p.id} product={p} index={idx} />
+                                    <div key={p.id} className="min-w-[85%] sm:min-w-[280px] lg:min-w-0 snap-center">
+                                        <ProductCard product={p} index={idx} />
+                                    </div>
                                 ))}
                             </div>
                         </section>

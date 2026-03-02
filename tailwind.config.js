@@ -35,10 +35,12 @@ export default {
                     'to': { width: '6rem' },
                 },
                 fadeInDown: {
-                    'to': { opacity: '1', transform: 'translateY(0)' },
+                    '0%': { opacity: '0', transform: 'translateY(-20px)' },
+                    '100%': { opacity: '1', transform: 'translateY(0)' },
                 },
                 fadeInUp: {
-                    'to': { opacity: '1', transform: 'translateY(0)' },
+                    '0%': { opacity: '0', transform: 'translateY(20px)' },
+                    '100%': { opacity: '1', transform: 'translateY(0)' },
                 },
                 zoom: {
                     '0%': { transform: 'scale(1.1)' },

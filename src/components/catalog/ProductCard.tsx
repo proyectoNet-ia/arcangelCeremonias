@@ -2,9 +2,9 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Product } from '@/types/product';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faWhatsapp } from '@fortawesome/free-brands-svg-icons';
-import { faShareNodes, faLeaf, faGem, faScissors, faCloud, faAward } from '@fortawesome/free-solid-svg-icons';
+import { faShareNodes, faLeaf, faGem, faScissors, faCloud, faAward, faEye } from '@fortawesome/free-solid-svg-icons';
 import { Link } from 'react-router-dom';
+import { useConfig } from '@/context/ConfigContext';
 
 interface ProductCardProps {
     product: Product;
@@ -13,6 +13,7 @@ interface ProductCardProps {
 
 export const ProductCard: React.FC<ProductCardProps> = ({ product, index }) => {
     const [isLoaded, setIsLoaded] = React.useState(false);
+    const { config } = useConfig();
 
     return (
         <motion.div
@@ -64,7 +65,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, index }) => {
                     </div>
 
                     {/* Share Button Overlay */}
-                    <div className="absolute top-4 right-4 translate-y-2 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500">
+                    <div className="absolute top-4 right-4 translate-y-0 md:translate-y-2 opacity-100 md:opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500">
                         <button
                             onClick={(e) => {
                                 e.preventDefault();
@@ -102,36 +103,13 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, index }) => {
                         </p>
                     </div>
 
-                    <div className="pt-2 opacity-0 group-hover:opacity-100 transform translate-y-3 group-hover:translate-y-0 transition-all duration-700">
-                        <button
-                            className="w-full py-3.5 bg-chocolate text-cream text-[9px] uppercase tracking-[0.3em] font-bold hover:bg-gold hover:shadow-lg transition-all duration-500 flex items-center justify-center gap-3"
-                            onClick={(e) => {
-                                e.preventDefault();
-                                e.stopPropagation();
-                                const model = product.model_code || product.slug.toUpperCase();
-                                const color = product.color || 'No especificado';
-                                const mat = product.material || 'No especificado';
-                                const url = `${window.location.origin}/producto/${product.slug}`;
-                                const msg = [
-                                    `\u00a1Hola! Me interesa el siguiente producto de *Arc\u00e1ngel Ceremonias*:`,
-                                    ``,
-                                    `\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501`,
-                                    `\ud83c\udff7\ufe0f *Producto:* ${product.name}`,
-                                    `\ud83d\udd16 *Modelo:* ${model}`,
-                                    `\ud83c\udfa8 *Color:* ${color}`,
-                                    `\ud83e\uddf5 *Material:* ${mat}`,
-                                    `\ud83d\udd17 *Ver producto:* ${url}`,
-                                    `\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501`,
-                                    `\ud83d\udecd\ufe0f *Canal:* Cat\u00e1logo web`,
-                                    ``,
-                                    `\u00bfPodr\u00edan darme m\u00e1s informaci\u00f3n sobre disponibilidad, tallas y formas de pago?`,
-                                ].join('\n');
-                                window.open(`https://wa.me/523521681197?text=${encodeURIComponent(msg)}`, '_blank');
-                            }}
+                    <div className="pt-2 opacity-100 md:opacity-0 group-hover:opacity-100 transform translate-y-0 md:translate-y-3 group-hover:translate-y-0 transition-all duration-700">
+                        <div
+                            className="w-full py-3.5 bg-chocolate text-cream text-[9px] uppercase tracking-[0.3em] font-bold hover:bg-gold hover:shadow-lg transition-all duration-500 flex items-center justify-center gap-2.5"
                         >
-                            <FontAwesomeIcon icon={faWhatsapp} className="text-sm" />
-                            Consultar Disponibilidad
-                        </button>
+                            <FontAwesomeIcon icon={faEye} className="text-[11px]" />
+                            Ver Producto
+                        </div>
                     </div>
                 </div>
             </Link>

@@ -1,566 +1,185 @@
-import React, { useEffect, useState, useCallback, useRef } from 'react';
-import { Link } from 'react-router-dom';
-import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
+import { faFacebook, faInstagram, faWhatsapp } from '@fortawesome/free-brands-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {
-    faChevronRight, faChevronLeft,
-    faHands, faTruckFast, faDiamond, faStore, faAward, faLeaf
-} from '@fortawesome/free-solid-svg-icons';
-import { faWhatsapp, faInstagram, faFacebook } from '@fortawesome/free-brands-svg-icons';
-import { Header } from '@/components/layout/Header';
-import { Footer } from '@/components/layout/Footer';
-import { RevealOnScroll } from '@/components/common/RevealOnScroll';
-import { ProductCard } from '@/components/catalog/ProductCard';
-import { productService } from '@/services/productService';
-import { heroService, HeroSlide } from '@/services/heroService';
-import { Product } from '@/types/product';
-import { useConfig } from '@/context/ConfigContext';
-import bgDesktop from '@/assets/fondo-horizontal.jpeg';
-import bgMobile from '@/assets/fondo-movil.jpg';
-import bgDesktop2 from '@/assets/fondo-pc.jpg';
-
-// ─── Static Hero Slides (Fallback) ───────────────────────────────────────────
-const staticSlides = [
-    {
-        id: 0,
-        bg: bgDesktop,
-        bgMobile: bgMobile,
-        tag: 'Colección 2026',
-        title: ['Arte', 'Ceremonial'],
-        subtitle: 'Piezas artesanales que visten los momentos más importantes de tu vida.',
-        cta: { label: 'Explorar Colección', to: '/catalogo' },
-        align: 'left' as const,
-    },
-    {
-        id: 1,
-        bg: bgDesktop2,
-        bgMobile: bgMobile,
-        tag: 'Hecho en México',
-        title: ['Elegancia', 'Atemporal'],
-        subtitle: 'Más de 30 años fabricando textiles ceremoniales con dedicación y talento artesanal.',
-        cta: { label: 'Conocer la Empresa', to: '/nosotros' },
-        align: 'left' as const,
-    },
-    {
-        id: 2,
-        bg: bgDesktop,
-        bgMobile: bgMobile,
-        tag: 'Ventas al Mayoreo',
-        title: ['Precios', 'Exclusivos'],
-        subtitle: 'Distribuidores y boutiques: consulta nuestros precios especiales para compras por volumen.',
-        cta: { label: 'Contactar Ahora', to: '/contacto' },
-        align: 'left' as const,
-    },
-];
-
-// ─── Trust Badges ────────────────────────────────────────────────────────────
-const badges = [
-    { icon: faHands, label: 'Piezas Artesanales' },
-    { icon: faAward, label: '+30 Años de Experiencia' },
-    { icon: faTruckFast, label: 'Envío Asegurado' },
-    { icon: faStore, label: 'Ventas al Mayoreo' },
-    { icon: faLeaf, label: 'Materiales Premium' },
-    { icon: faDiamond, label: 'Calidad Certificada' },
-];
-
-// ─── Values ─────────────────────────────────────────────────────────────────
-const values = [
-    { num: '30+', label: 'Años en el mercado' },
-    { num: '500+', label: 'Modelos en catálogo' },
-    { num: '100%', label: 'Fabricación nacional' },
-    { num: '∞', label: 'Atención personalizada' },
-];
+import React, { useEffect, useState } from 'react';
+import { Logo } from '@/components/Logo';
+import { Link } from 'react-router-dom';
+import bgMobile from '@/assets/modelo_medio.png';
+import bgDesktop from '@/assets/fondo-pc.jpg';
 
 const Home: React.FC = () => {
-    const [activeSlide, setActiveSlide] = useState(0);
-    const [products, setProducts] = useState<Product[]>([]);
-    const [loadingProducts, setLoadingProducts] = useState(true);
-    const [slides, setSlides] = useState<any[]>(staticSlides);
-    const { config } = useConfig();
+    const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
 
-    const whatsapp = config?.whatsapp || '523521681197';
-    const phone = config?.phone || '352 52 62502';
-    const facebook = config?.facebook_url || 'https://www.facebook.com/arcangel.ceremonias/';
-    const instagram = config?.instagram_url || 'https://www.instagram.com/ceremonias.arcangel/';
-
-    // CTA Banner (Mayoreo)
-    const ctaTag = config?.cta_banner_tag || 'Socios Comerciales';
-    const ctaTitle = config?.cta_banner_title || 'Venta al por mayor';
-    const ctaSubtitle = config?.cta_banner_subtitle || ' & Boutiques';
-    const ctaBody = config?.cta_banner_body || 'Abastecemos a las mejores boutiques de México con diseños exclusivos y calidad artesanal. Solicita nuestro catálogo de precios para negocios.';
-    const ctaBtn1 = config?.cta_banner_btn1_label || 'Catálogo Mayoreo';
-    const ctaBtn2 = config?.cta_banner_btn2_label || 'Línea de Negocios';
-
-    // Auto-advance slider
     useEffect(() => {
-        if (slides.length <= 1) return;
-        const timer = setInterval(() => {
-            setActiveSlide(prev => (prev + 1) % slides.length);
-        }, 6000);
-        return () => clearInterval(timer);
-    }, [slides.length]);
-
-    // Fetch Hero Slides from DB
-    useEffect(() => {
-        const loadHero = async () => {
-            try {
-                const data = await heroService.getSlides();
-                if (data && data.length > 0) {
-                    const mapped = data.map(s => ({
-                        id: s.id,
-                        bg: s.bg_url,
-                        bgMobile: s.bg_mobile_url || s.bg_url,
-                        tag: s.tag,
-                        title: [s.title_1, s.title_2 || ''],
-                        subtitle: s.subtitle,
-                        cta: { label: s.cta_label, to: s.cta_link },
-                        align: 'left' as const
-                    }));
-                    setSlides(mapped);
-                    setActiveSlide(0); // Reset for safety
-                }
-            } catch (e) {
-                console.error("Error loading dynamic slides:", e);
-            }
+        const handleMouseMove = (e: MouseEvent) => {
+            setMousePosition({ x: e.clientX, y: e.clientY });
         };
-        loadHero();
+
+        window.addEventListener('mousemove', handleMouseMove);
+        return () => window.removeEventListener('mousemove', handleMouseMove);
     }, []);
-
-    // Fetch featured products (first 8)
-    useEffect(() => {
-        const load = async () => {
-            try {
-                const data = await productService.getProducts();
-                if (data) {
-                    setProducts(data.slice(0, 8));
-                }
-            } catch (e: any) {
-                console.error("Products load error:", e.message || e);
-            } finally {
-                setLoadingProducts(false);
-            }
-        };
-        load();
-    }, []);
-
-    const prev = useCallback(() => setActiveSlide(p => (p - 1 + slides.length) % slides.length), [slides.length]);
-    const next = useCallback(() => setActiveSlide(p => (p + 1) % slides.length), [slides.length]);
-
-    // Parallax Effect for CTA
-    const ctaRef = useRef(null);
-    const { scrollYProgress } = useScroll({
-        target: ctaRef,
-        offset: ["start end", "end start"]
-    });
-    const ctaY = useTransform(scrollYProgress, [0, 1], ["-15%", "15%"]);
-
-    const slide = slides[activeSlide] || slides[0];
-    const alignClass = 'items-start text-left';
 
     return (
-        <div className="min-h-screen bg-cream font-sans text-chocolate selection:bg-gold/20">
-            <Header />
+        <div className="relative h-[100dvh] w-full flex flex-col justify-between overflow-hidden bg-cream cursor-none selection:bg-gold/30 font-sans text-cream">
 
-            {/* 1. HERO SLIDER */}
-            <section
-                className="relative h-[90vh] w-full overflow-hidden"
-                style={{ paddingTop: 'var(--header-height, 80px)' }}
-            >
-
-                {/* Background slides */}
-                <AnimatePresence mode="sync">
-                    <motion.div
-                        key={`bg-${activeSlide}`}
-                        className="absolute inset-0 z-0"
-                        initial={{ opacity: 0, scale: 1.06 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        exit={{ opacity: 0 }}
-                        transition={{ duration: 1.2, ease: 'easeInOut' }}
+            {/* --- SOCIAL SIDEBAR (DESKTOP) --- */}
+            <aside className="fixed left-0 top-1/2 -translate-y-1/2 z-[60] hidden md:flex flex-col items-center gap-6 px-4 md:px-8 fade-in-left pointer-events-none">
+                <div className="w-[1px] h-12 bg-cream/20 mb-2"></div>
+                <div className="flex flex-col gap-8 pointer-events-auto">
+                    <a
+                        href="https://www.facebook.com/arcangel.ceremonias/"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="group flex items-center justify-center text-cream/50 hover:text-gold transition-all duration-500 hover:-translate-y-1"
+                        aria-label="Facebook"
                     >
-                        {/* Desktop bg */}
-                        <div
-                            className="hidden md:block absolute inset-0 bg-cover bg-center"
-                            style={{ backgroundImage: `url(${slide.bg})` }}
-                        />
-                        {/* Mobile bg */}
-                        <div
-                            className="md:hidden absolute inset-0 bg-cover bg-right"
-                            style={{ backgroundImage: `url(${slide.bgMobile})` }}
-                        />
-                        {/* Overlay layers */}
-                        <div className="absolute inset-0 bg-black/80 md:bg-black/50" />
-                        <div className="absolute inset-0 bg-chocolate/10 md:bg-chocolate/35 mix-blend-multiply md:block hidden" />
-                        <div className="absolute inset-0 bg-gradient-to-t from-chocolate/95 via-chocolate/20 to-chocolate/40 md:from-chocolate/90 md:via-transparent md:to-chocolate/30" />
-                        <div className="absolute inset-0 bg-gradient-to-r from-chocolate/80 via-transparent to-transparent hidden md:block" />
-                    </motion.div>
-                </AnimatePresence>
-
-
-                {/* Noise texture */}
-                <div className="absolute inset-0 z-[2] opacity-[0.04] pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/marble-similar.png')]" />
-
-                {/* Slide content */}
-                <div className="relative z-10 h-full flex flex-col px-6 md:px-16 lg:px-24 xl:px-32">
-                    {/* Text content - flex-1 with justify-center to center vertically */}
-                    <div className={`flex-1 flex flex-col justify-center ${alignClass}`}>
-                        <AnimatePresence mode="wait">
-                            <motion.div
-                                key={`content-${activeSlide}`}
-                                className="flex flex-col gap-6 max-w-3xl"
-                                initial={{ opacity: 0, y: 30 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                exit={{ opacity: 0, y: -20 }}
-                                transition={{ duration: 0.7, ease: 'easeOut' }}
-                            >
-                                {/* Tag */}
-                                <motion.div
-                                    className="flex items-center gap-3"
-                                    initial={{ opacity: 0, x: -10 }}
-                                    animate={{ opacity: 1, x: 0 }}
-                                    transition={{ delay: 0.1 }}
-                                >
-                                    <div className="w-6 h-[2px] bg-gold" />
-                                    <span className="text-[10px] uppercase tracking-[0.5em] text-gold font-bold">
-                                        {slide.tag}
-                                    </span>
-                                </motion.div>
-
-                                {/* Title */}
-                                <motion.h1
-                                    className="font-serif text-cream leading-[0.95] tracking-tight"
-                                    initial={{ opacity: 0, y: 20 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    transition={{ delay: 0.2 }}
-                                >
-                                    <span className="block text-4xl xs:text-5xl md:text-7xl lg:text-8xl xl:text-9xl uppercase">
-                                        {slide.title[0]}
-                                    </span>
-                                    <span className="block text-4xl xs:text-5xl md:text-7xl lg:text-8xl xl:text-9xl uppercase text-gold/80">
-                                        {slide.title[1]}
-                                    </span>
-                                </motion.h1>
-
-                                {/* Divider */}
-                                <motion.div
-                                    className="w-16 h-[1px] bg-gold/40"
-                                    initial={{ scaleX: 0, originX: 0 }}
-                                    animate={{ scaleX: 1 }}
-                                    transition={{ delay: 0.35, duration: 0.6 }}
-                                />
-
-                                {/* Subtitle */}
-                                <motion.p
-                                    className="text-white md:text-cream/70 text-sm md:text-base font-light leading-relaxed max-w-md"
-                                    initial={{ opacity: 0 }}
-                                    animate={{ opacity: 1 }}
-                                    transition={{ delay: 0.4 }}
-                                >
-                                    {slide.subtitle}
-                                </motion.p>
-
-                                {/* CTA Button */}
-                                <motion.div
-                                    initial={{ opacity: 0, y: 10 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    transition={{ delay: 0.5 }}
-                                >
-                                    <Link
-                                        to={slide.cta.to}
-                                        className="inline-flex items-center gap-4 bg-gold text-chocolate px-7 py-3.5 md:px-8 md:py-4 text-[10px] uppercase tracking-[0.4em] font-bold hover:bg-cream transition-all duration-500 hover:shadow-2xl hover:shadow-gold/30 group"
-                                    >
-                                        {slide.cta.label}
-                                        <FontAwesomeIcon icon={faChevronRight} className="text-[8px] group-hover:translate-x-1 transition-transform" />
-                                    </Link>
-                                </motion.div>
-                            </motion.div>
-                        </AnimatePresence>
-                    </div>
-
-                    {/* Bottom controls */}
-                    <div className="pb-8 md:pb-12 flex items-center justify-between text-cream/60">
-                        {/* Slide indicators */}
-                        <div className="flex items-center gap-3">
-                            {slides.map((_, i) => (
-                                <button
-                                    key={i}
-                                    onClick={() => setActiveSlide(i)}
-                                    className={`transition-all duration-500 ${i === activeSlide ? 'w-10 h-[2px] bg-gold' : 'w-4 h-[1px] bg-white/15 hover:bg-white/40'}`}
-                                />
-                            ))}
-                        </div>
-
-                    </div>
+                        <FontAwesomeIcon icon={faFacebook} className="text-xl md:text-2xl drop-shadow-lg group-hover:drop-shadow-[0_0_8px_rgba(197,160,89,0.5)]" />
+                    </a>
+                    <a
+                        href="https://www.instagram.com/ceremonias.arcangel/"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="group flex items-center justify-center text-cream/50 hover:text-gold transition-all duration-500 hover:-translate-y-1"
+                        aria-label="Instagram"
+                    >
+                        <FontAwesomeIcon icon={faInstagram} className="text-xl md:text-2xl drop-shadow-lg group-hover:drop-shadow-[0_0_8px_rgba(197,160,89,0.5)]" />
+                    </a>
                 </div>
-            </section>
+                <div className="w-[1px] h-12 bg-cream/20 mt-2"></div>
+            </aside>
 
-            {/* ════════════════════════════════════════
-                2. MARQUEE ANNOUNCEMENT (REEL DE TEXTO)
-            ════════════════════════════════════════ */}
-            <section className="bg-chocolate py-4 overflow-hidden border-b border-gold/20 relative z-20">
-                <div className="flex whitespace-nowrap animate-marquee">
-                    {[...Array(6)].map((_, i) => (
-                        <div key={i} className="flex items-center">
-                            <span className="text-[10px] uppercase tracking-[0.4em] text-gold font-bold px-12">
-                                Fabricantes de Artículos Ceremoniales por más de 30 años
-                            </span>
-                            <FontAwesomeIcon icon={faDiamond} className="text-[8px] text-gold/40" />
-                            <span className="text-[10px] uppercase tracking-[0.4em] text-cream font-medium px-12">
-                                Envíos a todo México e Internacionales
-                            </span>
-                            <FontAwesomeIcon icon={faDiamond} className="text-[8px] text-gold/40" />
-                            <span className="text-[10px] uppercase tracking-[0.4em] text-gold font-bold px-12">
-                                Atención Personalizada y Ventas al Mayoreo
-                            </span>
-                            <FontAwesomeIcon icon={faDiamond} className="text-[8px] text-gold/40" />
-                        </div>
-                    ))}
-                </div>
-            </section>
-
-            {/* ════════════════════════════════════════
-                3. FEATURED PRODUCTS
-            {/* 3. FEATURED PRODUCTS */}
-            <section className="relative py-28 md:py-40 px-6 md:px-12 max-w-[1600px] mx-auto overflow-hidden">
-                <RevealOnScroll className="space-y-16">
-                    {/* Section header */}
-                    <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 border-b border-gold/10 pb-12">
-                        <div className="space-y-4">
-                            <div className="flex items-center gap-3">
-                                <div className="w-6 h-[2px] bg-gold" />
-                                <span className="text-[9px] uppercase tracking-[0.5em] text-gold font-bold">Colección</span>
-                            </div>
-                            <h2 className="font-serif text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-chocolate uppercase leading-tight">
-                                Artículos<br />
-                                <span className="text-gold/70">Destacados</span>
-                            </h2>
-                        </div>
-                        <Link
-                            to="/catalogo"
-                            className="group inline-flex items-center gap-3 text-[9px] uppercase tracking-[0.4em] font-bold text-chocolate/50 hover:text-chocolate transition-colors border-b border-gold/20 hover:border-chocolate pb-1"
-                        >
-                            Ver toda la colección
-                            <FontAwesomeIcon icon={faChevronRight} className="text-[7px] group-hover:translate-x-1 transition-transform" />
-                        </Link>
-                    </div>
-
-                    {/* Product grid */}
-                    {loadingProducts ? (
-                        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 md:gap-10">
-                            {[...Array(8)].map((_, i) => (
-                                <div key={i} className="aspect-[3/4] bg-chocolate/5 animate-pulse rounded-sm" />
-                            ))}
-                        </div>
-                    ) : (
-                        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-10">
-                            {products.map((product, idx) => (
-                                <ProductCard key={product.id} product={product} index={idx} />
-                            ))}
-                        </div>
-                    )}
-
-                    {/* Bottom CTA */}
-                    <div className="flex justify-center pt-8">
-                        <Link
-                            to="/catalogo"
-                            className="group inline-flex items-center gap-4 border border-gold/30 text-chocolate px-12 py-5 text-[9px] uppercase tracking-[0.4em] font-bold hover:bg-chocolate hover:text-cream hover:border-chocolate transition-all duration-500"
-                        >
-                            <FontAwesomeIcon icon={faStore} className="text-gold group-hover:text-gold text-sm" />
-                            Explorar el Catálogo Completo
-                        </Link>
-                    </div>
-                </RevealOnScroll>
-            </section>
-
-            {/* ════════════════════════════════════════
-                4. CTA WHATSAPP BANNER
-            ════════════════════════════════════════ */}
-            <motion.section
-                ref={ctaRef}
-                className="relative overflow-hidden"
-                style={{ backgroundColor: config?.cta_banner_bg_color || '#1B1411' }}
-                initial={{ opacity: 0 }}
-                whileInView={{ opacity: 1 }}
-                viewport={{ once: true, amount: 0.3 }}
-                transition={{ duration: 0.8 }}
+            {/* --- CUSTOM CURSOR --- */}
+            <div
+                className="fixed pointer-events-none z-[100] hidden md:block mix-blend-difference"
+                style={{
+                    left: mousePosition.x,
+                    top: mousePosition.y,
+                    transform: 'translate(-50%, -50%)'
+                }}
             >
-                {/* Background Image with Parallax & Translucent Overlay */}
-                {config?.cta_banner_bg_image_url && (
-                    <motion.div
-                        className="absolute inset-x-0 -top-[20%] h-[140%] z-0 bg-cover bg-center bg-no-repeat"
-                        style={{
-                            backgroundImage: `url(${config.cta_banner_bg_image_url})`,
-                            y: ctaY
-                        }}
-                    >
-                        {/* Overlay with dynamic opacity from CMS */}
-                        <div
-                            className="absolute inset-0 z-0"
-                            style={{
-                                backgroundColor: config?.cta_banner_bg_color || '#1B1411',
-                                opacity: config?.cta_banner_bg_opacity ?? 0.85
-                            }}
-                        />
-                    </motion.div>
-                )}
+                <div className="w-4 h-4 bg-white/80 rounded-full blur-[1px]" />
+                <div className="w-12 h-12 border border-white/40 rounded-full absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 transition-all duration-300 ease-out scale-100 opacity-50" />
+            </div>
 
-                {/* Shimmer */}
-                <motion.div
-                    className="absolute inset-0 pointer-events-none z-[1]"
-                    style={{ background: 'linear-gradient(105deg, transparent 40%, rgba(197,168,112,0.07) 50%, transparent 60%)' }}
-                    animate={{ x: ['-100%', '200%'] }}
-                    transition={{ duration: 4, repeat: Infinity, ease: 'linear', repeatDelay: 3 }}
-                />
+            {/* --- BACKGROUND LAYERS --- */}
+            <div
+                className="fixed inset-0 z-0 bg-no-repeat transition-transform duration-[60s] ease-linear scale-110 motion-safe:animate-[zoom_60s_linear_infinite_alternate] md:hidden"
+                style={{
+                    backgroundImage: `url('${bgMobile}')`,
+                    backgroundAttachment: 'fixed',
+                    backgroundPosition: 'right center',
+                    backgroundSize: 'contain',
+                    filter: 'sepia(0.05) brightness(0.85) contrast(1.05)'
+                }}
+            />
+            <div
+                className="fixed inset-0 z-0 bg-cover bg-no-repeat transition-transform duration-[60s] ease-linear scale-110 motion-safe:animate-[zoom_60s_linear_infinite_alternate] hidden md:block"
+                style={{
+                    backgroundImage: `url('${bgDesktop}')`,
+                    backgroundAttachment: 'fixed',
+                    backgroundPosition: 'right center',
+                    filter: 'sepia(0.2) brightness(0.9) contrast(0.95)'
+                }}
+            />
 
-                {/* Floating diamonds */}
-                {[...Array(5)].map((_, i) => (
-                    <motion.div
-                        key={i}
-                        className="absolute text-gold/5 z-[1]"
-                        style={{ top: `${15 + i * 18}%`, left: `${5 + i * 19}%`, fontSize: `${20 + (i % 3) * 14}px` }}
-                        animate={{ y: [0, -20, 0], rotate: [0, 25, 0], opacity: [0.03, 0.1, 0.03] }}
-                        transition={{ duration: 5 + i, repeat: Infinity, ease: 'easeInOut', delay: i * 0.8 }}
-                    >
-                        <FontAwesomeIcon icon={faDiamond} />
-                    </motion.div>
-                ))}
+            <div className="fixed inset-0 z-[1] bg-black/40"></div>
+            <div className="fixed inset-0 z-[1] bg-chocolate/40 mix-blend-multiply"></div>
+            <div className="fixed inset-0 z-[1] bg-gradient-to-t from-chocolate/95 via-transparent to-chocolate/40 opacity-90"></div>
+            <div className="fixed inset-0 z-[1] bg-gradient-to-r from-chocolate/60 via-transparent to-transparent hidden md:block"></div>
 
-                <div className="relative z-10 py-24 md:py-32 px-8 md:px-20 flex flex-col md:flex-row items-center justify-between gap-12 max-w-[1600px] mx-auto">
-                    {/* Text */}
-                    <motion.div
-                        className="relative space-y-6 text-left"
-                        initial={{ opacity: 0, x: -30 }}
-                        whileInView={{ opacity: 1, x: 0 }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 0.7, delay: 0.2 }}
-                    >
-                        <span className="text-[11px] md:text-xs uppercase tracking-[0.5em] text-white font-bold block mb-2">{ctaTag}</span>
-                        <h2 className="font-serif text-4xl md:text-5xl lg:text-7xl text-cream leading-none uppercase">
-                            {ctaTitle}<br className="hidden md:block" />
-                            <span className="text-gold md:ml-2">{ctaSubtitle}</span>
-                        </h2>
-                        <p className="text-white text-lg md:text-xl font-normal leading-relaxed max-w-2xl">
-                            {ctaBody}
+            <div className="fixed inset-0 z-[2] opacity-[0.03] pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/marble-similar.png')]"></div>
+            <div className="fixed inset-0 z-[2] opacity-[0.07] pointer-events-none bg-noise"></div>
+
+            {/* --- CONTENT --- */}
+            <div className="relative z-10 flex flex-col min-h-[100dvh] w-full drop-shadow-lg">
+
+                {/* Top: Logo */}
+                <header className="w-full py-6 md:py-8 lg:py-10 flex justify-start md:justify-center fade-in-down shrink-0 px-6 md:px-0">
+                    <div className="w-[176px] md:w-48 lg:w-56 opacity-90 transition-transform duration-700 hover:scale-105 hover:opacity-100 drop-shadow-md">
+                        <div className="invert brightness-0 contrast-200 sepia-[.3] hue-rotate-[10deg] saturate-[.5]">
+                            <Logo />
+                        </div>
+                    </div>
+                </header>
+
+                {/* Center: Main Message */}
+                <main className="flex flex-col items-start md:items-center justify-center text-left md:text-center flex-grow px-6 py-4 md:px-12 max-w-5xl mx-auto">
+                    <div className="flex flex-col items-start md:items-center space-y-4 md:space-y-6">
+                        <h1 className="flex flex-col items-start md:items-center justify-center leading-[0.85] font-serif text-cream">
+                            <span className="block text-4xl md:text-5xl lg:text-6xl xl:text-[5rem] tracking-tighter mix-blend-overlay reveal-text delay-500 uppercase">
+                                Próximamente
+                            </span>
+                        </h1>
+
+                        <div className="h-[1px] w-16 md:w-20 bg-cream/30 my-2 md:my-3 reveal-line delay-1000"></div>
+
+                        <p className="max-w-2xl text-cream/90 text-sm md:text-base font-light tracking-wide leading-relaxed reveal-text delay-1000 px-4 md:px-0">
+                            Este año inicia una nueva etapa en Arcángel!<br /><br />
+                            Nos estamos renovando para seguir creciendo con ustedes, manteniendo nuestra esencia con un compromiso aún más fuerte con la calidad y atención al detalle.
+                            <span className="hidden lg:inline"><br /></span>
+                            <span className="block font-medium text-gold/90 mt-2 hover:text-gold transition-colors duration-300">
+                                Próximamente nuevo catálogo disponible!
+                            </span>
                         </p>
-                    </motion.div>
+                    </div>
+                </main>
 
-                    {/* Buttons */}
-                    <motion.div
-                        className="relative flex flex-col sm:flex-row gap-4 w-full sm:w-auto"
-                        initial={{ opacity: 0, x: 30 }}
-                        whileInView={{ opacity: 1, x: 0 }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 0.7, delay: 0.35 }}
-                    >
-                        <motion.a
-                            href={`https://wa.me/${whatsapp}?text=${encodeURIComponent('Hola, me interesa recibir información sobre las ventas por mayoreo y el catálogo para mi Boutique/Negocio.')}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            whileHover={{ scale: 1.04, boxShadow: '0 20px 50px rgba(37,211,102,0.2)' }}
-                            whileTap={{ scale: 0.97 }}
-                            className="flex items-center justify-center sm:justify-start gap-4 bg-[#25D366] text-white px-10 py-5 text-[10px] uppercase tracking-[0.4em] font-bold hover:bg-[#1ebe59] transition-all duration-400 group"
-                        >
-                            <FontAwesomeIcon icon={faWhatsapp} className="text-lg group-hover:scale-110 transition-transform" />
-                            {ctaBtn1}
-                        </motion.a>
-                        <motion.a
-                            href={`tel:${phone.replace(/\s+/g, '')}`}
-                            whileHover={{ scale: 1.04 }}
-                            whileTap={{ scale: 0.97 }}
-                            className="flex items-center justify-center sm:justify-start gap-4 border border-cream/20 text-cream px-10 py-5 text-[10px] uppercase tracking-[0.4em] font-bold hover:border-gold hover:text-gold transition-all duration-400"
-                        >
-                            {ctaBtn2}
-                        </motion.a>
-                    </motion.div>
-                </div>
-            </motion.section>
-
-            {/* ════════════════════════════════════════
-                5. EMPRESA INFO + VALORES
-            {/* 5. EMPRESA INFO + VALORES */}
-            <section className="relative py-28 md:py-40 px-6 md:px-12 max-w-[1600px] mx-auto overflow-hidden">
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 xl:gap-40 items-center">
-
-                    {/* Left: Story */}
-                    <RevealOnScroll className="space-y-10">
-                        <div className="space-y-4">
-                            <div className="flex items-center gap-3">
-                                <div className="w-6 h-[2px] bg-gold" />
-                                <span className="text-[9px] uppercase tracking-[0.5em] text-gold font-bold">Nuestra Historia</span>
+                {/* Bottom: Footer Info */}
+                <footer className="w-full py-6 md:py-8 lg:py-10 px-6 flex flex-col items-start md:items-center justify-end text-left md:text-center fade-in-up z-20 shrink-0">
+                    <div className="flex flex-col items-start md:items-center gap-4 md:gap-6 lg:gap-8">
+                        <div className="flex flex-col md:flex-row gap-6 md:gap-12 lg:gap-24">
+                            {/* Call Center */}
+                            <div className="flex flex-col items-start md:items-center gap-1 md:gap-2">
+                                <span className="text-[10px] md:text-xs text-cream/70 uppercase tracking-[0.2em] font-medium">
+                                    Ventas / Call Center
+                                </span>
+                                <a
+                                    href="https://wa.me/523521681197"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-lg md:text-xl lg:text-2xl text-cream font-serif tracking-widest hover:text-gold transition-colors duration-300"
+                                >
+                                    <FontAwesomeIcon icon={faWhatsapp} className="mr-2 text-xl md:text-2xl" /> 352 168 1197
+                                </a>
                             </div>
-                            <h2 className="font-serif text-3xl sm:text-4xl md:text-5xl text-chocolate uppercase leading-tight">
-                                Más de 30 Años<br />
-                                <span className="text-gold/70">de Tradición</span>
-                            </h2>
-                        </div>
-                        <div className="space-y-5 text-chocolate/65 text-sm font-light leading-relaxed">
-                            <p>
-                                En Arcángel Ceremonias llevamos más de tres décadas en el ramo textil, fabricando y manufacturando productos ceremoniales con la dedicación y talento de muchas personas comprometidas con la calidad.
-                            </p>
-                            <p>
-                                Nuestra misión es ser líderes en la fabricación de productos ceremoniales para las nuevas generaciones, satisfaciendo las necesidades de nuestros clientes con calidad y a un precio justo.
-                            </p>
-                            <p>
-                                Creemos firmemente en el comercio justo y en la vocación de servir con valores fundamentales: <strong className="text-chocolate font-medium">calidad, honradez, amabilidad</strong> y especial atención a los detalles.
-                            </p>
-                        </div>
-                        <Link
-                            to="/nosotros"
-                            className="group inline-flex items-center gap-3 text-[9px] uppercase tracking-[0.4em] font-bold text-gold hover:text-chocolate transition-colors border-b border-gold/30 hover:border-chocolate pb-1"
-                        >
-                            Conocer más sobre nosotros
-                            <FontAwesomeIcon icon={faChevronRight} className="text-[7px] group-hover:translate-x-1 transition-transform" />
-                        </Link>
-                    </RevealOnScroll>
 
-                    {/* Right: Stats */}
-                    <RevealOnScroll delay={0.2} className="grid grid-cols-2 gap-6">
-                        {values.map((v, i) => (
-                            <motion.div
-                                key={i}
-                                className="bg-white/60 border border-gold/10 p-8 md:p-10 space-y-3 hover:bg-white/90 transition-all duration-500 group cursor-default"
-                                whileHover={{ y: -6, boxShadow: '0 20px 50px rgba(139,100,60,0.10)' }}
+                            {/* Empresa */}
+                            <div className="flex flex-col items-start md:items-center gap-1 md:gap-2">
+                                <span className="text-[10px] md:text-xs text-cream/70 uppercase tracking-[0.2em] font-medium">
+                                    Empresa
+                                </span>
+                                <a
+                                    href="tel:+523525262502"
+                                    className="text-lg md:text-xl lg:text-2xl text-cream font-serif tracking-widest hover:text-gold transition-colors duration-300"
+                                >
+                                    352 52 62502
+                                </a>
+                            </div>
+                        </div>
+
+                        {/* Social Media (Mobile only, hidden on desktop because of sidebar) */}
+                        <div className="flex flex-row items-center justify-start gap-10 pt-4 md:hidden">
+                            <a
+                                href="https://www.facebook.com/arcangel.ceremonias/"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-cream/50 hover:text-gold transition-colors duration-300"
+                                aria-label="Facebook"
                             >
-                                <div className="font-serif text-4xl md:text-5xl text-gold leading-none">{v.num}</div>
-                                <div className="w-8 h-[1px] bg-gold/30 group-hover:w-12 transition-all duration-500" />
-                                <p className="text-[10px] uppercase tracking-[0.3em] text-chocolate/60 font-medium">{v.label}</p>
-                            </motion.div>
-                        ))}
-                    </RevealOnScroll>
-                </div>
-            </section>
-
-            {/* ════════════════════════════════════════
-                6. SOCIAL STRIP
-            ════════════════════════════════════════ */}
-            <RevealOnScroll>
-                <section className="py-16 border-t border-b border-gold/10 bg-white/30">
-                    <div className="max-w-[1600px] mx-auto px-6 md:px-12 flex flex-col md:flex-row items-start md:items-center justify-between gap-8">
-                        <div className="space-y-2">
-                            <span className="text-[9px] uppercase tracking-[0.5em] text-gold font-bold block">Síguenos</span>
-                            <p className="text-base font-serif text-chocolate">Ceremonias que se visten de elegancia</p>
-                        </div>
-                        <div className="flex items-center gap-10">
-                            <a href={facebook} target="_blank" rel="noopener noreferrer"
-                                className="flex flex-col items-center gap-2 text-chocolate/40 hover:text-gold transition-all duration-300 hover:-translate-y-1 group">
                                 <FontAwesomeIcon icon={faFacebook} className="text-2xl" />
-                                <span className="text-[8px] uppercase tracking-widest">Facebook</span>
                             </a>
-                            <a href={instagram} target="_blank" rel="noopener noreferrer"
-                                className="flex flex-col items-center gap-2 text-chocolate/40 hover:text-gold transition-all duration-300 hover:-translate-y-1 group">
+                            <a
+                                href="https://www.instagram.com/ceremonias.arcangel/"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-cream/50 hover:text-gold transition-colors duration-300"
+                                aria-label="Instagram"
+                            >
                                 <FontAwesomeIcon icon={faInstagram} className="text-2xl" />
-                                <span className="text-[8px] uppercase tracking-widest">Instagram</span>
-                            </a>
-                            <a href={`https://wa.me/${whatsapp}`} target="_blank" rel="noopener noreferrer"
-                                className="flex flex-col items-center gap-2 text-chocolate/40 hover:text-[#25D366] transition-all duration-300 hover:-translate-y-1 group">
-                                <FontAwesomeIcon icon={faWhatsapp} className="text-2xl" />
-                                <span className="text-[8px] uppercase tracking-widest">WhatsApp</span>
                             </a>
                         </div>
                     </div>
-                </section>
-            </RevealOnScroll>
-
-            <Footer />
+                </footer>
+            </div>
         </div>
     );
 };

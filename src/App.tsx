@@ -1,17 +1,17 @@
 import React, { useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
-import Home from './pages/Home';
-import Catalog from './pages/Catalog';
-import ProductDetail from './pages/ProductDetail';
-import About from './pages/About';
-import Contact from './pages/Contact';
-import Admin from './pages/Admin';
+import { BrowserRouter as Router, Routes, Route, useLocation, Navigate } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import { FloatingActions } from './components/common/FloatingActions';
 import { ConfigProvider } from './context/ConfigContext';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import AdminLogin from './pages/AdminLogin';
-import { Navigate } from 'react-router-dom';
+import Admin from './pages/Admin';
+import Home from './pages/Home';
+import CatalogPage from './pages/CatalogPage';
+import Catalog from './pages/Catalog';
+import ProductDetail from './pages/ProductDetail';
+import About from './pages/About';
+import Contact from './pages/Contact';
 
 // Component to handle scroll to top on route change
 const ScrollToTop = () => {
@@ -80,11 +80,17 @@ const App: React.FC = () => {
           />
           <ScrollToTop />
           <Routes>
+            {/* MODO BLOQUEO: Home estable restaurado del historial */}
             <Route path="/" element={<Home />} />
+
+            {/* Rutas habilitadas para navegación y pruebas */}
+            <Route path="/home" element={<CatalogPage />} />
             <Route path="/catalogo" element={<Catalog />} />
             <Route path="/producto/:slug" element={<ProductDetail />} />
             <Route path="/nosotros" element={<About />} />
             <Route path="/contacto" element={<Contact />} />
+
+            {/* Acceso Administrador */}
             <Route path="/admin/login" element={<AdminLogin />} />
             <Route
               path="/admin/*"
@@ -94,7 +100,7 @@ const App: React.FC = () => {
                 </ProtectedRoute>
               }
             />
-            <Route path="*" element={<Home />} />
+            <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
           <FloatingActions />
         </Router>

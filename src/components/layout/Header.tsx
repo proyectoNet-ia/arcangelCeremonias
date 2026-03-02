@@ -219,18 +219,18 @@ export const Header: React.FC<HeaderProps> = ({ variant = 'light' }) => {
                     </nav>
 
                     {/* Mobile Actions */}
-                    <div className="flex items-center gap-2 md:hidden">
+                    <div className="flex items-center gap-1 md:hidden">
                         <button
-                            className={`p-2 ${isDark ? 'text-white' : 'text-chocolate/70'}`}
+                            className={`p-2 ${isDark ? 'text-white' : 'text-chocolate/50'}`}
                             onClick={() => setIsSearchOpen(true)}
                         >
-                            <FontAwesomeIcon icon={faSearch} className="text-2xl" />
+                            <FontAwesomeIcon icon={faSearch} className="text-xl" />
                         </button>
                         <button
-                            className={`p-2 ${isDark ? 'text-white' : 'text-chocolate/70'}`}
+                            className={`p-2 ${isDark ? 'text-white' : 'text-chocolate/50'}`}
                             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                         >
-                            <FontAwesomeIcon icon={isMobileMenuOpen ? faTimes : faBars} className="text-3xl" />
+                            <FontAwesomeIcon icon={isMobileMenuOpen ? faTimes : faBars} className="text-2xl" />
                         </button>
                     </div>
                 </div>
@@ -242,89 +242,135 @@ export const Header: React.FC<HeaderProps> = ({ variant = 'light' }) => {
                     onClose={closeMegamenu}
                 />
 
-                {/* Mobile Navigation Drawer */}
-                {isMobileMenuOpen && (
-                    <div className="md:hidden absolute top-full left-0 w-full bg-chocolate border-b border-gold/20 py-12 px-8 flex flex-col shadow-2xl animate-fade-in-down z-[50]">
-                        <div className="flex flex-col gap-8">
-                            {navItems.map((item, idx) => (
-                                <div key={item.name} className="flex flex-col gap-6">
-                                    <div className="flex items-center justify-between group">
-                                        <Link
-                                            to={item.path}
-                                            onClick={() => setIsMobileMenuOpen(false)}
-                                            className="flex items-center gap-6"
-                                        >
-                                            <FontAwesomeIcon
-                                                icon={item.icon}
-                                                className={`text-lg ${location.pathname === item.path ? 'text-gold' : 'text-gold/30'}`}
-                                            />
-                                            <span className={`text-sm uppercase tracking-[0.4em] font-medium transition-colors duration-300 ${location.pathname === item.path ? 'text-gold' : 'text-cream group-hover:text-gold'}`}>
-                                                {item.name}
-                                            </span>
-                                        </Link>
+                {/* --- PRO MOBILE DRAWER --- */}
+                <AnimatePresence>
+                    {isMobileMenuOpen && (
+                        <>
+                            {/* Backdrop Blur Overlay */}
+                            <motion.div
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                exit={{ opacity: 0 }}
+                                onClick={() => setIsMobileMenuOpen(false)}
+                                className="fixed inset-0 bg-chocolate/60 backdrop-blur-md z-[55] md:hidden"
+                            />
 
-                                        {item.hasMegamenu && (
-                                            <button
-                                                onClick={(e) => {
-                                                    e.stopPropagation();
-                                                    setIsMobileSubmenuOpen(!isMobileSubmenuOpen);
-                                                }}
-                                                className="p-2 text-gold/50"
-                                            >
-                                                <FontAwesomeIcon icon={faChevronDown} className={`text-xs transition-transform duration-300 ${isMobileSubmenuOpen ? 'rotate-180' : ''}`} />
-                                            </button>
-                                        )}
+                            {/* Main Drawer Panel */}
+                            <motion.div
+                                initial={{ x: '100%', opacity: 0 }}
+                                animate={{ x: 0, opacity: 1 }}
+                                exit={{ x: '100%', opacity: 0 }}
+                                transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+                                className="fixed top-0 right-0 h-full w-[85%] max-w-sm bg-chocolate z-[60] md:hidden shadow-2xl flex flex-col overflow-y-auto"
+                            >
+                                {/* Drawer Header */}
+                                <div className="flex justify-between items-center p-8 border-b border-gold/10">
+                                    <div className="w-32">
+                                        <Logo variant="dark" />
+                                    </div>
+                                    <button
+                                        onClick={() => setIsMobileMenuOpen(false)}
+                                        className="w-10 h-10 flex items-center justify-center text-gold bg-white/5 rounded-full"
+                                    >
+                                        <FontAwesomeIcon icon={faTimes} className="text-xl" />
+                                    </button>
+                                </div>
+
+                                {/* Navigation items with staggered animation */}
+                                <div className="flex-grow py-12 px-8 flex flex-col gap-2">
+                                    {navItems.map((item, idx) => (
+                                        <motion.div
+                                            key={item.name}
+                                            initial={{ opacity: 0, x: 20 }}
+                                            animate={{ opacity: 1, x: 0 }}
+                                            transition={{ delay: 0.1 + idx * 0.08 }}
+                                            className="flex flex-col"
+                                        >
+                                            <div className="flex items-center justify-between group py-4">
+                                                <Link
+                                                    to={item.path}
+                                                    onClick={() => setIsMobileMenuOpen(false)}
+                                                    className="flex items-center gap-6"
+                                                >
+                                                    <div className={`w-8 h-8 rounded-sm flex items-center justify-center transition-colors ${location.pathname === item.path ? 'bg-gold text-chocolate shadow-lg shadow-gold/20' : 'bg-white/10 text-gold/80'}`}>
+                                                        <FontAwesomeIcon icon={item.icon} className="text-sm" />
+                                                    </div>
+                                                    <span className={`text-sm uppercase tracking-[0.4em] font-bold transition-all ${location.pathname === item.path ? 'text-gold' : 'text-cream group-hover:text-gold group-hover:translate-x-2'}`}>
+                                                        {item.name}
+                                                    </span>
+                                                </Link>
+
+                                                {item.hasMegamenu && (
+                                                    <button
+                                                        onClick={() => setIsMobileSubmenuOpen(!isMobileSubmenuOpen)}
+                                                        className={`w-10 h-10 transition-transform duration-300 ${isMobileSubmenuOpen ? 'rotate-180 text-gold' : 'text-gold/50'}`}
+                                                    >
+                                                        <FontAwesomeIcon icon={faChevronDown} />
+                                                    </button>
+                                                )}
+                                            </div>
+
+                                            {/* Submenu categories */}
+                                            {item.hasMegamenu && isMobileSubmenuOpen && (
+                                                <motion.div
+                                                    initial={{ height: 0, opacity: 0 }}
+                                                    animate={{ height: 'auto', opacity: 1 }}
+                                                    className="pl-14 flex flex-col gap-4 py-2"
+                                                >
+                                                    {categories.map((cat, cIdx) => (
+                                                        <motion.div
+                                                            key={cat.id}
+                                                            initial={{ opacity: 0, x: 10 }}
+                                                            animate={{ opacity: 1, x: 0 }}
+                                                            transition={{ delay: 0.3 + cIdx * 0.05 }}
+                                                        >
+                                                            <Link
+                                                                to={`/catalogo?categoria=${cat.slug}`}
+                                                                onClick={() => setIsMobileMenuOpen(false)}
+                                                                className="text-[10px] uppercase tracking-[0.2em] text-cream/70 hover:text-gold flex items-center gap-3 py-1"
+                                                            >
+                                                                <div className="w-1 h-1 rounded-full bg-gold/40" />
+                                                                {cat.name}
+                                                            </Link>
+                                                        </motion.div>
+                                                    ))}
+                                                </motion.div>
+                                            )}
+                                        </motion.div>
+                                    ))}
+                                </div>
+
+                                {/* Drawer Footer with enhanced info */}
+                                <div className="mt-auto bg-black/30 p-8 space-y-8">
+                                    <div className="space-y-4">
+                                        <p className="text-[10px] uppercase tracking-[0.3em] text-gold font-bold">Asesoría Directa</p>
+                                        <a href={`https://wa.me/${whatsapp.replace(/\D/g, '')}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-4 text-cream hover:text-gold transition-colors group">
+                                            <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center group-hover:bg-[#25D366]/30 group-hover:text-white transition-all">
+                                                <FontAwesomeIcon icon={faWhatsapp} className="text-gold/80 group-hover:text-white" />
+                                            </div>
+                                            <span className="text-[12px] font-medium tracking-tight whitespace-nowrap">Ventas: {whatsapp.replace(/(\d{2})(\d{3})(\d{3})(\d{4})/, '+$1 $2 $3 $4')}</span>
+                                        </a>
+                                        <a href={`tel:${phone.replace(/\s+/g, '')}`} className="flex items-center gap-4 text-cream hover:text-gold transition-colors group">
+                                            <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center group-hover:bg-gold/30 group-hover:text-white transition-all">
+                                                <FontAwesomeIcon icon={faPhone} className="text-gold/80 group-hover:text-white" />
+                                            </div>
+                                            <span className="text-[12px] font-medium tracking-tight">Oficina: {phone}</span>
+                                        </a>
                                     </div>
 
-                                    {/* --- MOBILE SUBMENU (Simple categories) --- */}
-                                    {item.hasMegamenu && isMobileSubmenuOpen && (
-                                        <div className="pl-12 flex flex-col gap-4 animate-fade-in">
-                                            {categories.map((cat) => (
-                                                <Link
-                                                    key={cat.id}
-                                                    to={`/catalogo?categoria=${cat.slug}`}
-                                                    onClick={() => setIsMobileMenuOpen(false)}
-                                                    className="text-[11px] uppercase tracking-[0.2em] text-cream/60 hover:text-gold transition-colors flex items-center gap-3"
-                                                >
-                                                    <div className="w-1 h-1 rounded-full bg-gold/30" />
-                                                    {cat.name}
-                                                </Link>
-                                            ))}
-                                        </div>
-                                    )}
+                                    <div className="flex gap-4 pt-4 border-t border-white/10">
+                                        <a href={facebook} target="_blank" rel="noopener noreferrer" className="w-10 h-10 flex items-center justify-center bg-white/10 text-gold rounded-lg hover:text-white hover:bg-gold transition-all">
+                                            <FontAwesomeIcon icon={faFacebook} className="text-lg" />
+                                        </a>
+                                        <a href={instagram} target="_blank" rel="noopener noreferrer" className="w-10 h-10 flex items-center justify-center bg-white/10 text-gold rounded-lg hover:text-white hover:bg-gold transition-all">
+                                            <FontAwesomeIcon icon={faInstagram} className="text-lg" />
+                                        </a>
+                                    </div>
                                 </div>
-                            ))}
-                        </div>
-
-                        {/* Mobile Footer Info */}
-                        <div className="mt-12 pt-8 border-t border-white/5 space-y-6">
-                            <p className="text-[9px] uppercase tracking-[0.3em] text-gold/50 font-semibold">Atención al Cliente</p>
-                            <div className="space-y-4">
-                                <a href={`https://wa.me/${whatsapp}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-4 text-cream/70 text-xs hover:text-gold transition-colors">
-                                    <FontAwesomeIcon icon={faWhatsapp} className="text-gold w-4" />
-                                    <span>Ventas: {whatsapp.replace(/(\d{2})(\d{3})(\d{3})(\d{4})/, '+$1 $2 $3 $4')}</span>
-                                </a>
-                                <a href={`tel:${phone.replace(/\s+/g, '')}`} className="flex items-center gap-4 text-cream/70 text-xs hover:text-gold transition-colors">
-                                    <FontAwesomeIcon icon={faPhone} className="text-gold w-4" />
-                                    <span>Oficina: {phone}</span>
-                                </a>
-                                <a href={`mailto:${email}`} className="flex items-center gap-4 text-cream/70 text-xs hover:text-gold transition-colors">
-                                    <FontAwesomeIcon icon={faEnvelope} className="text-gold w-4" />
-                                    <span>{email}</span>
-                                </a>
-                                <a
-                                    href={`https://wa.me/${whatsapp}`}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="mt-6 w-full py-4 bg-gold text-chocolate font-bold text-[10px] uppercase tracking-[0.3em] flex items-center justify-center gap-3 shadow-xl hover:bg-cream transition-all duration-500 active:scale-95"
-                                >
-                                    <FontAwesomeIcon icon={faWhatsapp} className="text-lg" />
-                                    Chat de Ventas
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                )}
+                            </motion.div>
+                        </>
+                    )}
+                </AnimatePresence>
             </header>
         </div>
     );

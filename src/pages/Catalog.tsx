@@ -186,7 +186,7 @@ const Catalog: React.FC = () => {
                                 onMouseLeave={handleMouseLeave}
                                 onMouseUp={handleMouseUp}
                                 onMouseMove={handleMouseMove}
-                                className={`overflow-x-auto pb-4 -mb-4 flex gap-3 no-scrollbar mask-fade-right w-full cursor-grab active:cursor-grabbing select-none pr-32`}
+                                className={`overflow-x-auto pb-4 -mb-4 flex gap-3 no-scrollbar mask-fade-right w-full cursor-grab active:cursor-grabbing select-none pr-12 md:pr-32`}
                             >
                                 <button
                                     onClick={() => handleCategoryClick(null)}
@@ -250,7 +250,7 @@ const Catalog: React.FC = () => {
                 </div>
 
                 {/* --- PRODUCT GRID --- */}
-                <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-4 md:gap-x-8 gap-y-10 md:gap-y-16">
+                <div className="grid grid-cols-1 lg:grid-cols-3 xl:grid-cols-4 gap-x-4 md:gap-x-8 gap-y-10 md:gap-y-16">
                     <AnimatePresence mode='popLayout'>
                         {loading ? (
                             // SKELETON LOADERS

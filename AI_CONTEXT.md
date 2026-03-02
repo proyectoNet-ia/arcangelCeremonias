@@ -5,12 +5,19 @@ Este archivo es un resumen actualizado para mantener la continuidad del desarrol
 
 ---
 
+## 🏆 REGLA DE ORO — PROHIBIDO TOCAR MAIN
+
+> **NO TOCAR LA RAMA `main` NI REALIZAR DESPLIEGUES A PRODUCCIÓN (`--prod`) SIN INDICACIÓN EXPLÍCITA DEL USUARIO.**
+> Cualquier cambio debe desarrollarse y probarse en ramas de previsualización o localmente. La estabilidad del sitio público es la prioridad número uno.
+
+---
+
 ## ⚠️ REGLA CRÍTICA — Leer Antes de Cualquier Acción
 
 > **ESTAMOS EN FASE DE DESARROLLO LOCAL.**
 > El sitio de producción `https://www.ceremoniasarcangel.com` está mostrando una **página de "Próximamente"** al público.
-> **NO realizar `git push`, `vercel deploy`, ni ningún despliegue** hasta que el cliente apruebe explícitamente hacerlo.
-> Todo el trabajo se desarrolla y prueba en `http://localhost:3000` únicamente.
+> **NO realizar `git push` a main, `vercel --prod`, ni despliegues oficiales** hasta que el cliente apruebe explícitamente hacerlo.
+> Todo el trabajo se desarrolla y prueba en `http://localhost:3000` o URLs de previsualización únicamente.
 
 ---
 

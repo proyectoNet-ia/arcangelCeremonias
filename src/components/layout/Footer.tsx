@@ -159,7 +159,7 @@ export const Footer: React.FC = () => {
                                 <FontAwesomeIcon icon={faWhatsapp} className="text-2xl" />
                             </button>
                         </div>
-                        <div className="pt-8 opacity-20 hover:opacity-100 transition-opacity duration-700 w-40">
+                        <div className="pt-8 opacity-50 md:opacity-20 hover:opacity-100 transition-opacity duration-700 w-40">
                             <Logo variant="dark" />
                         </div>
                     </RevealOnScroll>

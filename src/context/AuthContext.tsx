@@ -55,15 +55,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         const initialize = async () => {
             const timeoutId = setTimeout(() => {
                 setLoading(false);
-                console.warn('Auth initialization timed out');
-            }, 8000);
+                console.warn('Auth initialization reached soft timeout (20s) - App will proceed but user may not be immediately recognized.');
+            }, 20000);
 
             try {
                 console.log('Initializing AuthContext...');
-                const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+                // we use a try/catch here to avoid lock issues from freezing the UI
+                const { data: { session }, error: sessionError } = await supabase.auth.getSession().catch(e => {
+                    console.error('Session get error (Lock timeout potentially):', e);
+                    return { data: { session: null }, error: e };
+                });
 
                 if (sessionError) {
-                    console.error('Session error:', sessionError);
+                    console.warn('Session error ignored for UI stability:', sessionError);
                 }
 
                 const currentUser = session?.user ?? null;
@@ -76,10 +80,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
                     console.log('No active session found during initialization.');
                 }
             } catch (err) {
-                console.error('Initialization crash:', err);
+                console.error('Initialization caught crash:', err);
+                // Fallback to null user so the app doesn't stay loading
+                setUser(null);
             } finally {
+                // Ensure timeout is cleared as soon as we finish the try/catch
                 clearTimeout(timeoutId);
-                console.log('Initialization complete, setting loading to false.');
+                console.log('Finalizing AuthContext initialization.');
                 setLoading(false);
             }
         };
