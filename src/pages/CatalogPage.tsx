@@ -15,6 +15,7 @@ import { productService } from '@/services/productService';
 import { heroService, HeroSlide } from '@/services/heroService';
 import { Product } from '@/types/product';
 import { useConfig } from '@/context/ConfigContext';
+import { CTABanner } from '@/components/common/CTABanner';
 import bgDesktop from '@/assets/fondo-horizontal.jpeg';
 import bgMobile from '@/assets/fondo-movil.jpg';
 import bgDesktop2 from '@/assets/fondo-pc.jpg';
@@ -82,14 +83,8 @@ const Home: React.FC = () => {
     const phone = config?.phone || '352 52 62502';
     const facebook = config?.facebook_url || 'https://www.facebook.com/arcangel.ceremonias/';
     const instagram = config?.instagram_url || 'https://www.instagram.com/ceremonias.arcangel/';
+    const [trendingIndex, setTrendingIndex] = useState(0);
 
-    // CTA Banner (Mayoreo)
-    const ctaTag = config?.cta_banner_tag || 'Socios Comerciales';
-    const ctaTitle = config?.cta_banner_title || 'Venta al por mayor';
-    const ctaSubtitle = config?.cta_banner_subtitle || ' & Boutiques';
-    const ctaBody = config?.cta_banner_body || 'Abastecemos a las mejores boutiques de México con diseños exclusivos y calidad artesanal. Solicita nuestro catálogo de precios para negocios.';
-    const ctaBtn1 = config?.cta_banner_btn1_label || 'Catálogo Mayoreo';
-    const ctaBtn2 = config?.cta_banner_btn2_label || 'Línea de Negocios';
 
     // Auto-advance slider
     useEffect(() => {
@@ -146,13 +141,6 @@ const Home: React.FC = () => {
     const prev = useCallback(() => setActiveSlide(p => (p - 1 + slides.length) % slides.length), [slides.length]);
     const next = useCallback(() => setActiveSlide(p => (p + 1) % slides.length), [slides.length]);
 
-    // Parallax Effect for CTA
-    const ctaRef = useRef(null);
-    const { scrollYProgress } = useScroll({
-        target: ctaRef,
-        offset: ["start end", "end start"]
-    });
-    const ctaY = useTransform(scrollYProgress, [0, 1], ["-15%", "15%"]);
 
     const slide = slides[activeSlide] || slides[0];
     const alignClass = 'items-start text-left';
@@ -320,18 +308,18 @@ const Home: React.FC = () => {
             {/* ════════════════════════════════════════
                 3. FEATURED PRODUCTS
             {/* 3. FEATURED PRODUCTS */}
-            <section className="relative py-28 md:py-40 px-6 md:px-12 max-w-[1600px] mx-auto overflow-hidden">
-                <RevealOnScroll className="space-y-16">
+            <section className="relative pt-28 pb-20 md:pt-40 md:pb-32 px-6 md:px-12 max-w-[1600px] mx-auto overflow-hidden">
+                <RevealOnScroll>
                     {/* Section header */}
-                    <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 border-b border-gold/10 pb-12">
-                        <div className="space-y-4">
-                            <div className="flex items-center gap-3">
-                                <div className="w-6 h-[2px] bg-gold" />
-                                <span className="text-[9px] uppercase tracking-[0.5em] text-gold font-bold">Colección</span>
+                    <div className="section-header flex flex-col md:flex-row md:items-end justify-between border-b border-gold/10 pb-12">
+                        <div>
+                            <div className="section-header-tag-wrapper">
+                                <div className="section-header-line" />
+                                <span className="section-header-tag">Colección</span>
                             </div>
-                            <h2 className="font-serif text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-chocolate uppercase leading-tight">
+                            <h2 className="section-header-title">
                                 Artículos<br />
-                                <span className="text-gold/70">Destacados</span>
+                                <span className="section-header-highlight">Destacados</span>
                             </h2>
                         </div>
                         <Link
@@ -343,7 +331,7 @@ const Home: React.FC = () => {
                         </Link>
                     </div>
 
-                    {/* Product grid */}
+                    {/* Product grid / Mobile Carousel */}
                     {loadingProducts ? (
                         <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6 md:gap-10">
                             {[...Array(8)].map((_, i) => (
@@ -351,15 +339,33 @@ const Home: React.FC = () => {
                             ))}
                         </div>
                     ) : (
-                        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-10">
-                            {products.map((product, idx) => (
-                                <ProductCard key={product.id} product={product} index={idx} />
-                            ))}
+                        <div className="relative no-scrollbar">
+                            <style>{`
+                                .no-scrollbar::-webkit-scrollbar { display: none !important; }
+                                .no-scrollbar { -ms-overflow-style: none !important; scrollbar-width: none !important; }
+                            `}</style>
+                            <div
+                                className="flex md:grid md:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-10 overflow-x-auto md:overflow-visible pb-12 md:pb-0 no-scrollbar snap-x snap-mandatory px-4 md:px-0"
+                                style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+                            >
+                                {products.map((product, idx) => (
+                                    <div key={product.id} className="min-w-[85%] sm:min-w-[320px] md:min-w-0 md:w-auto snap-center">
+                                        <ProductCard product={product} index={idx} />
+                                    </div>
+                                ))}
+                            </div>
+
+                            {/* Mobile Swipe Hint */}
+                            <div className="flex md:hidden justify-center gap-2 mt-4">
+                                {[...Array(Math.min(4, products.length))].map((_, i) => (
+                                    <div key={i} className="w-1.5 h-1.5 rounded-full bg-gold/20" />
+                                ))}
+                            </div>
                         </div>
                     )}
 
                     {/* Bottom CTA */}
-                    <div className="flex justify-center pt-8">
+                    <div className="flex justify-center mt-4">
                         <Link
                             to="/catalogo"
                             className="group inline-flex items-center gap-4 border border-gold/30 text-chocolate px-12 py-5 text-[9px] uppercase tracking-[0.4em] font-bold hover:bg-chocolate hover:text-cream hover:border-chocolate transition-all duration-500"
@@ -371,125 +377,187 @@ const Home: React.FC = () => {
                 </RevealOnScroll>
             </section>
 
+
             {/* ════════════════════════════════════════
-                4. CTA WHATSAPP BANNER
+                4. BRAND PILLARS (TRUST & VALUE)
             ════════════════════════════════════════ */}
-            <motion.section
-                ref={ctaRef}
-                className="relative overflow-hidden"
-                style={{ backgroundColor: config?.cta_banner_bg_color || '#1B1411' }}
-                initial={{ opacity: 0 }}
-                whileInView={{ opacity: 1 }}
-                viewport={{ once: true, amount: 0.3 }}
-                transition={{ duration: 0.8 }}
-            >
-                {/* Background Image with Parallax & Translucent Overlay */}
-                {config?.cta_banner_bg_image_url && (
-                    <motion.div
-                        className="absolute inset-x-0 -top-[20%] h-[140%] z-0 bg-cover bg-center bg-no-repeat"
-                        style={{
-                            backgroundImage: `url(${config.cta_banner_bg_image_url})`,
-                            y: ctaY
-                        }}
-                    >
-                        {/* Overlay with dynamic opacity from CMS */}
-                        <div
-                            className="absolute inset-0 z-0"
-                            style={{
-                                backgroundColor: config?.cta_banner_bg_color || '#1B1411',
-                                opacity: config?.cta_banner_bg_opacity ?? 0.85
-                            }}
-                        />
-                    </motion.div>
-                )}
+            <section className="relative py-20 md:py-32 bg-white/40 border-y border-gold/10 overflow-hidden">
+                <div className="max-w-[1600px] mx-auto px-6 md:px-12">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 md:gap-8">
+                        {/* Pilar 1: Materiales */}
+                        <RevealOnScroll className="space-y-6 text-center" delay={0.1}>
+                            <div className="relative w-16 h-16 mx-auto flex items-center justify-center">
+                                <div className="absolute inset-0 border border-gold/20 rotate-45 transform group-hover:rotate-90 transition-transform duration-700" />
+                                <FontAwesomeIcon icon={faAward} className="text-2xl text-gold" />
+                            </div>
+                            <div className="space-y-2">
+                                <h3 className="text-[10px] uppercase tracking-[0.3em] font-bold text-chocolate">Fibras Naturales</h3>
+                                <p className="text-[11px] text-chocolate/50 font-light leading-relaxed px-4">
+                                    Seleccionamos los mejores linos y sedas para garantizar frescura y caída impecable.
+                                </p>
+                            </div>
+                        </RevealOnScroll>
 
-                {/* Shimmer */}
-                <motion.div
-                    className="absolute inset-0 pointer-events-none z-[1]"
-                    style={{ background: 'linear-gradient(105deg, transparent 40%, rgba(197,168,112,0.07) 50%, transparent 60%)' }}
-                    animate={{ x: ['-100%', '200%'] }}
-                    transition={{ duration: 4, repeat: Infinity, ease: 'linear', repeatDelay: 3 }}
-                />
+                        {/* Pilar 2: Experiencia */}
+                        <RevealOnScroll className="space-y-6 text-center" delay={0.2}>
+                            <div className="relative w-16 h-16 mx-auto flex items-center justify-center">
+                                <div className="absolute inset-0 border border-gold/20 rotate-45" />
+                                <FontAwesomeIcon icon={faHands} className="text-2xl text-gold" />
+                            </div>
+                            <div className="space-y-2">
+                                <h3 className="text-[10px] uppercase tracking-[0.3em] font-bold text-chocolate">Maestría Textil</h3>
+                                <p className="text-[11px] text-chocolate/50 font-light leading-relaxed px-4">
+                                    Tres décadas perfeccionando procesos artesanales en cada puntada.
+                                </p>
+                            </div>
+                        </RevealOnScroll>
 
-                {/* Floating diamonds */}
-                {[...Array(5)].map((_, i) => (
-                    <motion.div
-                        key={i}
-                        className="absolute text-gold/5 z-[1]"
-                        style={{ top: `${15 + i * 18}%`, left: `${5 + i * 19}%`, fontSize: `${20 + (i % 3) * 14}px` }}
-                        animate={{ y: [0, -20, 0], rotate: [0, 25, 0], opacity: [0.03, 0.1, 0.03] }}
-                        transition={{ duration: 5 + i, repeat: Infinity, ease: 'easeInOut', delay: i * 0.8 }}
-                    >
-                        <FontAwesomeIcon icon={faDiamond} />
-                    </motion.div>
-                ))}
+                        {/* Pilar 3: Diseño */}
+                        <RevealOnScroll className="space-y-6 text-center" delay={0.3}>
+                            <div className="relative w-16 h-16 mx-auto flex items-center justify-center">
+                                <div className="absolute inset-0 border border-gold/20 rotate-45" />
+                                <FontAwesomeIcon icon={faLeaf} className="text-2xl text-gold" />
+                            </div>
+                            <div className="space-y-2">
+                                <h3 className="text-[10px] uppercase tracking-[0.3em] font-bold text-chocolate">Legado Familiar</h3>
+                                <p className="text-[11px] text-chocolate/50 font-light leading-relaxed px-4">
+                                    Piezas diseñadas para trascender el tiempo y ser herencia familiar.
+                                </p>
+                            </div>
+                        </RevealOnScroll>
 
-                <div className="relative z-10 py-24 md:py-32 px-8 md:px-20 flex flex-col md:flex-row items-center justify-between gap-12 max-w-[1600px] mx-auto">
-                    {/* Text */}
-                    <motion.div
-                        className="relative space-y-6 text-left"
-                        initial={{ opacity: 0, x: -30 }}
-                        whileInView={{ opacity: 1, x: 0 }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 0.7, delay: 0.2 }}
-                    >
-                        <span className="text-[11px] md:text-xs uppercase tracking-[0.5em] text-white font-bold block mb-2">{ctaTag}</span>
-                        <h2 className="font-serif text-4xl md:text-5xl lg:text-7xl text-cream leading-none uppercase">
-                            {ctaTitle}<br className="hidden md:block" />
-                            <span className="text-gold md:ml-2">{ctaSubtitle}</span>
-                        </h2>
-                        <p className="text-white text-lg md:text-xl font-normal leading-relaxed max-w-2xl">
-                            {ctaBody}
-                        </p>
-                    </motion.div>
-
-                    {/* Buttons */}
-                    <motion.div
-                        className="relative flex flex-col sm:flex-row gap-4 w-full sm:w-auto"
-                        initial={{ opacity: 0, x: 30 }}
-                        whileInView={{ opacity: 1, x: 0 }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 0.7, delay: 0.35 }}
-                    >
-                        <motion.a
-                            href={`https://wa.me/${whatsapp}?text=${encodeURIComponent('Hola, me interesa recibir información sobre las ventas por mayoreo y el catálogo para mi Boutique/Negocio.')}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            whileHover={{ scale: 1.04, boxShadow: '0 20px 50px rgba(37,211,102,0.2)' }}
-                            whileTap={{ scale: 0.97 }}
-                            className="flex items-center justify-center sm:justify-start gap-4 bg-[#25D366] text-white px-10 py-5 text-[10px] uppercase tracking-[0.4em] font-bold hover:bg-[#1ebe59] transition-all duration-400 group"
-                        >
-                            <FontAwesomeIcon icon={faWhatsapp} className="text-lg group-hover:scale-110 transition-transform" />
-                            {ctaBtn1}
-                        </motion.a>
-                        <motion.a
-                            href={`tel:${phone.replace(/\s+/g, '')}`}
-                            whileHover={{ scale: 1.04 }}
-                            whileTap={{ scale: 0.97 }}
-                            className="flex items-center justify-center sm:justify-start gap-4 border border-cream/20 text-cream px-10 py-5 text-[10px] uppercase tracking-[0.4em] font-bold hover:border-gold hover:text-gold transition-all duration-400"
-                        >
-                            {ctaBtn2}
-                        </motion.a>
-                    </motion.div>
+                        {/* Pilar 4: Distribución */}
+                        <RevealOnScroll className="space-y-6 text-center" delay={0.4}>
+                            <div className="relative w-16 h-16 mx-auto flex items-center justify-center">
+                                <div className="absolute inset-0 border border-gold/20 rotate-45" />
+                                <FontAwesomeIcon icon={faTruckFast} className="text-2xl text-gold" />
+                            </div>
+                            <div className="space-y-2">
+                                <h3 className="text-[10px] uppercase tracking-[0.3em] font-bold text-chocolate">Logística Global</h3>
+                                <p className="text-[11px] text-chocolate/50 font-light leading-relaxed px-4">
+                                    Envíos asegurados a todo México y atención prioritaria para boutiques.
+                                </p>
+                            </div>
+                        </RevealOnScroll>
+                    </div>
                 </div>
-            </motion.section>
+            </section>
+
+
+            {/* ════════════════════════════════════════
+                4.5 TRENDING CAROUSEL (LOS MÁS BUSCADOS)
+            ════════════════════════════════════════ */}
+            <section className="relative py-28 md:py-40 bg-cream/30 overflow-hidden">
+                <div className="max-w-[1600px] mx-auto px-6 md:px-12">
+                    <RevealOnScroll className="space-y-16">
+                        {/* Header Left Aligned */}
+                        <div className="section-header">
+                            <div className="section-header-tag-wrapper">
+                                <div className="section-header-line" />
+                                <span className="section-header-tag">Selección</span>
+                            </div>
+                            <h2 className="section-header-title">
+                                Piezas más <br />
+                                <span className="section-header-highlight">deseadas</span>
+                            </h2>
+                        </div>
+
+                        {/* Carousel Wrapper */}
+                        <div className="relative">
+                            {/* Navigation Buttons - Hidden on Mobile */}
+                            <div className="hidden md:block absolute top-1/2 -translate-y-1/2 -left-4 lg:-left-8 z-30">
+                                <motion.button
+                                    onClick={() => setTrendingIndex(prev => Math.max(0, prev - 1))}
+                                    whileHover={{ scale: 1.1, x: -5 }}
+                                    whileTap={{ scale: 0.9 }}
+                                    className={`w-14 h-14 rounded-full border border-gold/20 flex items-center justify-center text-gold backdrop-blur-md transition-all duration-300 ${trendingIndex === 0 ? 'opacity-20 cursor-not-allowed' : 'opacity-100 hover:bg-gold hover:text-white hover:border-gold'}`}
+                                >
+                                    <FontAwesomeIcon icon={faChevronLeft} />
+                                </motion.button>
+                            </div>
+                            <div className="hidden md:block absolute top-1/2 -translate-y-1/2 -right-4 lg:-right-8 z-30">
+                                <motion.button
+                                    onClick={() => {
+                                        const max = Math.max(0, products.slice(1, 9).length - 3);
+                                        setTrendingIndex(prev => Math.min(max, prev + 1));
+                                    }}
+                                    whileHover={{ scale: 1.1, x: 5 }}
+                                    whileTap={{ scale: 0.9 }}
+                                    className={`w-14 h-14 rounded-full border border-gold/20 flex items-center justify-center text-gold backdrop-blur-md transition-all duration-300 ${trendingIndex >= Math.max(0, products.slice(1, 9).length - 3) ? 'opacity-20 cursor-not-allowed' : 'opacity-100 hover:bg-gold hover:text-white hover:border-gold'}`}
+                                >
+                                    <FontAwesomeIcon icon={faChevronRight} />
+                                </motion.button>
+                            </div>
+
+                            {/* Carousel Content */}
+                            <div className="overflow-hidden no-scrollbar">
+                                <style>{`
+                                    .no-scrollbar::-webkit-scrollbar { display: none !important; }
+                                    .no-scrollbar { -ms-overflow-style: none !important; scrollbar-width: none !important; }
+                                `}</style>
+                                <motion.div
+                                    className="flex gap-10"
+                                    animate={{ x: `calc(-${trendingIndex * 33.333}% - ${trendingIndex * 2.5}rem)` }}
+                                    transition={{ type: "spring", stiffness: 200, damping: 25 }}
+                                >
+                                    {products.length > 4 ? products.slice(1, 9).map((p, idx) => (
+                                        <div
+                                            key={idx}
+                                            className="min-w-full md:min-w-[calc(33.333%-27px)]"
+                                        >
+                                            <ProductCard product={p} index={idx} />
+                                        </div>
+                                    )) : (
+                                        <div className="text-center w-full py-20 text-chocolate/30 italic font-serif">
+                                            Cargando tendencias...
+                                        </div>
+                                    )}
+                                </motion.div>
+                            </div>
+                        </div>
+
+                        {/* Link to catalog + Pagination lines */}
+                        <div className="flex flex-col items-center gap-12">
+                            <div className="flex gap-4">
+                                {[...Array(Math.max(0, products.slice(1, 9).length - 2))].map((_, i) => (
+                                    <button
+                                        key={i}
+                                        onClick={() => setTrendingIndex(i)}
+                                        className={`h-[1px] transition-all duration-700 ease-in-out ${i === trendingIndex ? 'w-16 bg-gold' : 'w-6 bg-gold/15 hover:bg-gold/30'}`}
+                                    />
+                                ))}
+                            </div>
+
+                            <Link
+                                to="/catalogo"
+                                className="group inline-flex items-center gap-4 text-[10px] uppercase tracking-[0.4em] font-bold text-gold hover:text-chocolate transition-all duration-500"
+                            >
+                                <span className="w-10 h-[1px] bg-gold/30 group-hover:w-16 transition-all" />
+                                Ver Tendencias Completas
+                                <span className="w-10 h-[1px] bg-gold/30 group-hover:w-16 transition-all" />
+                            </Link>
+                        </div>
+                    </RevealOnScroll>
+                </div>
+            </section>
 
             {/* ════════════════════════════════════════
                 5. EMPRESA INFO + VALORES
+            ════════════════════════════════════════ */}
             {/* 5. EMPRESA INFO + VALORES */}
             <section className="relative py-28 md:py-40 px-6 md:px-12 max-w-[1600px] mx-auto overflow-hidden">
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 xl:gap-40 items-center">
 
                     {/* Left: Story */}
                     <RevealOnScroll className="space-y-10">
-                        <div className="space-y-4">
-                            <div className="flex items-center gap-3">
-                                <div className="w-6 h-[2px] bg-gold" />
-                                <span className="text-[9px] uppercase tracking-[0.5em] text-gold font-bold">Nuestra Historia</span>
+                        <div className="section-header !mb-10">
+                            <div className="section-header-tag-wrapper">
+                                <div className="section-header-line" />
+                                <span className="section-header-tag">Nuestra Historia</span>
                             </div>
-                            <h2 className="font-serif text-3xl sm:text-4xl md:text-5xl text-chocolate uppercase leading-tight">
+                            <h2 className="section-header-title !text-3xl !sm:text-4xl !md:text-5xl">
                                 Más de 30 Años<br />
-                                <span className="text-gold/70">de Tradición</span>
+                                <span className="section-header-highlight uppercase">de Tradición</span>
                             </h2>
                         </div>
                         <div className="space-y-5 text-chocolate/65 text-sm font-light leading-relaxed">
@@ -533,11 +601,17 @@ const Home: React.FC = () => {
                 6. SOCIAL STRIP
             ════════════════════════════════════════ */}
             <RevealOnScroll>
-                <section className="py-16 border-t border-b border-gold/10 bg-white/30">
-                    <div className="max-w-[1600px] mx-auto px-6 md:px-12 flex flex-col md:flex-row items-start md:items-center justify-between gap-8">
-                        <div className="space-y-2">
-                            <span className="text-[9px] uppercase tracking-[0.5em] text-gold font-bold block">Síguenos</span>
-                            <p className="text-base font-serif text-chocolate">Ceremonias que se visten de elegancia</p>
+                <section className="py-20 border-t border-b border-gold/10 bg-white/30">
+                    <div className="max-w-[1600px] mx-auto px-6 md:px-12 flex flex-col md:flex-row items-start md:items-center justify-between gap-12">
+                        <div className="section-header !mb-0">
+                            <div className="section-header-tag-wrapper">
+                                <div className="section-header-line" />
+                                <span className="section-header-tag">Social</span>
+                            </div>
+                            <h2 className="section-header-title !text-2xl md:!text-3xl">
+                                Síguenos en <br />
+                                <span className="section-header-highlight uppercase">Redes</span>
+                            </h2>
                         </div>
                         <div className="flex items-center gap-10">
                             <a href={facebook} target="_blank" rel="noopener noreferrer"
@@ -560,8 +634,10 @@ const Home: React.FC = () => {
                 </section>
             </RevealOnScroll>
 
+            <CTABanner />
+
             <Footer />
-        </div>
+        </div >
     );
 };
 

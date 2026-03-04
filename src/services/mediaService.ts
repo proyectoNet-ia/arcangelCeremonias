@@ -1,4 +1,5 @@
 import { supabase } from '../lib/supabase';
+import { optimizeImage } from '../lib/imageOptimization';
 
 // ── Seguridad: Formatos Permitidos ────────────────────────────────
 export const ALLOWED_IMAGE_FORMATS = ['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/svg+xml'];
@@ -64,6 +65,46 @@ export const mediaService = {
         }
 
         return allFiles;
+    },
+
+    async uploadFile(file: File, folder: string) {
+        // 1. Validar archivo
+        this.validateFile(file);
+
+        let fileToUpload = file;
+
+        // 2. Optimización automática para la carpeta de productos
+        if (folder === 'products' && file.type.startsWith('image/')) {
+            try {
+                const optimizedBlob = await optimizeImage(file);
+                fileToUpload = new File([optimizedBlob], file.name, { type: 'image/jpeg' });
+            } catch (err) {
+                console.warn('Auto-optimization failed, uploading original', err);
+            }
+        }
+
+        // 3. Generar nombre único
+        const fileExt = fileToUpload.name.split('.').pop()?.toLowerCase() ?? 'bin';
+        const fileName = `${Date.now()}_${Math.random().toString(36).slice(2, 8)}.${fileExt}`;
+        const filePath = `${folder}/${fileName}`;
+
+        // 4. Subir a Supabase
+        const { error: uploadError } = await supabase.storage
+            .from('catalog')
+            .upload(filePath, fileToUpload, {
+                cacheControl: '3600',
+                upsert: false,
+                contentType: fileToUpload.type || 'application/octet-stream',
+            });
+
+        if (uploadError) throw uploadError;
+
+        // 5. Retornar URL pública
+        const { data } = supabase.storage
+            .from('catalog')
+            .getPublicUrl(filePath);
+
+        return data.publicUrl;
     },
 
     validateFile(file: File) {

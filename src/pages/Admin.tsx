@@ -8,7 +8,8 @@ import {
     faBox, faUsers, faEye, faChartBar, faArrowUp,
     faCog, faGlobe, faPhone, faMapMarkerAlt, faEnvelope,
     faFilePdf, faFileUpload, faMagic, faInbox, faCheckCircle,
-    faUserShield, faUserEdit, faUserMinus, faUserPlus
+    faUserShield, faUserEdit, faUserMinus, faUserPlus,
+    faChartLine, faArrowUpRightFromSquare
 } from '@fortawesome/free-solid-svg-icons';
 import { faWhatsapp, faFacebook, faInstagram } from '@fortawesome/free-brands-svg-icons';
 import { productService } from '@/services/productService';
@@ -24,6 +25,7 @@ import { AdminLayout } from '@/components/admin/AdminLayout';
 import { MediaGallery } from '@/components/admin/MediaGallery';
 import { MediaSelectorModal } from '@/components/admin/MediaSelectorModal';
 import { ConfirmModal } from '@/components/admin/ConfirmModal';
+import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import toast from 'react-hot-toast';
 const generateSlug = (name: string) => {
     return name
@@ -51,16 +53,15 @@ const smartFormatTitle = (val: string) => {
         })
         .join(' ');
 };
-
 // --- Dashboard Component ---
 const DashboardOverview: React.FC<{ products: Product[], categories: Category[], refresh: () => void }> = ({ products, categories, refresh }) => {
     const [isStandardizing, setIsStandardizing] = useState(false);
-    const [whatsappClicks, setWhatsappClicks] = useState<number | string>('...');
+    const [statsData, setStatsData] = useState({ pageViews: 0, whatsappClicks: 0, conversionRate: '0' });
 
     useEffect(() => {
         const fetchStats = async () => {
-            const count = await statsService.getWhatsAppClicksCount();
-            setWhatsappClicks(count);
+            const data = await statsService.getDashboardStats();
+            setStatsData(data);
         };
         fetchStats();
     }, []);
@@ -99,11 +100,12 @@ const DashboardOverview: React.FC<{ products: Product[], categories: Category[],
             setIsStandardizing(false);
         }
     };
+
     const stats = [
-        { label: 'Productos Totales', value: products.length, icon: faBox, color: 'text-blue-500', bg: 'bg-blue-50' },
-        { label: 'Categorías', value: categories.length, icon: faChartBar, color: 'text-purple-500', bg: 'bg-purple-50' },
-        { label: 'Visitas Hoy', value: '1,284', icon: faEye, color: 'text-gold', bg: 'bg-gold/5', trend: '+12%' },
-        { label: 'Consultas WhatsApp', value: whatsappClicks.toLocaleString(), icon: faUsers, color: 'text-green-500', bg: 'bg-green-50', trend: '+5%' },
+        { label: 'Catálogo', value: products.length, icon: faBox, color: 'text-blue-500', bg: 'bg-blue-50', sub: 'Productos' },
+        { label: 'Secciones', value: categories.length, icon: faChartBar, color: 'text-purple-500', bg: 'bg-purple-50', sub: 'Categorías' },
+        { label: 'Visitas Reales', value: statsData.pageViews.toLocaleString(), icon: faEye, color: 'text-gold', bg: 'bg-gold/5', trend: 'Global' },
+        { label: 'Efectividad', value: `${statsData.conversionRate}%`, icon: faWhatsapp, color: 'text-green-500', bg: 'bg-green-50', trend: 'WA Click' },
     ];
 
     return (
@@ -128,7 +130,10 @@ const DashboardOverview: React.FC<{ products: Product[], categories: Category[],
                             )}
                         </div>
                         <h3 className="text-slate-400 text-xs uppercase tracking-widest font-bold mb-1">{stat.label}</h3>
-                        <p className="text-3xl font-serif text-slate-800">{stat.value}</p>
+                        <div className="flex items-baseline gap-2">
+                            <p className="text-3xl font-serif text-slate-800">{stat.value}</p>
+                            {stat.sub && <span className="text-[10px] text-slate-400 uppercase font-bold tracking-widest">{stat.sub}</span>}
+                        </div>
                     </motion.div>
                 ))}
             </div>
@@ -157,6 +162,19 @@ const DashboardOverview: React.FC<{ products: Product[], categories: Category[],
                             <p className="text-xs uppercase tracking-widest font-bold">Estandarizar Títulos</p>
                             <p className="text-[8px] opacity-60">Corrige mayúsculas en todo el catálogo</p>
                         </button>
+                        <a
+                            href="https://vercel.com/dashboard"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="p-6 border border-slate-100 bg-slate-50 hover:bg-black hover:text-white transition-all text-left space-y-2 group"
+                        >
+                            <div className="flex justify-between items-center">
+                                <FontAwesomeIcon icon={faChartLine} className="text-black group-hover:text-white" />
+                                <FontAwesomeIcon icon={faArrowUpRightFromSquare} className="text-[10px] opacity-40 group-hover:opacity-100" />
+                            </div>
+                            <p className="text-xs uppercase tracking-widest font-bold">Vercel Analytics</p>
+                            <p className="text-[8px] opacity-60">Métricas avanzadas y rendimiento</p>
+                        </a>
                     </div>
                 </div>
 
@@ -184,53 +202,7 @@ const DashboardOverview: React.FC<{ products: Product[], categories: Category[],
     );
 };
 
-// --- Image Optimization Helper ---
-const optimizeImage = (file: File): Promise<Blob> => {
-    return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.readAsDataURL(file);
-        reader.onload = (event) => {
-            const img = new Image();
-            img.src = event.target?.result as string;
-            img.onload = () => {
-                const canvas = document.createElement('canvas');
-                // Target: Vertical Aspect Ratio (2:3 or 3:4)
-                const targetWidth = 800;
-                const targetHeight = 1100;
-
-                let width = img.width;
-                let height = img.height;
-
-                // Calculate cropping for vertical 
-                const scale = Math.max(targetWidth / width, targetHeight / height);
-                const drawWidth = width * scale;
-                const drawHeight = height * scale;
-                const x = (targetWidth - drawWidth) / 2;
-                const y = (targetHeight - drawHeight) / 2;
-
-                canvas.width = targetWidth;
-                canvas.height = targetHeight;
-
-                const ctx = canvas.getContext('2d');
-                if (!ctx) return reject('Could not get canvas context');
-
-                ctx.fillStyle = 'white';
-                ctx.fillRect(0, 0, targetWidth, targetHeight);
-                ctx.drawImage(img, x, y, drawWidth, drawHeight);
-
-                canvas.toBlob(
-                    (blob) => {
-                        if (blob) resolve(blob);
-                        else reject('Canvas toBlob failed');
-                    },
-                    'image/jpeg',
-                    0.8 // 80% quality (good balance)
-                );
-            };
-        };
-        reader.onerror = (err) => reject(err);
-    });
-};
+// --- (optimizeImage removed, imported from lib) ---
 
 // --- Products Manager Component ---
 const ProductsManager: React.FC<{
@@ -302,10 +274,7 @@ const ProductsManager: React.FC<{
 
         try {
             setIsUploading(true);
-            const optimizedBlob = await optimizeImage(file);
-            const optimizedFile = new File([optimizedBlob], `${Date.now()}.jpg`, { type: 'image/jpeg' });
-
-            const url = await productService.uploadImage(optimizedFile, 'products');
+            const url = await productService.uploadImage(file, 'products');
 
             if (field === 'main') {
                 setEditingProduct(prev => ({ ...prev, main_image: url }));
@@ -1302,7 +1271,7 @@ const ConfigManager: React.FC = () => {
 
         try {
             setSaving(true);
-            const url = await productService.uploadFile(file, 'catalog', 'files', ['application/pdf']);
+            const url = await productService.uploadFile(file, 'catalog', 'files');
             setConfig(prev => ({ ...prev, catalog_pdf_url: url }));
             toast.success('Catálogo PDF actualizado');
         } catch (error: any) {
@@ -2118,7 +2087,7 @@ const Admin: React.FC = () => {
                 <Route path="hero" element={<HeroManager />} />
                 <Route path="galeria" element={<MediaGallery />} />
                 <Route path="mensajes" element={<MessagesManager />} />
-                <Route path="usuarios" element={<UsersManager />} />
+                <Route path="usuarios" element={<ProtectedRoute requireAdmin><UsersManager /></ProtectedRoute>} />
                 <Route path="configuracion" element={<ConfigManager />} />
                 <Route path="*" element={<DashboardOverview products={products} categories={categories} refresh={fetchData} />} />
             </Routes>

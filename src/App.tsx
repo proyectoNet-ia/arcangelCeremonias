@@ -4,6 +4,7 @@ import { Toaster } from 'react-hot-toast';
 import { FloatingActions } from './components/common/FloatingActions';
 import { ConfigProvider } from './context/ConfigContext';
 import { AuthProvider, useAuth } from './context/AuthContext';
+import { ProtectedRoute } from './components/auth/ProtectedRoute';
 import AdminLogin from './pages/AdminLogin';
 import Admin from './pages/Admin';
 import Home from './pages/Home';
@@ -12,30 +13,19 @@ import Catalog from './pages/Catalog';
 import ProductDetail from './pages/ProductDetail';
 import About from './pages/About';
 import Contact from './pages/Contact';
+import { statsService } from './services/statsService';
 
-// Component to handle scroll to top on route change
+// Component to handle scroll to top on route change and track page views
 const ScrollToTop = () => {
   const { pathname } = useLocation();
 
   useEffect(() => {
     window.scrollTo(0, 0);
+    // Track internal page views (for the custom admin dashboard)
+    statsService.trackPageView(pathname);
   }, [pathname]);
 
   return null;
-};
-
-const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
-  const { user, loading } = useAuth();
-
-  if (loading) return (
-    <div className="min-h-screen bg-cream flex items-center justify-center">
-      <div className="w-10 h-10 border-4 border-gold/20 border-t-gold rounded-full animate-spin" />
-    </div>
-  );
-
-  if (!user) return <Navigate to="/admin/login" replace />;
-
-  return <>{children}</>;
 };
 
 const App: React.FC = () => {
@@ -80,11 +70,13 @@ const App: React.FC = () => {
           />
           <ScrollToTop />
           <Routes>
-            {/* MODO BLOQUEO: Home estable restaurado del historial */}
-            <Route path="/" element={<Home />} />
+            {/* SITIO PÚBLICO: Home completo con Slider y Productos */}
+            <Route path="/" element={<CatalogPage />} />
 
-            {/* Rutas habilitadas para navegación y pruebas */}
-            <Route path="/home" element={<CatalogPage />} />
+            {/* MODO BLOQUEO: Mantener la pantalla de próximamente accesible si se requiere */}
+            <Route path="/proximamente" element={<Home />} />
+
+            {/* Rutas de navegación */}
             <Route path="/catalogo" element={<Catalog />} />
             <Route path="/producto/:slug" element={<ProductDetail />} />
             <Route path="/nosotros" element={<About />} />

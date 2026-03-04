@@ -13,7 +13,8 @@ import {
     faAward,
     faEnvelope,
     faSearch,
-    faMapMarkerAlt
+    faMapMarkerAlt,
+    faFilePdf
 } from '@fortawesome/free-solid-svg-icons';
 import { faFacebook, faInstagram, faWhatsapp } from '@fortawesome/free-brands-svg-icons';
 import { Logo } from '@/components/Logo';
@@ -155,6 +156,17 @@ export const Header: React.FC<HeaderProps> = ({ variant = 'light' }) => {
                         <a href={`tel:${phone.replace(/\s+/g, '')}`} className="hover:text-gold transition-colors flex items-center gap-2">
                             <FontAwesomeIcon icon={faPhone} className="text-gold text-[11px]" /> Oficina: {phone}
                         </a>
+                        {config?.catalog_pdf_url && (
+                            <a
+                                href={config.catalog_pdf_url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="bg-gold/5 text-gold hover:bg-gold hover:text-white px-3 py-1 transition-all duration-300 flex items-center gap-2 rounded-full border border-gold/20"
+                            >
+                                <FontAwesomeIcon icon={faFilePdf} className="text-[10px]" />
+                                <span>Catálogo PDF</span>
+                            </a>
+                        )}
                     </div>
                     <div className="flex items-center gap-6">
                         <span className="text-chocolate/60">Síguenos:</span>

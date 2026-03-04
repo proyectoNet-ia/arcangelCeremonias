@@ -87,46 +87,10 @@ export const productService = {
     },
 
     async uploadImage(file: File, path: string) {
-        return this.uploadFile(file, 'catalog', path, ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/gif', 'image/svg+xml']);
+        return mediaService.uploadFile(file, path);
     },
 
-    async uploadFile(file: File, bucket: string, path: string, allowedMimeTypes: string[] = []) {
-        // ── Validación de seguridad (Centralizada) ────────
-        try {
-            mediaService.validateFile(file);
-        } catch (err: any) {
-            throw new Error(err.message);
-        }
-
-        const fileExt = file.name.split('.').pop()?.toLowerCase() ?? 'bin';
-        const fileName = `${Date.now()}_${Math.random().toString(36).slice(2, 8)}.${fileExt}`;
-        const filePath = `${path}/${fileName}`;
-
-        // ── Asegurar que el bucket existe ──────────
-        const { data: buckets } = await supabase.storage.listBuckets();
-        const exists = buckets?.some(b => b.name === bucket);
-        if (!exists) {
-            await supabase.storage.createBucket(bucket, {
-                public: true,
-                fileSizeLimit: MAX_FILE_SIZE,
-                allowedMimeTypes: allowedMimeTypes.length > 0 ? allowedMimeTypes : undefined,
-            });
-        }
-
-        const { error: uploadError } = await supabase.storage
-            .from(bucket)
-            .upload(filePath, file, {
-                cacheControl: '3600',
-                upsert: false,
-                contentType: file.type || 'application/octet-stream',
-            });
-
-        if (uploadError) throw uploadError;
-
-        const { data } = supabase.storage
-            .from(bucket)
-            .getPublicUrl(filePath);
-
-        return data.publicUrl;
+    async uploadFile(file: File, _bucket: string, path: string) {
+        return mediaService.uploadFile(file, path);
     }
 };

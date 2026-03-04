@@ -9,6 +9,7 @@ import toast from 'react-hot-toast';
 import { RevealOnScroll } from '@/components/common/RevealOnScroll';
 import { useConfig } from '@/context/ConfigContext';
 import { contactService } from '@/services/contactService';
+import { CTABanner } from '@/components/common/CTABanner';
 
 const Contact: React.FC = () => {
     const { config } = useConfig();
@@ -183,13 +184,14 @@ const Contact: React.FC = () => {
             <main className="relative z-10 pt-40 md:pt-52 pb-32 px-6 md:px-12 max-w-[1400px] mx-auto">
                 {/* HERO SECTION */}
                 <div className="flex flex-col md:flex-row justify-between items-end gap-10 mb-24">
-                    <RevealOnScroll direction="right" className="space-y-4 max-w-2xl">
-                        <span className="text-[10px] uppercase tracking-[0.5em] text-gold font-bold block">
-                            Estamos cerca de ti
-                        </span>
-                        <h1 className="text-5xl md:text-8xl font-serif leading-tight">
+                    <RevealOnScroll direction="right" className="section-header !mb-0 max-w-2xl">
+                        <div className="section-header-tag-wrapper">
+                            <div className="section-header-line" />
+                            <span className="section-header-tag">Estamos cerca de ti</span>
+                        </div>
+                        <h1 className="section-header-title !text-2xl md:!text-5xl lg:!text-6xl">
                             Contacto <br />
-                            <span className="italic text-gold/80 font-light">Directo</span>
+                            <span className="section-header-highlight uppercase">Directo</span>
                         </h1>
                     </RevealOnScroll>
 
@@ -205,12 +207,19 @@ const Contact: React.FC = () => {
                     {/* LEFT COLUMN: CONTACT INFO & MAP */}
                     <div className="lg:col-span-5 space-y-16">
                         <RevealOnScroll direction="right" className="space-y-12">
-                            <div className="space-y-6">
-                                <h2 className="text-2xl font-serif text-chocolate">Servicio Personalizado</h2>
-                                <p className="text-chocolate/60 font-light leading-relaxed text-lg">
-                                    Nuestra vocación es servirte con los más altos estándares de amabilidad y atención al detalle.
-                                </p>
+                            <div className="section-header !mb-6">
+                                <div className="section-header-tag-wrapper">
+                                    <div className="section-header-line" />
+                                    <span className="section-header-tag">Personalizado</span>
+                                </div>
+                                <h2 className="section-header-title !text-2xl md:!text-3xl">
+                                    Servicio <br />
+                                    <span className="section-header-highlight uppercase">Exclusivo</span>
+                                </h2>
                             </div>
+                            <p className="text-chocolate/60 font-light leading-relaxed text-lg">
+                                Nuestra vocación es servirte con los más altos estándares de amabilidad y atención al detalle.
+                            </p>
 
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-12">
                                 <div className="space-y-3 group cursor-pointer">
@@ -296,13 +305,19 @@ const Contact: React.FC = () => {
                                             exit={{ opacity: 0, y: -20 }}
                                             className="space-y-12"
                                         >
-                                            <div className="space-y-4">
-                                                <h2 className="text-4xl font-serif text-chocolate">Envíanos un mensaje</h2>
-                                                <div className="h-[1px] w-20 bg-gold" />
-                                                <p className="text-xs text-chocolate/50 uppercase tracking-[0.3em] font-bold italic">
-                                                    Recibirás atención en menos de 24 horas hábiles
-                                                </p>
+                                            <div className="section-header !mb-10">
+                                                <div className="section-header-tag-wrapper">
+                                                    <div className="section-header-line" />
+                                                    <span className="section-header-tag">Escríbenos</span>
+                                                </div>
+                                                <h2 className="section-header-title !text-2xl md:!text-3xl">
+                                                    Envíanos un <br />
+                                                    <span className="section-header-highlight uppercase">mensaje</span>
+                                                </h2>
                                             </div>
+                                            <p className="text-xs text-chocolate/50 uppercase tracking-[0.3em] font-bold italic">
+                                                Recibirás atención en menos de 24 horas hábiles
+                                            </p>
 
                                             <form className="space-y-10" onSubmit={handleSubmit}>
                                                 {/* Honeypot field - Hidden from humans */}
@@ -453,8 +468,10 @@ const Contact: React.FC = () => {
                 </RevealOnScroll>
             </main>
 
+            <CTABanner />
+
             <Footer />
-        </div>
+        </div >
     );
 };
 

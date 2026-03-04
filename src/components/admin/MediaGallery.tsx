@@ -20,6 +20,7 @@ export const MediaGallery: React.FC<MediaGalleryProps> = ({ onSelect, allowSelec
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
     const [filterFolder, setFilterFolder] = useState<string>('all');
+    const [uploading, setUploading] = useState(false);
     const [confirmDelete, setConfirmDelete] = useState<{ isOpen: boolean, file: MediaFile | null }>({
         isOpen: false,
         file: null
@@ -64,6 +65,30 @@ export const MediaGallery: React.FC<MediaGalleryProps> = ({ onSelect, allowSelec
         });
     };
 
+    const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        // Determinar carpeta de destino (si es 'all', mandamos a 'products' por defecto)
+        const targetFolder = filterFolder === 'all' ? 'products' : filterFolder;
+
+        try {
+            setUploading(true);
+            const toastId = toast.loading(`Subiendo a /${targetFolder}...`);
+
+            const url = await mediaService.uploadFile(file, targetFolder);
+
+            toast.success('Archivo subido con éxito', { id: toastId });
+            loadMedia(); // Recargar la lista
+        } catch (error: any) {
+            console.error('Upload error:', error);
+            toast.error(error.message || 'Error al subir archivo');
+        } finally {
+            setUploading(false);
+            if (e.target) e.target.value = ''; // Reset input
+        }
+    };
+
     const formatSize = (bytes: number) => {
         if (bytes === 0) return '0 B';
         const k = 1024;
@@ -97,7 +122,13 @@ export const MediaGallery: React.FC<MediaGalleryProps> = ({ onSelect, allowSelec
                     </div>
                 </div>
 
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-6">
+                    {/* Botón de Carga */}
+                    <label className={`flex items-center gap-2 px-6 py-3 bg-chocolate text-gold text-[10px] font-bold uppercase tracking-widest cursor-pointer hover:bg-gold hover:text-chocolate transition-all shadow-lg ${uploading ? 'opacity-50 pointer-events-none' : ''}`}>
+                        <FontAwesomeIcon icon={uploading ? faSync : faImage} className={uploading ? 'animate-spin' : ''} />
+                        {uploading ? 'Subiendo...' : 'Subir Archivo'}
+                        <input type="file" className="hidden" onChange={handleUpload} accept={ALL_ALLOWED_FORMATS.join(',')} />
+                    </label>
                     <div className="flex bg-slate-50 p-1">
                         {folders.map(folder => (
                             <button

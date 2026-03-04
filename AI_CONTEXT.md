@@ -23,7 +23,7 @@ Este archivo es un resumen actualizado para mantener la continuidad del desarrol
 
 ## 📝 Resumen Ejecutivo
  
-**Última actualización:** 26 de febrero de 2026 — 15:35 hrs
+**Última actualización:** 04 de marzo de 2026 — 16:10 hrs
 **Rama activa:** `main` (local, sincronizada vía OneDrive)
 **Entorno activo:** `http://localhost:3000` (desarrollo local)
 **Producción:** `https://www.ceremoniasarcangel.com` — ⛔ Mostrando página "Próximamente", NO tocar.
@@ -87,17 +87,19 @@ Este archivo es un resumen actualizado para mantener la continuidad del desarrol
 
 ## 🛠️ Próximos Pasos (Ordenados por Prioridad)
 
-1. **🟡 MEDIO:** Galería Media Centralizada — explorador de archivos Supabase Storage en Admin para reutilizar imágenes ya subidas
-2. **🟡 MEDIO:** Revisar y reforzar protección de ruta `/admin` con auth guard
-3. **🟢 BAJO:** Integrar link/descarga del Catálogo PDF en el sitio público (ya se puede subir desde Admin)
-4. **🟢 BAJO:** Mejorar Dashboard con estadísticas reales (visitas de Supabase Analytics o similar)
-5. **⏳ CUANDO EL CLIENTE APRUEBE:** Realizar `git push` y deployment en Vercel para lanzar el sitio completo
+1. **🟡 MEDIO:** Galería Media Centralizada — ✅ Completado
+2. **🟡 MEDIO:** Revisar y reforzar protección de ruta `/admin` con auth guard — ✅ Completado
+3. **🟢 BAJO:** Integrar link/descarga del Catálogo PDF en el sitio público — ✅ Completado
+4. **🟢 BAJO:** Mejorar Dashboard con estadísticas reales (Vercel Analytics + Supabase Tracking) — ✅ Completado
+5. **🟢 BAJO:** Estandarización visual "TITULO DE SECCION" en todo el sitio — ✅ Completado
+6. **⏳ CUANDO EL CLIENTE APRUEBE:** Realizar `git push` y deployment en Vercel para lanzar el sitio completo
 
 ---
 
 ## 🛠️ Notas Técnicas Importantes
 
 -   **CSS Variables:** `--color-primary` = color oscuro/chocolate, `--color-secondary` = gold/detalles, `--color-accent` = fondo claro/cream. Tailwind usa `var(--color-*)` con fallbacks hardcodeados.
+-   **Estándar "TITULO DE SECCION":** Implementado vía `.section-header` en `index.css`. Obligatorio para nuevos encabezados para mantener la consistencia (tag superior + título en 2 niveles + resaltado dorado bold).
 -   **Logo Fallback:** Si `logo_light_url` o `logo_dark_url` están vacíos en Supabase, el componente `Logo.tsx` muestra el SVG original. El SVG respeta la variante (`dark` = color gold, `light` = color chocolate).
 -   **Supabase Compartido:** Dev y Prod usan el mismo proyecto Supabase. Los cambios en `site_config` afectan la "Próximamente" en producción también. Esto es normal y esperado.
 -   **Migraciones ejecutadas:** `sql_migration_branding.sql` y `sql_migration_content.sql` ya aplicadas en Supabase.
@@ -106,4 +108,4 @@ Este archivo es un resumen actualizado para mantener la continuidad del desarrol
 
 ---
 
-*Actualizado por Antigravity — Agente IA de desarrollo. Última actualización: 26/02/2026 15:35 hrs*
+*Actualizado por Antigravity — Agente IA de desarrollo. Última actualización: 04/03/2026 16:10 hrs*

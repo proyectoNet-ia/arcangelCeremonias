@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFacebook, faInstagram, faWhatsapp } from '@fortawesome/free-brands-svg-icons';
-import { faUsers, faLocationDot, faPhone, faShareNodes, faBriefcase, faArrowUpRightFromSquare, faLock } from '@fortawesome/free-solid-svg-icons';
+import { faUsers, faLocationDot, faPhone, faShareNodes, faBriefcase, faArrowUpRightFromSquare, faLock, faFilePdf } from '@fortawesome/free-solid-svg-icons';
 import { Logo } from '@/components/Logo';
 import { RevealOnScroll } from '@/components/common/RevealOnScroll';
 import { useConfig } from '@/context/ConfigContext';
@@ -121,6 +121,20 @@ export const Footer: React.FC = () => {
                                 <span className="text-[12px] md:text-[10px] text-gold/50 tracking-[0.2em] font-bold uppercase">Email</span>
                                 <a href={`mailto:${email}`} className="text-cream hover:text-gold transition-colors duration-300 lowercase tracking-widest">{email}</a>
                             </div>
+                            {config?.catalog_pdf_url && (
+                                <div className="flex flex-col gap-2 pt-4 border-t border-gold/10">
+                                    <span className="text-[12px] md:text-[10px] text-gold/50 tracking-[0.2em] font-bold uppercase">Catálogo 2026</span>
+                                    <a
+                                        href={config.catalog_pdf_url}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="text-cream hover:text-gold transition-colors duration-300 flex items-center gap-2 font-medium"
+                                    >
+                                        <FontAwesomeIcon icon={faFilePdf} className="text-gold" />
+                                        <span>Descargar PDF</span>
+                                    </a>
+                                </div>
+                            )}
                         </div>
                     </RevealOnScroll>
 

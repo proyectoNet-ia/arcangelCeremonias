@@ -1,13 +1,17 @@
 import { faFacebook, faInstagram, faWhatsapp } from '@fortawesome/free-brands-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { motion } from 'framer-motion';
 import React, { useEffect, useState } from 'react';
 import { Logo } from '@/components/Logo';
 import { Link } from 'react-router-dom';
+import { useConfig } from '@/context/ConfigContext';
+import { faFilePdf } from '@fortawesome/free-solid-svg-icons';
 import bgMobile from '@/assets/modelo_medio.png';
 import bgDesktop from '@/assets/fondo-pc.jpg';
 
 const Home: React.FC = () => {
     const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+    const { config } = useConfig();
 
     useEffect(() => {
         const handleMouseMove = (e: MouseEvent) => {
@@ -120,6 +124,24 @@ const Home: React.FC = () => {
                                 Próximamente nuevo catálogo disponible!
                             </span>
                         </p>
+
+                        {config?.catalog_pdf_url && (
+                            <motion.div
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                transition={{ delay: 1.5 }}
+                            >
+                                <a
+                                    href={config.catalog_pdf_url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="mt-8 inline-flex items-center gap-3 bg-white/5 hover:bg-gold/20 text-cream px-8 py-4 border border-white/10 hover:border-gold/30 transition-all duration-500 text-[10px] uppercase tracking-[0.4em] font-bold backdrop-blur-sm group"
+                                >
+                                    <FontAwesomeIcon icon={faFilePdf} className="text-gold group-hover:scale-110 transition-transform" />
+                                    <span>Ver Catálogo PDF</span>
+                                </a>
+                            </motion.div>
+                        )}
                     </div>
                 </main>
 
