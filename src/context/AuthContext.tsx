@@ -55,8 +55,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         const initialize = async () => {
             const timeoutId = setTimeout(() => {
                 setLoading(false);
-                console.warn('Auth initialization reached soft timeout (20s) - App will proceed but user may not be immediately recognized.');
-            }, 20000);
+                console.warn('Auth initialization reached soft timeout (5s) - App will proceed to avoid frozen UI.');
+            }, 5000); // Reducido de 20s a 5s
 
             try {
                 console.log('Initializing AuthContext...');
@@ -94,38 +94,72 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         initialize();
 
         const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-            console.log('Auth state changed:', event);
-            const currentUser = session?.user ?? null;
-            setUser(currentUser);
+            console.log('Auth state changed:', event, session?.user?.id);
 
-            if (currentUser) {
-                await fetchProfile(currentUser.id);
-            } else {
+            const currentUser = session?.user ?? null;
+
+            if (event === 'SIGNED_IN' || event === 'USER_UPDATED') {
+                setLoading(true);
+                setUser(currentUser);
+                if (currentUser) {
+                    await fetchProfile(currentUser.id);
+                }
+                setLoading(false);
+            } else if (event === 'SIGNED_OUT') {
+                setUser(null);
                 setProfile(null);
+                setLoading(false);
+            } else {
+                setUser(currentUser);
+                if (currentUser && !profile) {
+                    await fetchProfile(currentUser.id);
+                }
+                setLoading(false);
             }
-            // Ensure loading is false even after auth changes
-            setLoading(false);
         });
 
         return () => subscription.unsubscribe();
     }, []);
 
     const signOut = async () => {
-        if (!supabase) return;
+        console.log('Executing immediate signOut sequence...');
+
+        // 1. Disparar el cierre en Supabase en segundo plano (sin esperar)
+        if (supabase) {
+            supabase.auth.signOut().catch(err =>
+                console.warn('Silent Supabase signOut error (ignoring):', err)
+            );
+        }
+
+        // 2. Limpieza inmediata del estado de React
+        setProfile(null);
+        setUser(null);
+        setLoading(false);
+
+        // 3. Limpieza física de datos del navegador
         try {
-            await supabase.auth.signOut();
-        } catch (error) {
-            console.error('Error during signOut:', error);
-        } finally {
-            // Forzamos la limpieza del estado local independientemente de Supabase
-            setUser(null);
-            setProfile(null);
-            // Limpiamos rastro de sesiones en el navegador
             localStorage.clear();
             sessionStorage.clear();
-            // Opcional: Redirección forzada si los estados no disparan el re-render
-            window.location.href = '/admin/login';
+            // Limpia específicamente la persistencia de Supabase
+            Object.keys(localStorage).forEach(key => {
+                if (key.startsWith('sb-')) localStorage.removeItem(key);
+            });
+
+            // Limpieza de Cookies (mejorada)
+            const cookies = document.cookie.split(";");
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i];
+                const eqPos = cookie.indexOf("=");
+                const name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
+                document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/";
+            }
+        } catch (e) {
+            console.error('Browser storage cleanup error:', e);
         }
+
+        console.log('Local session destroyed, forcing hard redirect...');
+        // 4. Redirección dura garantizada a nivel de navegador
+        window.location.replace('/admin/login');
     };
 
     const isAdmin = profile?.role === 'admin';

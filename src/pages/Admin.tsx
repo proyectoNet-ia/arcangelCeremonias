@@ -74,12 +74,27 @@ const DashboardOverview: React.FC<{ products: Product[], categories: Category[],
         fetchStats();
     }, []);
 
-    const handleStandardizeTitles = async () => {
-        if (!confirm('¿Deseas aplicar el nuevo formato "Smart Title Case" (Ej: Toalla para Bautizo) a todos los productos y categorías existentes? Esta acción actualizará la base de datos.')) return;
+    const [confirmModal, setConfirmModal] = useState<{ isOpen: boolean, onConfirm: () => void, title: string, message: string }>({
+        isOpen: false,
+        onConfirm: () => { },
+        title: '',
+        message: ''
+    });
 
+    const triggerStandardize = () => {
+        setConfirmModal({
+            isOpen: true,
+            title: 'Estandarizar Catálogo',
+            message: '¿Deseas aplicar el nuevo formato "Smart Title Case" (Ej: Toalla para Bautizo) a todos los productos y categorías? Esta acción actualizará la base de datos de forma masiva.',
+            onConfirm: handleStandardizeTitles
+        });
+    };
+
+    const handleStandardizeTitles = async () => {
         try {
             setIsStandardizing(true);
             const toastId = toast.loading('Estandarizando catálogo...');
+            // ... (rest of logic remains same)
 
             // 1. Estandarizar Categorías
             for (const cat of categories) {
@@ -117,15 +132,15 @@ const DashboardOverview: React.FC<{ products: Product[], categories: Category[],
     ];
 
     return (
-        <div className="space-y-12">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="space-y-6 md:space-y-12">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
                 {stats.map((stat, i) => (
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: i * 0.1 }}
                         key={stat.label}
-                        className="bg-white p-8 border border-slate-200 shadow-sm hover:shadow-md transition-shadow group"
+                        className="bg-white p-6 md:p-8 border border-slate-200 shadow-sm hover:shadow-md transition-shadow group"
                     >
                         <div className="flex justify-between items-start mb-6">
                             <div className={`w-14 h-14 ${stat.bg} ${stat.color} flex items-center justify-center rounded-2xl transition-transform group-hover:scale-110 shadow-sm text-xl`}>
@@ -137,9 +152,9 @@ const DashboardOverview: React.FC<{ products: Product[], categories: Category[],
                                 </span>
                             )}
                         </div>
-                        <h3 className="text-slate-500 text-sm uppercase tracking-[0.2em] font-black mb-2">{stat.label}</h3>
+                        <h3 className="text-slate-500 text-[10px] md:text-sm uppercase tracking-[0.2em] font-black mb-2">{stat.label}</h3>
                         <div className="flex items-baseline gap-3">
-                            <p className="text-5xl font-serif text-slate-900 leading-none">{stat.value}</p>
+                            <p className="text-3xl md:text-5xl font-serif text-slate-900 leading-none">{stat.value}</p>
                             {stat.sub && (
                                 <span className="text-xs text-slate-500 uppercase font-black tracking-widest bg-slate-100 px-2 py-1 rounded">
                                     {stat.sub}
@@ -150,9 +165,9 @@ const DashboardOverview: React.FC<{ products: Product[], categories: Category[],
                 ))}
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8">
                 {/* Quick Actions */}
-                <div className="bg-white p-8 border border-slate-200">
+                <div className="bg-white p-6 md:p-8 border border-slate-200">
                     <h3 className="font-serif text-xl mb-6 flex items-center gap-3">
                         <FontAwesomeIcon icon={faDiamond} className="text-[10px] text-gold" />
                         Acciones Rápidas
@@ -160,15 +175,15 @@ const DashboardOverview: React.FC<{ products: Product[], categories: Category[],
                     <div className="grid grid-cols-2 gap-4">
                         <button
                             onClick={() => window.location.href = '/admin/productos'}
-                            className="p-6 border border-slate-100 bg-slate-50 hover:bg-gold hover:text-white transition-all text-left space-y-2 group"
+                            className="p-4 md:p-6 border border-slate-100 bg-slate-50 hover:bg-gold hover:text-white transition-all text-left space-y-2 group"
                         >
                             <FontAwesomeIcon icon={faPlus} className="text-gold group-hover:text-white" />
                             <p className="text-xs uppercase tracking-widest font-bold">Nuevo Producto</p>
                         </button>
                         <button
-                            onClick={handleStandardizeTitles}
+                            onClick={triggerStandardize}
                             disabled={isStandardizing}
-                            className="p-6 border border-slate-100 bg-slate-50 hover:bg-gold hover:text-white transition-all text-left space-y-2 group disabled:opacity-50"
+                            className="p-4 md:p-6 border border-slate-100 bg-slate-50 hover:bg-gold hover:text-white transition-all text-left space-y-2 group disabled:opacity-50"
                         >
                             <FontAwesomeIcon icon={faMagic} className={`text-gold group-hover:text-white ${isStandardizing ? 'animate-spin' : ''}`} />
                             <p className="text-xs uppercase tracking-widest font-bold">Estandarizar Títulos</p>
@@ -178,7 +193,7 @@ const DashboardOverview: React.FC<{ products: Product[], categories: Category[],
                 </div>
 
                 {/* Popular Selection */}
-                <div className="bg-white p-8 border border-slate-200">
+                <div className="bg-white p-6 md:p-8 border border-slate-200">
                     <h3 className="font-serif text-xl mb-6 flex items-center gap-3">
                         <FontAwesomeIcon icon={faTrophy} className="text-gold" />
                         Más Populares (Clicks)
@@ -206,7 +221,7 @@ const DashboardOverview: React.FC<{ products: Product[], categories: Category[],
                 </div>
 
                 {/* Recent Products */}
-                <div className="bg-white p-8 border border-slate-200">
+                <div className="bg-white p-6 md:p-8 border border-slate-200">
                     <h3 className="font-serif text-xl mb-6 flex items-center gap-3">
                         <FontAwesomeIcon icon={faDiamond} className="text-[10px] text-gold" />
                         Últimos Productos
@@ -227,7 +242,7 @@ const DashboardOverview: React.FC<{ products: Product[], categories: Category[],
             </div>
 
             {/* WhatsApp Clicks Activity */}
-            <div className="bg-white p-8 border border-slate-200">
+            <div className="bg-white p-6 md:p-8 border border-slate-200">
                 <div className="flex justify-between items-center mb-8">
                     <h3 className="font-serif text-xl flex items-center gap-3">
                         <FontAwesomeIcon icon={faWhatsapp} className="text-[#25D366]" />
@@ -288,6 +303,16 @@ const DashboardOverview: React.FC<{ products: Product[], categories: Category[],
                     </table>
                 </div>
             </div>
+
+            <ConfirmModal
+                isOpen={confirmModal.isOpen}
+                title={confirmModal.title}
+                message={confirmModal.message}
+                onConfirm={confirmModal.onConfirm}
+                onCancel={() => setConfirmModal({ ...confirmModal, isOpen: false })}
+                confirmLabel="Confirmar Acción"
+                variant="info"
+            />
         </div>
     );
 };
@@ -409,9 +434,9 @@ const ProductsManager: React.FC<{
     };
 
     return (
-        <div className="space-y-8">
-            <div className="flex justify-between items-center bg-white p-6 border border-slate-200">
-                <p className="text-xs uppercase tracking-widest font-bold text-slate-400">Total: {products.length} productos / Auditoría: Activa</p>
+        <div className="space-y-6 md:space-y-8">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center bg-white p-4 md:p-6 border border-slate-200 gap-4">
+                <p className="text-[10px] uppercase tracking-widest font-bold text-slate-400">Total: {products.length} productos / Auditoría: Activa</p>
                 <button
                     onClick={() => {
                         setEditingProduct({
@@ -423,52 +448,54 @@ const ProductsManager: React.FC<{
                         setIsSlugCustomized(false);
                         setErrors({});
                     }}
-                    className="bg-gold text-chocolate px-6 py-3 text-[10px] uppercase tracking-widest font-bold hover:bg-chocolate hover:text-white transition-all shadow-lg"
+                    className="w-full sm:w-auto bg-gold text-chocolate px-6 py-3 text-[10px] uppercase tracking-widest font-bold hover:bg-chocolate hover:text-white transition-all shadow-lg text-center"
                 >
                     + Nuevo Producto
                 </button>
             </div>
 
             <div className="bg-white border border-slate-200 overflow-hidden shadow-sm">
-                <table className="w-full text-left border-collapse">
-                    <thead className="bg-slate-50">
-                        <tr>
-                            <th className="px-8 py-4 text-[10px] uppercase tracking-widest font-bold text-slate-400">Preview (800x1100)</th>
-                            <th className="px-8 py-4 text-[10px] uppercase tracking-widest font-bold text-slate-400">Información Técnica</th>
-                            <th className="px-8 py-4 text-[10px] uppercase tracking-widest font-bold text-slate-400">Categoría</th>
-                            <th className="px-8 py-4 text-[10px] uppercase tracking-widest font-bold text-slate-400 text-right">Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {products.map(prod => (
-                            <tr key={prod.id} className="border-b border-slate-100 hover:bg-slate-50/50 transition-colors group">
-                                <td className="px-8 py-4">
-                                    <img src={prod.main_image} className="w-12 h-16 object-cover border border-slate-200 group-hover:scale-105 transition-transform" />
-                                </td>
-                                <td className="px-8 py-4">
-                                    <div className="space-y-1">
-                                        <p className="text-sm font-serif">{prod.name}</p>
-                                        <div className="flex gap-2">
-                                            <span className="text-[9px] text-slate-400 border border-slate-100 px-1">{prod.model_code || 'S/M'}</span>
-                                            <span className="text-[9px] text-slate-400 border border-slate-100 px-1">{prod.color || 'Blanco'}</span>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td className="px-8 py-4 text-xs">{(prod as any).categories?.name}</td>
-                                <td className="px-8 py-4">
-                                    <div className="flex justify-end gap-3">
-                                        <button onClick={() => handleEdit(prod)} className="p-2 border border-slate-100 hover:bg-gold hover:text-white transition-all rounded shadow-sm">
-                                            <FontAwesomeIcon icon={faEdit} className="text-xs" />
-                                        </button>
-                                        <button onClick={() => setConfirmDelete({ isOpen: true, id: prod.id })} className="p-2 border border-slate-100 hover:bg-red-500 hover:text-white transition-all rounded shadow-sm">
-                                            <FontAwesomeIcon icon={faTrash} className="text-xs" />
-                                        </button>
-                                    </div>
-                                </td>
+                <div className="overflow-x-auto">
+                    <table className="w-full text-left border-collapse">
+                        <thead className="bg-slate-50">
+                            <tr>
+                                <th className="px-4 md:px-8 py-4 text-[10px] uppercase tracking-widest font-bold text-slate-400">Preview</th>
+                                <th className="px-4 md:px-8 py-4 text-[10px] uppercase tracking-widest font-bold text-slate-400">Información</th>
+                                <th className="hidden md:table-cell px-8 py-4 text-[10px] uppercase tracking-widest font-bold text-slate-400">Categoría</th>
+                                <th className="px-4 md:px-8 py-4 text-[10px] uppercase tracking-widest font-bold text-slate-400 text-right">Acciones</th>
                             </tr>
-                        ))}
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            {products.map(prod => (
+                                <tr key={prod.id} className="border-b border-slate-100 hover:bg-slate-50/50 transition-colors group">
+                                    <td className="px-4 md:px-8 py-4">
+                                        <img src={prod.main_image} className="w-10 h-14 md:w-12 md:h-16 object-cover border border-slate-200 group-hover:scale-105 transition-transform" />
+                                    </td>
+                                    <td className="px-4 md:px-8 py-4">
+                                        <div className="space-y-1">
+                                            <p className="text-xs md:text-sm font-serif truncate max-w-[120px] md:max-w-none">{prod.name}</p>
+                                            <div className="flex flex-wrap gap-1 md:gap-2">
+                                                <span className="text-[8px] md:text-[9px] text-slate-400 border border-slate-100 px-1">{prod.model_code || 'S/M'}</span>
+                                                <span className="md:hidden text-[8px] text-gold font-bold">{(prod as any).categories?.name}</span>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td className="hidden md:table-cell px-8 py-4 text-xs">{(prod as any).categories?.name}</td>
+                                    <td className="px-4 md:px-8 py-4">
+                                        <div className="flex justify-end gap-2 md:gap-3">
+                                            <button onClick={() => handleEdit(prod)} className="p-2 border border-slate-100 hover:bg-gold hover:text-white transition-all rounded shadow-sm">
+                                                <FontAwesomeIcon icon={faEdit} className="text-[10px] md:text-xs" />
+                                            </button>
+                                            <button onClick={() => setConfirmDelete({ isOpen: true, id: prod.id })} className="p-2 border border-slate-100 hover:bg-red-500 hover:text-white transition-all rounded shadow-sm">
+                                                <FontAwesomeIcon icon={faTrash} className="text-[10px] md:text-xs" />
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
             </div>
 
             <AnimatePresence>
@@ -735,7 +762,7 @@ const ProductsManager: React.FC<{
 
             <ConfirmModal
                 isOpen={confirmDelete.isOpen}
-                onClose={() => setConfirmDelete({ isOpen: false, id: null })}
+                onCancel={() => setConfirmDelete({ isOpen: false, id: null })}
                 onConfirm={handleDelete}
                 title="Eliminar Producto"
                 message="¿Estás seguro de que quieres eliminar este producto? Esta acción es irreversible."
@@ -1293,6 +1320,7 @@ const ConfigManager: React.FC = () => {
         cta_banner_btn1_label: '',
         cta_banner_btn2_label: '',
         catalog_pdf_url: '',
+        maintenance_mode: false,
     });
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
@@ -1344,6 +1372,7 @@ const ConfigManager: React.FC = () => {
                         cta_banner_bg_image_url: data.cta_banner_bg_image_url || '',
                         cta_banner_bg_opacity: data.cta_banner_bg_opacity ?? 0.85,
                         catalog_pdf_url: data.catalog_pdf_url || '',
+                        maintenance_mode: data.maintenance_mode ?? false,
                     });
                 }
             } catch (error) {
@@ -1412,61 +1441,82 @@ const ConfigManager: React.FC = () => {
             animate={{ opacity: 1, x: 0 }}
             className="w-full space-y-8"
         >
-            <div className="flex flex-col lg:flex-row gap-8">
-                {/* Sidebar Navigation */}
-                <div className="lg:w-1/4 space-y-2">
-                    {[
-                        { id: 'identity', label: 'Identidad Visual', icon: faDiamond },
-                        { id: 'contact', label: 'Contacto & Redes', icon: faPhone },
-                        { id: 'about', label: 'Sección Nosotros', icon: faUsers },
-                        { id: 'marketing', label: 'Marketing & PDF', icon: faChartBar },
-                    ].map(tab => (
-                        <button
-                            key={tab.id}
-                            type="button"
-                            onClick={() => setActiveTab(tab.id as any)}
-                            className={`w-full flex items-center gap-3 p-4 text-[10px] uppercase tracking-widest font-bold transition-all border ${activeTab === tab.id
-                                ? 'bg-chocolate text-white border-chocolate shadow-lg'
-                                : 'bg-white text-slate-400 border-slate-100 hover:border-gold/50 text-left'
-                                }`}
-                        >
-                            <FontAwesomeIcon icon={tab.icon} className={activeTab === tab.id ? 'text-gold' : 'text-slate-300'} />
-                            {tab.label}
-                        </button>
-                    ))}
-
-                    <button
-                        type="submit"
-                        form="config-form"
-                        disabled={saving}
-                        className="w-full mt-6 bg-gold text-chocolate p-4 text-[10px] uppercase tracking-widest font-bold hover:bg-chocolate hover:text-white transition-all shadow-xl disabled:opacity-50 flex items-center justify-center gap-2"
-                    >
-                        {saving ? <FontAwesomeIcon icon={faCog} className="animate-spin" /> : <FontAwesomeIcon icon={faSave} />}
-                        Guardar Cambios
-                    </button>
+            <div className="flex flex-col lg:flex-row gap-6 md:gap-8">
+                {/* Sidebar Navigation - Responsive scroll on mobile */}
+                <div className="lg:w-1/4">
+                    <div className="flex lg:flex-col gap-2 overflow-x-auto lg:overflow-x-visible no-scrollbar pb-2 lg:pb-0">
+                        {[
+                            { id: 'identity', label: 'Identidad Visual', icon: faDiamond },
+                            { id: 'contact', label: 'Contacto & Redes', icon: faPhone },
+                            { id: 'about', label: 'Sección Nosotros', icon: faUsers },
+                            { id: 'marketing', label: 'Marketing & PDF', icon: faChartBar },
+                        ].map(tab => (
+                            <button
+                                key={tab.id}
+                                type="button"
+                                onClick={() => setActiveTab(tab.id as any)}
+                                className={`flex-shrink-0 lg:w-full flex items-center gap-3 p-3 md:p-4 text-[9px] md:text-[10px] uppercase tracking-widest font-bold transition-all border ${activeTab === tab.id
+                                    ? 'bg-chocolate text-white border-chocolate shadow-md'
+                                    : 'bg-white text-slate-400 border-slate-100 hover:border-gold/50 text-left cursor-pointer'
+                                    }`}
+                            >
+                                <FontAwesomeIcon icon={tab.icon} className={activeTab === tab.id ? 'text-gold' : 'text-slate-300'} />
+                                <span className="whitespace-nowrap">{tab.label}</span>
+                            </button>
+                        ))}
+                    </div>
                 </div>
 
                 {/* Content Area */}
-                <div className="lg:w-3/4 bg-white p-8 lg:p-12 border border-slate-200 shadow-sm min-h-[600px]">
-                    <div className="mb-10 border-b border-slate-50 pb-6">
-                        <h2 className="text-2xl font-serif text-slate-800">
-                            {activeTab === 'identity' && 'Identidad de Marca'}
-                            {activeTab === 'contact' && 'Canales de Comunicación'}
-                            {activeTab === 'about' && 'Contenido "Nosotros"'}
-                            {activeTab === 'marketing' && 'Estrategia & Catálogo'}
-                        </h2>
-                        <p className="text-[10px] uppercase tracking-widest text-slate-400 font-bold mt-1">
-                            {activeTab === 'identity' && 'Logos, colores y esencia visual del sitio'}
-                            {activeTab === 'contact' && 'Atención al cliente, redes sociales y ubicación'}
-                            {activeTab === 'about' && 'Personaliza la historia y estadísticas de tu empresa'}
-                            {activeTab === 'marketing' && 'Configura el catálogo descargable y banners promocionales'}
-                        </p>
+                <div className="lg:w-3/4 bg-white p-6 md:p-8 lg:p-12 border border-slate-200 shadow-sm min-h-[400px] lg:min-h-[600px]">
+                    <div className="mb-10 border-b border-slate-50 pb-6 flex justify-between items-end">
+                        <div>
+                            <h2 className="text-2xl font-serif text-slate-800">
+                                {activeTab === 'identity' && 'Identidad de Marca'}
+                                {activeTab === 'contact' && 'Canales de Comunicación'}
+                                {activeTab === 'about' && 'Contenido "Nosotros"'}
+                                {activeTab === 'marketing' && 'Estrategia & Catálogo'}
+                            </h2>
+                            <p className="text-[10px] uppercase tracking-widest text-slate-400 font-bold mt-1">
+                                {activeTab === 'identity' && 'Logos, colores y esencia visual del sitio'}
+                                {activeTab === 'contact' && 'Atención al cliente, redes sociales y ubicación'}
+                                {activeTab === 'about' && 'Personaliza la historia y estadísticas de tu empresa'}
+                                {activeTab === 'marketing' && 'Configura el catálogo descargable y banners promocionales'}
+                            </p>
+                        </div>
+                        <button
+                            type="submit"
+                            form="config-form"
+                            disabled={saving}
+                            className="bg-gold text-chocolate px-6 py-3 text-[10px] uppercase tracking-widest font-bold hover:bg-chocolate hover:text-white transition-all shadow-xl disabled:opacity-50 flex items-center justify-center gap-2"
+                        >
+                            {saving ? <FontAwesomeIcon icon={faCog} className="animate-spin" /> : <FontAwesomeIcon icon={faSave} />}
+                            <span>Guardar</span>
+                        </button>
                     </div>
 
                     <form id="config-form" onSubmit={handleSave} className="space-y-12">
                         {activeTab === 'identity' && (
-                            <div className="space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                                {/* Brand & Colors */}
+                            <div className="space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                                {/* Maintenance Mode Toggle */}
+                                <div className="p-6 bg-slate-50 border border-slate-100 rounded-xl flex items-center justify-between">
+                                    <div className="space-y-1">
+                                        <h3 className="text-[10px] uppercase tracking-widest font-bold text-chocolate">Estado del Sitio Público</h3>
+                                        <p className="text-xs text-slate-400">Si activas el modo mantenimiento, los visitantes verán la página "Próximamente".</p>
+                                    </div>
+                                    <button
+                                        type="button"
+                                        onClick={() => setConfig({ ...config, maintenance_mode: !config.maintenance_mode })}
+                                        className={`px-6 py-2 text-[10px] font-bold uppercase tracking-widest transition-all border ${config.maintenance_mode
+                                            ? 'bg-amber-100 text-amber-600 border-amber-200'
+                                            : 'bg-emerald-100 text-emerald-600 border-emerald-200'
+                                            }`}
+                                    >
+                                        {config.maintenance_mode ? 'Modo Mantenimiento ON' : 'Sitio Público ON'}
+                                    </button>
+                                </div>
+
+                                {/* Logos */}
                                 <div className="space-y-8">
                                     <h3 className="text-[10px] uppercase tracking-widest font-bold text-gold flex items-center gap-2">
                                         <div className="w-1 h-1 rounded-full bg-gold" /> Paleta de Colores
@@ -2009,6 +2059,9 @@ const UsersManager: React.FC = () => {
     const { isAdmin } = useAuth();
     const [users, setUsers] = useState<Profile[]>([]);
     const [loading, setLoading] = useState(true);
+    const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+    const [newUser, setNewUser] = useState({ email: '', password: '', fullName: '', role: 'editor' });
+    const [isSaving, setIsSaving] = useState(false);
 
     const fetchUsers = async () => {
         setLoading(true);
@@ -2021,16 +2074,51 @@ const UsersManager: React.FC = () => {
         if (isAdmin) fetchUsers();
     }, [isAdmin]);
 
-    const handleUpdateRole = async (userId: string, currentRole: 'admin' | 'editor') => {
-        const newRole = currentRole === 'admin' ? 'editor' : 'admin';
-        if (!confirm(`¿Deseas cambiar el rol de este usuario a ${newRole.toUpperCase()}?`)) return;
+    const [confirmModal, setConfirmModal] = useState<{ isOpen: boolean, onConfirm: () => void, title: string, message: string }>({
+        isOpen: false,
+        onConfirm: () => { },
+        title: '',
+        message: ''
+    });
 
+    const triggerUpdateRole = (userId: string, currentRole: 'admin' | 'editor') => {
+        const newRole = currentRole === 'admin' ? 'editor' : 'admin';
+        setConfirmModal({
+            isOpen: true,
+            title: 'Cambiar Rol de Usuario',
+            message: `¿Deseas cambiar el rol de este usuario a ${newRole.toUpperCase()}?`,
+            onConfirm: () => handleUpdateRole(userId, newRole)
+        });
+    };
+
+    const handleUpdateRole = async (userId: string, newRole: 'admin' | 'editor') => {
         const success = await userService.updateRole(userId, newRole);
         if (success) {
             toast.success('Rol actualizado con éxito');
             fetchUsers();
         } else {
             toast.error('Error al actualizar rol');
+        }
+    };
+
+    const handleCreateUser = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!newUser.email || !newUser.password || !newUser.fullName) {
+            toast.error('Todos los campos son obligatorios');
+            return;
+        }
+
+        try {
+            setIsSaving(true);
+            await userService.createUser(newUser.email, newUser.password, newUser.fullName, newUser.role);
+            toast.success('Usuario creado correctamente');
+            setIsCreateModalOpen(false);
+            setNewUser({ email: '', password: '', fullName: '', role: 'editor' });
+            fetchUsers();
+        } catch (error: any) {
+            toast.error(error.message || 'Error al crear usuario');
+        } finally {
+            setIsSaving(false);
         }
     };
 
@@ -2046,88 +2134,180 @@ const UsersManager: React.FC = () => {
 
     return (
         <div className="space-y-8 animate-in fade-in duration-700">
-            <div className="flex justify-between items-end">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4">
                 <div className="space-y-2">
                     <h2 className="text-3xl font-serif text-slate-800">Gestión de Usuarios</h2>
                     <p className="text-xs uppercase tracking-widest text-slate-400 font-bold">Control de accesos y roles (Admin / Editor)</p>
                 </div>
-                {/* Nota: La creación de usuarios se hace vía Supabase Auth Dashboard o invitación */}
-                <div className="text-[10px] uppercase text-gold bg-gold/5 px-4 py-2 border border-gold/10 font-bold">
-                    Crea usuarios desde el Panel de Supabase
-                </div>
+                <button
+                    onClick={() => setIsCreateModalOpen(true)}
+                    className="w-full sm:w-auto bg-gold text-chocolate px-6 py-3 text-[10px] uppercase tracking-widest font-bold hover:bg-chocolate hover:text-white transition-all shadow-lg flex items-center justify-center gap-2"
+                >
+                    <FontAwesomeIcon icon={faUserPlus} />
+                    Nuevo Usuario
+                </button>
             </div>
 
             <div className="bg-white border border-slate-200 overflow-hidden shadow-sm">
-                <table className="w-full text-left">
-                    <thead>
-                        <tr className="bg-slate-50 border-b border-slate-200">
-                            <th className="px-8 py-4 text-[10px] uppercase tracking-widest font-bold text-slate-400">Usuario</th>
-                            <th className="px-8 py-4 text-[10px] uppercase tracking-widest font-bold text-slate-400">Rol Corriente</th>
-                            <th className="px-8 py-4 text-[10px] uppercase tracking-widest font-bold text-slate-400">Fecha Registro</th>
-                            <th className="px-8 py-4 text-[10px] uppercase tracking-widest font-bold text-slate-400 text-right">Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody className="divide-y divide-slate-100">
-                        {loading ? (
-                            <tr><td colSpan={4} className="p-12 text-center text-slate-300">Cargando usuarios...</td></tr>
-                        ) : users.length === 0 ? (
-                            <tr><td colSpan={4} className="p-12 text-center text-slate-300">No hay usuarios registrados</td></tr>
-                        ) : users.map(user => (
-                            <tr key={user.id} className="hover:bg-slate-50/50 transition-colors">
-                                <td className="px-8 py-6">
-                                    <div className="flex items-center gap-4">
-                                        <div className="w-10 h-10 bg-gold/10 text-gold rounded-full flex items-center justify-center font-bold">
-                                            {user.email[0].toUpperCase()}
-                                        </div>
-                                        <div>
-                                            <p className="font-bold text-slate-700">{user.full_name || 'Sin nombre'}</p>
-                                            <p className="text-xs text-slate-400">{user.email}</p>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td className="px-8 py-6">
-                                    <span className={`px-3 py-1 rounded-full text-[9px] font-bold uppercase tracking-widest ${user.role === 'admin' ? 'bg-gold/10 text-gold' : 'bg-slate-100 text-slate-500'
-                                        }`}>
-                                        {user.role}
-                                    </span>
-                                </td>
-                                <td className="px-8 py-6 text-xs text-slate-400">
-                                    {new Date(user.created_at).toLocaleDateString()}
-                                </td>
-                                <td className="px-8 py-6 text-right">
-                                    <button
-                                        onClick={() => handleUpdateRole(user.id, user.role)}
-                                        className="text-[10px] uppercase tracking-widest font-bold text-gold hover:text-chocolate transition-colors border-b border-gold/30 hover:border-chocolate"
-                                    >
-                                        Cambiar a {user.role === 'admin' ? 'Editor' : 'Admin'}
-                                    </button>
-                                </td>
+                <div className="overflow-x-auto">
+                    <table className="w-full text-left">
+                        <thead>
+                            <tr className="bg-slate-50 border-b border-slate-200">
+                                <th className="px-8 py-4 text-[10px] uppercase tracking-widest font-bold text-slate-400">Usuario</th>
+                                <th className="px-8 py-4 text-[10px] uppercase tracking-widest font-bold text-slate-400">Rol Corriente</th>
+                                <th className="hidden md:table-cell px-8 py-4 text-[10px] uppercase tracking-widest font-bold text-slate-400">Fecha Registro</th>
+                                <th className="px-8 py-4 text-[10px] uppercase tracking-widest font-bold text-slate-400 text-right">Acciones</th>
                             </tr>
-                        ))}
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody className="divide-y divide-slate-100">
+                            {loading ? (
+                                <tr><td colSpan={4} className="p-12 text-center text-slate-300">Cargando usuarios...</td></tr>
+                            ) : users.length === 0 ? (
+                                <tr><td colSpan={4} className="p-12 text-center text-slate-300">No hay usuarios registrados</td></tr>
+                            ) : users.map(user => (
+                                <tr key={user.id} className="hover:bg-slate-50/50 transition-colors">
+                                    <td className="px-8 py-6">
+                                        <div className="flex items-center gap-4">
+                                            <div className="w-10 h-10 bg-gold/10 text-gold rounded-full flex items-center justify-center font-bold text-xs">
+                                                {user.email ? user.email[0].toUpperCase() : '?'}
+                                            </div>
+                                            <div>
+                                                <p className="font-bold text-slate-700 text-sm">{user.full_name || 'Sin nombre'}</p>
+                                                <p className="text-[10px] text-slate-400 truncate max-w-[150px] sm:max-w-none">{user.email}</p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td className="px-8 py-6">
+                                        <span className={`px-3 py-1 rounded-full text-[8px] font-bold uppercase tracking-widest ${user.role === 'admin' ? 'bg-gold/10 text-gold' : 'bg-slate-100 text-slate-500'
+                                            }`}>
+                                            {user.role}
+                                        </span>
+                                    </td>
+                                    <td className="hidden md:table-cell px-8 py-6 text-xs text-slate-400">
+                                        {new Date(user.created_at).toLocaleDateString()}
+                                    </td>
+                                    <td className="px-8 py-6 text-right">
+                                        <button
+                                            onClick={() => triggerUpdateRole(user.id, user.role)}
+                                            className="text-[9px] uppercase tracking-widest font-bold text-gold hover:text-chocolate transition-colors border-b border-gold/30 hover:border-chocolate whitespace-nowrap"
+                                        >
+                                            Cambiar a {user.role === 'admin' ? 'Editor' : 'Admin'}
+                                        </button>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
             </div>
 
-            <div className="bg-slate-50 p-8 border border-slate-200 space-y-4">
-                <h4 className="text-xs uppercase tracking-widest font-bold text-slate-800 flex items-center gap-2">
+            <ConfirmModal
+                isOpen={confirmModal.isOpen}
+                title={confirmModal.title}
+                message={confirmModal.message}
+                onConfirm={confirmModal.onConfirm}
+                onCancel={() => setConfirmModal({ ...confirmModal, isOpen: false })}
+                confirmLabel="Confirmar Cambio"
+                variant="warning"
+            />
+
+            <div className="bg-slate-50 p-6 md:p-8 border border-slate-200 space-y-4">
+                <h4 className="text-[10px] md:text-xs uppercase tracking-widest font-bold text-slate-800 flex items-center gap-2">
                     <FontAwesomeIcon icon={faUserShield} className="text-gold" />
                     Guía de Permisos
                 </h4>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
                     <div className="space-y-2">
-                        <p className="text-[10px] font-bold text-gold uppercase">Administrador</p>
-                        <p className="text-xs text-slate-500 leading-relaxed">
+                        <p className="text-[9px] md:text-[10px] font-bold text-gold uppercase">Administrador</p>
+                        <p className="text-[11px] md:text-xs text-slate-500 leading-relaxed">
                             Acceso total al sistema. Puede gestionar productos, categorías, banners, mensajes y **otros usuarios / permisos**.
                         </p>
                     </div>
                     <div className="space-y-2">
-                        <p className="text-[10px] font-bold text-slate-400 uppercase">Editor</p>
-                        <p className="text-xs text-slate-500 leading-relaxed">
+                        <p className="text-[9px] md:text-[10px] font-bold text-slate-400 uppercase">Editor</p>
+                        <p className="text-[11px] md:text-xs text-slate-500 leading-relaxed">
                             Acceso limitado. Puede gestionar el contenido del sitio (catálogo, galería, banners) pero no tiene acceso a la configuración de usuarios ni seguridad.
                         </p>
                     </div>
                 </div>
             </div>
+
+            {/* Modal de Creación */}
+            <AnimatePresence>
+                {isCreateModalOpen && (
+                    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+                        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onClick={() => !isSaving && setIsCreateModalOpen(false)} />
+                        <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="relative bg-white w-full max-w-lg shadow-2xl border border-gold/20 flex flex-col overflow-hidden">
+                            <div className="p-6 border-b border-slate-100 flex justify-between items-center bg-white sticky top-0 z-10">
+                                <h3 className="text-xl font-serif text-slate-800">Nuevo Usuario Administrativo</h3>
+                                <button onClick={() => !isSaving && setIsCreateModalOpen(false)} className="text-slate-300 hover:text-chocolate transition-colors"><FontAwesomeIcon icon={faTimes} className="text-lg" /></button>
+                            </div>
+
+                            <form onSubmit={handleCreateUser} className="p-8 space-y-6">
+                                <div className="space-y-2">
+                                    <label className="text-[10px] uppercase tracking-widest font-bold text-slate-400">Nombre Completo</label>
+                                    <input
+                                        type="text"
+                                        required
+                                        className="w-full p-4 bg-slate-50 border border-slate-100 focus:border-gold outline-none text-sm"
+                                        placeholder="Ej. Juan Pérez"
+                                        value={newUser.fullName}
+                                        onChange={e => setNewUser({ ...newUser, fullName: e.target.value })}
+                                    />
+                                </div>
+
+                                <div className="space-y-2">
+                                    <label className="text-[10px] uppercase tracking-widest font-bold text-slate-400">Correo Electrónico</label>
+                                    <input
+                                        type="email"
+                                        required
+                                        className="w-full p-4 bg-slate-50 border border-slate-100 focus:border-gold outline-none text-sm"
+                                        placeholder="correo@ejemplo.com"
+                                        value={newUser.email}
+                                        onChange={e => setNewUser({ ...newUser, email: e.target.value })}
+                                    />
+                                </div>
+
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                                    <div className="space-y-2">
+                                        <label className="text-[10px] uppercase tracking-widest font-bold text-slate-400">Contraseña Inicial</label>
+                                        <input
+                                            type="password"
+                                            required
+                                            minLength={6}
+                                            className="w-full p-4 bg-slate-50 border border-slate-100 focus:border-gold outline-none text-sm"
+                                            placeholder="******"
+                                            value={newUser.password}
+                                            onChange={e => setNewUser({ ...newUser, password: e.target.value })}
+                                        />
+                                        <p className="text-[8px] text-slate-400">Mínimo 6 caracteres</p>
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-[10px] uppercase tracking-widest font-bold text-slate-400">Rol Asignado</label>
+                                        <select
+                                            className="w-full p-4 bg-slate-50 border border-slate-100 focus:border-gold outline-none text-sm h-[54px] appearance-none"
+                                            value={newUser.role}
+                                            onChange={e => setNewUser({ ...newUser, role: e.target.value })}
+                                        >
+                                            <option value="editor">Editor (Limitado)</option>
+                                            <option value="admin">Administrador (Total)</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <button
+                                    type="submit"
+                                    disabled={isSaving}
+                                    className="w-full bg-chocolate text-white p-5 text-[10px] uppercase tracking-widest font-bold hover:bg-gold hover:text-chocolate transition-all flex items-center justify-center gap-3 shadow-xl"
+                                >
+                                    {isSaving ? <FontAwesomeIcon icon={faCog} className="animate-spin" /> : <FontAwesomeIcon icon={faUserPlus} />}
+                                    Registrar Usuario
+                                </button>
+                            </form>
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
         </div>
     );
 };

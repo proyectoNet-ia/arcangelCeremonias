@@ -19,6 +19,7 @@ import {
 import { useConfig } from '@/context/ConfigContext';
 import { statsService } from '@/services/statsService';
 import { CTABanner } from '@/components/common/CTABanner';
+import { SEO } from '@/components/common/SEO';
 
 const ProductDetail: React.FC = () => {
     const { slug } = useParams<{ slug: string }>();
@@ -161,6 +162,12 @@ const ProductDetail: React.FC = () => {
 
     return (
         <div className="min-h-screen bg-cream font-sans text-chocolate selection:bg-gold/20">
+            <SEO
+                title={product.name}
+                description={product.description}
+                image={product.main_image}
+                article={true}
+            />
             <Header />
 
             <main>

@@ -5,7 +5,7 @@ import React, { useEffect, useState } from 'react';
 import { Logo } from '@/components/Logo';
 import { Link } from 'react-router-dom';
 import { useConfig } from '@/context/ConfigContext';
-import { faFilePdf } from '@fortawesome/free-solid-svg-icons';
+import { faFilePdf, faLock } from '@fortawesome/free-solid-svg-icons';
 import { statsService } from '@/services/statsService';
 import bgMobile from '@/assets/modelo_medio.png';
 import bgDesktop from '@/assets/fondo-pc.jpg';
@@ -73,7 +73,7 @@ const Home: React.FC = () => {
                     backgroundAttachment: 'fixed',
                     backgroundPosition: 'right center',
                     backgroundSize: 'contain',
-                    filter: 'sepia(0.05) brightness(0.85) contrast(1.05)'
+                    filter: 'sepia(0.2) brightness(0.85) contrast(1.1) saturate(0.95)'
                 }}
             />
             <div
@@ -82,46 +82,69 @@ const Home: React.FC = () => {
                     backgroundImage: `url('${bgDesktop}')`,
                     backgroundAttachment: 'fixed',
                     backgroundPosition: 'right center',
-                    filter: 'sepia(0.2) brightness(0.9) contrast(0.95)'
+                    filter: 'sepia(0.3) brightness(0.8) contrast(1.05) saturate(1)'
                 }}
             />
 
-            <div className="fixed inset-0 z-[1] bg-black/40"></div>
-            <div className="fixed inset-0 z-[1] bg-chocolate/40 mix-blend-multiply"></div>
-            <div className="fixed inset-0 z-[1] bg-gradient-to-t from-chocolate/95 via-transparent to-chocolate/40 opacity-90"></div>
-            <div className="fixed inset-0 z-[1] bg-gradient-to-r from-chocolate/60 via-transparent to-transparent hidden md:block"></div>
+            <div className="fixed inset-0 z-[1] bg-black/30"></div>
 
-            <div className="fixed inset-0 z-[2] opacity-[0.03] pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/marble-similar.png')]"></div>
-            <div className="fixed inset-0 z-[2] opacity-[0.07] pointer-events-none bg-noise"></div>
+            {/* Capas de color dinámicas basadas en la marca - MUCHO MÁS TENUES PARA LIMPIEZA */}
+            <div
+                className="fixed inset-0 z-[1] mix-blend-multiply opacity-25"
+                style={{ backgroundColor: config?.secondary_color || '#2A1810' }}
+            ></div>
+
+            <div
+                className="fixed inset-0 z-[1] opacity-60 bg-gradient-to-t via-transparent"
+                style={{
+                    backgroundImage: `linear-gradient(to top, ${config?.primary_color || '#1B0F0B'} 0%, transparent 60%, ${config?.accent_color || '#3D261C'} 100%)`
+                }}
+            ></div>
+
+            <div
+                className="fixed inset-0 z-[1] hidden md:block opacity-15"
+                style={{
+                    backgroundImage: `radial-gradient(circle at left center, ${config?.secondary_color || '#5D2F1D'} 0%, transparent 70%)`
+                }}
+            ></div>
+
+            <div className="fixed inset-0 z-[1] bg-[radial-gradient(circle_at_right_center,rgba(0,0,0,0.15),transparent_70%)]"></div>
+            <div className="fixed inset-0 z-[1] bg-[linear-gradient(45deg,rgba(0,0,0,0.15)_0%,transparent_100%)]"></div>
+
+            {/* SE ELIMINARON LAS TEXTURAS DE MÁRMOL Y RUIDO (PECAS) PARA CLARIDAD TOTAL */}
 
             {/* --- CONTENT --- */}
             <div className="relative z-10 flex flex-col min-h-[100dvh] w-full drop-shadow-lg">
 
                 {/* Top: Logo */}
-                <header className="w-full py-6 md:py-8 lg:py-10 flex justify-start md:justify-center fade-in-down shrink-0 px-6 md:px-0">
-                    <div className="w-[176px] md:w-48 lg:w-56 opacity-90 transition-transform duration-700 hover:scale-105 hover:opacity-100 drop-shadow-md">
-                        <div className="invert brightness-0 contrast-200 sepia-[.3] hue-rotate-[10deg] saturate-[.5]">
-                            <Logo />
-                        </div>
+                <header className="w-full py-12 md:py-20 flex justify-start md:justify-center fade-in-down shrink-0 px-6 md:px-0">
+                    <div className="w-full max-w-[280px] md:max-w-md lg:max-w-lg opacity-95 transition-transform duration-700 hover:scale-[1.02] hover:opacity-100 drop-shadow-[0_0_30px_rgba(0,0,0,0.3)]">
+                        <Logo className="w-full" variant="dark" />
                     </div>
                 </header>
 
                 {/* Center: Main Message */}
                 <main className="flex flex-col items-start md:items-center justify-center text-left md:text-center flex-grow px-6 py-4 md:px-12 max-w-5xl mx-auto">
                     <div className="flex flex-col items-start md:items-center space-y-4 md:space-y-6">
-                        <h1 className="flex flex-col items-start md:items-center justify-center leading-[0.85] font-serif text-cream">
-                            <span className="block text-4xl md:text-5xl lg:text-6xl xl:text-[5rem] tracking-tighter mix-blend-overlay reveal-text delay-500 uppercase">
+                        <h1 className="flex flex-col items-start md:items-center justify-center leading-none font-serif">
+                            <span
+                                className="block text-4xl md:text-5xl lg:text-7xl xl:text-[5.5rem] tracking-[0.2em] md:tracking-[0.3em] reveal-text delay-500 uppercase"
+                                style={{ color: config?.accent_color ? 'var(--color-cream)' : 'var(--color-cream)' }}
+                            >
                                 Próximamente
                             </span>
                         </h1>
 
                         <div className="h-[1px] w-16 md:w-20 bg-cream/30 my-2 md:my-3 reveal-line delay-1000"></div>
 
-                        <p className="max-w-2xl text-cream/90 text-sm md:text-base font-light tracking-wide leading-relaxed reveal-text delay-1000 px-4 md:px-0">
+                        <p className="max-w-2xl text-cream/80 text-sm md:text-base font-light tracking-widest leading-relaxed reveal-text delay-1000 px-4 md:px-0">
                             Este año inicia una nueva etapa en Arcángel!<br /><br />
                             Nos estamos renovando para seguir creciendo con ustedes, manteniendo nuestra esencia con un compromiso aún más fuerte con la calidad y atención al detalle.
                             <span className="hidden lg:inline"><br /></span>
-                            <span className="block font-medium text-gold/90 mt-2 hover:text-gold transition-colors duration-300">
+                            <span
+                                className="block font-medium mt-4 hover:brightness-125 transition-all duration-300 tracking-[0.15em] italic"
+                                style={{ color: config?.secondary_color || '#C5A059' }}
+                            >
                                 Próximamente nuevo catálogo disponible!
                             </span>
                         </p>
@@ -204,6 +227,15 @@ const Home: React.FC = () => {
                     </div>
                 </footer>
             </div>
+
+            {/* --- ADMIN ACCESS LOCK --- */}
+            <Link
+                to="/admin"
+                className="fixed top-6 left-6 md:top-auto md:bottom-8 md:left-8 z-[100] text-cream/10 hover:text-gold transition-all duration-700 hover:scale-110 drop-shadow-sm p-2"
+                title="Administración"
+            >
+                <FontAwesomeIcon icon={faLock} className="text-[10px] md:text-xs" />
+            </Link>
         </div>
     );
 };

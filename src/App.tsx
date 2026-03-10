@@ -2,8 +2,8 @@ import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation, Navigate } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import { FloatingActions } from './components/common/FloatingActions';
-import { ConfigProvider } from './context/ConfigContext';
-import { AuthProvider, useAuth } from './context/AuthContext';
+import { ConfigProvider, useConfig } from './context/ConfigContext';
+import { AuthProvider } from './context/AuthContext';
 import { ProtectedRoute } from './components/auth/ProtectedRoute';
 import AdminLogin from './pages/AdminLogin';
 import Admin from './pages/Admin';
@@ -26,6 +26,67 @@ const ScrollToTop = () => {
   }, [pathname]);
 
   return null;
+};
+
+// Separate routes to consume context safely
+const AppRoutes = () => {
+  const { config, loading } = useConfig();
+
+  // Si loading es true, o maintenance_mode no es estrictamente false, estamos en mantenimiento
+  const isMaintenance = config?.maintenance_mode !== false;
+
+  return (
+    <>
+      <ScrollToTop />
+      <Routes>
+        {/* 1. Acceso Administrador: SIEMPRE DISPONIBLE (Nunca se bloquea) */}
+        <Route path="/admin/login" element={<AdminLogin />} />
+        <Route
+          path="/admin/*"
+          element={
+            <ProtectedRoute>
+              <Admin />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* 2. Ruta de Previsualización: Siempre accesible para que el cliente capture productos */}
+        <Route path="/inicio" element={<CatalogPage />} />
+
+        {/* 3. Ruta Principal (Dominio base) */}
+        <Route
+          path="/"
+          element={
+            loading || isMaintenance
+              ? <Home />
+              : <CatalogPage />
+          }
+        />
+
+        {/* 4. Rutas Públicas: Se redirigen al Home (Under Construction) si el mantenimiento está ON */}
+        <Route
+          path="/catalogo"
+          element={!loading && isMaintenance ? <Navigate to="/" replace /> : <Catalog />}
+        />
+        <Route
+          path="/producto/:slug"
+          element={!loading && isMaintenance ? <Navigate to="/" replace /> : <ProductDetail />}
+        />
+        <Route
+          path="/nosotros"
+          element={!loading && isMaintenance ? <Navigate to="/" replace /> : <About />}
+        />
+        <Route
+          path="/contacto"
+          element={!loading && isMaintenance ? <Navigate to="/" replace /> : <Contact />}
+        />
+
+        {/* Fallback general */}
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+      <FloatingActions />
+    </>
+  );
 };
 
 const App: React.FC = () => {
@@ -68,33 +129,7 @@ const App: React.FC = () => {
               }
             }}
           />
-          <ScrollToTop />
-          <Routes>
-            {/* MODO BLOQUEO: Mantener la pantalla de próximamente en el HOME (/) para no afectar el sitio actual */}
-            <Route path="/" element={<Home />} />
-
-            {/* SITIO NUEVO (PREVIEW): Acceso al catálogo completo en una ruta interna */}
-            <Route path="/inicio" element={<CatalogPage />} />
-
-            {/* Rutas de navegación */}
-            <Route path="/catalogo" element={<Catalog />} />
-            <Route path="/producto/:slug" element={<ProductDetail />} />
-            <Route path="/nosotros" element={<About />} />
-            <Route path="/contacto" element={<Contact />} />
-
-            {/* Acceso Administrador */}
-            <Route path="/admin/login" element={<AdminLogin />} />
-            <Route
-              path="/admin/*"
-              element={
-                <ProtectedRoute>
-                  <Admin />
-                </ProtectedRoute>
-              }
-            />
-            <Route path="*" element={<Navigate to="/" replace />} />
-          </Routes>
-          <FloatingActions />
+          <AppRoutes />
         </Router>
       </ConfigProvider>
     </AuthProvider>

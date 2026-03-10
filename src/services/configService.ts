@@ -46,6 +46,7 @@ export interface SiteConfig {
     cta_banner_bg_opacity?: number;
     // ── Extras / Archivos ──────────────────────────────
     catalog_pdf_url?: string;
+    maintenance_mode?: boolean;
 }
 
 export const configService = {

@@ -16,6 +16,7 @@ import { heroService, HeroSlide } from '@/services/heroService';
 import { Product } from '@/types/product';
 import { useConfig } from '@/context/ConfigContext';
 import { CTABanner } from '@/components/common/CTABanner';
+import { SEO } from '@/components/common/SEO';
 import bgDesktop from '@/assets/fondo-horizontal.jpeg';
 import bgMobile from '@/assets/fondo-movil.jpg';
 import bgDesktop2 from '@/assets/fondo-pc.jpg';
@@ -147,6 +148,10 @@ const Home: React.FC = () => {
 
     return (
         <div className="relative min-h-screen bg-cream font-sans text-chocolate selection:bg-gold/20">
+            <SEO
+                title="Catálogo Exclusivo"
+                description="Descubre nuestra colección artesanal de artículos ceremoniales: ropones, bautizos y comuniones con más de 30 años de tradición."
+            />
             <Header />
 
             {/* 1. HERO SLIDER */}

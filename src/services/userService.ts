@@ -54,6 +54,9 @@ export const userService = {
      * Nota: En Supabase, borrar en auth.users requiere el service_role key o llamar a una función RPC de confianza.
      * Aquí solo lo quitamos de la vista si es necesario, pero lo ideal es borrar el auth.user.
      */
+    /**
+     * Elimina un usuario (desde la tabla profiles, el usuario en auth debe borrarse manualmente o vía API de admin)
+     */
     async deleteProfile(userId: string) {
         if (!supabase) return false;
 
@@ -68,6 +71,28 @@ export const userService = {
         } catch (error) {
             console.error('Error deleting profile:', error);
             return false;
+        }
+    },
+
+    /**
+     * Crea un nuevo usuario directamente desde el CMS llamando al RPC admin_create_user
+     */
+    async createUser(email: string, password: string, fullName: string, role: string) {
+        if (!supabase) return false;
+
+        try {
+            const { data, error } = await supabase.rpc('create_new_user_admin', {
+                user_email: email,
+                user_password: password,
+                user_full_name: fullName,
+                user_role: role
+            });
+
+            if (error) throw error;
+            return true;
+        } catch (error: any) {
+            console.error('Error creating user:', error);
+            throw new Error(error.message || 'Error al crear usuario');
         }
     }
 };
