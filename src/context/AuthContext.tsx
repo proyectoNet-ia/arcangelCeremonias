@@ -112,7 +112,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     const signOut = async () => {
         if (!supabase) return;
-        await supabase.auth.signOut();
+        try {
+            await supabase.auth.signOut();
+        } catch (error) {
+            console.error('Error during signOut:', error);
+        } finally {
+            // Forzamos la limpieza del estado local independientemente de Supabase
+            setUser(null);
+            setProfile(null);
+            // Limpiamos rastro de sesiones en el navegador
+            localStorage.clear();
+            sessionStorage.clear();
+            // Opcional: Redirección forzada si los estados no disparan el re-render
+            window.location.href = '/admin/login';
+        }
     };
 
     const isAdmin = profile?.role === 'admin';

@@ -20,6 +20,7 @@ import { faFacebook, faInstagram, faWhatsapp } from '@fortawesome/free-brands-sv
 import { Logo } from '@/components/Logo';
 import { Megamenu } from './Megamenu';
 import { useConfig } from '@/context/ConfigContext';
+import { statsService } from '@/services/statsService';
 
 interface HeaderProps {
     variant?: 'light' | 'dark';
@@ -150,7 +151,13 @@ export const Header: React.FC<HeaderProps> = ({ variant = 'light' }) => {
             <div className="hidden md:block bg-white text-chocolate py-2.5 px-12 border-b border-gold/10">
                 <div className="max-w-[1600px] mx-auto flex justify-between items-center text-[9px] uppercase tracking-[0.2em] font-semibold">
                     <div className="flex gap-10">
-                        <a href={`https://wa.me/${whatsapp}`} target="_blank" rel="noopener noreferrer" className="hover:text-gold transition-colors flex items-center gap-2">
+                        <a
+                            href={`https://wa.me/${whatsapp}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            onClick={() => statsService.trackWhatsAppClick(window.location.href)}
+                            className="hover:text-gold transition-colors flex items-center gap-2"
+                        >
                             <FontAwesomeIcon icon={faWhatsapp} className="text-gold text-[11px]" /> {whatsapp.replace(/(\d{2})(\d{3})(\d{3})(\d{4})/, '+$1 $2 $3 $4')}
                         </a>
                         <a href={`tel:${phone.replace(/\s+/g, '')}`} className="hover:text-gold transition-colors flex items-center gap-2">
@@ -356,7 +363,13 @@ export const Header: React.FC<HeaderProps> = ({ variant = 'light' }) => {
                                 <div className="mt-auto bg-black/30 p-8 space-y-8">
                                     <div className="space-y-4">
                                         <p className="text-[10px] uppercase tracking-[0.3em] text-gold font-bold">Asesoría Directa</p>
-                                        <a href={`https://wa.me/${whatsapp.replace(/\D/g, '')}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-4 text-cream hover:text-gold transition-colors group">
+                                        <a
+                                            href={`https://wa.me/${whatsapp.replace(/\D/g, '')}`}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            onClick={() => statsService.trackWhatsAppClick(window.location.href)}
+                                            className="flex items-center gap-4 text-cream hover:text-gold transition-colors group"
+                                        >
                                             <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center group-hover:bg-[#25D366]/30 group-hover:text-white transition-all">
                                                 <FontAwesomeIcon icon={faWhatsapp} className="text-gold/80 group-hover:text-white" />
                                             </div>

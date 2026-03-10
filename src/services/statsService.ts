@@ -98,5 +98,71 @@ export const statsService = {
             console.error('Error fetching dashboard stats:', error);
             return { pageViews: 0, whatsappClicks: 0, conversionRate: 0 };
         }
+    },
+
+    /**
+     * Obtiene los últimos clics de WhatsApp con info de producto si aplica
+     */
+    async getRecentWhatsAppClicks(limit = 10) {
+        if (!supabase) return [];
+
+        try {
+            const { data, error } = await supabase
+                .from('whatsapp_clicks')
+                .select(`
+                    *,
+                    products (
+                        name,
+                        model_code,
+                        main_image
+                    )
+                `)
+                .order('created_at', { ascending: false })
+                .limit(limit);
+
+            if (error) throw error;
+            return data || [];
+        } catch (error) {
+            console.error('Error fetching recent WhatsApp clicks:', error);
+            return [];
+        }
+    },
+
+    /**
+     * Obtiene los productos más populares (con más clics)
+     */
+    async getTopProducts(limit = 3) {
+        if (!supabase) return [];
+
+        try {
+            // Esta es una consulta avanzada que requiere un rpc de supabase o un filtrado manual si no es pesada
+            // Para simplicidad en este MVP, traemos los clics y agrupamos
+            const { data, error } = await supabase
+                .from('whatsapp_clicks')
+                .select('product_id, products(name, model_code, main_image)')
+                .not('product_id', 'is', null);
+
+            if (error) throw error;
+
+            // Agrupación manual (eficiente para volúmenes moderados)
+            const stats: Record<string, any> = {};
+            data.forEach((click: any) => {
+                if (!click.product_id) return;
+                if (!stats[click.product_id]) {
+                    stats[click.product_id] = {
+                        ...click.products,
+                        clicks: 0
+                    };
+                }
+                stats[click.product_id].clicks++;
+            });
+
+            return Object.values(stats)
+                .sort((a: any, b: any) => b.clicks - a.clicks)
+                .slice(0, limit);
+        } catch (error) {
+            console.error('Error getting top products:', error);
+            return [];
+        }
     }
 };

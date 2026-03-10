@@ -9,7 +9,7 @@ import {
     faCog, faGlobe, faPhone, faMapMarkerAlt, faEnvelope,
     faFilePdf, faFileUpload, faMagic, faInbox, faCheckCircle,
     faUserShield, faUserEdit, faUserMinus, faUserPlus,
-    faChartLine, faArrowUpRightFromSquare
+    faChartLine, faArrowUpRightFromSquare, faTrophy
 } from '@fortawesome/free-solid-svg-icons';
 import { faWhatsapp, faFacebook, faInstagram } from '@fortawesome/free-brands-svg-icons';
 import { productService } from '@/services/productService';
@@ -57,11 +57,19 @@ const smartFormatTitle = (val: string) => {
 const DashboardOverview: React.FC<{ products: Product[], categories: Category[], refresh: () => void }> = ({ products, categories, refresh }) => {
     const [isStandardizing, setIsStandardizing] = useState(false);
     const [statsData, setStatsData] = useState({ pageViews: 0, whatsappClicks: 0, conversionRate: '0' });
+    const [recentClicks, setRecentClicks] = useState<any[]>([]);
+    const [topProducts, setTopProducts] = useState<any[]>([]);
 
     useEffect(() => {
         const fetchStats = async () => {
-            const data = await statsService.getDashboardStats();
+            const [data, clicks, top] = await Promise.all([
+                statsService.getDashboardStats(),
+                statsService.getRecentWhatsAppClicks(5),
+                statsService.getTopProducts(3)
+            ]);
             setStatsData(data);
+            setRecentClicks(clicks);
+            setTopProducts(top);
         };
         fetchStats();
     }, []);
@@ -119,20 +127,24 @@ const DashboardOverview: React.FC<{ products: Product[], categories: Category[],
                         key={stat.label}
                         className="bg-white p-8 border border-slate-200 shadow-sm hover:shadow-md transition-shadow group"
                     >
-                        <div className="flex justify-between items-start mb-4">
-                            <div className={`w-12 h-12 ${stat.bg} ${stat.color} flex items-center justify-center rounded-xl transition-transform group-hover:scale-110`}>
+                        <div className="flex justify-between items-start mb-6">
+                            <div className={`w-14 h-14 ${stat.bg} ${stat.color} flex items-center justify-center rounded-2xl transition-transform group-hover:scale-110 shadow-sm text-xl`}>
                                 <FontAwesomeIcon icon={stat.icon} />
                             </div>
                             {stat.trend && (
-                                <span className="text-[10px] font-bold text-green-500 bg-green-50 px-2 py-1 rounded">
-                                    <FontAwesomeIcon icon={faArrowUp} className="mr-1" /> {stat.trend}
+                                <span className="text-xs font-bold text-green-600 bg-green-50 px-3 py-1.5 rounded-lg border border-green-100">
+                                    <FontAwesomeIcon icon={faArrowUp} className="mr-1.5" /> {stat.trend}
                                 </span>
                             )}
                         </div>
-                        <h3 className="text-slate-400 text-xs uppercase tracking-widest font-bold mb-1">{stat.label}</h3>
-                        <div className="flex items-baseline gap-2">
-                            <p className="text-3xl font-serif text-slate-800">{stat.value}</p>
-                            {stat.sub && <span className="text-[10px] text-slate-400 uppercase font-bold tracking-widest">{stat.sub}</span>}
+                        <h3 className="text-slate-500 text-sm uppercase tracking-[0.2em] font-black mb-2">{stat.label}</h3>
+                        <div className="flex items-baseline gap-3">
+                            <p className="text-5xl font-serif text-slate-900 leading-none">{stat.value}</p>
+                            {stat.sub && (
+                                <span className="text-xs text-slate-500 uppercase font-black tracking-widest bg-slate-100 px-2 py-1 rounded">
+                                    {stat.sub}
+                                </span>
+                            )}
                         </div>
                     </motion.div>
                 ))}
@@ -162,19 +174,34 @@ const DashboardOverview: React.FC<{ products: Product[], categories: Category[],
                             <p className="text-xs uppercase tracking-widest font-bold">Estandarizar Títulos</p>
                             <p className="text-[8px] opacity-60">Corrige mayúsculas en todo el catálogo</p>
                         </button>
-                        <a
-                            href="https://vercel.com/dashboard"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="p-6 border border-slate-100 bg-slate-50 hover:bg-black hover:text-white transition-all text-left space-y-2 group"
-                        >
-                            <div className="flex justify-between items-center">
-                                <FontAwesomeIcon icon={faChartLine} className="text-black group-hover:text-white" />
-                                <FontAwesomeIcon icon={faArrowUpRightFromSquare} className="text-[10px] opacity-40 group-hover:opacity-100" />
+                    </div>
+                </div>
+
+                {/* Popular Selection */}
+                <div className="bg-white p-8 border border-slate-200">
+                    <h3 className="font-serif text-xl mb-6 flex items-center gap-3">
+                        <FontAwesomeIcon icon={faTrophy} className="text-gold" />
+                        Más Populares (Clicks)
+                    </h3>
+                    <div className="space-y-4">
+                        {topProducts.length === 0 ? (
+                            <p className="text-sm text-slate-500 italic">Datos insuficientes...</p>
+                        ) : topProducts.map((prod, idx) => (
+                            <div key={idx} className="flex items-center gap-4 p-3 bg-slate-50/80 rounded-xl border border-slate-100 shadow-sm transition-all hover:bg-gold/5">
+                                <div className="w-8 h-8 rounded-full bg-gold text-white flex items-center justify-center text-xs font-black shadow-sm">
+                                    {idx + 1}
+                                </div>
+                                <img src={prod.main_image} className="w-10 h-10 object-cover rounded-md shadow-sm border border-white" />
+                                <div className="flex-grow min-w-0">
+                                    <p className="text-xs font-black truncate text-slate-800 uppercase tracking-tight">{prod.name}</p>
+                                    <p className="text-[10px] text-slate-500 font-bold uppercase tracking-tighter">Modelo: {prod.model_code}</p>
+                                </div>
+                                <div className="text-right pl-2">
+                                    <p className="text-xl font-black text-gold leading-none">{prod.clicks}</p>
+                                    <p className="text-[9px] uppercase font-black text-slate-400 mt-1">Clicks</p>
+                                </div>
                             </div>
-                            <p className="text-xs uppercase tracking-widest font-bold">Vercel Analytics</p>
-                            <p className="text-[8px] opacity-60">Métricas avanzadas y rendimiento</p>
-                        </a>
+                        ))}
                     </div>
                 </div>
 
@@ -196,6 +223,69 @@ const DashboardOverview: React.FC<{ products: Product[], categories: Category[],
                             </div>
                         ))}
                     </div>
+                </div>
+            </div>
+
+            {/* WhatsApp Clicks Activity */}
+            <div className="bg-white p-8 border border-slate-200">
+                <div className="flex justify-between items-center mb-8">
+                    <h3 className="font-serif text-xl flex items-center gap-3">
+                        <FontAwesomeIcon icon={faWhatsapp} className="text-[#25D366]" />
+                        Seguimiento WhatsApp (Tiempo Real)
+                    </h3>
+                    <span className="text-[10px] uppercase font-bold text-slate-400 bg-slate-50 px-3 py-1 border border-slate-100">Últimas Interacciones</span>
+                </div>
+
+                <div className="overflow-x-auto overflow-hidden">
+                    <table className="w-full text-left">
+                        <thead>
+                            <tr className="bg-slate-50 border-b border-slate-200">
+                                <th className="px-6 py-5 text-[11px] uppercase tracking-[0.2em] font-black text-slate-600">Fecha / Hora</th>
+                                <th className="px-6 py-5 text-[11px] uppercase tracking-[0.2em] font-black text-slate-600">Origen / Página</th>
+                                <th className="px-6 py-5 text-[11px] uppercase tracking-[0.2em] font-black text-slate-600">Producto Relacionado</th>
+                                <th className="px-6 py-5 text-[11px] uppercase tracking-[0.2em] font-black text-slate-600 text-right">Canal</th>
+                            </tr>
+                        </thead>
+                        <tbody className="divide-y divide-slate-50">
+                            {recentClicks.length === 0 ? (
+                                <tr>
+                                    <td colSpan={4} className="py-20 text-center text-slate-300 italic font-serif text-lg">
+                                        No se han registrado clics recientemente
+                                    </td>
+                                </tr>
+                            ) : recentClicks.map((click, idx) => (
+                                <tr key={click.id} className="hover:bg-slate-50 transition-colors group">
+                                    <td className="px-6 py-6">
+                                        <p className="text-sm font-black text-slate-800">{new Date(click.created_at).toLocaleDateString()}</p>
+                                        <p className="text-xs text-slate-500 font-bold">{new Date(click.created_at).toLocaleTimeString()}</p>
+                                    </td>
+                                    <td className="px-6 py-6">
+                                        <div className="max-w-xs truncate text-xs text-slate-600 font-bold bg-slate-100 px-3 py-1.5 border border-slate-200 rounded">
+                                            {click.page_url.replace(window.location.origin, '') || '/'}
+                                        </div>
+                                    </td>
+                                    <td className="px-6 py-6">
+                                        {click.products ? (
+                                            <div className="flex items-center gap-4">
+                                                <img src={click.products.main_image} className="w-10 h-12 object-cover rounded-lg shadow-sm border-2 border-white" />
+                                                <div>
+                                                    <p className="text-sm font-black text-slate-800 leading-tight uppercase tracking-tight">{click.products.name}</p>
+                                                    <p className="text-[10px] text-gold uppercase font-black tracking-widest mt-1">Mod: {click.products.model_code}</p>
+                                                </div>
+                                            </div>
+                                        ) : (
+                                            <span className="text-xs text-slate-500 uppercase font-black tracking-widest bg-slate-50 px-3 py-1.5 rounded border border-slate-100 italic">Interés General</span>
+                                        )}
+                                    </td>
+                                    <td className="px-6 py-6 text-right">
+                                        <div className="w-10 h-10 rounded-full bg-green-100 text-green-600 flex items-center justify-center ml-auto border border-green-200 shadow-sm transition-transform group-hover:scale-110">
+                                            <FontAwesomeIcon icon={faWhatsapp} className="text-sm" />
+                                        </div>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>

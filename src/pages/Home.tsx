@@ -6,6 +6,7 @@ import { Logo } from '@/components/Logo';
 import { Link } from 'react-router-dom';
 import { useConfig } from '@/context/ConfigContext';
 import { faFilePdf } from '@fortawesome/free-solid-svg-icons';
+import { statsService } from '@/services/statsService';
 import bgMobile from '@/assets/modelo_medio.png';
 import bgDesktop from '@/assets/fondo-pc.jpg';
 
@@ -158,6 +159,7 @@ const Home: React.FC = () => {
                                     href="https://wa.me/523521681197"
                                     target="_blank"
                                     rel="noopener noreferrer"
+                                    onClick={() => statsService.trackWhatsAppClick(window.location.href)}
                                     className="text-lg md:text-xl lg:text-2xl text-cream font-serif tracking-widest hover:text-gold transition-colors duration-300"
                                 >
                                     <FontAwesomeIcon icon={faWhatsapp} className="mr-2 text-xl md:text-2xl" /> 352 168 1197

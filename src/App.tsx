@@ -70,11 +70,11 @@ const App: React.FC = () => {
           />
           <ScrollToTop />
           <Routes>
-            {/* SITIO PÚBLICO: Home completo con Slider y Productos */}
-            <Route path="/" element={<CatalogPage />} />
+            {/* MODO BLOQUEO: Mantener la pantalla de próximamente en el HOME (/) para no afectar el sitio actual */}
+            <Route path="/" element={<Home />} />
 
-            {/* MODO BLOQUEO: Mantener la pantalla de próximamente accesible si se requiere */}
-            <Route path="/proximamente" element={<Home />} />
+            {/* SITIO NUEVO (PREVIEW): Acceso al catálogo completo en una ruta interna */}
+            <Route path="/inicio" element={<CatalogPage />} />
 
             {/* Rutas de navegación */}
             <Route path="/catalogo" element={<Catalog />} />

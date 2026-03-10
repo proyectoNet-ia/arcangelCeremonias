@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import toast from 'react-hot-toast';
 import {
     faChartLine,
     faBox,
@@ -124,12 +125,13 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
                         </div>
                         <button
                             onClick={() => {
-                                if (confirm('¿Cerrar sesión?')) signOut();
+                                signOut();
+                                toast.success('Cerrando sesión...');
                             }}
-                            className="w-10 h-10 bg-slate-100 rounded-full flex items-center justify-center border border-slate-200 hover:bg-slate-200 transition-colors"
+                            className="w-10 h-10 bg-slate-100/50 rounded-full flex items-center justify-center border border-slate-200 hover:bg-red-50 hover:border-red-200 transition-all group"
                             title="Cerrar Sesión"
                         >
-                            <FontAwesomeIcon icon={faSignOutAlt} className="text-slate-400 hover:text-red-500" />
+                            <FontAwesomeIcon icon={faSignOutAlt} className="text-slate-400 group-hover:text-red-500 transition-colors" />
                         </button>
                     </div>
                 </header>
