@@ -55,19 +55,27 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         const initialize = async () => {
             const timeoutId = setTimeout(() => {
                 setLoading(false);
-                console.warn('Auth initialization reached soft timeout (15s) - App will proceed to avoid frozen UI.');
-            }, 15000); // Aumentado de 5s a 15s para mayor estabilidad al recuperar el foco del navegador
+                console.warn('Auth initialization reached failsafe timeout (2.5s) - Proceeding to keep UI responsive.');
+            }, 2500);
 
             try {
                 console.log('Initializing AuthContext...');
-                // we use a try/catch here to avoid lock issues from freezing the UI
-                const { data: { session }, error: sessionError } = await supabase.auth.getSession().catch(e => {
-                    console.error('Session get error (Lock timeout potentially):', e);
+                // Carrera entre getSession y un timeout de 2.5s para no congelar la UI
+                const sessionPromise = supabase.auth.getSession();
+                const timeoutPromise = new Promise((_, reject) =>
+                    setTimeout(() => reject(new Error('Session fetch timeout')), 2500)
+                );
+
+                const result = await Promise.race([sessionPromise, timeoutPromise]).catch(e => {
+                    console.error('Session get error or timeout:', e);
                     return { data: { session: null }, error: e };
                 });
 
+                const session = (result as any)?.data?.session ?? null;
+                const sessionError = (result as any)?.error ?? null;
+
                 if (sessionError) {
-                    console.warn('Session error ignored for UI stability:', sessionError);
+                    console.warn('Session error suppressed for stability:', sessionError);
                 }
 
                 const currentUser = session?.user ?? null;

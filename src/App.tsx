@@ -32,8 +32,9 @@ const ScrollToTop = () => {
 const AppRoutes = () => {
   const { config, loading } = useConfig();
 
-  // Si loading es true, o maintenance_mode no es estrictamente false, estamos en mantenimiento
-  const isMaintenance = config?.maintenance_mode !== false;
+  // El modo mantenimiento es true por defecto solo si NO tenemos config cargada aún
+  // Si ya tenemos config, respetamos el valor de la base de datos
+  const isMaintenance = config ? config.maintenance_mode : true;
 
   return (
     <>
@@ -57,7 +58,7 @@ const AppRoutes = () => {
         <Route
           path="/"
           element={
-            loading || isMaintenance
+            (loading && !config) || isMaintenance
               ? <Home />
               : <CatalogPage />
           }

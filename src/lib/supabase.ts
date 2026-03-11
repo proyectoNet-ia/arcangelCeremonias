@@ -17,7 +17,6 @@ if (!supabaseUrl || !supabaseAnonKey || !isUrlValid(supabaseUrl)) {
 }
 
 // Implementación de almacenamiento personalizado sin el sistema de Locks del navegador
-// Esto soluciona el error 'NavigatorLockAcquireTimeoutError' común en algunos navegadores/entornos locales
 const customStorage = {
     getItem: (key: string) => {
         try {
@@ -40,17 +39,22 @@ const customStorage = {
     }
 };
 
+
 export const supabase = isUrlValid(supabaseUrl || '')
     ? createClient(supabaseUrl, supabaseAnonKey || '', {
         auth: {
             autoRefreshToken: true,
             persistSession: true,
             detectSessionInUrl: true,
-            storageKey: 'arcangel-auth-local',
-            storage: customStorage, // Usamos el storage personalizado sin Locks
+            storageKey: 'arcangel-session-v5', // Llave nueva permite ignorar "Locks" antiguos bloqueados en el navegador
+            storage: customStorage,
+            lock: async (name: string, _acquireTimeout: number, callback: () => Promise<any>) => {
+                console.log('Supabase Lock Bypass (v2026 Compatible):', name);
+                return await callback();
+            },
         },
         global: {
-            fetch: (...args) => fetch(...args).catch(err => {
+            fetch: (input: RequestInfo | URL, init?: RequestInit) => fetch(input, init).catch(err => {
                 console.error('Network error during Supabase fetch:', err);
                 throw err;
             })

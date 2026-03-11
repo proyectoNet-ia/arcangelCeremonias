@@ -19,7 +19,10 @@ export const ConfigProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
     const fetchConfig = async () => {
         try {
-            setLoading(true);
+            // Solo activamos loading si no tenemos configuración previa 
+            // para evitar parpadeos (preloaders) al recuperar foco o refrescar
+            if (!config) setLoading(true);
+
             const data = await configService.getConfig();
             if (data) setConfig(data);
         } catch (error) {

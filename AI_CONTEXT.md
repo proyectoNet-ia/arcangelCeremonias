@@ -23,10 +23,10 @@ Este archivo es un resumen actualizado para mantener la continuidad del desarrol
 
 ## 📝 Resumen Ejecutivo
  
-**Última actualización:** 04 de marzo de 2026 — 16:10 hrs
+**Última actualización:** 11 de marzo de 2026 — 15:25 hrs
 **Rama activa:** `main` (local, sincronizada vía OneDrive)
 **Entorno activo:** `http://localhost:3000` (desarrollo local)
-**Producción:** `https://www.ceremoniasarcangel.com` — ⛔ Mostrando página "Próximamente", NO tocar.
+**Producción:** `https://www.ceremoniasarcangel.com` — ⛔ En fase de correcciones de estabilidad y favicon.
 
 ---
 
@@ -41,25 +41,17 @@ Este archivo es un resumen actualizado para mantener la continuidad del desarrol
 
 ---
 
-## 🧩 Estado del CMS Admin — Completado al 25/02/2026
+## 🧩 Estado del CMS Admin — Completado al 11/03/2026
 
 ### ✅ Secciones implementadas y funcionales:
 
 | Sección Admin | Ruta | Descripción |
 |---------------|------|-------------|
-| Dashboard | `/admin` | Estadísticas generales (algunas son placeholder) |
+| Dashboard | `/admin` | Estadísticas reales de visitas y clics de WhatsApp |
 | Productos | `/admin/productos` | CRUD completo + upload de imágenes a Supabase Storage |
 | Categorías | `/admin/productos` | Gestión de categorías incluida en Productos |
 | Hero Slider | `/admin/hero` | CRUD de diapositivas con imagen, textos, alineación y botones |
-| Configuración | `/admin/configuracion` | Todo lo de abajo ↓ |
-
-### Dentro de `/admin/configuracion` (5 secciones):
-
-1. **Identidad Visual y Colores** — Color Primario (chocolate/oscuro), Secundario (gold/detalles), Acento (cream/fondos). Se aplican en todo el sitio vía CSS variables `var(--color-*)`.
-2. **Logos** — Logo para fondos claros y Logo para fondos oscuros. Upload a Supabase Storage, fallback automático al SVG original si no hay imagen.
-3. **Información de Identidad** — Nombre empresa, WhatsApp, teléfono, email, redes sociales.
-4. **Página "Nosotros"** — Subtítulo, título, cita destacada, 3 párrafos, URL de imagen, 4 estadísticas (valor + etiqueta).
-5. **Banner CTA Mayoreo (Home)** — Etiqueta, título, subtítulo dorado, cuerpo del texto, texto de botón 1 (WhatsApp) y botón 2 (teléfono).
+| Configuración | `/admin/configuracion` | Favicon, Colores, Logos, Nosotros, CTA Banner |
 
 ---
 
@@ -75,37 +67,42 @@ Este archivo es un resumen actualizado para mantener la continuidad del desarrol
 
 ---
 
-## 🐛 Issues Conocidos (por resolver)
+## 🐛 Issues Corregidos (Marzo 2026)
 
-| ID | Descripción | Severidad | Estado |
-|----|-------------|-----------|--------|
-| B-01 | Stats del Dashboard (visitas, consultas) son valores ficticios | Medio | Pendiente |
-| B-04 | Verificar protección de ruta `/admin` (auth guard) | Alto | Pendiente revisión |
-| B-05 | Catálogo PDF integrado en Panel Admin | Bajo | ✅ Completado |
+| ID | Descripción | Solución |
+|----|-------------|----------|
+| B-06 | Preloader ("Próximamente") reaparece al perder foco | Refactor de `ConfigContext` y `AppRoutes` para ignorar `loading` si ya hay config cargada. |
+| B-07 | NavigatorLockAcquireTimeoutError (Supabase) | Implementación de `lock` bypass funcional en `supabase.ts` para evitar esperas de 10s. |
+| B-08 | TypeError: this.lock is not a function | Actualizada firma de la función `lock` para compatibilidad con Supabase v2.97.0. |
+| B-09 | Favicon no se actualizaba | Agregado `favicon_url` a `SiteConfig` y lógica de inyección en `<head>` vía `ConfigProvider`. |
 
 ---
 
 ## 🛠️ Próximos Pasos (Ordenados por Prioridad)
 
-1. **🟡 MEDIO:** Galería Media Centralizada — ✅ Completado
-2. **🟡 MEDIO:** Revisar y reforzar protección de ruta `/admin` con auth guard — ✅ Completado
-3. **🟢 BAJO:** Integrar link/descarga del Catálogo PDF en el sitio público — ✅ Completado
-4. **🟢 BAJO:** Mejorar Dashboard con estadísticas reales (Vercel Analytics + Supabase Tracking) — ✅ Completado
-5. **🟢 BAJO:** Estandarización visual "TITULO DE SECCION" en todo el sitio — ✅ Completado
-6. **⏳ CUANDO EL CLIENTE APRUEBE:** Realizar `git push` y deployment en Vercel para lanzar el sitio completo
+1. **🟡 MEDIO:** Revisar optimización de imágenes en el catálogo (tamaño de archivo vs calidad).
+2. **🟢 BAJO:** Mejorar diseño de los mensajes de error en formularios de contacto.
+3. **🟢 BAJO:** Implementar sistema de búsqueda de productos en el catálogo principal.
+4. **⏳ LANZAMIENTO:** Solicitar aprobación final para eliminar el modo mantenimiento por defecto.
 
 ---
 
 ## 🛠️ Notas Técnicas Importantes
 
--   **CSS Variables:** `--color-primary` = color oscuro/chocolate, `--color-secondary` = gold/detalles, `--color-accent` = fondo claro/cream. Tailwind usa `var(--color-*)` con fallbacks hardcodeados.
--   **Estándar "TITULO DE SECCION":** Implementado vía `.section-header` en `index.css`. Obligatorio para nuevos encabezados para mantener la consistencia (tag superior + título en 2 niveles + resaltado dorado bold).
--   **Logo Fallback:** Si `logo_light_url` o `logo_dark_url` están vacíos en Supabase, el componente `Logo.tsx` muestra el SVG original. El SVG respeta la variante (`dark` = color gold, `light` = color chocolate).
--   **Supabase Compartido:** Dev y Prod usan el mismo proyecto Supabase. Los cambios en `site_config` afectan la "Próximamente" en producción también. Esto es normal y esperado.
--   **Migraciones ejecutadas:** `sql_migration_branding.sql` y `sql_migration_content.sql` ya aplicadas en Supabase.
--   **TypeScript limpio:** `npx tsc --noEmit` → exit 0, sin errores.
--   **Servicio de Carga:** Se implementó `uploadFile` en `productService` que soporta validación de tamaño (15MB para PDF) y tipos de archivo genéricos.
+-   **Supabase Sessions (v2.97.0):** Para evitar bloqueos del `Navigator LockManager` en navegadores modernos, se usa una función `lock` personalizada en `createClient` que ejecuta directamente los callbacks.
+-   **Failsafe Auth:** El inicio de sesión en `AuthContext.tsx` tiene un timeout de 2.5s para no congelar la UI si Supabase tarda en responder.
+-   **Favicon Dinámico:** Se inyecta directamente al DOM en `ConfigProvider.tsx` buscando `link[rel~='icon']`.
+-   **Instalación:** Si se cambia de máquina, asegurar que las variables `VITE_SUPABASE_URL` y `VITE_SUPABASE_ANON_KEY` estén configuradas correctamente en el entorno.
 
 ---
 
-*Actualizado por Antigravity — Agente IA de desarrollo. Última actualización: 04/03/2026 16:10 hrs*
+## 🛠️ Archivos Recientemente Modificados:
+- `src/lib/supabase.ts` (Lock bypass, compatibilidad v2.97.0)
+- `src/context/AuthContext.tsx` (Failsafe timeout initialization)
+- `src/context/ConfigContext.tsx` (Silent refresh, Favicon update)
+- `src/App.tsx` (Resilient routing for maintenance vs content)
+- `src/pages/Admin.tsx` (Favicon state management)
+
+---
+
+*Actualizado por Antigravity — Agente IA de desarrollo. Última actualización: 11/03/2026 15:25 hrs*
