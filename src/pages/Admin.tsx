@@ -2096,8 +2096,34 @@ const UsersManager: React.FC = () => {
         if (success) {
             toast.success('Rol actualizado con éxito');
             fetchUsers();
+            setConfirmModal({ ...confirmModal, isOpen: false });
         } else {
             toast.error('Error al actualizar rol');
+        }
+    };
+
+    const triggerDeleteUser = (userId: string, email: string) => {
+        setConfirmModal({
+            isOpen: true,
+            title: 'Eliminar Usuario',
+            message: `¿Estás seguro de que deseas eliminar permanentemente a ${email}? Esta acción no se puede deshacer.`,
+            onConfirm: () => handleDeleteUser(userId)
+        });
+    };
+
+    const handleDeleteUser = async (userId: string) => {
+        try {
+            const success = await userService.deleteProfile(userId);
+            if (success) {
+                toast.success('Usuario eliminado correctamente');
+                fetchUsers();
+                setConfirmModal({ ...confirmModal, isOpen: false });
+            } else {
+                toast.error('No se pudo eliminar el usuario');
+            }
+        } catch (error) {
+            console.error(error);
+            toast.error('Error al intentar eliminar');
         }
     };
 
@@ -2187,12 +2213,25 @@ const UsersManager: React.FC = () => {
                                         {new Date(user.created_at).toLocaleDateString()}
                                     </td>
                                     <td className="px-8 py-6 text-right">
-                                        <button
-                                            onClick={() => triggerUpdateRole(user.id, user.role)}
-                                            className="text-[9px] uppercase tracking-widest font-bold text-gold hover:text-chocolate transition-colors border-b border-gold/30 hover:border-chocolate whitespace-nowrap"
-                                        >
-                                            Cambiar a {user.role === 'admin' ? 'Editor' : 'Admin'}
-                                        </button>
+                                        <div className="flex items-center justify-end gap-3">
+                                            <button
+                                                onClick={() => triggerUpdateRole(user.id, user.role)}
+                                                className="text-[9px] uppercase tracking-widest font-bold text-gold hover:text-chocolate transition-colors border-b border-gold/30 hover:border-chocolate whitespace-nowrap"
+                                            >
+                                                {user.role === 'admin' ? 'Hacer Editor' : 'Hacer Admin'}
+                                            </button>
+
+                                            {/* Impedir que un admin se borre a sí mismo */}
+                                            {user.id !== useAuth().user?.id && (
+                                                <button
+                                                    onClick={() => triggerDeleteUser(user.id, user.email)}
+                                                    className="w-8 h-8 flex items-center justify-center text-slate-300 hover:text-red-500 transition-colors"
+                                                    title="Eliminar Usuario"
+                                                >
+                                                    <FontAwesomeIcon icon={faTrash} />
+                                                </button>
+                                            )}
+                                        </div>
                                     </td>
                                 </tr>
                             ))}
