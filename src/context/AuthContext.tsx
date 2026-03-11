@@ -55,8 +55,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         const initialize = async () => {
             const timeoutId = setTimeout(() => {
                 setLoading(false);
-                console.warn('Auth initialization reached soft timeout (5s) - App will proceed to avoid frozen UI.');
-            }, 5000); // Reducido de 20s a 5s
+                console.warn('Auth initialization reached soft timeout (15s) - App will proceed to avoid frozen UI.');
+            }, 15000); // Aumentado de 5s a 15s para mayor estabilidad al recuperar el foco del navegador
 
             try {
                 console.log('Initializing AuthContext...');

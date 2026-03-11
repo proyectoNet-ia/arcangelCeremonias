@@ -42,11 +42,17 @@ export const mediaService = {
     },
 
     async deleteFile(path: string) {
-        const { error } = await supabase.storage
+        const { data, error } = await supabase.storage
             .from('catalog')
             .remove([path]);
 
         if (error) throw error;
+
+        // Si data está vacío, significa que el archivo no existía en esa ruta o no tenemos permisos
+        if (!data || data.length === 0) {
+            throw new Error('No se pudo encontrar el archivo en el servidor. Verifique los permisos o si ya fue eliminado.');
+        }
+
         return true;
     },
 

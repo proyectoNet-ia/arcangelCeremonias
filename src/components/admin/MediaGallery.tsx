@@ -46,15 +46,21 @@ export const MediaGallery: React.FC<MediaGalleryProps> = ({ onSelect, allowSelec
     const handleDelete = async () => {
         if (!confirmDelete.file) return;
 
+        const file = confirmDelete.file;
+        const path = `${file.folder}/${file.name}`;
+
         try {
-            const file = confirmDelete.file;
-            const path = `${file.folder}/${file.name}`;
+            console.log('Intentando eliminar:', path);
             await mediaService.deleteFile(path);
+
             toast.success('Archivo eliminado definitivamente');
-            setFiles(files.filter(f => f.name !== file.name));
+
+            // Actualización más precisa del estado local
+            setFiles(prev => prev.filter(f => !(f.name === file.name && f.folder === file.folder)));
             setConfirmDelete({ isOpen: false, file: null });
-        } catch (error) {
-            toast.error('Error al intentar eliminar el archivo');
+        } catch (error: any) {
+            console.error('Error al eliminar:', error);
+            toast.error(error.message || 'Error al intentar eliminar el archivo');
         }
     };
 
