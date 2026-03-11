@@ -1401,17 +1401,18 @@ const ConfigManager: React.FC = () => {
         }
     };
 
-    const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>, type: 'light' | 'dark') => {
+    const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>, type: 'light' | 'dark' | 'favicon') => {
         const file = e.target.files?.[0];
         if (!file) return;
         try {
             setSaving(true);
             const url = await productService.uploadImage(file, 'branding');
             if (type === 'light') setConfig(prev => ({ ...prev, logo_light_url: url }));
-            else setConfig(prev => ({ ...prev, logo_dark_url: url }));
-            toast.success('Logo cargado correctamente');
+            else if (type === 'dark') setConfig(prev => ({ ...prev, logo_dark_url: url }));
+            else if (type === 'favicon') setConfig(prev => ({ ...prev, favicon_url: url }));
+            toast.success(type === 'favicon' ? 'Favicon cargado' : 'Logo cargado correctamente');
         } catch (error: any) {
-            toast.error(error.message || 'Error al subir el logo');
+            toast.error(error.message || 'Error al subir el archivo');
         } finally {
             setSaving(false);
         }
@@ -1585,6 +1586,34 @@ const ConfigManager: React.FC = () => {
                                             <button type="button" onClick={() => setMediaSelector({ isOpen: true, field: 'logo_dark' })} className="w-full py-2 border border-slate-100 text-[9px] uppercase font-bold tracking-widest hover:bg-chocolate hover:text-white transition-all flex items-center justify-center gap-2">
                                                 <FontAwesomeIcon icon={faImages} className="text-gold" /> Galería de Medios
                                             </button>
+                                        </div>
+                                    </div>
+
+                                    {/* Favicon Section */}
+                                    <div className="pt-8 border-t border-slate-50">
+                                        <div className="space-y-4 max-w-sm">
+                                            <div className="space-y-1">
+                                                <label className="text-[10px] uppercase tracking-widest font-bold text-slate-400">Favicon (Icono de Pestaña)</label>
+                                                <p className="text-[9px] text-slate-400 lowercase italic">Se recomienda un archivo .png o .ico cuadrado (32x32 o 64x64px)</p>
+                                            </div>
+                                            <div className="flex items-center gap-6">
+                                                <div className="w-16 h-16 bg-white border border-slate-100 rounded shadow-sm flex items-center justify-center overflow-hidden">
+                                                    {config.favicon_url ? (
+                                                        <img src={config.favicon_url} className="w-10 h-10 object-contain" />
+                                                    ) : (
+                                                        <FontAwesomeIcon icon={faGlobe} className="text-2xl text-slate-100" />
+                                                    )}
+                                                </div>
+                                                <div className="flex flex-col gap-2">
+                                                    <label className="cursor-pointer bg-slate-50 text-slate-600 px-4 py-2 text-[9px] font-bold uppercase tracking-widest border border-slate-100 hover:border-gold transition-all text-center">
+                                                        Subir Nuevo
+                                                        <input type="file" className="hidden" accept="image/png,image/x-icon,image/jpeg" onChange={e => handleLogoUpload(e, 'favicon')} />
+                                                    </label>
+                                                    <button type="button" onClick={() => setMediaSelector({ isOpen: true, field: 'favicon' })} className="px-4 py-2 border border-slate-100 text-[9px] uppercase font-bold tracking-widest text-slate-400 hover:text-gold transition-all">
+                                                        Usar Galería
+                                                    </button>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
 
@@ -1876,6 +1905,7 @@ const ConfigManager: React.FC = () => {
                     const field = mediaSelector.field;
                     if (field === 'logo_light') setConfig(prev => ({ ...prev, logo_light_url: url }));
                     else if (field === 'logo_dark') setConfig(prev => ({ ...prev, logo_dark_url: url }));
+                    else if (field === 'favicon') setConfig(prev => ({ ...prev, favicon_url: url }));
                     else if (field === 'about') setConfig(prev => ({ ...prev, about_image_url: url }));
                     else if (field === 'cta_bg') setConfig(prev => ({ ...prev, cta_banner_bg_image_url: url }));
                     else if (field === 'pdf') setConfig(prev => ({ ...prev, catalog_pdf_url: url }));

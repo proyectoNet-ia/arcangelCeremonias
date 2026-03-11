@@ -40,6 +40,17 @@ export const ConfigProvider: React.FC<{ children: React.ReactNode }> = ({ childr
             if (config.secondary_color) root.style.setProperty('--color-secondary', config.secondary_color);
             if (config.accent_color) root.style.setProperty('--color-accent', config.accent_color);
 
+            // Update Favicon
+            if (config.favicon_url) {
+                let link: HTMLLinkElement | null = document.querySelector("link[rel~='icon']");
+                if (!link) {
+                    link = document.createElement('link');
+                    link.rel = 'icon';
+                    document.getElementsByTagName('head')[0].appendChild(link);
+                }
+                link.href = config.favicon_url;
+            }
+
             // Also set derived colors if needed, or just let Tailwind handle it via CSS variables
         }
     }, [config]);

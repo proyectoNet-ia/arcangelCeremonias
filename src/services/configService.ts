@@ -18,6 +18,7 @@ export interface SiteConfig {
     accent_color?: string;
     logo_light_url?: string;
     logo_dark_url?: string;
+    favicon_url?: string;
     // ── Página Nosotros ───────────────────────────────
     about_title?: string;
     about_subtitle?: string;
