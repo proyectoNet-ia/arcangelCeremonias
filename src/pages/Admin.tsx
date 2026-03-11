@@ -1302,6 +1302,7 @@ const ConfigManager: React.FC = () => {
         accent_color: '#FDF8F1',
         logo_light_url: '',
         logo_dark_url: '',
+        favicon_url: '',
         about_title: '',
         about_subtitle: '',
         about_quote: '',
@@ -1319,13 +1320,19 @@ const ConfigManager: React.FC = () => {
         cta_banner_body: '',
         cta_banner_btn1_label: '',
         cta_banner_btn2_label: '',
+        cta_banner_bg_color: '#1B1411',
+        cta_banner_bg_image_url: '',
+        cta_banner_bg_opacity: 0.85,
         catalog_pdf_url: '',
         maintenance_mode: false,
     });
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [activeTab, setActiveTab] = useState<'identity' | 'contact' | 'about' | 'marketing'>('identity');
-    const [mediaSelector, setMediaSelector] = useState<{ isOpen: boolean, field: 'logo_light' | 'logo_dark' | 'pdf' | 'about' }>({
+    const [mediaSelector, setMediaSelector] = useState<{
+        isOpen: boolean,
+        field: 'logo_light' | 'logo_dark' | 'favicon' | 'pdf' | 'about' | 'cta_bg'
+    }>({
         isOpen: false,
         field: 'logo_light'
     });
@@ -1351,6 +1358,7 @@ const ConfigManager: React.FC = () => {
                         accent_color: data.accent_color || '#FDF8F1',
                         logo_light_url: data.logo_light_url || '',
                         logo_dark_url: data.logo_dark_url || '',
+                        favicon_url: data.favicon_url || '',
                         about_title: data.about_title || '',
                         about_subtitle: data.about_subtitle || '',
                         about_quote: data.about_quote || '',
