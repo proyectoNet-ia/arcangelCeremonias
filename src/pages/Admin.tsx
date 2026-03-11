@@ -1593,8 +1593,8 @@ const ConfigManager: React.FC = () => {
                                     <div className="pt-8 border-t border-slate-50">
                                         <div className="space-y-4 max-w-sm">
                                             <div className="space-y-1">
-                                                <label className="text-[10px] uppercase tracking-widest font-bold text-slate-400">Favicon (Icono de Pestaña)</label>
-                                                <p className="text-[9px] text-slate-400 lowercase italic">Se recomienda un archivo .png o .ico cuadrado (32x32 o 64x64px)</p>
+                                                <label className="text-[10px] uppercase tracking-widest font-bold text-slate-400">Favicon (Icono de la Pestaña)</label>
+                                                <p className="text-[9px] text-slate-400 lowercase italic">Imagen cuadrada: .png, .ico o .jpg (mínimo 32x32px)</p>
                                             </div>
                                             <div className="flex items-center gap-6">
                                                 <div className="w-16 h-16 bg-white border border-slate-100 rounded shadow-sm flex items-center justify-center overflow-hidden">
