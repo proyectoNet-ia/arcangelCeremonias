@@ -98,13 +98,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
             const currentUser = session?.user ?? null;
 
-            if (event === 'SIGNED_IN' || event === 'USER_UPDATED') {
-                setLoading(true);
+            if (event === 'SIGNED_IN' || event === 'USER_UPDATED' || event === 'TOKEN_REFRESHED') {
+                // Solo activamos loading si no teníamos usuario previo (evita parpadeo al cambiar foco)
+                const shouldShowLoading = !user && event !== 'TOKEN_REFRESHED';
+
+                if (shouldShowLoading) setLoading(true);
+
                 setUser(currentUser);
-                if (currentUser) {
+                if (currentUser && (!profile || profile.id !== currentUser.id)) {
                     await fetchProfile(currentUser.id);
                 }
-                setLoading(false);
+
+                if (shouldShowLoading) setLoading(false);
             } else if (event === 'SIGNED_OUT') {
                 setUser(null);
                 setProfile(null);
