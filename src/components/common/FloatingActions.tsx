@@ -3,12 +3,19 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faWhatsapp } from '@fortawesome/free-brands-svg-icons';
 import { faChevronUp } from '@fortawesome/free-solid-svg-icons';
+import { useLocation } from 'react-router-dom';
 import { useConfig } from '@/context/ConfigContext';
 import { statsService } from '@/services/statsService';
 
 export const FloatingActions: React.FC = () => {
+    const { pathname } = useLocation();
     const [isVisible, setIsVisible] = useState(false);
     const { config } = useConfig();
+
+    // No mostrar en el panel de administración
+    if (pathname.startsWith('/admin')) {
+        return null;
+    }
 
     // Show button when page is scrolled down
     const toggleVisibility = () => {
