@@ -73,27 +73,49 @@ export const MediaGallery: React.FC<MediaGalleryProps> = ({ onSelect, allowSelec
     };
 
     const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (!file) return;
+        const selectedFiles = e.target.files;
+        if (!selectedFiles || selectedFiles.length === 0) return;
 
         const targetFolder = filterFolder === 'all' ? 'products' : filterFolder;
-        let toastId = '';
+        const filesArray = Array.from(selectedFiles);
+        const total = filesArray.length;
+
+        setUploading(true);
+        let successCount = 0;
+        let failCount = 0;
+
+        const mainToastId = toast.loading(
+            total > 1 ? `Subiendo ${total} archivos...` : 'Subiendo archivo...'
+        );
 
         try {
-            setUploading(true);
-            toastId = toast.loading(`Subiendo a /${targetFolder}...`);
+            await Promise.all(
+                (filesArray as File[]).map(async (file: File) => {
+                    try {
+                        await mediaService.uploadFile(file, targetFolder);
+                        successCount++;
+                        if (total > 1) {
+                            toast.loading(`Progreso: ${successCount}/${total} archivos`, { id: mainToastId });
+                        }
+                    } catch (err) {
+                        failCount++;
+                        console.error(`Error subiendo ${file.name}:`, err);
+                    }
+                })
+            );
 
-            const url = await mediaService.uploadFile(file, targetFolder);
-
-            toast.success('Archivo subido con éxito', { id: toastId });
-            loadMedia(true); // Recarga silenciosa para no mostrar el spinner grande
-        } catch (error: any) {
-            console.error('Upload error:', error);
-            if (toastId) {
-                toast.error(error.message || 'Error al subir archivo', { id: toastId });
+            if (failCount === 0) {
+                toast.success(total > 1 ? `${total} archivos subidos con éxito` : 'Archivo subido con éxito', { id: mainToastId });
+            } else if (successCount > 0) {
+                toast.success(`${successCount} subidos, ${failCount} fallaron`, { id: mainToastId });
             } else {
-                toast.error(error.message || 'Error al subir archivo');
+                toast.error('Error al subir los archivos', { id: mainToastId });
             }
+
+            loadMedia(true);
+        } catch (error: any) {
+            console.error('Batch upload error:', error);
+            toast.error('Ocurrió un error inesperado', { id: mainToastId });
         } finally {
             setUploading(false);
             if (e.target) e.target.value = '';
@@ -141,7 +163,7 @@ export const MediaGallery: React.FC<MediaGalleryProps> = ({ onSelect, allowSelec
                         <label className={`flex-grow md:flex-grow-0 flex items-center justify-center gap-2 px-6 py-3 bg-chocolate text-gold text-[10px] font-bold uppercase tracking-widest cursor-pointer hover:bg-gold hover:text-chocolate transition-all shadow-lg ${uploading ? 'opacity-50 pointer-events-none' : ''}`}>
                             <FontAwesomeIcon icon={uploading ? faSync : faImage} className={uploading ? 'animate-spin' : ''} />
                             {uploading ? 'Subiendo...' : 'Subir Archivo'}
-                            <input type="file" className="hidden" onChange={handleUpload} accept={ALL_ALLOWED_FORMATS.join(',')} />
+                            <input type="file" className="hidden" onChange={handleUpload} accept={ALL_ALLOWED_FORMATS.join(',')} multiple />
                         </label>
 
                         <button
