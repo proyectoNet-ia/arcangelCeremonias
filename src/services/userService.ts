@@ -94,5 +94,25 @@ export const userService = {
             console.error('Error creating user:', error);
             throw new Error(error.message || 'Error al crear usuario');
         }
+    },
+
+    /**
+     * Restablece la contraseña de un usuario
+     */
+    async resetPassword(userId: string, newPassword: string) {
+        if (!supabase) return false;
+
+        try {
+            const { data, error } = await supabase.rpc('admin_reset_user_password', {
+                target_user_id: userId,
+                new_password: newPassword
+            });
+
+            if (error) throw error;
+            return true;
+        } catch (error: any) {
+            console.error('Error resetting password:', error);
+            throw new Error(error.message || 'Error al restablecer contraseña');
+        }
     }
 };

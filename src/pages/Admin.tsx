@@ -9,7 +9,7 @@ import {
     faCog, faGlobe, faPhone, faMapMarkerAlt, faEnvelope,
     faFilePdf, faFileUpload, faMagic, faInbox, faCheckCircle,
     faUserShield, faUserEdit, faUserMinus, faUserPlus,
-    faChartLine, faArrowUpRightFromSquare, faTrophy
+    faChartLine, faArrowUpRightFromSquare, faTrophy, faKey
 } from '@fortawesome/free-solid-svg-icons';
 import { faWhatsapp, faFacebook, faInstagram } from '@fortawesome/free-brands-svg-icons';
 import { productService } from '@/services/productService';
@@ -2100,6 +2100,12 @@ const UsersManager: React.FC = () => {
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
     const [newUser, setNewUser] = useState({ email: '', password: '', fullName: '', role: 'editor' });
     const [isSaving, setIsSaving] = useState(false);
+    const [resetModal, setResetModal] = useState<{ isOpen: boolean, userId: string, userEmail: string, newPassword: '' }>({
+        isOpen: false,
+        userId: '',
+        userEmail: '',
+        newPassword: ''
+    });
 
     const fetchUsers = async () => {
         setLoading(true);
@@ -2186,6 +2192,25 @@ const UsersManager: React.FC = () => {
         }
     };
 
+    const handleResetPassword = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!resetModal.newPassword || resetModal.newPassword.length < 6) {
+            toast.error('La contraseña debe tener al menos 6 caracteres');
+            return;
+        }
+
+        try {
+            setIsSaving(true);
+            await userService.resetPassword(resetModal.userId, resetModal.newPassword);
+            toast.success('Contraseña restablecida correctamente');
+            setResetModal({ ...resetModal, isOpen: false, newPassword: '' });
+        } catch (error: any) {
+            toast.error(error.message || 'Error al restablecer contraseña');
+        } finally {
+            setIsSaving(false);
+        }
+    };
+
     if (!isAdmin) {
         return (
             <div className="flex flex-col items-center justify-center p-20 text-center">
@@ -2257,6 +2282,14 @@ const UsersManager: React.FC = () => {
                                                 className="text-[9px] uppercase tracking-widest font-bold text-gold hover:text-chocolate transition-colors border-b border-gold/30 hover:border-chocolate whitespace-nowrap"
                                             >
                                                 {user.role === 'admin' ? 'Hacer Editor' : 'Hacer Admin'}
+                                            </button>
+
+                                            <button
+                                                onClick={() => setResetModal({ isOpen: true, userId: user.id, userEmail: user.email, newPassword: '' })}
+                                                className="w-8 h-8 flex items-center justify-center text-slate-300 hover:text-gold transition-colors"
+                                                title="Restablecer Contraseña"
+                                            >
+                                                <FontAwesomeIcon icon={faKey} />
                                             </button>
 
                                             {/* Impedir que un admin se borre a sí mismo */}
@@ -2379,6 +2412,68 @@ const UsersManager: React.FC = () => {
                                 >
                                     {isSaving ? <FontAwesomeIcon icon={faCog} className="animate-spin" /> : <FontAwesomeIcon icon={faUserPlus} />}
                                     Registrar Usuario
+                                </button>
+                            </form>
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
+
+            {/* Modal de Restablecer Contraseña */}
+            <AnimatePresence>
+                {resetModal.isOpen && (
+                    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm"
+                            onClick={() => !isSaving && setResetModal({ ...resetModal, isOpen: false })}
+                        />
+                        <motion.div
+                            initial={{ scale: 0.9, opacity: 0 }}
+                            animate={{ scale: 1, opacity: 1 }}
+                            className="relative bg-white w-full max-w-md shadow-2xl border border-gold/20 flex flex-col overflow-hidden"
+                        >
+                            <div className="p-6 border-b border-slate-100 flex justify-between items-center bg-white sticky top-0 z-10">
+                                <div>
+                                    <h3 className="text-xl font-serif text-slate-800">Restablecer Contraseña</h3>
+                                    <p className="text-[10px] uppercase tracking-widest text-slate-400 font-bold">{resetModal.userEmail}</p>
+                                </div>
+                                <button
+                                    onClick={() => !isSaving && setResetModal({ ...resetModal, isOpen: false })}
+                                    className="text-slate-300 hover:text-chocolate transition-colors"
+                                >
+                                    <FontAwesomeIcon icon={faTimes} className="text-lg" />
+                                </button>
+                            </div>
+
+                            <form onSubmit={handleResetPassword} className="p-8 space-y-6">
+                                <div className="space-y-2">
+                                    <label className="text-[10px] uppercase tracking-widest font-bold text-slate-400">Nueva Contraseña</label>
+                                    <div className="relative">
+                                        <input
+                                            type="password"
+                                            required
+                                            minLength={6}
+                                            className="w-full p-4 bg-slate-50 border border-slate-100 focus:border-gold outline-none text-sm"
+                                            placeholder="******"
+                                            value={resetModal.newPassword}
+                                            onChange={e => setResetModal({ ...resetModal, newPassword: e.target.value as any })}
+                                            autoFocus
+                                        />
+                                        <FontAwesomeIcon icon={faKey} className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-200" />
+                                    </div>
+                                    <p className="text-[8px] text-slate-400">Mínimo 6 caracteres. El usuario deberá cerrar sesión e ingresar con esta nueva clave.</p>
+                                </div>
+
+                                <button
+                                    type="submit"
+                                    disabled={isSaving}
+                                    className="w-full bg-chocolate text-white p-5 text-[10px] uppercase tracking-widest font-bold hover:bg-gold hover:text-chocolate transition-all flex items-center justify-center gap-3 shadow-xl"
+                                >
+                                    {isSaving ? <FontAwesomeIcon icon={faCog} className="animate-spin" /> : <FontAwesomeIcon icon={faSave} />}
+                                    Actualizar Contraseña
                                 </button>
                             </form>
                         </motion.div>
