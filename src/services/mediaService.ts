@@ -5,7 +5,7 @@ import { optimizeImage } from '../lib/imageOptimization';
 export const ALLOWED_IMAGE_FORMATS = ['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/svg+xml'];
 export const ALLOWED_DOC_FORMATS = ['application/pdf'];
 export const ALL_ALLOWED_FORMATS = [...ALLOWED_IMAGE_FORMATS, ...ALLOWED_DOC_FORMATS];
-export const MAX_FILE_SIZE = 5 * 1024 * 1024; // Reducido a 5MB para asegurar rendimiento
+export const MAX_FILE_SIZE = 20 * 1024 * 1024; // Aumentado a 20MB para fotos de celulares modernos
 
 export interface MediaFile {
     name: string;
@@ -132,7 +132,7 @@ export const mediaService = {
             throw new Error(`Formato no permitido: ${file.type}. Use JPG, PNG, WEBP, GIF o PDF.`);
         }
         if (file.size > MAX_FILE_SIZE) {
-            throw new Error(`Archivo demasiado grande: ${(file.size / (1024 * 1024)).toFixed(2)}MB. El límite es 15MB.`);
+            throw new Error(`Archivo demasiado grande: ${(file.size / (1024 * 1024)).toFixed(2)}MB. El límite es 20MB.`);
         }
         return true;
     }

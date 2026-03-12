@@ -76,23 +76,27 @@ export const MediaGallery: React.FC<MediaGalleryProps> = ({ onSelect, allowSelec
         const file = e.target.files?.[0];
         if (!file) return;
 
-        // Determinar carpeta de destino (si es 'all', mandamos a 'products' por defecto)
         const targetFolder = filterFolder === 'all' ? 'products' : filterFolder;
+        let toastId = '';
 
         try {
             setUploading(true);
-            const toastId = toast.loading(`Subiendo a /${targetFolder}...`);
+            toastId = toast.loading(`Subiendo a /${targetFolder}...`);
 
             const url = await mediaService.uploadFile(file, targetFolder);
 
             toast.success('Archivo optimizado y subido con éxito', { id: toastId });
-            loadMedia(); // Recargar la lista
+            loadMedia();
         } catch (error: any) {
             console.error('Upload error:', error);
-            toast.error(error.message || 'Error al subir archivo');
+            if (toastId) {
+                toast.error(error.message || 'Error al subir archivo', { id: toastId });
+            } else {
+                toast.error(error.message || 'Error al subir archivo');
+            }
         } finally {
             setUploading(false);
-            if (e.target) e.target.value = ''; // Reset input
+            if (e.target) e.target.value = '';
         }
     };
 
