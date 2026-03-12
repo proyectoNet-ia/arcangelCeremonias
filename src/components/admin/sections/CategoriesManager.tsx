@@ -91,14 +91,14 @@ export const CategoriesManager: React.FC<CategoriesManagerProps> = ({ categories
                 </button>
             </div>
 
-            <div className="bg-white border border-slate-200 overflow-hidden">
-                <table className="w-full text-left border-collapse">
+            <div className="bg-white border border-slate-200 overflow-x-auto scrollbar-thin scrollbar-thumb-slate-200 scrollbar-track-transparent">
+                <table className="w-full text-left border-collapse min-w-[700px]">
                     <thead>
                         <tr className="bg-slate-50 border-b border-slate-100">
-                            <th className="px-8 py-4 text-[10px] uppercase tracking-widest font-bold text-slate-400">Imagen</th>
-                            <th className="px-8 py-4 text-[10px] uppercase tracking-widest font-bold text-slate-400">Nombre / URL</th>
-                            <th className="px-8 py-4 text-[10px] uppercase tracking-widest font-bold text-slate-400">Descripción</th>
-                            <th className="px-8 py-4 text-[10px] uppercase tracking-widest font-bold text-slate-400 text-right">Acciones</th>
+                            <th className="px-4 md:px-8 py-4 text-[10px] uppercase tracking-widest font-bold text-slate-400">Imagen</th>
+                            <th className="px-4 md:px-8 py-4 text-[10px] uppercase tracking-widest font-bold text-slate-400">Nombre / URL</th>
+                            <th className="px-4 md:px-8 py-4 text-[10px] uppercase tracking-widest font-bold text-slate-400">Descripción</th>
+                            <th className="px-4 md:px-8 py-4 text-[10px] uppercase tracking-widest font-bold text-slate-400 text-right">Acciones</th>
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100">
@@ -106,7 +106,7 @@ export const CategoriesManager: React.FC<CategoriesManagerProps> = ({ categories
                             const parent = categories.find(c => c.id === cat.parent_id);
                             return (
                                 <tr key={cat.id} className="hover:bg-slate-50/50 transition-colors">
-                                    <td className="px-8 py-4">
+                                    <td className="px-4 md:px-8 py-4">
                                         <div className="w-12 h-12 bg-slate-100 flex items-center justify-center overflow-hidden rounded border border-slate-200">
                                             {cat.image_url ? (
                                                 <img src={cat.image_url} alt={cat.name} className="w-full h-full object-cover" />
@@ -115,7 +115,7 @@ export const CategoriesManager: React.FC<CategoriesManagerProps> = ({ categories
                                             )}
                                         </div>
                                     </td>
-                                    <td className="px-8 py-4">
+                                    <td className="px-4 md:px-8 py-4">
                                         <div className="flex items-center gap-2">
                                             {cat.parent_id && <span className="text-slate-300">└</span>}
                                             <p className={`text-sm font-serif font-bold ${cat.parent_id ? 'text-slate-500' : 'text-slate-800'}`}>
@@ -139,10 +139,10 @@ export const CategoriesManager: React.FC<CategoriesManagerProps> = ({ categories
                                             )}
                                         </div>
                                     </td>
-                                    <td className="px-8 py-4">
+                                    <td className="px-4 md:px-8 py-4">
                                         <p className="text-xs text-slate-400 line-clamp-1 italic">{cat.description || 'Sin descripción'}</p>
                                     </td>
-                                    <td className="px-8 py-4">
+                                    <td className="px-4 md:px-8 py-4">
                                         <div className="flex justify-end gap-3">
                                             <button onClick={() => handleEdit(cat)} className="p-2 border border-slate-100 hover:bg-gold hover:text-white transition-all rounded shadow-sm">
                                                 <FontAwesomeIcon icon={faEdit} className="text-xs" />
