@@ -27,9 +27,9 @@ export const MediaGallery: React.FC<MediaGalleryProps> = ({ onSelect, allowSelec
         file: null
     });
 
-    const loadMedia = async () => {
+    const loadMedia = async (silent = false) => {
         try {
-            setLoading(true);
+            if (!silent && files.length === 0) setLoading(true);
             const data = await mediaService.getAllMedia();
             setFiles(data);
         } catch (error) {
@@ -73,26 +73,52 @@ export const MediaGallery: React.FC<MediaGalleryProps> = ({ onSelect, allowSelec
     };
 
     const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (!file) return;
+        const selectedFiles = e.target.files;
+        if (!selectedFiles || selectedFiles.length === 0) return;
 
-        // Determinar carpeta de destino (si es 'all', mandamos a 'products' por defecto)
         const targetFolder = filterFolder === 'all' ? 'products' : filterFolder;
+        const filesArray = Array.from(selectedFiles);
+        const total = filesArray.length;
+
+        setUploading(true);
+        let successCount = 0;
+        let failCount = 0;
+
+        const mainToastId = toast.loading(
+            total > 1 ? `Subiendo ${total} archivos...` : 'Subiendo archivo...'
+        );
 
         try {
-            setUploading(true);
-            const toastId = toast.loading(`Subiendo a /${targetFolder}...`);
+            await Promise.all(
+                (filesArray as File[]).map(async (file: File) => {
+                    try {
+                        await mediaService.uploadFile(file, targetFolder);
+                        successCount++;
+                        if (total > 1) {
+                            toast.loading(`Progreso: ${successCount}/${total} archivos`, { id: mainToastId });
+                        }
+                    } catch (err) {
+                        failCount++;
+                        console.error(`Error subiendo ${file.name}:`, err);
+                    }
+                })
+            );
 
-            const url = await mediaService.uploadFile(file, targetFolder);
+            if (failCount === 0) {
+                toast.success(total > 1 ? `${total} archivos subidos con éxito` : 'Archivo subido con éxito', { id: mainToastId });
+            } else if (successCount > 0) {
+                toast.success(`${successCount} subidos, ${failCount} fallaron`, { id: mainToastId });
+            } else {
+                toast.error('Error al subir los archivos', { id: mainToastId });
+            }
 
-            toast.success('Archivo optimizado y subido con éxito', { id: toastId });
-            loadMedia(); // Recargar la lista
+            loadMedia(true);
         } catch (error: any) {
-            console.error('Upload error:', error);
-            toast.error(error.message || 'Error al subir archivo');
+            console.error('Batch upload error:', error);
+            toast.error('Ocurrió un error inesperado', { id: mainToastId });
         } finally {
             setUploading(false);
-            if (e.target) e.target.value = ''; // Reset input
+            if (e.target) e.target.value = '';
         }
     };
 
@@ -115,9 +141,10 @@ export const MediaGallery: React.FC<MediaGalleryProps> = ({ onSelect, allowSelec
     return (
         <div className="space-y-8 min-h-[600px] flex flex-col">
             {/* Toolbar */}
-            <div className="flex flex-wrap items-center justify-between gap-6 bg-white p-6 border border-slate-200">
-                <div className="flex items-center gap-4 flex-grow max-w-md">
-                    <div className="relative flex-grow">
+            <div className="flex flex-col lg:flex-row items-center justify-between gap-6 bg-white p-6 border border-slate-200">
+                {/* Search Bar */}
+                <div className="w-full lg:max-w-md">
+                    <div className="relative">
                         <FontAwesomeIcon icon={faSearch} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 text-xs" />
                         <input
                             type="text"
@@ -129,19 +156,32 @@ export const MediaGallery: React.FC<MediaGalleryProps> = ({ onSelect, allowSelec
                     </div>
                 </div>
 
-                <div className="flex items-center gap-6">
-                    {/* Botón de Carga */}
-                    <label className={`flex items-center gap-2 px-6 py-3 bg-chocolate text-gold text-[10px] font-bold uppercase tracking-widest cursor-pointer hover:bg-gold hover:text-chocolate transition-all shadow-lg ${uploading ? 'opacity-50 pointer-events-none' : ''}`}>
-                        <FontAwesomeIcon icon={uploading ? faSync : faImage} className={uploading ? 'animate-spin' : ''} />
-                        {uploading ? 'Subiendo...' : 'Subir Archivo'}
-                        <input type="file" className="hidden" onChange={handleUpload} accept={ALL_ALLOWED_FORMATS.join(',')} />
-                    </label>
-                    <div className="flex bg-slate-50 p-1">
+                {/* Actions & Categories Wrapper */}
+                <div className="w-full lg:w-auto flex flex-col md:flex-row items-center gap-6">
+                    <div className="w-full md:w-auto flex items-center justify-between gap-4">
+                        {/* Botón de Carga */}
+                        <label className={`flex-grow md:flex-grow-0 flex items-center justify-center gap-2 px-6 py-3 bg-chocolate text-gold text-[10px] font-bold uppercase tracking-widest cursor-pointer hover:bg-gold hover:text-chocolate transition-all shadow-lg ${uploading ? 'opacity-50 pointer-events-none' : ''}`}>
+                            <FontAwesomeIcon icon={uploading ? faSync : faImage} className={uploading ? 'animate-spin' : ''} />
+                            {uploading ? 'Subiendo...' : 'Subir Archivo'}
+                            <input type="file" className="hidden" onChange={handleUpload} accept={ALL_ALLOWED_FORMATS.join(',')} multiple />
+                        </label>
+
+                        <button
+                            onClick={loadMedia}
+                            className="p-3 text-slate-400 hover:text-gold transition-colors block lg:hidden"
+                            title="Actualizar"
+                        >
+                            <FontAwesomeIcon icon={faSync} className={loading ? 'animate-spin' : ''} />
+                        </button>
+                    </div>
+
+                    {/* Categorías (Scrollable) */}
+                    <div className="w-full md:w-auto flex bg-slate-50 p-1 overflow-x-auto no-scrollbar border border-slate-100">
                         {folders.map(folder => (
                             <button
                                 key={folder}
                                 onClick={() => setFilterFolder(folder)}
-                                className={`px-4 py-2 text-[10px] uppercase font-bold tracking-widest transition-all ${filterFolder === folder
+                                className={`flex-shrink-0 px-4 py-2 text-[10px] uppercase font-bold tracking-widest transition-all ${filterFolder === folder
                                     ? 'bg-white text-gold shadow-sm'
                                     : 'text-slate-400 hover:text-chocolate'
                                     }`}
@@ -153,7 +193,7 @@ export const MediaGallery: React.FC<MediaGalleryProps> = ({ onSelect, allowSelec
 
                     <button
                         onClick={loadMedia}
-                        className="p-3 text-slate-400 hover:text-gold transition-colors"
+                        className="hidden lg:block p-3 text-slate-400 hover:text-gold transition-colors"
                         title="Actualizar"
                     >
                         <FontAwesomeIcon icon={faSync} className={loading ? 'animate-spin' : ''} />

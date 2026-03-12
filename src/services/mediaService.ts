@@ -5,7 +5,7 @@ import { optimizeImage } from '../lib/imageOptimization';
 export const ALLOWED_IMAGE_FORMATS = ['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/svg+xml'];
 export const ALLOWED_DOC_FORMATS = ['application/pdf'];
 export const ALL_ALLOWED_FORMATS = [...ALLOWED_IMAGE_FORMATS, ...ALLOWED_DOC_FORMATS];
-export const MAX_FILE_SIZE = 5 * 1024 * 1024; // Reducido a 5MB para asegurar rendimiento
+export const MAX_FILE_SIZE = 20 * 1024 * 1024; // Aumentado a 20MB para fotos de celulares modernos
 
 export interface MediaFile {
     name: string;
@@ -58,19 +58,26 @@ export const mediaService = {
 
     async getAllMedia() {
         const folders = ['products', 'hero', 'branding', 'files'];
-        const allFiles: MediaFile[] = [];
 
-        for (const folder of folders) {
-            try {
-                const files = await this.listFiles(folder);
-                // Filter out placeholder files or empty listings
-                allFiles.push(...files.filter(f => !f.name.startsWith('.')).map(f => ({ ...f, folder })));
-            } catch (err) {
-                console.error(`Error listing folder ${folder}:`, err);
-            }
+        try {
+            const results = await Promise.all(
+                folders.map(async (folder) => {
+                    try {
+                        const files = await this.listFiles(folder);
+                        return files
+                            .filter(f => !f.name.startsWith('.'))
+                            .map(f => ({ ...f, folder }));
+                    } catch (err) {
+                        console.error(`Error listing folder ${folder}:`, err);
+                        return [];
+                    }
+                })
+            );
+            return results.flat();
+        } catch (err) {
+            console.error('General error in getAllMedia:', err);
+            return [];
         }
-
-        return allFiles;
     },
 
     async uploadFile(file: File, folder: string) {
@@ -84,13 +91,10 @@ export const mediaService = {
             try {
                 let options = {};
                 if (folder === 'products') {
-                    // Productos: Formato vertical estándar Arcángel
                     options = { maxWidth: 800, maxHeight: 1100, fit: 'cover', format: 'image/webp' };
                 } else if (folder === 'hero') {
-                    // Banners: Alta resolución horizontal
                     options = { maxWidth: 1920, maxHeight: 1080, fit: 'none', format: 'image/webp', quality: 0.85 };
                 } else {
-                    // Otros (Branding, etc): Optimizar sin estirar
                     options = { maxWidth: 1200, maxHeight: 1200, fit: 'none', format: 'image/webp' };
                 }
 
@@ -99,7 +103,9 @@ export const mediaService = {
                 const baseName = file.name.substring(0, file.name.lastIndexOf('.')) || 'image';
                 fileToUpload = new File([optimizedBlob], `${baseName}.${newExtension}`, { type: 'image/webp' });
             } catch (err) {
-                console.warn('Auto-optimization failed, uploading original', err);
+                console.warn('Auto-optimization failed or timed out, uploading original file to avoid hang.', err);
+                // No relanzamos el error, simplemente usamos el archivo original
+                fileToUpload = file;
             }
         }
 
@@ -128,11 +134,17 @@ export const mediaService = {
     },
 
     validateFile(file: File) {
-        if (!ALL_ALLOWED_FORMATS.includes(file.type)) {
-            throw new Error(`Formato no permitido: ${file.type}. Use JPG, PNG, WEBP, GIF o PDF.`);
+        const hasValidType = ALL_ALLOWED_FORMATS.includes(file.type);
+        const hasValidExt = ['jpg', 'jpeg', 'png', 'webp', 'gif', 'svg', 'pdf'].some(ext =>
+            file.name.toLowerCase().endsWith(`.${ext}`)
+        );
+
+        if (!hasValidType && !hasValidExt) {
+            throw new Error(`Formato no reconocido: ${file.name}. Use imágenes estándar o PDF.`);
         }
+
         if (file.size > MAX_FILE_SIZE) {
-            throw new Error(`Archivo demasiado grande: ${(file.size / (1024 * 1024)).toFixed(2)}MB. El límite es 15MB.`);
+            throw new Error(`Archivo demasiado grande: ${(file.size / (1024 * 1024)).toFixed(2)}MB. El límite es 20MB.`);
         }
         return true;
     }

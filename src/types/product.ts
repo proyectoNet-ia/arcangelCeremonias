@@ -41,6 +41,7 @@ export interface Category {
     parent_id?: string | null;
     image_url?: string;
     icon_url?: string;
+    size_guide_url?: string;
     description?: string;
     is_active?: boolean;
 }

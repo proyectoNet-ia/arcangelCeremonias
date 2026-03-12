@@ -22,6 +22,11 @@ export const optimizeImage = (file: File, options: OptimizationOptions = {}): Pr
     } = options;
 
     return new Promise((resolve, reject) => {
+        // Timeout de seguridad: Si la optimización tarda más de 10s, cancelamos
+        const timeout = setTimeout(() => {
+            reject(new Error('La optimización de imagen tardó demasiado tiempo.'));
+        }, 10000);
+
         const reader = new FileReader();
         reader.readAsDataURL(file);
         reader.onload = (event) => {
@@ -50,7 +55,10 @@ export const optimizeImage = (file: File, options: OptimizationOptions = {}): Pr
                 }
 
                 const ctx = canvas.getContext('2d');
-                if (!ctx) return reject('Could not get canvas context');
+                if (!ctx) {
+                    clearTimeout(timeout);
+                    return reject('Could not get canvas context');
+                }
 
                 // Fondo blanco para WebP/JPEG
                 ctx.fillStyle = 'white';
@@ -72,6 +80,7 @@ export const optimizeImage = (file: File, options: OptimizationOptions = {}): Pr
 
                 canvas.toBlob(
                     (blob) => {
+                        clearTimeout(timeout);
                         if (blob) {
                             console.log(`[Image Optimization] Original: ${(file.size / 1024).toFixed(1)}KB -> Optimized: ${(blob.size / 1024).toFixed(1)}KB (${format})`);
                             resolve(blob);
@@ -83,7 +92,15 @@ export const optimizeImage = (file: File, options: OptimizationOptions = {}): Pr
                     quality
                 );
             };
+
+            img.onerror = () => {
+                clearTimeout(timeout);
+                reject(new Error('Error al decodificar la imagen. El archivo podría estar dañado.'));
+            };
         };
-        reader.onerror = (err) => reject(err);
+        reader.onerror = (err) => {
+            clearTimeout(timeout);
+            reject(err);
+        };
     });
 };

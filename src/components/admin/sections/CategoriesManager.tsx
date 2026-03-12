@@ -24,7 +24,7 @@ export const CategoriesManager: React.FC<CategoriesManagerProps> = ({ categories
     const [editingCategory, setEditingCategory] = useState<Partial<Category> | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isSlugCustomized, setIsSlugCustomized] = useState(false);
-    const [mediaSelector, setMediaSelector] = useState<{ isOpen: boolean, field: 'image' }>({
+    const [mediaSelector, setMediaSelector] = useState<{ isOpen: boolean, field: 'image' | 'size_guide' }>({
         isOpen: false,
         field: 'image'
     });
@@ -91,14 +91,14 @@ export const CategoriesManager: React.FC<CategoriesManagerProps> = ({ categories
                 </button>
             </div>
 
-            <div className="bg-white border border-slate-200 overflow-hidden">
-                <table className="w-full text-left border-collapse">
+            <div className="bg-white border border-slate-200 overflow-x-auto scrollbar-thin scrollbar-thumb-slate-200 scrollbar-track-transparent">
+                <table className="w-full text-left border-collapse min-w-[700px]">
                     <thead>
                         <tr className="bg-slate-50 border-b border-slate-100">
-                            <th className="px-8 py-4 text-[10px] uppercase tracking-widest font-bold text-slate-400">Imagen</th>
-                            <th className="px-8 py-4 text-[10px] uppercase tracking-widest font-bold text-slate-400">Nombre / URL</th>
-                            <th className="px-8 py-4 text-[10px] uppercase tracking-widest font-bold text-slate-400">Descripción</th>
-                            <th className="px-8 py-4 text-[10px] uppercase tracking-widest font-bold text-slate-400 text-right">Acciones</th>
+                            <th className="px-4 md:px-8 py-4 text-[10px] uppercase tracking-widest font-bold text-slate-400">Imagen</th>
+                            <th className="px-4 md:px-8 py-4 text-[10px] uppercase tracking-widest font-bold text-slate-400">Nombre / URL</th>
+                            <th className="px-4 md:px-8 py-4 text-[10px] uppercase tracking-widest font-bold text-slate-400">Descripción</th>
+                            <th className="px-4 md:px-8 py-4 text-[10px] uppercase tracking-widest font-bold text-slate-400 text-right">Acciones</th>
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100">
@@ -106,7 +106,7 @@ export const CategoriesManager: React.FC<CategoriesManagerProps> = ({ categories
                             const parent = categories.find(c => c.id === cat.parent_id);
                             return (
                                 <tr key={cat.id} className="hover:bg-slate-50/50 transition-colors">
-                                    <td className="px-8 py-4">
+                                    <td className="px-4 md:px-8 py-4">
                                         <div className="w-12 h-12 bg-slate-100 flex items-center justify-center overflow-hidden rounded border border-slate-200">
                                             {cat.image_url ? (
                                                 <img src={cat.image_url} alt={cat.name} className="w-full h-full object-cover" />
@@ -115,7 +115,7 @@ export const CategoriesManager: React.FC<CategoriesManagerProps> = ({ categories
                                             )}
                                         </div>
                                     </td>
-                                    <td className="px-8 py-4">
+                                    <td className="px-4 md:px-8 py-4">
                                         <div className="flex items-center gap-2">
                                             {cat.parent_id && <span className="text-slate-300">└</span>}
                                             <p className={`text-sm font-serif font-bold ${cat.parent_id ? 'text-slate-500' : 'text-slate-800'}`}>
@@ -139,10 +139,10 @@ export const CategoriesManager: React.FC<CategoriesManagerProps> = ({ categories
                                             )}
                                         </div>
                                     </td>
-                                    <td className="px-8 py-4">
+                                    <td className="px-4 md:px-8 py-4">
                                         <p className="text-xs text-slate-400 line-clamp-1 italic">{cat.description || 'Sin descripción'}</p>
                                     </td>
-                                    <td className="px-8 py-4">
+                                    <td className="px-4 md:px-8 py-4">
                                         <div className="flex justify-end gap-3">
                                             <button onClick={() => handleEdit(cat)} className="p-2 border border-slate-100 hover:bg-gold hover:text-white transition-all rounded shadow-sm">
                                                 <FontAwesomeIcon icon={faEdit} className="text-xs" />
@@ -259,19 +259,37 @@ export const CategoriesManager: React.FC<CategoriesManagerProps> = ({ categories
                                     </div>
 
                                     {!editingCategory.parent_id && (
-                                        <div className="space-y-2">
-                                            <label className="text-[10px] uppercase tracking-widest font-bold text-slate-400">Imagen Representativa (Solo Padres)</label>
-                                            <div className="flex gap-2">
-                                                <input
-                                                    type="text"
-                                                    value={editingCategory.image_url || ''}
-                                                    onChange={e => setEditingCategory({ ...editingCategory, image_url: e.target.value })}
-                                                    className="flex-grow p-4 border border-slate-100 focus:border-gold outline-none text-sm"
-                                                    placeholder="Selecciona desde la galería"
-                                                />
-                                                <button onClick={() => setMediaSelector({ isOpen: true, field: 'image' })} className="px-6 py-4 border border-slate-200 hover:bg-slate-50 text-gold transition-all">
-                                                    <FontAwesomeIcon icon={faImages} />
-                                                </button>
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                            <div className="space-y-2">
+                                                <label className="text-[10px] uppercase tracking-widest font-bold text-slate-400">Imagen Representativa</label>
+                                                <div className="flex gap-2">
+                                                    <input
+                                                        type="text"
+                                                        value={editingCategory.image_url || ''}
+                                                        onChange={e => setEditingCategory({ ...editingCategory, image_url: e.target.value })}
+                                                        className="flex-grow p-4 border border-slate-100 focus:border-gold outline-none text-sm"
+                                                        placeholder="Galería..."
+                                                    />
+                                                    <button onClick={() => setMediaSelector({ isOpen: true, field: 'image' })} className="px-6 py-4 border border-slate-200 hover:bg-slate-50 text-gold transition-all">
+                                                        <FontAwesomeIcon icon={faImages} />
+                                                    </button>
+                                                </div>
+                                            </div>
+
+                                            <div className="space-y-2">
+                                                <label className="text-[10px] uppercase tracking-widest font-bold text-slate-400">Guía de Tallas (Tallero)</label>
+                                                <div className="flex gap-2">
+                                                    <input
+                                                        type="text"
+                                                        value={editingCategory.size_guide_url || ''}
+                                                        onChange={e => setEditingCategory({ ...editingCategory, size_guide_url: e.target.value })}
+                                                        className="flex-grow p-4 border border-slate-100 focus:border-gold outline-none text-sm"
+                                                        placeholder="Imagen de referencia..."
+                                                    />
+                                                    <button onClick={() => setMediaSelector({ isOpen: true, field: 'size_guide' })} className="px-6 py-4 border border-slate-200 hover:bg-slate-50 text-gold transition-all">
+                                                        <FontAwesomeIcon icon={faImages} />
+                                                    </button>
+                                                </div>
                                             </div>
                                         </div>
                                     )}
@@ -293,7 +311,11 @@ export const CategoriesManager: React.FC<CategoriesManagerProps> = ({ categories
                 isOpen={mediaSelector.isOpen}
                 onClose={() => setMediaSelector({ ...mediaSelector, isOpen: false })}
                 onSelect={(url) => {
-                    setEditingCategory(prev => ({ ...prev, image_url: url }));
+                    if (mediaSelector.field === 'image') {
+                        setEditingCategory(prev => ({ ...prev, image_url: url }));
+                    } else {
+                        setEditingCategory(prev => ({ ...prev, size_guide_url: url }));
+                    }
                     toast.success('Imagen seleccionada');
                 }}
             />

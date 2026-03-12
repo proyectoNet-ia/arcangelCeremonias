@@ -23,7 +23,7 @@ Este archivo es un resumen actualizado para mantener la continuidad del desarrol
 
 ## 📝 Resumen Ejecutivo
  
-**Última actualización:** 11 de marzo de 2026 — 15:25 hrs
+**Última actualización:** 11 de marzo de 2026 — 23:05 hrs
 **Rama activa:** `main` (local, sincronizada vía OneDrive)
 **Entorno activo:** `http://localhost:3000` (desarrollo local)
 **Producción:** `https://www.ceremoniasarcangel.com` — ⛔ En fase de correcciones de estabilidad y favicon.
@@ -75,6 +75,8 @@ Este archivo es un resumen actualizado para mantener la continuidad del desarrol
 | B-10 | Login 500 (Confirmation tokens NULL) | Reparados tokens nulos en `auth.users` que bloqueaban el motor GoTrue de Supabase. |
 | B-11 | Recursión RLS en Profiles | Implementada política basada en JWT metadata para evitar consultas cíclicas a la propia tabla. |
 | B-12 | Bundle size excesivo | Implementado **Lazy Loading** en `App.tsx` para separar el CMS de la parte pública. |
+| B-13 | Hangs en subida de medios (móvil) | Solucionado con optimizador de imágenes robusto, paralelismo, timeouts y avisos visuales (batch upload). |
+| B-14 | Guía de Tallas (Size Guide) | Implementada URL de guía de tallas por categoría con visualización dinámica en productos. |
 
 ---
 
@@ -91,6 +93,8 @@ Este archivo es un resumen actualizado para mantener la continuidad del desarrol
 
 -   **Code Splitting:** Se utiliza `React.lazy` para todas las rutas. El bundle inicial se redujo un ~25%.
 -   **RBAC (Role Based Access Control):** Los editores solo ven inventario y galería. Los admins ven todo.
+-   **Media Optimization:** Las imágenes móviles ahora tienen fallback y timeout para evitar bloqueos infinitos.
+-   **Batch Uploads:** Soporte para subida masiva de imágenes con barra de progreso en tiempo real.
 -   **Supabase Sessions:** Bypass de locks activo para estabilidad en Chrome/Edge.
 
 ---
@@ -103,4 +107,4 @@ Este archivo es un resumen actualizado para mantener la continuidad del desarrol
 
 ---
 
-*Actualizado por Antigravity — Agente IA de desarrollo. Última actualización: 11/03/2026 21:00 hrs*
+*Actualizado por Antigravity — Agente IA de desarrollo. Última actualización: 11/03/2026 23:05 hrs*

@@ -3,7 +3,7 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faWhatsapp } from '@fortawesome/free-brands-svg-icons';
-import { faArrowLeft, faChevronRight, faChevronLeft, faShareNodes, faDiamond, faHands, faTruckFast, faStore, faTag, faPalette, faLayerGroup, faScissors, faStar, faPhone } from '@fortawesome/free-solid-svg-icons';
+import { faArrowLeft, faChevronRight, faChevronLeft, faShareNodes, faDiamond, faHands, faTruckFast, faStore, faTag, faPalette, faLayerGroup, faScissors, faStar, faPhone, faRulerHorizontal, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
 import { Logo } from '@/components/Logo';
@@ -32,6 +32,7 @@ const ProductDetail: React.FC = () => {
     const [selectedVariant, setSelectedVariant] = useState<number | null>(null);
     const [relatedProducts, setRelatedProducts] = useState<Product[]>([]);
     const [historyProducts, setHistoryProducts] = useState<Product[]>([]);
+    const [showSizeGuide, setShowSizeGuide] = useState(false);
     const { config } = useConfig();
     const whatsapp = config?.whatsapp || '523521681197';
     const phone = config?.phone || '352 52 62502';
@@ -331,6 +332,24 @@ const ProductDetail: React.FC = () => {
                                 </motion.div>
                             )}
 
+                            {/* Size Guide Link (Mercado Libre Style) */}
+                            {product && (product as any).categories?.size_guide_url && (
+                                <motion.div
+                                    initial={{ opacity: 0, x: -10 }}
+                                    animate={{ opacity: 1, x: 0 }}
+                                    transition={{ delay: 0.7 }}
+                                    className="pt-2"
+                                >
+                                    <button
+                                        onClick={() => setShowSizeGuide(true)}
+                                        className="text-[10px] uppercase tracking-[0.2em] font-bold text-gold hover:text-chocolate transition-all flex items-center gap-2 group"
+                                    >
+                                        <FontAwesomeIcon icon={faRulerHorizontal} className="group-hover:rotate-12 transition-transform" />
+                                        <span className="border-b border-gold/30 group-hover:border-chocolate pb-0.5">Guía de Tallas</span>
+                                    </button>
+                                </motion.div>
+                            )}
+
                             {/* Product Technical Specs (Blocks) — staggered */}
                             <div className="grid grid-cols-2 gap-4">
                                 {[
@@ -538,6 +557,56 @@ const ProductDetail: React.FC = () => {
             />
 
             <Footer />
+
+            {/* Size Guide Modal */}
+            <AnimatePresence>
+                {showSizeGuide && product && (product as any).categories?.size_guide_url && (
+                    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-10">
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            onClick={() => setShowSizeGuide(false)}
+                            className="absolute inset-0 bg-slate-900/90 backdrop-blur-md cursor-zoom-out"
+                        />
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.9, y: 20 }}
+                            className="relative w-full max-w-4xl bg-white shadow-2xl overflow-hidden rounded-sm"
+                        >
+                            <div className="p-6 border-b border-slate-100 flex justify-between items-center bg-white sticky top-0 z-10">
+                                <div className="flex items-center gap-4">
+                                    <div className="w-1 h-6 bg-gold" />
+                                    <div>
+                                        <h3 className="text-sm uppercase tracking-widest font-bold text-chocolate">Guía de Tallas</h3>
+                                        <p className="text-[10px] text-chocolate/40 uppercase tracking-widest">Referencia para {(product as any).categories?.name}</p>
+                                    </div>
+                                </div>
+                                <button
+                                    onClick={() => setShowSizeGuide(false)}
+                                    className="w-10 h-10 flex items-center justify-center text-chocolate/40 hover:text-gold transition-colors"
+                                >
+                                    <FontAwesomeIcon icon={faTimes} className="text-xl" />
+                                </button>
+                            </div>
+                            <div className="max-h-[80vh] overflow-y-auto bg-slate-50 p-4 md:p-8">
+                                <img
+                                    src={(product as any).categories.size_guide_url}
+                                    alt="Guía de Tallas"
+                                    className="w-full h-auto shadow-sm rounded-sm mx-auto"
+                                />
+                                <div className="mt-8 p-6 bg-gold/5 border border-gold/10 rounded-sm">
+                                    <p className="text-[10px] text-chocolate/60 leading-relaxed font-medium uppercase tracking-widest text-center">
+                                        * Las medidas son referenciales y pueden variar ligeramente según el modelo y material de la prenda.
+                                        Para una asesoría personalizada, no dudes en contactarnos vía WhatsApp.
+                                    </p>
+                                </div>
+                            </div>
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
         </div>
     );
 };
