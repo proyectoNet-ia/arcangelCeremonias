@@ -50,21 +50,15 @@ export const userService = {
     },
 
     /**
-     * Elimina un usuario (desde la tabla profiles, el usuario en auth debe borrarse manualmente o vía API de admin)
-     * Nota: En Supabase, borrar en auth.users requiere el service_role key o llamar a una función RPC de confianza.
-     * Aquí solo lo quitamos de la vista si es necesario, pero lo ideal es borrar el auth.user.
-     */
-    /**
-     * Elimina un usuario (desde la tabla profiles, el usuario en auth debe borrarse manualmente o vía API de admin)
+     * Elimina un usuario (tanto de auth.users como de public.profiles)
      */
     async deleteProfile(userId: string) {
         if (!supabase) return false;
 
         try {
-            const { error } = await supabase
-                .from('profiles')
-                .delete()
-                .eq('id', userId);
+            const { data, error } = await supabase.rpc('delete_user_admin', {
+                target_user_id: userId
+            });
 
             if (error) throw error;
             return true;
