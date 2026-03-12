@@ -58,19 +58,26 @@ export const mediaService = {
 
     async getAllMedia() {
         const folders = ['products', 'hero', 'branding', 'files'];
-        const allFiles: MediaFile[] = [];
 
-        for (const folder of folders) {
-            try {
-                const files = await this.listFiles(folder);
-                // Filter out placeholder files or empty listings
-                allFiles.push(...files.filter(f => !f.name.startsWith('.')).map(f => ({ ...f, folder })));
-            } catch (err) {
-                console.error(`Error listing folder ${folder}:`, err);
-            }
+        try {
+            const results = await Promise.all(
+                folders.map(async (folder) => {
+                    try {
+                        const files = await this.listFiles(folder);
+                        return files
+                            .filter(f => !f.name.startsWith('.'))
+                            .map(f => ({ ...f, folder }));
+                    } catch (err) {
+                        console.error(`Error listing folder ${folder}:`, err);
+                        return [];
+                    }
+                })
+            );
+            return results.flat();
+        } catch (err) {
+            console.error('General error in getAllMedia:', err);
+            return [];
         }
-
-        return allFiles;
     },
 
     async uploadFile(file: File, folder: string) {
@@ -127,9 +134,15 @@ export const mediaService = {
     },
 
     validateFile(file: File) {
-        if (!ALL_ALLOWED_FORMATS.includes(file.type)) {
-            throw new Error(`Formato no permitido: ${file.type}. Use JPG, PNG, WEBP, GIF o PDF.`);
+        const hasValidType = ALL_ALLOWED_FORMATS.includes(file.type);
+        const hasValidExt = ['jpg', 'jpeg', 'png', 'webp', 'gif', 'svg', 'pdf'].some(ext =>
+            file.name.toLowerCase().endsWith(`.${ext}`)
+        );
+
+        if (!hasValidType && !hasValidExt) {
+            throw new Error(`Formato no reconocido: ${file.name}. Use imágenes estándar o PDF.`);
         }
+
         if (file.size > MAX_FILE_SIZE) {
             throw new Error(`Archivo demasiado grande: ${(file.size / (1024 * 1024)).toFixed(2)}MB. El límite es 20MB.`);
         }
