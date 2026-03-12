@@ -84,13 +84,10 @@ export const mediaService = {
             try {
                 let options = {};
                 if (folder === 'products') {
-                    // Productos: Formato vertical estándar Arcángel
                     options = { maxWidth: 800, maxHeight: 1100, fit: 'cover', format: 'image/webp' };
                 } else if (folder === 'hero') {
-                    // Banners: Alta resolución horizontal
                     options = { maxWidth: 1920, maxHeight: 1080, fit: 'none', format: 'image/webp', quality: 0.85 };
                 } else {
-                    // Otros (Branding, etc): Optimizar sin estirar
                     options = { maxWidth: 1200, maxHeight: 1200, fit: 'none', format: 'image/webp' };
                 }
 
@@ -99,7 +96,9 @@ export const mediaService = {
                 const baseName = file.name.substring(0, file.name.lastIndexOf('.')) || 'image';
                 fileToUpload = new File([optimizedBlob], `${baseName}.${newExtension}`, { type: 'image/webp' });
             } catch (err) {
-                console.warn('Auto-optimization failed, uploading original', err);
+                console.warn('Auto-optimization failed or timed out, uploading original file to avoid hang.', err);
+                // No relanzamos el error, simplemente usamos el archivo original
+                fileToUpload = file;
             }
         }
 

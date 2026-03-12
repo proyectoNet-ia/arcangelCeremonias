@@ -27,9 +27,9 @@ export const MediaGallery: React.FC<MediaGalleryProps> = ({ onSelect, allowSelec
         file: null
     });
 
-    const loadMedia = async () => {
+    const loadMedia = async (silent = false) => {
         try {
-            setLoading(true);
+            if (!silent && files.length === 0) setLoading(true);
             const data = await mediaService.getAllMedia();
             setFiles(data);
         } catch (error) {
@@ -85,8 +85,8 @@ export const MediaGallery: React.FC<MediaGalleryProps> = ({ onSelect, allowSelec
 
             const url = await mediaService.uploadFile(file, targetFolder);
 
-            toast.success('Archivo optimizado y subido con éxito', { id: toastId });
-            loadMedia();
+            toast.success('Archivo subido con éxito', { id: toastId });
+            loadMedia(true); // Recarga silenciosa para no mostrar el spinner grande
         } catch (error: any) {
             console.error('Upload error:', error);
             if (toastId) {
