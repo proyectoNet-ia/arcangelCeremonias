@@ -1,6 +1,9 @@
 -- Migración: Función para restablecer contraseñas desde el CMS (Admin Panel)
 -- Esta función permite a un administrador cambiar la contraseña de otro usuario.
 
+-- 1. Asegurarse de tener pgcrypto habilitado para el hash de contraseñas
+CREATE EXTENSION IF NOT EXISTS pgcrypto;
+
 CREATE OR REPLACE FUNCTION public.admin_reset_user_password(
     target_user_id uuid,
     new_password text
