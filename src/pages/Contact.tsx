@@ -183,7 +183,7 @@ const Contact: React.FC = () => {
 
             <main className="relative z-10 pt-40 md:pt-52 pb-32 px-6 md:px-12 max-w-[1400px] mx-auto">
                 {/* HERO SECTION */}
-                <div className="flex flex-col md:flex-row justify-between items-end gap-10 mb-24">
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-10 mb-24">
                     <RevealOnScroll direction="right" className="section-header !mb-0 max-w-2xl">
                         <div className="section-header-tag-wrapper">
                             <div className="section-header-line" />
@@ -431,21 +431,50 @@ const Contact: React.FC = () => {
                                             key="success-message"
                                             initial={{ opacity: 0, scale: 0.9 }}
                                             animate={{ opacity: 1, scale: 1 }}
-                                            className="py-20 text-center space-y-8"
+                                            className="py-20 text-center space-y-8 flex flex-col items-center justify-center"
                                         >
-                                            <div className="w-24 h-24 bg-gold/10 rounded-full flex items-center justify-center mx-auto mb-8">
-                                                <FontAwesomeIcon icon={faEnvelope} className="text-4xl text-gold" />
+                                            <div className="relative mb-8">
+                                                <motion.div
+                                                    initial={{ scale: 0 }}
+                                                    animate={{ scale: 1 }}
+                                                    transition={{ type: "spring", stiffness: 200, damping: 20 }}
+                                                    className="w-24 h-24 bg-gold/10 rounded-full flex items-center justify-center"
+                                                >
+                                                    <motion.div
+                                                        initial={{ pathLength: 0, opacity: 0 }}
+                                                        animate={{ pathLength: 1, opacity: 1 }}
+                                                        transition={{ duration: 0.8, delay: 0.2 }}
+                                                    >
+                                                        <svg className="w-12 h-12 text-gold" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                                                            <motion.path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                                                        </svg>
+                                                    </motion.div>
+                                                </motion.div>
+
+                                                {/* Decorative pulses */}
+                                                <motion.div
+                                                    animate={{ scale: [1, 1.5], opacity: [0.5, 0] }}
+                                                    transition={{ duration: 1.5, repeat: Infinity }}
+                                                    className="absolute inset-0 bg-gold/20 rounded-full -z-10"
+                                                />
                                             </div>
-                                            <h2 className="text-4xl font-serif text-chocolate">¡Gracias por escribirnos!</h2>
-                                            <p className="text-chocolate/60 font-light max-w-sm mx-auto text-lg">
-                                                Tu mensaje ha sido enviado correctamente. Un asesor se pondrá en contacto contigo a la brevedad.
-                                            </p>
-                                            <button
+
+                                            <div className="space-y-4">
+                                                <h2 className="text-4xl font-serif text-chocolate">¡Mensaje Recibido!</h2>
+                                                <p className="text-chocolate/60 font-light max-w-sm mx-auto text-lg leading-relaxed">
+                                                    Gracias por tu confianza. Hemos recibido tu solicitud correctamente y un asesor especializado te contactará en breve.
+                                                </p>
+                                            </div>
+
+                                            <motion.button
+                                                initial={{ opacity: 0 }}
+                                                animate={{ opacity: 1 }}
+                                                transition={{ delay: 1 }}
                                                 onClick={resetForm}
-                                                className="text-[10px] uppercase tracking-widest text-gold hover:underline font-bold"
+                                                className="mt-8 px-8 py-3 bg-chocolate/5 hover:bg-gold hover:text-white transition-all duration-500 text-[10px] uppercase tracking-widest font-bold border border-gold/10"
                                             >
                                                 Enviar otro mensaje
-                                            </button>
+                                            </motion.button>
                                         </motion.div>
                                     )}
                                 </AnimatePresence>

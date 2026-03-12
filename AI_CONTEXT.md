@@ -52,6 +52,7 @@ Este archivo es un resumen actualizado para mantener la continuidad del desarrol
 | Categorías | `/admin/productos` | Gestión de categorías incluida en Productos |
 | Hero Slider | `/admin/hero` | CRUD de diapositivas con imagen, textos, alineación y botones |
 | Configuración | `/admin/configuracion` | Favicon, Colores, Logos, Nosotros, CTA Banner |
+| Usuarios | `/admin/usuarios` | Gestión de roles (Admin/Editor) con RLS fix. |
 
 ---
 
@@ -71,38 +72,35 @@ Este archivo es un resumen actualizado para mantener la continuidad del desarrol
 
 | ID | Descripción | Solución |
 |----|-------------|----------|
-| B-06 | Preloader ("Próximamente") reaparece al perder foco | Refactor de `ConfigContext` y `AppRoutes` para ignorar `loading` si ya hay config cargada. |
-| B-07 | NavigatorLockAcquireTimeoutError (Supabase) | Implementación de `lock` bypass funcional en `supabase.ts` para evitar esperas de 10s. |
-| B-08 | TypeError: this.lock is not a function | Actualizada firma de la función `lock` para compatibilidad con Supabase v2.97.0. |
-| B-09 | Favicon no se actualizaba | Agregado `favicon_url` a `SiteConfig` y lógica de inyección en `<head>` vía `ConfigProvider`. |
+| B-10 | Login 500 (Confirmation tokens NULL) | Reparados tokens nulos en `auth.users` que bloqueaban el motor GoTrue de Supabase. |
+| B-11 | Recursión RLS en Profiles | Implementada política basada en JWT metadata para evitar consultas cíclicas a la propia tabla. |
+| B-12 | Bundle size excesivo | Implementado **Lazy Loading** en `App.tsx` para separar el CMS de la parte pública. |
 
 ---
 
 ## 🛠️ Próximos Pasos (Ordenados por Prioridad)
 
-1. **🟡 MEDIO:** Revisar optimización de imágenes en el catálogo (tamaño de archivo vs calidad).
-2. **🟢 BAJO:** Mejorar diseño de los mensajes de error en formularios de contacto.
-3. **🟢 BAJO:** Implementar sistema de búsqueda de productos en el catálogo principal.
+1. **🟡 ALTA:** Implementar barra de búsqueda de productos en el catálogo principal.
+2. **🟡 ALTA:** Revisar optimización de imágenes en el catálogo (formato WebP y límites de resolución).
+3. **🟢 BAJO:** Mejorar diseño de los mensajes de error en formularios de contacto.
 4. **⏳ LANZAMIENTO:** Solicitar aprobación final para eliminar el modo mantenimiento por defecto.
 
 ---
 
 ## 🛠️ Notas Técnicas Importantes
 
--   **Supabase Sessions (v2.97.0):** Para evitar bloqueos del `Navigator LockManager` en navegadores modernos, se usa una función `lock` personalizada en `createClient` que ejecuta directamente los callbacks.
--   **Failsafe Auth:** El inicio de sesión en `AuthContext.tsx` tiene un timeout de 2.5s para no congelar la UI si Supabase tarda en responder.
--   **Favicon Dinámico:** Se inyecta directamente al DOM en `ConfigProvider.tsx` buscando `link[rel~='icon']`.
--   **Instalación:** Si se cambia de máquina, asegurar que las variables `VITE_SUPABASE_URL` y `VITE_SUPABASE_ANON_KEY` estén configuradas correctamente en el entorno.
+-   **Code Splitting:** Se utiliza `React.lazy` para todas las rutas. El bundle inicial se redujo un ~25%.
+-   **RBAC (Role Based Access Control):** Los editores solo ven inventario y galería. Los admins ven todo.
+-   **Supabase Sessions:** Bypass de locks activo para estabilidad en Chrome/Edge.
 
 ---
 
 ## 🛠️ Archivos Recientemente Modificados:
-- `src/lib/supabase.ts` (Lock bypass, compatibilidad v2.97.0)
-- `src/context/AuthContext.tsx` (Failsafe timeout initialization)
-- `src/context/ConfigContext.tsx` (Silent refresh, Favicon update)
-- `src/App.tsx` (Resilient routing for maintenance vs content)
-- `src/pages/Admin.tsx` (Favicon state management)
+- `src/App.tsx` (Lazy loading implementation)
+- `src/pages/Admin.tsx` (Role access restriction for editors)
+- `src/components/admin/AdminLayout.tsx` (Sidebar dynamic visibility per role)
+- `sql_migration_fix_schema.sql` (Final RLS and token fixes)
 
 ---
 
-*Actualizado por Antigravity — Agente IA de desarrollo. Última actualización: 11/03/2026 15:25 hrs*
+*Actualizado por Antigravity — Agente IA de desarrollo. Última actualización: 11/03/2026 21:00 hrs*

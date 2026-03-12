@@ -5,7 +5,7 @@ import { optimizeImage } from '../lib/imageOptimization';
 export const ALLOWED_IMAGE_FORMATS = ['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/svg+xml'];
 export const ALLOWED_DOC_FORMATS = ['application/pdf'];
 export const ALL_ALLOWED_FORMATS = [...ALLOWED_IMAGE_FORMATS, ...ALLOWED_DOC_FORMATS];
-export const MAX_FILE_SIZE = 15 * 1024 * 1024; // 15MB
+export const MAX_FILE_SIZE = 5 * 1024 * 1024; // Reducido a 5MB para asegurar rendimiento
 
 export interface MediaFile {
     name: string;
@@ -79,11 +79,25 @@ export const mediaService = {
 
         let fileToUpload = file;
 
-        // 2. Optimización automática para la carpeta de productos
-        if (folder === 'products' && file.type.startsWith('image/')) {
+        // 2. Optimización automática por carpeta
+        if (file.type.startsWith('image/') && !file.type.includes('svg')) {
             try {
-                const optimizedBlob = await optimizeImage(file);
-                fileToUpload = new File([optimizedBlob], file.name, { type: 'image/jpeg' });
+                let options = {};
+                if (folder === 'products') {
+                    // Productos: Formato vertical estándar Arcángel
+                    options = { maxWidth: 800, maxHeight: 1100, fit: 'cover', format: 'image/webp' };
+                } else if (folder === 'hero') {
+                    // Banners: Alta resolución horizontal
+                    options = { maxWidth: 1920, maxHeight: 1080, fit: 'none', format: 'image/webp', quality: 0.85 };
+                } else {
+                    // Otros (Branding, etc): Optimizar sin estirar
+                    options = { maxWidth: 1200, maxHeight: 1200, fit: 'none', format: 'image/webp' };
+                }
+
+                const optimizedBlob = await optimizeImage(file, options);
+                const newExtension = 'webp';
+                const baseName = file.name.substring(0, file.name.lastIndexOf('.')) || 'image';
+                fileToUpload = new File([optimizedBlob], `${baseName}.${newExtension}`, { type: 'image/webp' });
             } catch (err) {
                 console.warn('Auto-optimization failed, uploading original', err);
             }

@@ -30,6 +30,7 @@ export interface Product {
     featured?: boolean;
     badges?: string[];
     stock_status?: 'available' | 'on_request' | 'out_of_stock';
+    is_active?: boolean;
     created_at?: string;
 }
 
@@ -41,6 +42,7 @@ export interface Category {
     image_url?: string;
     icon_url?: string;
     description?: string;
+    is_active?: boolean;
 }
 
 export interface ShopConfig {

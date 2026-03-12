@@ -3,20 +3,31 @@ import { Product, Category } from '../types/product';
 import { mediaService, MAX_FILE_SIZE } from './mediaService';
 
 export const productService = {
-    async getProducts() {
-        const { data, error } = await supabase
+    async getProducts(onlyActive = false) {
+        let query = supabase
             .from('products')
-            .select('*, categories(*)')
-            .order('created_at', { ascending: false });
+            .select('*, categories(*)');
+
+        if (onlyActive) {
+            query = query.eq('is_active', true);
+        }
+
+        const { data, error } = await query.order('created_at', { ascending: false });
 
         if (error) throw error;
         return data as (Product & { categories: Category })[];
     },
 
-    async getCategories() {
-        const { data, error } = await supabase
+    async getCategories(onlyActive = false) {
+        let query = supabase
             .from('categories')
             .select('*');
+
+        if (onlyActive) {
+            query = query.eq('is_active', true);
+        }
+
+        const { data, error } = await query;
 
         if (error) throw error;
         return data as Category[];

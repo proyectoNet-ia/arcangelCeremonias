@@ -5,15 +5,17 @@ import { FloatingActions } from './components/common/FloatingActions';
 import { ConfigProvider, useConfig } from './context/ConfigContext';
 import { AuthProvider } from './context/AuthContext';
 import { ProtectedRoute } from './components/auth/ProtectedRoute';
-import AdminLogin from './pages/AdminLogin';
-import Admin from './pages/Admin';
-import Home from './pages/Home';
-import CatalogPage from './pages/CatalogPage';
-import Catalog from './pages/Catalog';
-import ProductDetail from './pages/ProductDetail';
-import About from './pages/About';
-import Contact from './pages/Contact';
 import { statsService } from './services/statsService';
+
+// Lazy loading of pages for performance optimization
+const AdminLogin = React.lazy(() => import('./pages/AdminLogin'));
+const Admin = React.lazy(() => import('./pages/Admin'));
+const Home = React.lazy(() => import('./pages/Home'));
+const CatalogPage = React.lazy(() => import('./pages/CatalogPage'));
+const Catalog = React.lazy(() => import('./pages/Catalog'));
+const ProductDetail = React.lazy(() => import('./pages/ProductDetail'));
+const About = React.lazy(() => import('./pages/About'));
+const Contact = React.lazy(() => import('./pages/Contact'));
 
 // Component to handle scroll to top on route change and track page views
 const ScrollToTop = () => {
@@ -37,16 +39,30 @@ const AppRoutes = () => {
   const isMaintenance = config ? config.maintenance_mode : true;
 
   return (
-    <>
+    <React.Suspense fallback={
+      <div className="h-screen w-full flex items-center justify-center bg-white">
+        <div className="w-10 h-10 border-4 border-gold border-t-transparent rounded-full animate-spin" />
+      </div>
+    }>
       <ScrollToTop />
       <Routes>
         {/* 1. Acceso Administrador: SIEMPRE DISPONIBLE (Nunca se bloquea) */}
-        <Route path="/admin/login" element={<AdminLogin />} />
+        <Route path="/admin/login" element={
+          <React.Suspense fallback={<div className="h-screen bg-white" />}>
+            <AdminLogin />
+          </React.Suspense>
+        } />
         <Route
           path="/admin/*"
           element={
             <ProtectedRoute>
-              <Admin />
+              <React.Suspense fallback={
+                <div className="h-screen flex items-center justify-center bg-slate-50">
+                  <div className="w-8 h-8 border-2 border-gold border-t-transparent rounded-full animate-spin" />
+                </div>
+              }>
+                <Admin />
+              </React.Suspense>
             </ProtectedRoute>
           }
         />
@@ -86,7 +102,7 @@ const AppRoutes = () => {
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
       <FloatingActions />
-    </>
+    </React.Suspense>
   );
 };
 

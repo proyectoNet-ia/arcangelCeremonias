@@ -33,6 +33,9 @@ export const Header: React.FC<HeaderProps> = ({ variant = 'light' }) => {
     const [isMobileSubmenuOpen, setIsMobileSubmenuOpen] = useState(false);
     const [categories, setCategories] = useState<any[]>([]);
     const [scrolled, setScrolled] = useState(false);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [searchResults, setSearchResults] = useState<any[]>([]);
+    const [isSearching, setIsSearching] = useState(false);
     const location = useLocation();
     const navigate = useNavigate();
     const { config } = useConfig();
@@ -93,6 +96,37 @@ export const Header: React.FC<HeaderProps> = ({ variant = 'light' }) => {
         loadCategories();
     }, []);
 
+    // Live Search Logic
+    useEffect(() => {
+        const performSearch = async () => {
+            if (searchTerm.trim().length < 2) {
+                setSearchResults([]);
+                return;
+            }
+
+            try {
+                setIsSearching(true);
+                const { productService } = await import('@/services/productService');
+                const allProducts = await productService.getProducts();
+
+                const filtered = allProducts.filter(p =>
+                    p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                    p.model_code?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                    p.material?.toLowerCase().includes(searchTerm.toLowerCase())
+                ).slice(0, 6); // Limit to 6 results for live view
+
+                setSearchResults(filtered);
+            } catch (err) {
+                console.error("Search error:", err);
+            } finally {
+                setIsSearching(false);
+            }
+        };
+
+        const timeoutId = setTimeout(performSearch, 300);
+        return () => clearTimeout(timeoutId);
+    }, [searchTerm]);
+
     const navItems = [
         { name: 'Inicio', path: '/', icon: faHouse },
         { name: 'Colección', path: '/catalogo', hasMegamenu: true, icon: faCrown },
@@ -113,7 +147,7 @@ export const Header: React.FC<HeaderProps> = ({ variant = 'light' }) => {
                         initial={{ opacity: 0, y: -20 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -20 }}
-                        className="absolute inset-x-0 top-0 bg-chocolate text-cream p-12 z-[60] shadow-2xl"
+                        className="absolute inset-x-0 top-0 bg-chocolate text-cream p-6 md:p-12 z-[60] shadow-2xl min-h-[100dvh] md:min-h-0 overflow-y-auto md:overflow-y-visible"
                     >
                         <div className="max-w-4xl mx-auto flex flex-col gap-8">
                             <div className="flex justify-between items-center text-gold uppercase tracking-[0.4em] text-[10px]">
@@ -123,23 +157,67 @@ export const Header: React.FC<HeaderProps> = ({ variant = 'light' }) => {
                                 </button>
                             </div>
                             <div className="relative border-b-2 border-gold/30 pb-4 flex items-center group">
-                                <FontAwesomeIcon icon={faSearch} className="text-2xl text-gold/50 group-hover:text-gold transition-colors" />
+                                <FontAwesomeIcon icon={faSearch} className={`text-2xl ${isSearching ? 'animate-pulse text-gold' : 'text-gold/50 group-hover:text-gold'} transition-colors`} />
                                 <input
                                     autoFocus
                                     type="text"
+                                    value={searchTerm}
+                                    onChange={(e) => setSearchTerm(e.target.value)}
                                     placeholder="Encuentra tu prenda ideal..."
                                     className="w-full bg-transparent border-none focus:ring-0 outline-none text-3xl md:text-5xl font-serif text-cream placeholder:text-cream/30 px-6"
                                     onKeyDown={(e) => {
                                         if (e.key === 'Enter') {
-                                            const val = (e.target as HTMLInputElement).value;
-                                            navigate(`/catalogo?search=${encodeURIComponent(val)}`);
+                                            navigate(`/catalogo?search=${encodeURIComponent(searchTerm)}`);
                                             setIsSearchOpen(false);
                                         }
                                     }}
                                 />
                             </div>
+
+                            {/* Live Results Panel */}
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-4">
+                                <AnimatePresence mode="popLayout">
+                                    {searchResults.map((product, idx) => (
+                                        <motion.div
+                                            key={product.id}
+                                            initial={{ opacity: 0, scale: 0.95 }}
+                                            animate={{ opacity: 1, scale: 1 }}
+                                            exit={{ opacity: 0, scale: 0.95 }}
+                                            transition={{ delay: idx * 0.05 }}
+                                            className="bg-white/5 border border-white/10 p-4 flex gap-4 cursor-pointer hover:bg-white/10 transition-all group"
+                                            onClick={() => {
+                                                navigate(`/producto/${product.slug}`);
+                                                setIsSearchOpen(false);
+                                            }}
+                                        >
+                                            <div className="w-16 h-20 bg-chocolate flex-shrink-0 overflow-hidden">
+                                                <img src={product.main_image} alt={product.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                                            </div>
+                                            <div className="flex flex-col justify-center min-w-0">
+                                                <h4 className="text-xs font-bold text-cream uppercase tracking-widest truncate">{product.name}</h4>
+                                                <p className="text-[9px] text-gold uppercase tracking-tighter mt-1">Modelo: {product.model_code}</p>
+                                                <div className="mt-2 text-[8px] text-cream/40 uppercase tracking-widest flex items-center gap-2">
+                                                    <span>Ver Detalle</span>
+                                                    <FontAwesomeIcon icon={faChevronDown} className="-rotate-90 text-[6px]" />
+                                                </div>
+                                            </div>
+                                        </motion.div>
+                                    ))}
+                                </AnimatePresence>
+                            </div>
+
+                            {searchTerm.length >= 2 && searchResults.length === 0 && !isSearching && (
+                                <p className="text-cream/40 text-[11px] uppercase tracking-widest text-center mt-8 italic font-serif">
+                                    No encontramos resultados para "{searchTerm}"
+                                </p>
+                            )}
+
                             <p className="text-cream/40 text-[10px] uppercase tracking-widest text-center mt-4">
-                                Presiona <span className="text-gold">Enter</span> para ver los resultados en el catálogo
+                                {searchTerm.length >= 2 ? (
+                                    <>Presiona <span className="text-gold">Enter</span> para ver todos los resultados</>
+                                ) : (
+                                    <>Escribe al menos 2 caracteres para comenzar la búsqueda</>
+                                )}
                             </p>
                         </div>
                     </motion.div>
@@ -309,12 +387,12 @@ export const Header: React.FC<HeaderProps> = ({ variant = 'light' }) => {
                                                 <Link
                                                     to={item.path}
                                                     onClick={() => setIsMobileMenuOpen(false)}
-                                                    className="flex items-center gap-6"
+                                                    className="flex items-center gap-4 md:gap-6 w-full"
                                                 >
-                                                    <div className={`w-8 h-8 rounded-sm flex items-center justify-center transition-colors ${location.pathname === item.path ? 'bg-gold text-chocolate shadow-lg shadow-gold/20' : 'bg-white/10 text-gold/80'}`}>
+                                                    <div className={`flex-shrink-0 w-8 h-8 rounded-sm flex items-center justify-center transition-colors ${location.pathname === item.path ? 'bg-gold text-chocolate shadow-lg shadow-gold/20' : 'bg-white/10 text-gold/80'}`}>
                                                         <FontAwesomeIcon icon={item.icon} className="text-sm" />
                                                     </div>
-                                                    <span className={`text-sm uppercase tracking-[0.4em] font-bold transition-all ${location.pathname === item.path ? 'text-gold' : 'text-cream group-hover:text-gold group-hover:translate-x-2'}`}>
+                                                    <span className={`text-xs md:text-sm uppercase tracking-[0.3em] md:tracking-[0.4em] font-bold transition-all ${location.pathname === item.path ? 'text-gold' : 'text-cream group-hover:text-gold group-hover:translate-x-2'}`}>
                                                         {item.name}
                                                     </span>
                                                 </Link>

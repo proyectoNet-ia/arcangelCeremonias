@@ -20,6 +20,7 @@ import { useConfig } from '@/context/ConfigContext';
 import { statsService } from '@/services/statsService';
 import { CTABanner } from '@/components/common/CTABanner';
 import { SEO } from '@/components/common/SEO';
+import { ProductDetailSkeleton } from '@/components/common/Skeleton';
 
 const ProductDetail: React.FC = () => {
     const { slug } = useParams<{ slug: string }>();
@@ -86,14 +87,10 @@ const ProductDetail: React.FC = () => {
     };
 
     if (loading) {
-        return (
-            <div className="min-h-screen bg-cream flex items-center justify-center">
-                <div className="w-12 h-12 border-2 border-gold border-t-transparent rounded-full animate-spin" />
-            </div>
-        );
+        return <ProductDetailSkeleton />;
     }
 
-    if (!product) {
+    if (!product || product.is_active === false) {
         return (
             <div className="min-h-screen bg-cream flex flex-col items-center justify-center space-y-6">
                 <h2 className="font-serif text-3xl text-chocolate">Producto no encontrado</h2>
@@ -193,7 +190,7 @@ const ProductDetail: React.FC = () => {
 
                         {/* Left: Image Gallery — slides in from left */}
                         <motion.div
-                            className="lg:col-span-12 xl:col-span-7 space-y-4"
+                            className="lg:col-span-7 xl:col-span-7 space-y-4"
                             initial={{ opacity: 0, x: -40 }}
                             animate={{ opacity: 1, x: 0 }}
                             transition={{ duration: 0.8, ease: 'easeOut' }}

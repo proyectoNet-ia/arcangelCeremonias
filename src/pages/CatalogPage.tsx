@@ -7,6 +7,8 @@ import {
     faHands, faTruckFast, faDiamond, faStore, faAward, faLeaf
 } from '@fortawesome/free-solid-svg-icons';
 import { faWhatsapp, faInstagram, faFacebook } from '@fortawesome/free-brands-svg-icons';
+import { faSearch, faTimes } from '@fortawesome/free-solid-svg-icons';
+import { useNavigate } from 'react-router-dom';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
 import { RevealOnScroll } from '@/components/common/RevealOnScroll';
@@ -85,6 +87,8 @@ const Home: React.FC = () => {
     const facebook = config?.facebook_url || 'https://www.facebook.com/arcangel.ceremonias/';
     const instagram = config?.instagram_url || 'https://www.instagram.com/ceremonias.arcangel/';
     const [trendingIndex, setTrendingIndex] = useState(0);
+    const [searchTerm, setSearchTerm] = useState('');
+    const navigate = useNavigate();
 
 
     // Auto-advance slider
@@ -311,8 +315,53 @@ const Home: React.FC = () => {
             </section>
 
             {/* ════════════════════════════════════════
+                2.5 SEARCH SECTION (PIEZA CLAVE)
+            ════════════════════════════════════════ */}
+            <section className="relative -mt-10 md:-mt-14 z-30 px-6">
+                <div className="max-w-4xl mx-auto">
+                    <RevealOnScroll direction="up">
+                        <div className="bg-white/80 backdrop-blur-xl border border-gold/20 p-2 md:p-3 shadow-2xl flex items-center gap-4 group focus-within:border-gold transition-all duration-500">
+                            <div className="pl-4 md:pl-6 text-chocolate/40 group-focus-within:text-gold transition-colors">
+                                <FontAwesomeIcon icon={faSearch} className="text-lg" />
+                            </div>
+                            <input
+                                type="text"
+                                placeholder="¿Qué pieza estás buscando hoy? (Ej: Ropón de bautizo, traje sastre...)"
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                                onKeyDown={(e) => {
+                                    if (e.key === 'Enter' && searchTerm.trim()) {
+                                        navigate(`/catalogo?search=${encodeURIComponent(searchTerm.trim())}`);
+                                    }
+                                }}
+                                className="flex-1 bg-transparent py-4 md:py-6 outline-none text-xs md:text-sm uppercase tracking-widest font-medium placeholder:text-chocolate/30"
+                            />
+                            {searchTerm && (
+                                <button
+                                    onClick={() => setSearchTerm('')}
+                                    className="p-2 text-chocolate/20 hover:text-chocolate transition-colors"
+                                >
+                                    <FontAwesomeIcon icon={faTimes} />
+                                </button>
+                            )}
+                            <button
+                                onClick={() => {
+                                    if (searchTerm.trim()) {
+                                        navigate(`/catalogo?search=${encodeURIComponent(searchTerm.trim())}`);
+                                    }
+                                }}
+                                className="bg-chocolate text-cream px-8 md:px-12 py-4 md:py-6 text-[10px] uppercase font-bold tracking-[0.3em] hover:bg-gold hover:text-chocolate transition-all duration-500 hidden sm:block"
+                            >
+                                Buscar
+                            </button>
+                        </div>
+                    </RevealOnScroll>
+                </div>
+            </section>
+
+            {/* ════════════════════════════════════════
                 3. FEATURED PRODUCTS
-            {/* 3. FEATURED PRODUCTS */}
+            */}
             <section className="relative pt-28 pb-20 md:pt-40 md:pb-32 px-6 md:px-12 max-w-[1600px] mx-auto overflow-hidden">
                 <RevealOnScroll>
                     {/* Section header */}

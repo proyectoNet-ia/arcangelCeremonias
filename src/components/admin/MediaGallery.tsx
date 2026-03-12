@@ -21,6 +21,7 @@ export const MediaGallery: React.FC<MediaGalleryProps> = ({ onSelect, allowSelec
     const [searchTerm, setSearchTerm] = useState('');
     const [filterFolder, setFilterFolder] = useState<string>('all');
     const [uploading, setUploading] = useState(false);
+    const [optimizationStats, setOptimizationStats] = useState<{ original: number, optimized: number } | null>(null);
     const [confirmDelete, setConfirmDelete] = useState<{ isOpen: boolean, file: MediaFile | null }>({
         isOpen: false,
         file: null
@@ -84,7 +85,7 @@ export const MediaGallery: React.FC<MediaGalleryProps> = ({ onSelect, allowSelec
 
             const url = await mediaService.uploadFile(file, targetFolder);
 
-            toast.success('Archivo subido con éxito', { id: toastId });
+            toast.success('Archivo optimizado y subido con éxito', { id: toastId });
             loadMedia(); // Recargar la lista
         } catch (error: any) {
             console.error('Upload error:', error);

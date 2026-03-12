@@ -25,10 +25,13 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, index }) => {
         >
             <Link to={`/producto/${product.slug}`}>
                 <div className="relative overflow-hidden bg-slate-50 aspect-[3/4] mb-5 shadow-sm group-hover:shadow-xl transition-shadow duration-700">
-                    {/* Skeleton / Placeholder */}
+                    {/* Skeleton / Placeholder Premium */}
                     {!isLoaded && (
-                        <div className="absolute inset-0 bg-chocolate/5 animate-pulse flex items-center justify-center">
-                            <div className="w-10 h-[1px] bg-gold/20" />
+                        <div className="absolute inset-0 bg-chocolate/5 overflow-hidden">
+                            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full animate-[shimmer_2s_infinite]" />
+                            <div className="flex items-center justify-center h-full">
+                                <div className="w-10 h-[1px] bg-gold/20" />
+                            </div>
                         </div>
                     )}
 
@@ -51,7 +54,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, index }) => {
                             return displayBadges.map((badge, bIdx) => (
                                 <span
                                     key={bIdx}
-                                    className={`backdrop-blur-md text-[9px] uppercase tracking-[0.3em] px-3 py-1.5 font-bold shadow-sm border ${badge.toUpperCase() === 'NUEVO'
+                                    className={`backdrop-blur-md text-[7px] md:text-[9px] uppercase tracking-[0.2em] md:tracking-[0.3em] px-2 py-1 md:px-3 md:py-1.5 font-bold shadow-sm border ${badge.toUpperCase() === 'NUEVO'
                                         ? 'bg-gold text-white border-gold/20'
                                         : badge.toUpperCase() === 'PREMIUM'
                                             ? 'bg-chocolate text-gold border-gold/30'
@@ -88,17 +91,17 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, index }) => {
                     </div>
                 </div>
 
-                <div className="text-left space-y-2 px-1">
+                <div className="text-left space-y-1 md:space-y-2 px-1 mt-2 md:mt-0">
                     <div className="relative inline-block">
-                        <h3 className="font-serif text-[19px] text-chocolate group-hover:text-gold transition-colors duration-500 leading-tight">
+                        <h3 className="font-serif text-sm md:text-[19px] text-chocolate group-hover:text-gold transition-colors duration-500 leading-tight">
                             {product.name}
                         </h3>
                         <div className="absolute -bottom-1 left-0 w-0 h-[1px] bg-gold group-hover:w-full transition-all duration-700 ease-out" />
                     </div>
 
-                    <div className="flex items-center gap-2.5 text-chocolate/40 group-hover:text-chocolate/60 transition-colors duration-500">
-                        <FontAwesomeIcon icon={faAward} className="text-[10px] text-gold/60" />
-                        <p className="text-[10px] uppercase tracking-[0.25em] font-medium">
+                    <div className="flex items-center gap-1.5 md:gap-2.5 text-chocolate/40 group-hover:text-chocolate/60 transition-colors duration-500">
+                        <FontAwesomeIcon icon={faAward} className="text-[8px] md:text-[10px] text-gold/60 flex-shrink-0" />
+                        <p className="text-[8px] md:text-[10px] uppercase tracking-[0.15em] md:tracking-[0.25em] font-medium truncate">
                             {product.material || 'Artesanía de Autor'}
                         </p>
                     </div>

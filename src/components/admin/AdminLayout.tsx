@@ -30,14 +30,20 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
     const location = useLocation();
 
     const menuItems = [
-        { name: 'Dashboard', path: '/admin', icon: faChartLine },
+        ...(isAdmin || profile?.role === 'admin' ? [
+            { name: 'Dashboard', path: '/admin', icon: faChartLine },
+        ] : []),
         { name: 'Productos', path: '/admin/productos', icon: faBox },
         { name: 'Categorías', path: '/admin/categorias', icon: faTags },
-        { name: 'Hero Slider', path: '/admin/hero', icon: faImage },
+        ...(isAdmin || profile?.role === 'admin' ? [
+            { name: 'Hero Slider', path: '/admin/hero', icon: faImage },
+        ] : []),
         { name: 'Galería Media', path: '/admin/galeria', icon: faImage },
-        { name: 'Mensajes', path: '/admin/mensajes', icon: faInbox },
-        { name: 'Configuración', path: '/admin/configuracion', icon: faPalette },
-        ...(isAdmin ? [{ name: 'Usuarios', path: '/admin/usuarios', icon: faUsersCog }] : []),
+        ...(isAdmin || profile?.role === 'admin' ? [
+            { name: 'Mensajes', path: '/admin/mensajes', icon: faInbox },
+            { name: 'Configuración', path: '/admin/configuracion', icon: faPalette },
+            { name: 'Usuarios', path: '/admin/usuarios', icon: faUsersCog }
+        ] : []),
     ];
 
     return (

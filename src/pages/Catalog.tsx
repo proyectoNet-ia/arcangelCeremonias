@@ -12,6 +12,7 @@ import { useConfig } from '@/context/ConfigContext';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch, faTimes, faFilePdf } from '@fortawesome/free-solid-svg-icons';
 import { CTABanner } from '@/components/common/CTABanner';
+import { ProductSkeleton } from '@/components/common/Skeleton';
 
 const Catalog: React.FC = () => {
     const [searchParams, setSearchParams] = useSearchParams();
@@ -70,8 +71,8 @@ const Catalog: React.FC = () => {
             try {
                 setLoading(true);
                 const [productsData, categoriesData] = await Promise.all([
-                    productService.getProducts(),
-                    productService.getCategories()
+                    productService.getProducts(true),
+                    productService.getCategories(true)
                 ]);
                 setProducts(productsData);
                 setCategories(categoriesData);
@@ -272,16 +273,12 @@ const Catalog: React.FC = () => {
                 </div>
 
                 {/* --- PRODUCT GRID --- */}
-                <div className="grid grid-cols-1 lg:grid-cols-3 xl:grid-cols-4 gap-x-4 md:gap-x-8 gap-y-10 md:gap-y-16">
+                <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-3 md:gap-x-8 gap-y-8 md:gap-y-16">
                     <AnimatePresence mode='popLayout'>
                         {loading ? (
-                            // SKELETON LOADERS
+                            // PREMIUM SKELETON LOADERS
                             Array.from({ length: 8 }).map((_, i) => (
-                                <div key={`skeleton-${i}`} className="space-y-4 animate-pulse">
-                                    <div className="bg-chocolate/5 aspect-[3/4] w-full" />
-                                    <div className="h-4 bg-chocolate/5 w-3/4" />
-                                    <div className="h-3 bg-chocolate/5 w-1/2" />
-                                </div>
+                                <ProductSkeleton key={`skeleton-${i}`} />
                             ))
                         ) : filteredProducts.length > 0 ? (
                             filteredProducts.map((product, index) => (
