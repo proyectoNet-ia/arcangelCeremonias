@@ -24,7 +24,7 @@ export const CategoriesManager: React.FC<CategoriesManagerProps> = ({ categories
     const [editingCategory, setEditingCategory] = useState<Partial<Category> | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isSlugCustomized, setIsSlugCustomized] = useState(false);
-    const [mediaSelector, setMediaSelector] = useState<{ isOpen: boolean, field: 'image' }>({
+    const [mediaSelector, setMediaSelector] = useState<{ isOpen: boolean, field: 'image' | 'size_guide' }>({
         isOpen: false,
         field: 'image'
     });
@@ -259,19 +259,37 @@ export const CategoriesManager: React.FC<CategoriesManagerProps> = ({ categories
                                     </div>
 
                                     {!editingCategory.parent_id && (
-                                        <div className="space-y-2">
-                                            <label className="text-[10px] uppercase tracking-widest font-bold text-slate-400">Imagen Representativa (Solo Padres)</label>
-                                            <div className="flex gap-2">
-                                                <input
-                                                    type="text"
-                                                    value={editingCategory.image_url || ''}
-                                                    onChange={e => setEditingCategory({ ...editingCategory, image_url: e.target.value })}
-                                                    className="flex-grow p-4 border border-slate-100 focus:border-gold outline-none text-sm"
-                                                    placeholder="Selecciona desde la galería"
-                                                />
-                                                <button onClick={() => setMediaSelector({ isOpen: true, field: 'image' })} className="px-6 py-4 border border-slate-200 hover:bg-slate-50 text-gold transition-all">
-                                                    <FontAwesomeIcon icon={faImages} />
-                                                </button>
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                            <div className="space-y-2">
+                                                <label className="text-[10px] uppercase tracking-widest font-bold text-slate-400">Imagen Representativa</label>
+                                                <div className="flex gap-2">
+                                                    <input
+                                                        type="text"
+                                                        value={editingCategory.image_url || ''}
+                                                        onChange={e => setEditingCategory({ ...editingCategory, image_url: e.target.value })}
+                                                        className="flex-grow p-4 border border-slate-100 focus:border-gold outline-none text-sm"
+                                                        placeholder="Galería..."
+                                                    />
+                                                    <button onClick={() => setMediaSelector({ isOpen: true, field: 'image' })} className="px-6 py-4 border border-slate-200 hover:bg-slate-50 text-gold transition-all">
+                                                        <FontAwesomeIcon icon={faImages} />
+                                                    </button>
+                                                </div>
+                                            </div>
+
+                                            <div className="space-y-2">
+                                                <label className="text-[10px] uppercase tracking-widest font-bold text-slate-400">Guía de Tallas (Tallero)</label>
+                                                <div className="flex gap-2">
+                                                    <input
+                                                        type="text"
+                                                        value={editingCategory.size_guide_url || ''}
+                                                        onChange={e => setEditingCategory({ ...editingCategory, size_guide_url: e.target.value })}
+                                                        className="flex-grow p-4 border border-slate-100 focus:border-gold outline-none text-sm"
+                                                        placeholder="Imagen de referencia..."
+                                                    />
+                                                    <button onClick={() => setMediaSelector({ isOpen: true, field: 'size_guide' })} className="px-6 py-4 border border-slate-200 hover:bg-slate-50 text-gold transition-all">
+                                                        <FontAwesomeIcon icon={faImages} />
+                                                    </button>
+                                                </div>
                                             </div>
                                         </div>
                                     )}
@@ -293,7 +311,11 @@ export const CategoriesManager: React.FC<CategoriesManagerProps> = ({ categories
                 isOpen={mediaSelector.isOpen}
                 onClose={() => setMediaSelector({ ...mediaSelector, isOpen: false })}
                 onSelect={(url) => {
-                    setEditingCategory(prev => ({ ...prev, image_url: url }));
+                    if (mediaSelector.field === 'image') {
+                        setEditingCategory(prev => ({ ...prev, image_url: url }));
+                    } else {
+                        setEditingCategory(prev => ({ ...prev, size_guide_url: url }));
+                    }
                     toast.success('Imagen seleccionada');
                 }}
             />
