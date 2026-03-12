@@ -136,12 +136,12 @@ export const MediaGallery: React.FC<MediaGalleryProps> = ({ onSelect, allowSelec
                         {uploading ? 'Subiendo...' : 'Subir Archivo'}
                         <input type="file" className="hidden" onChange={handleUpload} accept={ALL_ALLOWED_FORMATS.join(',')} />
                     </label>
-                    <div className="flex bg-slate-50 p-1">
+                    <div className="flex bg-slate-50 p-1 overflow-x-auto no-scrollbar max-w-full sm:max-w-none">
                         {folders.map(folder => (
                             <button
                                 key={folder}
                                 onClick={() => setFilterFolder(folder)}
-                                className={`px-4 py-2 text-[10px] uppercase font-bold tracking-widest transition-all ${filterFolder === folder
+                                className={`flex-shrink-0 px-4 py-2 text-[10px] uppercase font-bold tracking-widest transition-all ${filterFolder === folder
                                     ? 'bg-white text-gold shadow-sm'
                                     : 'text-slate-400 hover:text-chocolate'
                                     }`}
