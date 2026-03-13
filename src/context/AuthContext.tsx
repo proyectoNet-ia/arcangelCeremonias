@@ -24,6 +24,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const [profile, setProfile] = useState<Profile | null>(null);
     const [loading, setLoading] = useState(true);
 
+    // Use Refs to avoid stale closures in event listeners
+    const profileRef = React.useRef<Profile | null>(null);
+    const userRef = React.useRef<User | null>(null);
+
+    // Sync refs with state
+    useEffect(() => { profileRef.current = profile; }, [profile]);
+    useEffect(() => { userRef.current = user; }, [user]);
+
     const fetchProfile = async (userId: string) => {
         try {
             console.log('Fetching profile for:', userId);
@@ -47,91 +55,61 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     useEffect(() => {
         if (!supabase) {
-            console.warn('Supabase client not initialized');
             setLoading(false);
             return;
         }
 
-        const initialize = async () => {
-            const timeoutId = setTimeout(() => {
-                setLoading(false);
-                console.warn('Auth initialization reached failsafe timeout (2.5s) - Proceeding to keep UI responsive.');
-            }, 2500);
+        const handleAuthEvent = async (event: string, session: any) => {
+            console.log(`[Auth Event] ${event}`, session?.user?.id);
+            const currentUser = session?.user ?? null;
 
-            try {
-                console.log('Initializing AuthContext...');
-                // Carrera entre getSession y un timeout de 2.5s para no congelar la UI
-                const sessionPromise = supabase.auth.getSession();
-                const timeoutPromise = new Promise((_, reject) =>
-                    setTimeout(() => reject(new Error('Session fetch timeout')), 2500)
-                );
-
-                const result = await Promise.race([sessionPromise, timeoutPromise]).catch(e => {
-                    console.error('Session get error or timeout:', e);
-                    return { data: { session: null }, error: e };
-                });
-
-                const session = (result as any)?.data?.session ?? null;
-                const sessionError = (result as any)?.error ?? null;
-
-                if (sessionError) {
-                    console.warn('Session error suppressed for stability:', sessionError);
-                }
-
-                const currentUser = session?.user ?? null;
-                setUser(currentUser);
-
-                if (currentUser) {
-                    console.log('User found, fetching profile...', currentUser.id);
-                    await fetchProfile(currentUser.id);
-                } else {
-                    console.log('No active session found during initialization.');
-                }
-            } catch (err) {
-                console.error('Initialization caught crash:', err);
-                // Fallback to null user so the app doesn't stay loading
+            if (event === 'SIGNED_OUT') {
                 setUser(null);
-            } finally {
-                // Ensure timeout is cleared as soon as we finish the try/catch
-                clearTimeout(timeoutId);
-                console.log('Finalizing AuthContext initialization.');
+                setProfile(null);
+                setLoading(false);
+                return;
+            }
+
+            setUser(currentUser);
+            
+            if (currentUser) {
+                // Use profileRef to check if we really need to fetch
+                const needsProfileFetch = !profileRef.current || profileRef.current.id !== currentUser.id;
+                
+                if (needsProfileFetch) {
+                    // Only show loading for the very first sign in if we didn't have a user before
+                    const shouldShowLoading = event === 'SIGNED_IN' && !userRef.current;
+                    if (shouldShowLoading) setLoading(true);
+                    
+                    await fetchProfile(currentUser.id);
+                    
+                    if (shouldShowLoading) setLoading(false);
+                } else {
+                    setLoading(false);
+                }
+            } else {
                 setLoading(false);
             }
         };
 
-        initialize();
-
-        const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-            console.log('Auth state changed:', event, session?.user?.id);
-
-            const currentUser = session?.user ?? null;
-
-            if (event === 'SIGNED_IN' || event === 'USER_UPDATED' || event === 'TOKEN_REFRESHED') {
-                // Solo activamos loading si realmente necesitamos bloquear la UI para una transición crítica
-                // TOKEN_REFRESHED no debería disparar loading.
-                const needsProfileFetch = currentUser && (!profile || profile.id !== currentUser.id);
-                
-                setUser(currentUser);
-                
-                if (needsProfileFetch) {
-                    // Si ya tenemos un usuario y solo estamos refrescando, no bloqueamos con loading
-                    const forceLoading = event === 'SIGNED_IN' && !user;
-                    if (forceLoading) setLoading(true);
-                    
-                    await fetchProfile(currentUser.id);
-                    
-                    if (forceLoading) setLoading(false);
+        const initAuth = async () => {
+            try {
+                const { data: { session } } = await supabase.auth.getSession();
+                if (session) {
+                    await handleAuthEvent('INITIAL', session);
                 } else {
                     setLoading(false);
                 }
-            } else if (event === 'SIGNED_OUT') {
-                setUser(null);
-                setProfile(null);
-                setLoading(false);
-            } else {
-                setUser(currentUser);
+            } catch (err) {
+                console.error('Auth Init Error:', err);
                 setLoading(false);
             }
+        };
+
+        initAuth();
+
+        const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+            handleAuthEvent(event, session);
         });
 
         return () => subscription.unsubscribe();
