@@ -7,15 +7,35 @@ import { AuthProvider } from './context/AuthContext';
 import { ProtectedRoute } from './components/auth/ProtectedRoute';
 import { statsService } from './services/statsService';
 
+// Resilient lazy loading to handle ChunkLoadError (common after redeploys)
+const lazyWithRetry = (componentImport: () => Promise<any>) =>
+  React.lazy(async () => {
+    const pageHasAlreadyBeenForceRefreshed = JSON.parse(
+      window.localStorage.getItem('page-has-been-force-refreshed') || 'false'
+    );
+
+    try {
+      const component = await componentImport();
+      window.localStorage.setItem('page-has-been-force-refreshed', 'false');
+      return component;
+    } catch (error) {
+      if (!pageHasAlreadyBeenForceRefreshed) {
+        window.localStorage.setItem('page-has-been-force-refreshed', 'true');
+        return window.location.reload();
+      }
+      throw error;
+    }
+  });
+
 // Lazy loading of pages for performance optimization
-const AdminLogin = React.lazy(() => import('./pages/AdminLogin'));
-const Admin = React.lazy(() => import('./pages/Admin'));
-const Home = React.lazy(() => import('./pages/Home'));
-const CatalogPage = React.lazy(() => import('./pages/CatalogPage'));
-const Catalog = React.lazy(() => import('./pages/Catalog'));
-const ProductDetail = React.lazy(() => import('./pages/ProductDetail'));
-const About = React.lazy(() => import('./pages/About'));
-const Contact = React.lazy(() => import('./pages/Contact'));
+const AdminLogin = lazyWithRetry(() => import('./pages/AdminLogin'));
+const Admin = lazyWithRetry(() => import('./pages/Admin'));
+const Home = lazyWithRetry(() => import('./pages/Home'));
+const CatalogPage = lazyWithRetry(() => import('./pages/CatalogPage'));
+const Catalog = lazyWithRetry(() => import('./pages/Catalog'));
+const ProductDetail = lazyWithRetry(() => import('./pages/ProductDetail'));
+const About = lazyWithRetry(() => import('./pages/About'));
+const Contact = lazyWithRetry(() => import('./pages/Contact'));
 
 // Component to handle scroll to top on route change and track page views
 const ScrollToTop = () => {
