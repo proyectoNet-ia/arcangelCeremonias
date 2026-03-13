@@ -12,11 +12,6 @@ export const FloatingActions: React.FC = () => {
     const [isVisible, setIsVisible] = useState(false);
     const { config } = useConfig();
 
-    // No mostrar en el panel de administración
-    if (pathname.startsWith('/admin')) {
-        return null;
-    }
-
     // Show button when page is scrolled down
     const toggleVisibility = () => {
         if (window.pageYOffset > 300) {
@@ -46,6 +41,11 @@ export const FloatingActions: React.FC = () => {
         const url = `https://wa.me/${whatsappNumber}?text=${whatsappMessage}`;
         window.open(url, '_blank', 'noopener,noreferrer');
     };
+
+    // No mostrar en el panel de administración
+    if (pathname.startsWith('/admin')) {
+        return null;
+    }
 
     return (
         <div className="fixed bottom-8 right-8 z-[100] flex flex-col gap-4">
