@@ -53,57 +53,53 @@ const Admin: React.FC = () => {
         fetchData();
     }, []);
 
-    if (loading && products.length === 0) {
-        return (
-            <div className="h-screen flex items-center justify-center bg-slate-50">
-                <div className="w-12 h-12 border-2 border-gold border-t-transparent rounded-full animate-spin" />
-            </div>
-        );
-    }
-
     return (
         <AdminLayout>
-            <Suspense fallback={<LoadingSection />}>
-                <Routes>
-                    <Route index element={
-                        isAdmin ? (
-                            <DashboardOverview products={products} categories={categories} refresh={fetchData} />
-                        ) : (
-                            <Navigate to="productos" replace />
-                        )
-                    } />
-                    <Route path="productos" element={<ProductsManager products={products} categories={categories} refresh={fetchData} />} />
-                    <Route path="categorias" element={<CategoriesManager categories={categories} refresh={fetchData} />} />
+            {loading && products.length === 0 ? (
+                <LoadingSection />
+            ) : (
+                <Suspense fallback={<LoadingSection />}>
+                    <Routes>
+                        <Route index element={
+                            isAdmin ? (
+                                <DashboardOverview products={products} categories={categories} refresh={fetchData} />
+                            ) : (
+                                <Navigate to="productos" replace />
+                            )
+                        } />
+                        <Route path="productos" element={<ProductsManager products={products} categories={categories} refresh={fetchData} />} />
+                        <Route path="categorias" element={<CategoriesManager categories={categories} refresh={fetchData} />} />
 
-                    <Route path="hero" element={
-                        <ProtectedRoute requireAdmin>
-                            <HeroManager />
-                        </ProtectedRoute>
-                    } />
+                        <Route path="hero" element={
+                            <ProtectedRoute requireAdmin>
+                                <HeroManager />
+                            </ProtectedRoute>
+                        } />
 
-                    <Route path="galeria" element={<MediaGallery />} />
+                        <Route path="galeria" element={<MediaGallery />} />
 
-                    <Route path="mensajes" element={
-                        <ProtectedRoute requireAdmin>
-                            <MessagesManager />
-                        </ProtectedRoute>
-                    } />
+                        <Route path="mensajes" element={
+                            <ProtectedRoute requireAdmin>
+                                <MessagesManager />
+                            </ProtectedRoute>
+                        } />
 
-                    <Route path="usuarios" element={
-                        <ProtectedRoute requireAdmin>
-                            <UsersManager />
-                        </ProtectedRoute>
-                    } />
+                        <Route path="usuarios" element={
+                            <ProtectedRoute requireAdmin>
+                                <UsersManager />
+                            </ProtectedRoute>
+                        } />
 
-                    <Route path="configuracion" element={
-                        <ProtectedRoute requireAdmin>
-                            <ConfigManager />
-                        </ProtectedRoute>
-                    } />
+                        <Route path="configuracion" element={
+                            <ProtectedRoute requireAdmin>
+                                <ConfigManager />
+                            </ProtectedRoute>
+                        } />
 
-                    <Route path="*" element={<DashboardOverview products={products} categories={categories} refresh={fetchData} />} />
-                </Routes>
-            </Suspense>
+                        <Route path="*" element={<DashboardOverview products={products} categories={categories} refresh={fetchData} />} />
+                    </Routes>
+                </Suspense>
+            )}
         </AdminLayout>
     );
 };

@@ -107,26 +107,29 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             const currentUser = session?.user ?? null;
 
             if (event === 'SIGNED_IN' || event === 'USER_UPDATED' || event === 'TOKEN_REFRESHED') {
-                // Solo activamos loading si no teníamos usuario previo (evita parpadeo al cambiar foco)
-                const shouldShowLoading = !user && event !== 'TOKEN_REFRESHED';
-
-                if (shouldShowLoading) setLoading(true);
-
+                // Solo activamos loading si realmente necesitamos bloquear la UI para una transición crítica
+                // TOKEN_REFRESHED no debería disparar loading.
+                const needsProfileFetch = currentUser && (!profile || profile.id !== currentUser.id);
+                
                 setUser(currentUser);
-                if (currentUser && (!profile || profile.id !== currentUser.id)) {
+                
+                if (needsProfileFetch) {
+                    // Si ya tenemos un usuario y solo estamos refrescando, no bloqueamos con loading
+                    const forceLoading = event === 'SIGNED_IN' && !user;
+                    if (forceLoading) setLoading(true);
+                    
                     await fetchProfile(currentUser.id);
+                    
+                    if (forceLoading) setLoading(false);
+                } else {
+                    setLoading(false);
                 }
-
-                if (shouldShowLoading) setLoading(false);
             } else if (event === 'SIGNED_OUT') {
                 setUser(null);
                 setProfile(null);
                 setLoading(false);
             } else {
                 setUser(currentUser);
-                if (currentUser && !profile) {
-                    await fetchProfile(currentUser.id);
-                }
                 setLoading(false);
             }
         });
