@@ -179,7 +179,7 @@ const Home: React.FC = () => {
                                     Ventas / Call Center
                                 </span>
                                 <a
-                                    href="https://wa.me/523521681197"
+                                    href={`https://wa.me/${(config?.whatsapp || '523521681197').replace(/\D/g, '')}`}
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     onClick={() => statsService.trackWhatsAppClick(window.location.href)}

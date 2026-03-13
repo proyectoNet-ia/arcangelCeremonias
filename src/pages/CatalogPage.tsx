@@ -678,7 +678,7 @@ const Home: React.FC = () => {
                                 <FontAwesomeIcon icon={faInstagram} className="text-2xl" />
                                 <span className="text-[8px] uppercase tracking-widest">Instagram</span>
                             </a>
-                            <a href={`https://wa.me/${whatsapp}`} target="_blank" rel="noopener noreferrer"
+                            <a href={`https://wa.me/${whatsapp.replace(/\D/g, '')}`} target="_blank" rel="noopener noreferrer"
                                 className="flex flex-col items-center gap-2 text-chocolate/40 hover:text-[#25D366] transition-all duration-300 hover:-translate-y-1 group">
                                 <FontAwesomeIcon icon={faWhatsapp} className="text-2xl" />
                                 <span className="text-[8px] uppercase tracking-widest">WhatsApp</span>

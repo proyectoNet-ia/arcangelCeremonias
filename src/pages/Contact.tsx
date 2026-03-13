@@ -227,7 +227,7 @@ const Contact: React.FC = () => {
                                         <FontAwesomeIcon icon={faWhatsapp} className="text-xl" />
                                         <h3 className="text-[10px] uppercase tracking-widest font-bold text-chocolate/40 group-hover:text-gold transition-colors">WhatsApp</h3>
                                     </div>
-                                    <a href={`https://wa.me/${whatsapp}`} className="block text-base hover:text-gold transition-colors font-medium border-b border-gold/10 pb-2">
+                                    <a href={`https://wa.me/${whatsapp.replace(/\D/g, '')}`} className="block text-base hover:text-gold transition-colors font-medium border-b border-gold/10 pb-2">
                                         {whatsapp.replace(/(\d{2})(\d{3})(\d{3})(\d{4})/, '+$1 $2 $3 $4')}
                                     </a>
                                 </div>
