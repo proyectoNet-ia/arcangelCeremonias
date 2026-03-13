@@ -317,7 +317,7 @@ const Home: React.FC = () => {
             {/* ════════════════════════════════════════
                 2.5 SEARCH SECTION (PIEZA CLAVE)
             ════════════════════════════════════════ */}
-            <section className="relative -mt-10 md:-mt-14 z-30 px-6">
+            <section className="relative mt-8 md:mt-10 z-30 px-6">
                 <div className="max-w-4xl mx-auto">
                     <RevealOnScroll direction="up">
                         <div className="bg-white/80 backdrop-blur-xl border border-gold/20 p-2 md:p-3 shadow-2xl flex items-center gap-4 group focus-within:border-gold transition-all duration-500">
