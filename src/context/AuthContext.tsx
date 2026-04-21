@@ -71,19 +71,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             }
 
             setUser(currentUser);
-            
+
             if (currentUser) {
                 // Use profileRef to check if we really need to fetch
                 const needsProfileFetch = !profileRef.current || profileRef.current.id !== currentUser.id;
-                
+
                 if (needsProfileFetch) {
                     // Only show loading for the very first sign in if we didn't have a user before
                     const shouldShowLoading = event === 'SIGNED_IN' && !userRef.current;
                     if (shouldShowLoading) setLoading(true);
-                    
+
                     await fetchProfile(currentUser.id);
-                    
-                    if (shouldShowLoading) setLoading(false);
+
+                    setLoading(false);
                 } else {
                     setLoading(false);
                 }
