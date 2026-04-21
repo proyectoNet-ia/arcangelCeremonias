@@ -283,7 +283,17 @@ export const ProductsManager: React.FC<ProductsManagerProps> = ({ products, cate
                                             <div className="grid grid-cols-2 gap-4">
                                                 <input type="text" placeholder="Modelo / Código" value={editingProduct.model_code || ''} onChange={e => setEditingProduct({ ...editingProduct, model_code: e.target.value })} className="w-full p-4 border border-slate-100 focus:border-gold outline-none text-xs" />
                                                 <input type="text" placeholder="Color Principal" value={editingProduct.color || ''} onChange={e => setEditingProduct({ ...editingProduct, color: e.target.value })} className="w-full p-4 border border-slate-100 focus:border-gold outline-none text-xs" />
+                                                <input type="text" placeholder="Material (Ej. Raso, Tul)" value={editingProduct.material || ''} onChange={e => setEditingProduct({ ...editingProduct, material: e.target.value })} className="w-full p-4 border border-slate-100 focus:border-gold outline-none text-xs" />
+                                                <input type="text" placeholder="¿Qué incluye?" value={editingProduct.includes || ''} onChange={e => setEditingProduct({ ...editingProduct, includes: e.target.value })} className="w-full p-4 border border-slate-100 focus:border-gold outline-none text-xs" title="Ej. Tiara, Crinolina" />
                                             </div>
+
+                                            <textarea
+                                                placeholder="Descripción del Producto"
+                                                value={editingProduct.description || ''}
+                                                onChange={e => setEditingProduct({ ...editingProduct, description: e.target.value })}
+                                                rows={3}
+                                                className="w-full p-4 border border-slate-100 focus:border-gold outline-none text-xs resize-none"
+                                            />
 
                                             <div className="space-y-2">
                                                 <label className="text-[9px] uppercase tracking-widest font-bold text-slate-400 pl-1">Distintivos del Producto</label>
