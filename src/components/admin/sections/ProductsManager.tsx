@@ -144,7 +144,7 @@ export const ProductsManager: React.FC<ProductsManagerProps> = ({ products, cate
                         setEditingProduct({
                             name: '', slug: '', description: '', price: 0,
                             category_id: categories[0]?.id, gallery: [],
-                            stock: 10, is_active: true
+                            stock_status: 'available', is_active: true
                         });
                         setIsModalOpen(true);
                         setIsSlugCustomized(false);
