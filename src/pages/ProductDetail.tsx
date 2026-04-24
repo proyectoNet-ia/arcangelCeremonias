@@ -3,7 +3,7 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faWhatsapp } from '@fortawesome/free-brands-svg-icons';
-import { faArrowLeft, faChevronRight, faChevronLeft, faShareNodes, faDiamond, faHands, faTruckFast, faStore, faTag, faPalette, faLayerGroup, faScissors, faStar, faPhone, faRulerHorizontal, faTimes } from '@fortawesome/free-solid-svg-icons';
+import { faArrowLeft, faChevronRight, faChevronLeft, faShareNodes, faDiamond, faHands, faTruckFast, faStore, faTag, faPalette, faLayerGroup, faScissors, faStar, faPhone, faRulerHorizontal, faTimes, faCertificate, faMap } from '@fortawesome/free-solid-svg-icons';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
 import { Logo } from '@/components/Logo';
@@ -122,10 +122,12 @@ const ProductDetail: React.FC = () => {
         const desc = product.description || '';
         const url = window.location.href;
 
+        const showPrices = (config?.show_prices ?? true) && product.show_price;
         let tallaLinea = '';
         if (selectedVariant !== null && product.size_variants) {
             const v = product.size_variants[selectedVariant];
-            tallaLinea = `📐 *Talla seleccionada:* ${v.size}\n💰 *Precio (esa talla):* $${v.price.toLocaleString('es-MX')} MXN`;
+            const priceInfo = showPrices ? `\n💰 *Precio (esa talla):* $${v.price.toLocaleString('es-MX')} MXN` : '';
+            tallaLinea = `📐 *Talla seleccionada:* ${v.size}${priceInfo}`;
         } else if (product.sizes && product.sizes.length > 0) {
             tallaLinea = `📐 *Tallas disponibles:* ${product.sizes.join(', ')}`;
         } else {
@@ -285,7 +287,7 @@ const ProductDetail: React.FC = () => {
                                     animate={{ opacity: 1, y: 0 }}
                                     transition={{ duration: 0.5, delay: 0.5 }}
                                 >
-                                    {product.show_price && currentPrice ? (
+                                    {(config?.show_prices ?? true) && product.show_price && currentPrice ? (
                                         <span className="text-2xl font-sans text-gold">
                                             ${currentPrice.toLocaleString('es-MX')}
                                             {selectedVariant !== null && (
@@ -430,19 +432,21 @@ const ProductDetail: React.FC = () => {
                                 {/* Trust badges */}
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-[10px] uppercase tracking-[0.2em] text-chocolate/70 font-semibold">
                                     {[
-                                        { icon: faHands, label: 'Piezas Artesanales' },
-                                        { icon: faTruckFast, label: 'Envío Asegurado' }
+                                        { icon: faMap, label: 'Hecho en México' },
+                                        { icon: faCertificate, label: 'Calidad Textil' }
                                     ].map((badge, i) => (
                                         <motion.div
                                             key={i}
-                                            className="flex items-center gap-4 bg-white/80 p-5 border border-gold/15 rounded-sm shadow-sm"
+                                            className="flex items-center gap-4 bg-white p-5 border border-gold/30 rounded-sm shadow-md hover:shadow-xl transition-all duration-500 group/badge"
                                             initial={{ opacity: 0, x: i % 2 === 0 ? -14 : 14 }}
                                             animate={{ opacity: 1, x: 0 }}
                                             transition={{ duration: 0.5, delay: 1.35 + i * 0.1 }}
-                                            whileHover={{ scale: 1.02, backgroundColor: 'rgba(255,255,255,0.96)' }}
+                                            whileHover={{ scale: 1.02, backgroundColor: '#ffffff' }}
                                         >
-                                            <FontAwesomeIcon icon={badge.icon} className="text-gold text-sm" />
-                                            <span>{badge.label}</span>
+                                            <div className="w-10 h-10 rounded-full bg-gold/5 flex items-center justify-center group-hover/badge:bg-gold/10 transition-colors">
+                                                <FontAwesomeIcon icon={badge.icon} className="text-gold text-lg" />
+                                            </div>
+                                            <span className="text-chocolate font-bold tracking-[0.25em]">{badge.label}</span>
                                         </motion.div>
                                     ))}
                                 </div>

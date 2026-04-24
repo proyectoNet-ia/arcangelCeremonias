@@ -37,6 +37,7 @@ export const Megamenu: React.FC<{ isOpen: boolean; onClose: () => void; onOpen: 
                         {parents.map((parent) => (
                             <div key={parent.id} className="group/parent p-8 lg:p-10 border-r border-b border-gold/10 hover:bg-white transition-all duration-500 flex flex-col">
                                 <div className="space-y-4 flex-grow">
+                                    {/* Temporarily hidden image
                                     <div className="aspect-[16/10] overflow-hidden bg-slate-100 relative shadow-md">
                                         <img
                                             src={parent.image_url || '/placeholder.jpg'}
@@ -47,6 +48,7 @@ export const Megamenu: React.FC<{ isOpen: boolean; onClose: () => void; onOpen: 
                                         />
                                         <div className="absolute inset-0 bg-gradient-to-t from-cream/30 to-transparent" />
                                     </div>
+                                    */}
 
                                     <h4 className="text-[11px] uppercase tracking-[0.4em] text-gold font-bold flex justify-between items-center group-hover/parent:text-chocolate transition-colors">
                                         {parent.name}

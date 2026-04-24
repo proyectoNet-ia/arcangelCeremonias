@@ -49,6 +49,7 @@ export const ConfigManager: React.FC = () => {
         cta_banner_bg_opacity: 0.85,
         catalog_pdf_url: '',
         maintenance_mode: false,
+        show_prices: true,
     });
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
@@ -104,6 +105,7 @@ export const ConfigManager: React.FC = () => {
                         cta_banner_bg_opacity: data.cta_banner_bg_opacity ?? 0.85,
                         catalog_pdf_url: data.catalog_pdf_url || '',
                         maintenance_mode: data.maintenance_mode ?? false,
+                        show_prices: data.show_prices ?? true,
                     });
                 }
             } catch (error) {
@@ -240,6 +242,23 @@ export const ConfigManager: React.FC = () => {
                                             }`}
                                     >
                                         {config.maintenance_mode ? 'Modo Mantenimiento ON' : 'Sitio Público ON'}
+                                    </button>
+                                </div>
+
+                                <div className="p-6 bg-slate-50 border border-slate-100 rounded-xl flex items-center justify-between">
+                                    <div className="space-y-1">
+                                        <h3 className="text-[10px] uppercase tracking-widest font-bold text-chocolate">Visibilidad de Precios</h3>
+                                        <p className="text-xs text-slate-400">Controla si los precios son visibles para los clientes en el catálogo.</p>
+                                    </div>
+                                    <button
+                                        type="button"
+                                        onClick={() => setConfig({ ...config, show_prices: !config.show_prices })}
+                                        className={`px-6 py-2 text-[10px] font-bold uppercase tracking-widest transition-all border ${config.show_prices
+                                            ? 'bg-emerald-100 text-emerald-600 border-emerald-200'
+                                            : 'bg-amber-100 text-amber-600 border-amber-200'
+                                            }`}
+                                    >
+                                        {config.show_prices ? 'Precios Visibles' : 'Precios Ocultos'}
                                     </button>
                                 </div>
 

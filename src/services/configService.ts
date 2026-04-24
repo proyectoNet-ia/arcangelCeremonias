@@ -48,6 +48,7 @@ export interface SiteConfig {
     // ── Extras / Archivos ──────────────────────────────
     catalog_pdf_url?: string;
     maintenance_mode?: boolean;
+    show_prices?: boolean;
 }
 
 export const configService = {

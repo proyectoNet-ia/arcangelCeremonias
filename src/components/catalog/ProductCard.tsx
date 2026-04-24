@@ -106,6 +106,15 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, index }) => {
                         </p>
                     </div>
 
+                    {/* Price Display */}
+                    {(config?.show_prices ?? true) && product.show_price && product.price && (
+                        <div className="pt-1">
+                            <span className="text-xs md:text-sm font-sans font-bold text-gold">
+                                ${product.price.toLocaleString('es-MX')}
+                            </span>
+                        </div>
+                    )}
+
                     <div className="pt-2 opacity-100 md:opacity-0 group-hover:opacity-100 transform translate-y-0 md:translate-y-3 group-hover:translate-y-0 transition-all duration-700">
                         <div
                             className="w-full py-3.5 bg-chocolate text-cream text-[9px] uppercase tracking-[0.3em] font-bold hover:bg-gold hover:shadow-lg transition-all duration-500 flex items-center justify-center gap-2.5"

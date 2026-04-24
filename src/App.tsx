@@ -54,14 +54,23 @@ const ScrollToTop = () => {
 const AppRoutes = () => {
   const { config, loading } = useConfig();
 
-  // El modo mantenimiento es true por defecto solo si NO tenemos config cargada aún
-  // Si ya tenemos config, respetamos el valor de la base de datos
-  const isMaintenance = config ? config.maintenance_mode : true;
+  // Si estamos cargando la configuración inicial, mostramos un preloader limpio
+  // de esta forma evitamos el "pantallazo" del modo mantenimiento por defecto
+  if (loading && !config) {
+    return (
+      <div className="h-screen w-full flex items-center justify-center bg-white">
+        <div className="w-10 h-10 border-4 border-[#C5A059] border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
+
+  // El modo mantenimiento solo es true si viene explícitamente así de la base de datos
+  const isMaintenance = !!config?.maintenance_mode;
 
   return (
     <React.Suspense fallback={
       <div className="h-screen w-full flex items-center justify-center bg-white">
-        <div className="w-10 h-10 border-4 border-gold border-t-transparent rounded-full animate-spin" />
+        <div className="w-10 h-10 border-4 border-[#C5A059] border-t-transparent rounded-full animate-spin" />
       </div>
     }>
       <ScrollToTop />
@@ -78,7 +87,7 @@ const AppRoutes = () => {
             <ProtectedRoute>
               <React.Suspense fallback={
                 <div className="h-screen flex items-center justify-center bg-slate-50">
-                  <div className="w-8 h-8 border-2 border-gold border-t-transparent rounded-full animate-spin" />
+                  <div className="w-8 h-8 border-2 border-[#C5A059] border-t-transparent rounded-full animate-spin" />
                 </div>
               }>
                 <Admin />
@@ -94,7 +103,7 @@ const AppRoutes = () => {
         <Route
           path="/"
           element={
-            (loading && !config) || isMaintenance
+            isMaintenance
               ? <Home />
               : <CatalogPage />
           }
