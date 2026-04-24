@@ -198,8 +198,8 @@ const Home: React.FC = () => {
 
                 {/* Slide content */}
                 <div className="relative z-10 h-full flex flex-col px-6 md:px-16 lg:px-24 xl:px-32">
-                    {/* Text content - flex-1 with justify-center to center vertically */}
-                    <div className={`flex-1 flex flex-col justify-center ${alignClass}`}>
+                    {/* Text content - move up by using justify-start and top padding */}
+                    <div className={`flex-1 flex flex-col justify-start pt-16 md:pt-24 lg:pt-32 ${alignClass}`}>
                         <AnimatePresence mode="wait">
                             <motion.div
                                 key={`content-${activeSlide}`}
