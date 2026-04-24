@@ -198,8 +198,8 @@ const Home: React.FC = () => {
 
                 {/* Slide content */}
                 <div className="relative z-10 h-full flex flex-col px-6 md:px-16 lg:px-24 xl:px-32">
-                    {/* Text content - move up by using justify-start and top padding */}
-                    <div className={`flex-1 flex flex-col justify-start pt-16 md:pt-24 lg:pt-32 ${alignClass}`}>
+                    {/* Text content - strictly aligned to top with negative margin to be as close to logo as possible */}
+                    <div className={`flex-1 flex flex-col justify-start pt-0 -mt-8 md:-mt-12 lg:-mt-16 ${alignClass}`}>
                         <AnimatePresence mode="wait">
                             <motion.div
                                 key={`content-${activeSlide}`}
@@ -229,10 +229,10 @@ const Home: React.FC = () => {
                                     animate={{ opacity: 1, y: 0 }}
                                     transition={{ delay: 0.2 }}
                                 >
-                                    <span className="block text-xl xs:text-2xl md:text-4xl lg:text-5xl xl:text-6xl uppercase">
+                                    <span className="block text-2xl xs:text-3xl md:text-4xl lg:text-5xl xl:text-6xl uppercase">
                                         {slide.title[0]}
                                     </span>
-                                    <span className="block text-xl xs:text-2xl md:text-4xl lg:text-5xl xl:text-6xl uppercase text-gold/80">
+                                    <span className="block text-2xl xs:text-3xl md:text-4xl lg:text-5xl xl:text-6xl uppercase text-gold/80">
                                         {slide.title[1]}
                                     </span>
                                 </motion.h1>
