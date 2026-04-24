@@ -229,10 +229,10 @@ const Home: React.FC = () => {
                                     animate={{ opacity: 1, y: 0 }}
                                     transition={{ delay: 0.2 }}
                                 >
-                                    <span className="block text-2xl xs:text-3xl md:text-5xl lg:text-6xl xl:text-7xl uppercase">
+                                    <span className="block text-xl xs:text-2xl md:text-4xl lg:text-5xl xl:text-6xl uppercase">
                                         {slide.title[0]}
                                     </span>
-                                    <span className="block text-2xl xs:text-3xl md:text-5xl lg:text-6xl xl:text-7xl uppercase text-gold/80">
+                                    <span className="block text-xl xs:text-2xl md:text-4xl lg:text-5xl xl:text-6xl uppercase text-gold/80">
                                         {slide.title[1]}
                                     </span>
                                 </motion.h1>
