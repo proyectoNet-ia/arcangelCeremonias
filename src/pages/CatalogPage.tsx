@@ -160,7 +160,7 @@ const Home: React.FC = () => {
 
             {/* 1. HERO SLIDER */}
             <section
-                className="relative h-[90vh] w-full overflow-hidden"
+                className="relative h-[75vh] md:h-[85vh] max-h-[800px] min-h-[450px] w-full overflow-hidden"
                 style={{ paddingTop: 'var(--header-height, 80px)' }}
             >
 
