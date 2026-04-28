@@ -30,10 +30,10 @@ export const CTABanner: React.FC<CTABannerProps> = ({
     const whatsapp = config?.whatsapp || '523521681197';
     const phone = config?.phone || '352 52 62502';
 
-    const ctaTag = config?.cta_banner_tag || 'Socios Comerciales';
+    const ctaTag = config?.cta_banner_tag || 'Alianzas Estratégicas';
     const ctaTitle = customTitle || config?.cta_banner_title || 'Venta al por mayor';
-    const ctaSubtitle = customSubtitle || config?.cta_banner_subtitle || ' & Boutiques';
-    const ctaBody = customBody || config?.cta_banner_body || 'Abastecemos a las mejores boutiques de México con diseños exclusivos y calidad artesanal. Solicita nuestro catálogo de precios para negocios.';
+    const ctaSubtitle = customSubtitle || config?.cta_banner_subtitle || ' & Socios de Éxito';
+    const ctaBody = customBody || config?.cta_banner_body || 'Eleva el prestigio de tu boutique con la distinción de nuestras confecciones exclusivas y calidad de excelencia. Un legado de elegancia diseñado para potenciar tu negocio. Solicita nuestro catálogo de precios para socios comerciales.';
     const ctaBtn1 = config?.cta_banner_btn1_label || 'Catálogo Mayoreo';
     const ctaBtn2 = config?.cta_banner_btn2_label || 'Línea de Negocios';
 

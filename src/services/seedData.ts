@@ -33,7 +33,7 @@ export const seedCatalog = async () => {
             {
                 name: 'Traje Charro',
                 slug: 'traje-charro',
-                description: 'La elegancia de nuestra cultura plasmada en bordados artesanales.',
+                description: 'La elegancia de nuestra cultura plasmada en bordados de excelencia.',
                 image_url: '/catalog/medium-shot-kid-praying-with-crucifix.jpg'
             },
             {
@@ -57,7 +57,7 @@ export const seedCatalog = async () => {
             {
                 name: 'Calzado',
                 slug: 'calzado',
-                description: 'Pasos de fe con suavidad y diseño artesanal.',
+                description: 'Pasos de fe con suavidad y diseño exclusivo.',
                 image_url: '/catalog/top-view-hands-holding-baby-s-foot.jpg'
             },
             {
@@ -147,7 +147,7 @@ export const seedCatalog = async () => {
             {
                 name: 'Ropón Gema Premium',
                 slug: 'ropon-gema-premium',
-                description: 'Ropón artesanal con detalles en perla.',
+                description: 'Ropón de fina confección con detalles en perla.',
                 price: 3500,
                 show_price: true,
                 model_code: 'GEMA-01',
@@ -197,7 +197,7 @@ export const seedCatalog = async () => {
             {
                 name: 'Traje Charro Gala Virgen',
                 slug: 'charro-gala-virgen',
-                description: 'Bordado artesanal de la Virgen en espalda.',
+                description: 'Bordado de gran maestría de la Virgen en espalda.',
                 price: 5800,
                 show_price: true,
                 model_code: 'CH-VG-01',

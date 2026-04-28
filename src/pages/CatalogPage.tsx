@@ -31,7 +31,7 @@ const staticSlides = [
         bgMobile: bgMobile,
         tag: 'Colección 2026',
         title: ['Arte', 'Ceremonial'],
-        subtitle: 'Piezas artesanales que visten los momentos más importantes de tu vida.',
+        subtitle: 'Piezas de alta confección que visten los momentos más importantes de tu vida.',
         cta: { label: 'Explorar Colección', to: '/catalogo' },
         align: 'left' as const,
     },
@@ -41,7 +41,7 @@ const staticSlides = [
         bgMobile: bgMobile,
         tag: 'Hecho en México',
         title: ['Elegancia', 'Atemporal'],
-        subtitle: 'Más de 30 años fabricando textiles ceremoniales con dedicación y talento artesanal.',
+        subtitle: 'Más de 30 años fabricando textiles ceremoniales con dedicación y maestría en cada diseño.',
         cta: { label: 'Conocer la Empresa', to: '/nosotros' },
         align: 'left' as const,
     },
@@ -59,7 +59,7 @@ const staticSlides = [
 
 // ─── Trust Badges ────────────────────────────────────────────────────────────
 const badges = [
-    { icon: faHands, label: 'Piezas Artesanales' },
+    { icon: faHands, label: 'Confección de Excelencia' },
     { icon: faAward, label: '+30 Años de Experiencia' },
     { icon: faTruckFast, label: 'Envío Asegurado' },
     { icon: faStore, label: 'Ventas al Mayoreo' },
@@ -154,7 +154,7 @@ const Home: React.FC = () => {
         <div className="relative min-h-screen bg-cream font-sans text-chocolate selection:bg-gold/20">
             <SEO
                 title="Catálogo Exclusivo"
-                description="Descubre nuestra colección artesanal de artículos ceremoniales: ropones, bautizos y comuniones con más de 30 años de tradición."
+                description="Descubre nuestra colección exclusiva de artículos ceremoniales: ropones, bautizos y comuniones con más de 30 años de elegancia y tradición."
             />
             <Header />
 
@@ -302,11 +302,15 @@ const Home: React.FC = () => {
                             </span>
                             <FontAwesomeIcon icon={faDiamond} className="text-[8px] text-gold/40" />
                             <span className="text-[10px] uppercase tracking-[0.4em] text-cream font-medium px-12">
-                                Envíos a todo México e Internacionales
+                                Envíos Nacionales e Internacionales
                             </span>
                             <FontAwesomeIcon icon={faDiamond} className="text-[8px] text-gold/40" />
                             <span className="text-[10px] uppercase tracking-[0.4em] text-gold font-bold px-12">
                                 Atención Personalizada y Ventas al Mayoreo
+                            </span>
+                            <FontAwesomeIcon icon={faDiamond} className="text-[8px] text-gold/40" />
+                            <span className="text-[10px] uppercase tracking-[0.4em] text-cream font-medium px-12">
+                                Diseños Exclusivos y Auténticos
                             </span>
                             <FontAwesomeIcon icon={faDiamond} className="text-[8px] text-gold/40" />
                         </div>
@@ -326,7 +330,7 @@ const Home: React.FC = () => {
                             </div>
                             <input
                                 type="text"
-                                placeholder="¿Qué pieza estás buscando hoy? (Ej: Ropón de bautizo, traje sastre...)"
+                                placeholder="¿Qué pieza estás buscando hoy?"
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
                                 onKeyDown={(e) => {
@@ -440,56 +444,56 @@ const Home: React.FC = () => {
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 md:gap-8">
                         {/* Pilar 1: Materiales */}
                         <RevealOnScroll className="space-y-6 text-center" delay={0.1}>
-                            <div className="relative w-16 h-16 mx-auto flex items-center justify-center">
+                            <div className="relative w-[72px] h-[72px] mx-auto flex items-center justify-center">
                                 <div className="absolute inset-0 border border-gold/20 rotate-45 transform group-hover:rotate-90 transition-transform duration-700" />
-                                <FontAwesomeIcon icon={faAward} className="text-2xl text-gold" />
+                                <FontAwesomeIcon icon={faAward} className="text-[27px] text-gold" />
                             </div>
                             <div className="space-y-2">
-                                <h3 className="text-[10px] uppercase tracking-[0.3em] font-bold text-chocolate">Fibras Naturales</h3>
-                                <p className="text-[11px] text-chocolate/50 font-light leading-relaxed px-4">
-                                    Seleccionamos los mejores linos y sedas para garantizar frescura y caída impecable.
+                                <h3 className="text-[16px] uppercase tracking-[0.3em] font-bold text-chocolate">Fibras Naturales</h3>
+                                <p className="text-[17px] text-chocolate/50 font-light leading-relaxed px-4">
+                                    Seleccionamos las mejores telas, para garantizar frescura, calidad y durabilidad.
                                 </p>
                             </div>
                         </RevealOnScroll>
 
                         {/* Pilar 2: Experiencia */}
                         <RevealOnScroll className="space-y-6 text-center" delay={0.2}>
-                            <div className="relative w-16 h-16 mx-auto flex items-center justify-center">
+                            <div className="relative w-[72px] h-[72px] mx-auto flex items-center justify-center">
                                 <div className="absolute inset-0 border border-gold/20 rotate-45" />
-                                <FontAwesomeIcon icon={faHands} className="text-2xl text-gold" />
+                                <FontAwesomeIcon icon={faHands} className="text-[27px] text-gold" />
                             </div>
                             <div className="space-y-2">
-                                <h3 className="text-[10px] uppercase tracking-[0.3em] font-bold text-chocolate">Maestría Textil</h3>
-                                <p className="text-[11px] text-chocolate/50 font-light leading-relaxed px-4">
-                                    Tres décadas perfeccionando procesos artesanales en cada puntada.
+                                <h3 className="text-[16px] uppercase tracking-[0.3em] font-bold text-chocolate">Maestría Textil</h3>
+                                <p className="text-[17px] text-chocolate/50 font-light leading-relaxed px-4">
+                                    Tres décadas perfeccionando procesos con pasión en cada puntada.
                                 </p>
                             </div>
                         </RevealOnScroll>
 
                         {/* Pilar 3: Diseño */}
                         <RevealOnScroll className="space-y-6 text-center" delay={0.3}>
-                            <div className="relative w-16 h-16 mx-auto flex items-center justify-center">
+                            <div className="relative w-[72px] h-[72px] mx-auto flex items-center justify-center">
                                 <div className="absolute inset-0 border border-gold/20 rotate-45" />
-                                <FontAwesomeIcon icon={faLeaf} className="text-2xl text-gold" />
+                                <FontAwesomeIcon icon={faLeaf} className="text-[27px] text-gold" />
                             </div>
                             <div className="space-y-2">
-                                <h3 className="text-[10px] uppercase tracking-[0.3em] font-bold text-chocolate">Legado Familiar</h3>
-                                <p className="text-[11px] text-chocolate/50 font-light leading-relaxed px-4">
-                                    Piezas diseñadas para trascender el tiempo y ser herencia familiar.
+                                <h3 className="text-[16px] uppercase tracking-[0.3em] font-bold text-chocolate">Legado Familiar</h3>
+                                <p className="text-[17px] text-chocolate/50 font-light leading-relaxed px-4">
+                                    Piezas diseñadas para trascender el tiempo logrando confecciones únicas
                                 </p>
                             </div>
                         </RevealOnScroll>
 
                         {/* Pilar 4: Distribución */}
                         <RevealOnScroll className="space-y-6 text-center" delay={0.4}>
-                            <div className="relative w-16 h-16 mx-auto flex items-center justify-center">
+                            <div className="relative w-[72px] h-[72px] mx-auto flex items-center justify-center">
                                 <div className="absolute inset-0 border border-gold/20 rotate-45" />
-                                <FontAwesomeIcon icon={faTruckFast} className="text-2xl text-gold" />
+                                <FontAwesomeIcon icon={faTruckFast} className="text-[27px] text-gold" />
                             </div>
                             <div className="space-y-2">
-                                <h3 className="text-[10px] uppercase tracking-[0.3em] font-bold text-chocolate">Logística Global</h3>
-                                <p className="text-[11px] text-chocolate/50 font-light leading-relaxed px-4">
-                                    Envíos asegurados a todo México y atención prioritaria para boutiques.
+                                <h3 className="text-[16px] uppercase tracking-[0.3em] font-bold text-chocolate">Logística Global</h3>
+                                <p className="text-[17px] text-chocolate/50 font-light leading-relaxed px-4">
+                                    Cobertura total y envíos a nivel nacional e internacional.
                                 </p>
                             </div>
                         </RevealOnScroll>

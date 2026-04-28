@@ -35,7 +35,7 @@ export const products: Product[] = [
         id: 'accesorios-01',
         slug: 'vela-de-ceremonia',
         name: 'Vela de Ceremonia',
-        description: 'Vela decorada artesanalmente para bautizo o primera comunión.',
+        description: 'Vela decorada con pasión para bautizo o primera comunión.',
         category_id: 'accesorios',
         main_image: 'https://images.unsplash.com/photo-1579546673203-d24eb0423e46?auto=format&fit=crop&q=80&w=800',
         show_price: false,

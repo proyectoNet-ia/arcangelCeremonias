@@ -230,7 +230,7 @@ export const Header: React.FC<HeaderProps> = ({ variant = 'light' }) => {
                 <div className="max-w-[1600px] mx-auto flex justify-between items-center text-[9px] uppercase tracking-[0.2em] font-semibold">
                     <div className="flex gap-10">
                         <a
-                            href={`https://wa.me/${whatsapp.replace(/\D/g, '')}`}
+                            href={`https://wa.me/${whatsapp.replace(/\D/g, '')}?text=${encodeURIComponent("Hola me gustaría recibir más información de los productos")}`}
                             target="_blank"
                             rel="noopener noreferrer"
                             onClick={() => statsService.trackWhatsAppClick(window.location.href)}
@@ -442,7 +442,7 @@ export const Header: React.FC<HeaderProps> = ({ variant = 'light' }) => {
                                     <div className="space-y-4">
                                         <p className="text-[10px] uppercase tracking-[0.3em] text-gold font-bold">Asesoría Directa</p>
                                         <a
-                                            href={`https://wa.me/${whatsapp.replace(/\D/g, '')}`}
+                                            href={`https://wa.me/${whatsapp.replace(/\D/g, '')}?text=${encodeURIComponent("Hola me gustaría recibir más información de los productos")}`}
                                             target="_blank"
                                             rel="noopener noreferrer"
                                             onClick={() => statsService.trackWhatsAppClick(window.location.href)}

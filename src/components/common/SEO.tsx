@@ -13,7 +13,7 @@ export const SEO: React.FC<SEOProps> = ({ title, description, image, article }) 
 
     // Configuración base (Personaliza según el dominio real)
     const siteName = "Arcángel Ceremonias";
-    const defaultDescription = "Piezas artesanales de alta calidad para ceremonias religiosas: bautizos, comuniones, confirmaciones y más. Tradición y elegancia en cada detalle.";
+    const defaultDescription = "Confecciones de alta calidad para ceremonias religiosas: bautizos, comuniones, confirmaciones y más. Tradición y elegancia en cada detalle.";
     const baseUrl = window.location.origin;
     const defaultImage = `${baseUrl}/og-image.jpg`; // Asegúrate de que esta imagen exista en public/
 
