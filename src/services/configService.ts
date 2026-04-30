@@ -29,12 +29,16 @@ export interface SiteConfig {
     about_image_url?: string;
     about_stat_1_value?: string;
     about_stat_1_label?: string;
+    about_stat_1_desc?: string;
     about_stat_2_value?: string;
     about_stat_2_label?: string;
+    about_stat_2_desc?: string;
     about_stat_3_value?: string;
     about_stat_3_label?: string;
+    about_stat_3_desc?: string;
     about_stat_4_value?: string;
     about_stat_4_label?: string;
+    about_stat_4_desc?: string;
     // ── Banner CTA Home (Mayoreo) ─────────────────────
     cta_banner_title?: string;
     cta_banner_subtitle?: string;

@@ -22,10 +22,10 @@ const About: React.FC = () => {
     const imageUrl = config?.about_image_url || '/catalog/portrait-child-getting-ready-their-first-communion.jpg';
 
     const stats = [
-        { value: config?.about_stat_1_value || '30+', label: config?.about_stat_1_label || 'Años de Experiencia', desc: 'Liderando el mercado textil ceremonial.' },
-        { value: config?.about_stat_2_value || '500k+', label: config?.about_stat_2_label || 'Prendas Creadas', desc: 'Vistiendo momentos inolvidables.' },
-        { value: config?.about_stat_3_value || '150+', label: config?.about_stat_3_label || 'Puntos de Venta', desc: 'Presencia en toda la República Mexicana.' },
-        { value: config?.about_stat_4_value || '100%', label: config?.about_stat_4_label || 'Calidad Auténtica', desc: 'Cada detalle es revisado a mano.' },
+        { value: config?.about_stat_1_value || '30+', label: config?.about_stat_1_label || 'Años de Experiencia', desc: config?.about_stat_1_desc || 'Liderando el mercado textil ceremonial.' },
+        { value: config?.about_stat_2_value || '500k+', label: config?.about_stat_2_label || 'Prendas Creadas', desc: config?.about_stat_2_desc || 'Vistiendo momentos inolvidables.' },
+        { value: config?.about_stat_3_value || '150+', label: config?.about_stat_3_label || 'Puntos de Venta', desc: config?.about_stat_3_desc || 'Presencia en toda la República Mexicana.' },
+        { value: config?.about_stat_4_value || '100%', label: config?.about_stat_4_label || 'Calidad Auténtica', desc: config?.about_stat_4_desc || 'Cada detalle es revisado a mano.' },
     ];
 
     const mainImgRef = useRef(null);

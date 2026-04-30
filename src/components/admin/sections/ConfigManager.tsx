@@ -450,6 +450,7 @@ export const ConfigManager: React.FC = () => {
                                                 <div key={n} className="space-y-2 p-4 border border-slate-50 bg-slate-50/50">
                                                     <input type="text" value={(config as any)[`about_stat_${n}_value`] || ''} onChange={e => setConfig({ ...config, [`about_stat_${n}_value`]: e.target.value })} className="w-full p-2 bg-transparent border-b border-gold/10 focus:border-gold outline-none text-sm font-serif text-gold text-center" placeholder="Valor" />
                                                     <input type="text" value={(config as any)[`about_stat_${n}_label`] || ''} onChange={e => setConfig({ ...config, [`about_stat_${n}_label`]: e.target.value })} className="w-full p-2 bg-transparent border-none outline-none text-[8px] uppercase tracking-wider font-bold text-slate-400 text-center" placeholder="Etiqueta" />
+                                                    <textarea rows={2} value={(config as any)[`about_stat_${n}_desc`] || ''} onChange={e => setConfig({ ...config, [`about_stat_${n}_desc`]: e.target.value })} className="w-full p-2 bg-white/50 border border-slate-100 outline-none text-[9px] text-slate-500 text-center resize-none" placeholder="Descripción corta" />
                                                 </div>
                                             ))}
                                         </div>
