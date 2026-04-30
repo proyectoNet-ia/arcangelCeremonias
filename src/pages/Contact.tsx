@@ -52,7 +52,7 @@ const Contact: React.FC = () => {
 
     const whatsapp = config?.whatsapp || '523521681197';
     const phone = config?.phone || '352 52 62502';
-    const email = config?.email || 'ventas@arcangelceremonias.com';
+    const email = config?.email || 'ventasesbasa@hotmail.com';
     const facebook = config?.facebook_url || 'https://facebook.com/arcangel.ceremonias';
     const instagram = config?.instagram_url || 'https://instagram.com/ceremonias.arcangel';
     const address = config?.address || 'Igualdad #200, Ejido de Potrerillos, La Piedad, Michoacán, MX.';

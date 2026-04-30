@@ -33,7 +33,7 @@ export const contactService = {
                     },
                     body: JSON.stringify({
                         from: 'Arcangel Ceremonias <onboarding@resend.dev>',
-                        to: ['ventas@arcangelceremonias.com'],
+                        to: ['ventasesbasa@hotmail.com'],
                         subject: `Nuevo Mensaje: ${message.subject}`,
                         html: `
                             <h1>Nuevo mensaje de contacto</h1>
