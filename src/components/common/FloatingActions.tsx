@@ -39,7 +39,7 @@ export const FloatingActions: React.FC = () => {
     const handleWhatsAppClick = () => {
         statsService.trackWhatsAppClick(window.location.href);
         const url = `https://wa.me/${whatsappNumber.replace(/\D/g, '')}?text=${whatsappMessage}`;
-        window.open(url, '_blank', 'noopener,noreferrer');
+        window.open(url, 'whatsapp_contact', 'noopener,noreferrer');
     };
 
     // No mostrar en el panel de administración

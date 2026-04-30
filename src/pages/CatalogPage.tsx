@@ -91,14 +91,16 @@ const Home: React.FC = () => {
     const navigate = useNavigate();
 
 
+    const [isHoveringSlider, setIsHoveringSlider] = useState(false);
+
     // Auto-advance slider
     useEffect(() => {
-        if (slides.length <= 1) return;
+        if (slides.length <= 1 || isHoveringSlider) return;
         const timer = setInterval(() => {
             setActiveSlide(prev => (prev + 1) % slides.length);
         }, 6000);
         return () => clearInterval(timer);
-    }, [slides.length]);
+    }, [slides.length, isHoveringSlider]);
 
     // Fetch Hero Slides from DB
     useEffect(() => {
@@ -126,13 +128,19 @@ const Home: React.FC = () => {
         loadHero();
     }, []);
 
-    // Fetch featured products (first 8)
+    // Fetch and shuffle products for a dynamic experience
     useEffect(() => {
         const load = async () => {
             try {
                 const data = await productService.getProducts();
-                if (data) {
-                    setProducts(data.slice(0, 8));
+                if (data && data.length > 0) {
+                    // Mezclar aleatoriamente (Fisher-Yates Shuffle)
+                    const shuffled = [...data];
+                    for (let i = shuffled.length - 1; i > 0; i--) {
+                        const j = Math.floor(Math.random() * (i + 1));
+                        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+                    }
+                    setProducts(shuffled.slice(0, 12));
                 }
             } catch (e: any) {
                 console.error("Products load error:", e.message || e);
@@ -162,6 +170,8 @@ const Home: React.FC = () => {
             <section
                 className="relative h-[75vh] md:h-[85vh] max-h-[800px] min-h-[450px] w-full overflow-hidden"
                 style={{ paddingTop: 'var(--header-height, 80px)' }}
+                onMouseEnter={() => setIsHoveringSlider(true)}
+                onMouseLeave={() => setIsHoveringSlider(false)}
             >
 
                 {/* Background slides */}
@@ -391,8 +401,8 @@ const Home: React.FC = () => {
 
                     {/* Product grid / Mobile Carousel */}
                     {loadingProducts ? (
-                        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6 md:gap-10">
-                            {[...Array(8)].map((_, i) => (
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-10">
+                            {[...Array(4)].map((_, i) => (
                                 <div key={i} className="aspect-[3/4] bg-chocolate/5 animate-pulse rounded-sm" />
                             ))}
                         </div>
@@ -406,7 +416,7 @@ const Home: React.FC = () => {
                                 className="flex md:grid md:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-10 overflow-x-auto md:overflow-visible pb-12 md:pb-0 no-scrollbar snap-x snap-mandatory px-4 md:px-0"
                                 style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
                             >
-                                {products.map((product, idx) => (
+                                {products.slice(0, 4).map((product, idx) => (
                                     <div key={product.id} className="min-w-[85%] sm:min-w-[320px] md:min-w-0 md:w-auto snap-center">
                                         <ProductCard product={product} index={idx} />
                                     </div>
@@ -515,8 +525,8 @@ const Home: React.FC = () => {
                                 <span className="section-header-tag">Selección</span>
                             </div>
                             <h2 className="section-header-title">
-                                Piezas más <br />
-                                <span className="section-header-highlight">deseadas</span>
+                                Favoritos de la <br />
+                                <span className="section-header-highlight">Colección</span>
                             </h2>
                         </div>
 
@@ -682,7 +692,7 @@ const Home: React.FC = () => {
                                 <FontAwesomeIcon icon={faInstagram} className="text-2xl" />
                                 <span className="text-[8px] uppercase tracking-widest">Instagram</span>
                             </a>
-                            <a href={`https://wa.me/${whatsapp.replace(/\D/g, '')}`} target="_blank" rel="noopener noreferrer"
+                            <a href={`https://wa.me/${whatsapp.replace(/\D/g, '')}`} target="whatsapp_contact" rel="noopener noreferrer"
                                 className="flex flex-col items-center gap-2 text-chocolate/40 hover:text-[#25D366] transition-all duration-300 hover:-translate-y-1 group">
                                 <FontAwesomeIcon icon={faWhatsapp} className="text-2xl" />
                                 <span className="text-[8px] uppercase tracking-widest">WhatsApp</span>

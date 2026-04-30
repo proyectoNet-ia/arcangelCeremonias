@@ -277,29 +277,46 @@ export const Header: React.FC<HeaderProps> = ({ variant = 'light' }) => {
                     {/* Desktop Navigation */}
                     <nav className="hidden md:flex gap-10 lg:gap-14 text-[11px] uppercase tracking-[0.3em] font-medium h-full items-center">
                         {navItems.map((item) => (
-                            <div key={item.name} className="flex items-center gap-3">
-                                <FontAwesomeIcon
-                                    icon={item.icon}
-                                    className={`text-[13px] ${location.pathname === item.path || (item.hasMegamenu && isCatalog) ? 'text-gold' : (isDark ? 'text-white/40' : 'text-gold/50')} transition-colors duration-300`}
-                                />
-                                {item.hasMegamenu ? (
-                                    <div
-                                        className="relative h-full flex items-center group cursor-pointer"
-                                        onMouseEnter={openMegamenu}
-                                        onMouseLeave={closeMegamenu}
-                                    >
-                                        <span className={`${isMegamenuOpen || isCatalog ? 'text-gold' : (isDark ? 'text-white' : 'text-chocolate/60')} group-hover:text-gold transition-colors flex items-center gap-2 font-bold`}>
-                                            {item.name} <FontAwesomeIcon icon={faChevronDown} className={`text-[9px] transition-transform duration-300 ${isMegamenuOpen ? 'rotate-180' : ''}`} />
-                                        </span>
-                                    </div>
-                                ) : (
-                                    <Link
-                                        to={item.path}
-                                        className={`${location.pathname === item.path ? 'text-gold' : (isDark ? 'text-white' : 'text-chocolate/60')} hover:text-gold transition-colors flex items-center font-bold`}
-                                    >
-                                        {item.name}
-                                    </Link>
-                                )}
+                            <div key={item.name} className="relative h-full flex items-center group">
+                                <div className="flex items-center gap-2.5 h-full relative py-2">
+                                    <FontAwesomeIcon
+                                        icon={item.icon}
+                                        className={`text-[12px] ${location.pathname === item.path || (item.hasMegamenu && isCatalog) ? 'text-gold' : 'text-gold/30'} group-hover:text-gold transition-colors duration-500`}
+                                    />
+                                    
+                                    {item.hasMegamenu ? (
+                                        <div
+                                            className="h-full flex items-center cursor-pointer"
+                                            onMouseEnter={openMegamenu}
+                                            onMouseLeave={closeMegamenu}
+                                        >
+                                            <span className={`${isMegamenuOpen || isCatalog ? 'text-gold' : 'text-chocolate/60'} group-hover:text-gold transition-colors flex items-center gap-2 font-bold`}>
+                                                {item.name} 
+                                                <FontAwesomeIcon 
+                                                    icon={faChevronDown} 
+                                                    className={`text-[8px] transition-transform duration-500 ${isMegamenuOpen ? 'rotate-180 text-gold' : 'text-gold/40'}`} 
+                                                />
+                                            </span>
+
+                                            {/* Megamenu Dropdown */}
+                                            <Megamenu
+                                                isOpen={isMegamenuOpen}
+                                                onOpen={openMegamenu}
+                                                onClose={closeMegamenu}
+                                            />
+                                        </div>
+                                    ) : (
+                                        <Link
+                                            to={item.path}
+                                            className={`${location.pathname === item.path ? 'text-gold font-bold' : 'text-chocolate/60 font-medium'} hover:text-gold transition-colors flex items-center`}
+                                        >
+                                            {item.name}
+                                        </Link>
+                                    )}
+
+                                    {/* Premium Underline Indicator */}
+                                    <div className={`absolute bottom-0 left-0 h-[2px] bg-gold transition-all duration-500 ease-out ${location.pathname === item.path || (item.hasMegamenu && isCatalog) ? 'w-full opacity-100' : 'w-0 opacity-0 group-hover:w-full group-hover:opacity-100'}`} />
+                                </div>
                             </div>
                         ))}
 
@@ -332,12 +349,7 @@ export const Header: React.FC<HeaderProps> = ({ variant = 'light' }) => {
                     </div>
                 </div>
 
-                {/* Megamenu Component */}
-                <Megamenu
-                    isOpen={isMegamenuOpen}
-                    onOpen={openMegamenu}
-                    onClose={closeMegamenu}
-                />
+
 
                 {/* --- PRO MOBILE DRAWER --- */}
                 <AnimatePresence>

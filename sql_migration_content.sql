@@ -23,7 +23,7 @@ ALTER TABLE site_config
   ADD COLUMN IF NOT EXISTS cta_banner_title       TEXT DEFAULT 'Venta al por mayor',
   ADD COLUMN IF NOT EXISTS cta_banner_subtitle     TEXT DEFAULT '& Boutiques',
   ADD COLUMN IF NOT EXISTS cta_banner_tag          TEXT DEFAULT 'Socios Comerciales',
-  ADD COLUMN IF NOT EXISTS cta_banner_body         TEXT DEFAULT 'Abastecemos a las mejores boutiques de México con diseños exclusivos y calidad artesanal. Solicita nuestro catálogo de precios para negocios.',
+  ADD COLUMN IF NOT EXISTS cta_banner_body         TEXT DEFAULT 'Forma parte de nuestra Red de Distribuidores y accede a precios especiales. Eleva el prestigio de tu negocio con la distinción de nuestras confecciones exclusivas y calidad de excelencia.',
   ADD COLUMN IF NOT EXISTS cta_banner_btn1_label   TEXT DEFAULT 'Catálogo Mayoreo',
   ADD COLUMN IF NOT EXISTS cta_banner_btn2_label   TEXT DEFAULT 'Línea de Negocios';
 

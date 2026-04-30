@@ -33,15 +33,15 @@ export const CTABanner: React.FC<CTABannerProps> = ({
     const ctaTag = config?.cta_banner_tag || 'Alianzas Estratégicas';
     const ctaTitle = customTitle || config?.cta_banner_title || 'Venta al por mayor';
     const ctaSubtitle = customSubtitle || config?.cta_banner_subtitle || ' & Socios de Éxito';
-    const ctaBody = customBody || config?.cta_banner_body || 'Eleva el prestigio de tu boutique con la distinción de nuestras confecciones exclusivas y calidad de excelencia. Un legado de elegancia diseñado para potenciar tu negocio. Solicita nuestro catálogo de precios para socios comerciales.';
+    const ctaBody = customBody || config?.cta_banner_body || 'Forma parte de nuestra Red de Distribuidores y accede a precios especiales. Eleva el prestigio de tu negocio con la distinción de nuestras confecciones exclusivas y calidad de excelencia.';
     const ctaBtn1 = config?.cta_banner_btn1_label || 'Catálogo Mayoreo';
     const ctaBtn2 = config?.cta_banner_btn2_label || 'Línea de Negocios';
 
     const handleWhatsAppClick = () => {
         const waPhone = whatsapp.replace(/\D/g, '');
         statsService.trackWhatsAppClick(window.location.href);
-        const msg = 'Hola, me interesa recibir información sobre las piezas de Arcángel Ceremonias y los catálogos disponibles.';
-        window.open(`https://wa.me/${waPhone}?text=${encodeURIComponent(msg)}`, '_blank', 'noopener,noreferrer');
+        const msg = 'Deseo formar parte de su Red de Distribuidores y acceder a precios especiales.';
+        window.open(`https://wa.me/${waPhone}?text=${encodeURIComponent(msg)}`, 'whatsapp_contact', 'noopener,noreferrer');
     };
 
     return (
@@ -135,15 +135,6 @@ export const CTABanner: React.FC<CTABannerProps> = ({
                     >
                         <FontAwesomeIcon icon={faWhatsapp} className="text-base group-hover:scale-110 transition-transform duration-300" />
                         {ctaBtn1}
-                    </motion.button>
-                    <motion.button
-                        onClick={() => window.open(`tel:${phone.replace(/\s+/g, '')}`)}
-                        whileHover={{ scale: 1.04 }}
-                        whileTap={{ scale: 0.97 }}
-                        className="px-12 py-5 border border-white/30 text-white text-[10px] md:text-xs uppercase tracking-[0.3em] font-bold hover:bg-white hover:text-chocolate transition-all duration-500 backdrop-blur-sm flex items-center justify-center gap-3"
-                    >
-                        <FontAwesomeIcon icon={faPhone} />
-                        {ctaBtn2}
                     </motion.button>
                 </motion.div>
             </div>

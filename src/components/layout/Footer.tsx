@@ -24,7 +24,7 @@ export const Footer: React.FC = () => {
         statsService.trackWhatsAppClick(window.location.href);
         const phone = whatsapp.replace(/\D/g, '');
         const url = `https://wa.me/${phone}${msg ? `?text=${encodeURIComponent(msg)}` : ''}`;
-        window.open(url, '_blank', 'noopener,noreferrer');
+        window.open(url, 'whatsapp_contact', 'noopener,noreferrer');
     };
 
     return (

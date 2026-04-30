@@ -57,6 +57,7 @@ export const configService = {
             const { data, error } = await supabase
                 .from('site_config')
                 .select('*')
+                .eq('id', 'config_1')
                 .maybeSingle();
 
             if (error) {

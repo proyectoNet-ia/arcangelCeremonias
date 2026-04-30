@@ -111,7 +111,8 @@ const ProductDetail: React.FC = () => {
     const waOpen = (msg: string) => {
         const phone = whatsapp.replace(/\D/g, ''); // solo dígitos, sin espacios ni guiones
         statsService.trackWhatsAppClick(window.location.href, product.id);
-        window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, '_blank', 'noopener,noreferrer');
+        const url = `https://wa.me/${phone}?text=${encodeURIComponent(msg)}`;
+        window.open(url, 'whatsapp_contact', 'noopener,noreferrer');
     };
 
     // ── Mensaje detallado para el vendedor ──────────────────────────────
@@ -126,34 +127,34 @@ const ProductDetail: React.FC = () => {
         let tallaLinea = '';
         if (selectedVariant !== null && product.size_variants) {
             const v = product.size_variants[selectedVariant];
-            const priceInfo = showPrices ? `\n💰 *Precio (esa talla):* $${v.price.toLocaleString('es-MX')} MXN` : '';
-            tallaLinea = `📐 *Talla seleccionada:* ${v.size}${priceInfo}`;
+            const priceInfo = showPrices ? `\n*Precio:* $${v.price.toLocaleString('es-MX')} MXN` : '';
+            tallaLinea = `*Talla seleccionada:* ${v.size}${priceInfo}`;
         } else if (product.sizes && product.sizes.length > 0) {
-            tallaLinea = `📐 *Tallas disponibles:* ${product.sizes.join(', ')}`;
+            tallaLinea = `*Tallas disponibles:* ${product.sizes.join(', ')}`;
         } else {
-            tallaLinea = `📐 *Tallas:* A consultar`;
+            tallaLinea = `*Tallas:* A consultar`;
         }
 
         const badge = context === 'distribuidor'
-            ? '🏭 *Canal:* Distribuidor / Mayoreo'
+            ? '*Canal:* Distribuidor / Mayoreo'
             : context === 'asesoria'
-                ? '💬 *Canal:* Asesoría general'
-                : '🛍️ *Canal:* Cliente directo';
+                ? '*Canal:* Asesoría general'
+                : '*Canal:* Cliente directo';
 
         return [
             `¡Hola! Me interesa el siguiente producto de *Arcángel Ceremonias*:`,
             ``,
-            `━━━━━━━━━━━━━━━━━━━━━`,
-            `🏷️ *Producto:* ${product.name}`,
-            `🔖 *Modelo:* ${model}`,
-            `🎨 *Color:* ${color}`,
-            `🧵 *Material:* ${mat}`,
+            `-------------------------------------------`,
+            `*Producto:* ${product.name}`,
+            `*Modelo:* ${model}`,
+            `*Color:* ${color}`,
+            `*Material:* ${mat}`,
             tallaLinea,
             ``,
-            `📝 *Descripción:* ${desc}`,
+            `*Descripción:* ${desc}`,
             ``,
-            `🔗 *Ver producto:* ${url}`,
-            `━━━━━━━━━━━━━━━━━━━━━`,
+            `*Ver producto:* ${url}`,
+            `-------------------------------------------`,
             badge,
             ``,
             `Por favor, ¿podrían darme más información sobre disponibilidad, tiempos de entrega y formas de pago?`,
@@ -398,13 +399,18 @@ const ProductDetail: React.FC = () => {
                             >
                                 <div className="flex gap-4">
                                     <motion.button
-                                        whileHover={{ scale: 1.02, boxShadow: '0 16px 50px rgba(197,168,112,0.25)' }}
-                                        whileTap={{ scale: 0.97 }}
+                                        whileHover={{ y: -4, boxShadow: '0 20px 50px rgba(139,100,60,0.2)' }}
+                                        whileTap={{ scale: 0.98 }}
                                         onClick={() => waOpen(buildWhatsAppMessage('interesa'))}
-                                        className="flex-grow bg-[#8E735B] text-cream py-4 md:py-6 px-4 flex items-center justify-center gap-3 md:gap-4 group transition-all duration-500 hover:bg-gold hover:shadow-2xl hover:shadow-gold/20"
+                                        className="flex-grow bg-chocolate text-cream py-5 md:py-6 px-8 flex items-center justify-center gap-4 group transition-all duration-500 relative overflow-hidden"
                                     >
-                                        <FontAwesomeIcon icon={faWhatsapp} className="text-lg md:text-xl group-hover:scale-110 transition-transform duration-300" />
-                                        <span className="text-[10px] md:text-xs uppercase tracking-[0.2em] md:tracking-[0.4em] font-medium text-center leading-tight">Me interesa el producto</span>
+                                        <div className="relative z-10 flex items-center gap-4">
+                                            <FontAwesomeIcon icon={faWhatsapp} className="text-xl group-hover:scale-110 transition-transform duration-500 text-gold" />
+                                            <span className="text-[10px] md:text-[11px] uppercase tracking-[0.4em] font-bold">Solicitar Información</span>
+                                        </div>
+                                        {/* Premium Background Layer */}
+                                        <div className="absolute inset-0 bg-gold opacity-0 group-hover:opacity-10 transition-opacity duration-500" />
+                                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full group-hover:animate-shine" />
                                     </motion.button>
 
                                     <motion.button
@@ -460,34 +466,32 @@ const ProductDetail: React.FC = () => {
                                 >
                                     {/* Header */}
                                     <div className="space-y-1">
-                                        <span className="text-[9px] uppercase tracking-[0.4em] text-gold/50 font-bold">Ventas al Mayoreo</span>
-                                        <h3 className="text-sm uppercase tracking-[0.25em] font-bold text-chocolate/80 font-sans">Atención a Distribuidores</h3>
+                                        <span className="text-[9px] uppercase tracking-[0.4em] text-gold/50 font-bold">Asesoría Mayorista</span>
+                                        <h3 className="text-sm uppercase tracking-[0.25em] font-bold text-chocolate/80 font-sans">Ventas al Mayoreo y Distribución</h3>
                                     </div>
 
-                                    {/* Two contact buttons */}
-                                    <div className="grid grid-cols-2 gap-3">
-                                        {/* Call Center */}
-                                        <motion.button
-                                            whileHover={{ scale: 1.03, y: -2, boxShadow: '0 10px 30px rgba(139,100,60,0.12)' }}
-                                            whileTap={{ scale: 0.97 }}
-                                            onClick={() => window.open(`tel:${phone.replace(/\s+/g, '')}`)}
-                                            className="flex flex-col items-center justify-center gap-2 py-5 bg-white border border-gold/15 text-chocolate hover:border-gold hover:text-gold transition-all duration-400 group"
-                                        >
-                                            <FontAwesomeIcon icon={faPhone} className="text-base text-gold group-hover:scale-110 transition-transform duration-300" />
-                                            <span className="text-[8px] uppercase tracking-[0.3em] font-bold leading-tight text-center">Call Center</span>
-                                        </motion.button>
-
-                                        {/* WhatsApp */}
-                                        <motion.button
-                                            whileHover={{ scale: 1.03, y: -2, boxShadow: '0 10px 30px rgba(37,211,102,0.15)' }}
-                                            whileTap={{ scale: 0.97 }}
-                                            onClick={() => waOpen(buildWhatsAppMessage('distribuidor'))}
-                                            className="flex flex-col items-center justify-center gap-2 py-5 bg-white border border-gold/15 text-chocolate hover:border-[#25D366]/50 hover:text-[#25D366] transition-all duration-400 group"
-                                        >
-                                            <FontAwesomeIcon icon={faWhatsapp} className="text-base text-[#25D366] group-hover:scale-110 transition-transform duration-300" />
-                                            <span className="text-[8px] uppercase tracking-[0.3em] font-bold leading-tight text-center">WhatsApp</span>
-                                        </motion.button>
-                                    </div>
+                                    {/* Single Premium WhatsApp Button */}
+                                    <motion.button
+                                        whileHover={{ y: -4, boxShadow: '0 20px 40px rgba(37,211,102,0.15)' }}
+                                        whileTap={{ scale: 0.98 }}
+                                        onClick={() => waOpen(buildWhatsAppMessage('distribuidor'))}
+                                        className="w-full flex items-center justify-between p-6 bg-white border border-gold/20 text-chocolate hover:border-[#25D366] transition-all duration-500 group relative overflow-hidden"
+                                    >
+                                        <div className="flex items-center gap-5 relative z-10">
+                                            <div className="w-12 h-12 rounded-full bg-[#25D366]/5 flex items-center justify-center group-hover:bg-[#25D366] group-hover:text-white transition-all duration-500">
+                                                <FontAwesomeIcon icon={faWhatsapp} className="text-xl text-[#25D366] group-hover:text-white transition-transform duration-500" />
+                                            </div>
+                                            <div className="text-left">
+                                                <span className="block text-[10px] uppercase tracking-[0.3em] font-bold text-chocolate/40 group-hover:text-[#25D366]/70 transition-colors">Contactar vía</span>
+                                                <span className="block text-xs uppercase tracking-[0.4em] font-bold">WhatsApp Business</span>
+                                            </div>
+                                        </div>
+                                        <div className="opacity-0 group-hover:opacity-100 -translate-x-4 group-hover:translate-x-0 transition-all duration-500 relative z-10">
+                                            <FontAwesomeIcon icon={faChevronRight} className="text-[#25D366]" />
+                                        </div>
+                                        {/* Subtle Shine Effect */}
+                                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent -translate-x-full group-hover:animate-shine" />
+                                    </motion.button>
                                 </motion.div>
                             </motion.div>
                         </motion.div>

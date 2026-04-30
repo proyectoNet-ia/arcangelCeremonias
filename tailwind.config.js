@@ -26,8 +26,12 @@ export default {
                 'fade-in-up': 'fadeInUp 1s ease-out forwards',
                 'zoom': 'zoom 60s linear infinite alternate',
                 'marquee': 'marquee 30s linear infinite',
+                'shine': 'shine 1.5s ease-out infinite',
             },
             keyframes: {
+                shine: {
+                    '100%': { transform: 'translateX(100%)' },
+                },
                 revealUp: {
                     'to': { opacity: '1', transform: 'translateY(0)' },
                 },
