@@ -14,11 +14,11 @@ export const Footer: React.FC = () => {
     // Default values if config is not yet loaded
     const whatsapp = config?.whatsapp || '523521681197';
     const phone = config?.phone || '352 52 62502';
-    const email = config?.email || 'ventas@arcangelceremonias.com';
+    const email = config?.email || 'ventasesbasa@hotmail.com';
     const facebook = config?.facebook_url || 'https://www.facebook.com/arcangel.ceremonias/';
     const instagram = config?.instagram_url || 'https://www.instagram.com/ceremonias.arcangel/';
     const address = config?.address || 'Igualdad #200, Ejido de Potrerillos, La Piedad, Michoacán, México';
-    const companyName = config?.company_name || 'Arcángel Ceremonias';
+    const companyName = config?.company_name || 'Grupo Espinoza Baez S.A. de C.V.';
 
     const handleWhatsAppClick = (msg?: string) => {
         statsService.trackWhatsAppClick(window.location.href);
@@ -182,7 +182,7 @@ export const Footer: React.FC = () => {
 
                 {/* ── Copyright bar ── */}
                 <div className="mt-10 pt-8 border-t border-gold/5 flex flex-col md:flex-row justify-between items-start md:items-center gap-6 text-[12px] md:text-[10px] tracking-[0.1em] font-medium text-cream/30">
-                    <p>© {new Date().getFullYear()} {companyName}. Todos los derechos reservados.</p>
+                    <p>© 2026. {companyName}. Todos los derechos reservados.</p>
                     <div className="flex flex-wrap gap-x-8 gap-y-4 items-center">
                         <Link to="#" className="hover:text-gold transition-colors">Términos & Condiciones</Link>
                         <Link to="#" className="hover:text-gold transition-colors">Aviso de Privacidad</Link>
