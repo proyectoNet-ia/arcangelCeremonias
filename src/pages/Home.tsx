@@ -1,491 +1,241 @@
-import React, { useEffect, useState, useCallback } from 'react';
-import { Link } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
+import { faFacebook, faInstagram, faWhatsapp } from '@fortawesome/free-brands-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {
-    faChevronRight, faChevronLeft,
-    faHands, faTruckFast, faDiamond, faStore, faAward, faLeaf
-} from '@fortawesome/free-solid-svg-icons';
-import { faWhatsapp, faInstagram, faFacebook } from '@fortawesome/free-brands-svg-icons';
-import { Header } from '@/components/layout/Header';
-import { Footer } from '@/components/layout/Footer';
-import { RevealOnScroll } from '@/components/common/RevealOnScroll';
-import { ProductCard } from '@/components/catalog/ProductCard';
-import { productService } from '@/services/productService';
-import { Product } from '@/types/product';
-import bgDesktop from '@/assets/fondo-horizontal.jpeg';
-import bgMobile from '@/assets/fondo-movil.jpg';
-import bgDesktop2 from '@/assets/fondo-pc.jpg';
-
-// ─── Hero Slides ────────────────────────────────────────────────────────────
-const slides = [
-    {
-        id: 0,
-        bg: bgDesktop,
-        bgMobile: bgMobile,
-        tag: 'Colección 2026',
-        title: ['Arte', 'Ceremonial'],
-        subtitle: 'Piezas artesanales que visten los momentos más importantes de tu vida.',
-        cta: { label: 'Explorar Colección', to: '/catalogo' },
-        align: 'left' as const,
-    },
-    {
-        id: 1,
-        bg: bgDesktop2,
-        bgMobile: bgMobile,
-        tag: 'Hecho en México',
-        title: ['Elegancia', 'Atemporal'],
-        subtitle: 'Más de 30 años fabricando textiles ceremoniales con dedicación y talento artesanal.',
-        cta: { label: 'Conocer la Empresa', to: '/nosotros' },
-        align: 'left' as const,
-    },
-    {
-        id: 2,
-        bg: bgDesktop,
-        bgMobile: bgMobile,
-        tag: 'Ventas al Mayoreo',
-        title: ['Precios', 'Exclusivos'],
-        subtitle: 'Distribuidores y boutiques: consulta nuestros precios especiales para compras por volumen.',
-        cta: { label: 'Contactar Ahora', to: '/contacto' },
-        align: 'left' as const,
-    },
-];
-
-// ─── Trust Badges ────────────────────────────────────────────────────────────
-const badges = [
-    { icon: faHands, label: 'Piezas Artesanales' },
-    { icon: faAward, label: '+30 Años de Experiencia' },
-    { icon: faTruckFast, label: 'Envío Asegurado' },
-    { icon: faStore, label: 'Ventas al Mayoreo' },
-    { icon: faLeaf, label: 'Materiales Premium' },
-    { icon: faDiamond, label: 'Calidad Certificada' },
-];
-
-// ─── Values ─────────────────────────────────────────────────────────────────
-const values = [
-    { num: '30+', label: 'Años en el mercado' },
-    { num: '500+', label: 'Modelos en catálogo' },
-    { num: '100%', label: 'Fabricación nacional' },
-    { num: '∞', label: 'Atención personalizada' },
-];
+import { motion } from 'framer-motion';
+import React, { useEffect, useState } from 'react';
+import { Logo } from '@/components/Logo';
+import { Link } from 'react-router-dom';
+import { useConfig } from '@/context/ConfigContext';
+import { faFilePdf, faLock } from '@fortawesome/free-solid-svg-icons';
+import { statsService } from '@/services/statsService';
+import bgMobile from '@/assets/modelo_medio.png';
+import bgDesktop from '@/assets/fondo-pc.jpg';
 
 const Home: React.FC = () => {
-    const [activeSlide, setActiveSlide] = useState(0);
-    const [products, setProducts] = useState<Product[]>([]);
-    const [loadingProducts, setLoadingProducts] = useState(true);
+    const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+    const { config } = useConfig();
 
-    // Auto-advance slider
     useEffect(() => {
-        const timer = setInterval(() => {
-            setActiveSlide(prev => (prev + 1) % slides.length);
-        }, 6000);
-        return () => clearInterval(timer);
-    }, []);
-
-    // Fetch featured products (first 8)
-    useEffect(() => {
-        const load = async () => {
-            try {
-                const data = await productService.getProducts();
-                setProducts(data.slice(0, 8));
-            } catch (e) {
-                console.error(e);
-            } finally {
-                setLoadingProducts(false);
-            }
+        const handleMouseMove = (e: MouseEvent) => {
+            setMousePosition({ x: e.clientX, y: e.clientY });
         };
-        load();
+
+        window.addEventListener('mousemove', handleMouseMove);
+        return () => window.removeEventListener('mousemove', handleMouseMove);
     }, []);
-
-    const prev = useCallback(() => setActiveSlide(p => (p - 1 + slides.length) % slides.length), []);
-    const next = useCallback(() => setActiveSlide(p => (p + 1) % slides.length), []);
-
-    const slide = slides[activeSlide];
-    const alignClass = 'items-start text-left';
 
     return (
-        <div className="min-h-screen bg-cream font-sans text-chocolate selection:bg-gold/20">
-            <Header />
+        <div className="relative h-[100dvh] w-full flex flex-col justify-between overflow-hidden bg-cream cursor-none selection:bg-gold/30 font-sans text-cream">
 
-            {/* ════════════════════════════════════════
-                1. HERO SLIDER
-            ════════════════════════════════════════ */}
-            <section className="relative h-[100dvh] w-full overflow-hidden">
-
-                {/* Background slides */}
-                <AnimatePresence mode="sync">
-                    <motion.div
-                        key={`bg-${activeSlide}`}
-                        className="absolute inset-0 z-0"
-                        initial={{ opacity: 0, scale: 1.06 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        exit={{ opacity: 0 }}
-                        transition={{ duration: 1.2, ease: 'easeInOut' }}
+            {/* --- SOCIAL SIDEBAR (DESKTOP) --- */}
+            <aside className="fixed left-0 top-1/2 -translate-y-1/2 z-[60] hidden md:flex flex-col items-center gap-6 px-4 md:px-8 fade-in-left pointer-events-none">
+                <div className="w-[1px] h-12 bg-cream/20 mb-2"></div>
+                <div className="flex flex-col gap-8 pointer-events-auto">
+                    <a
+                        href="https://www.facebook.com/arcangel.ceremonias/"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="group flex items-center justify-center text-cream/50 hover:text-gold transition-all duration-500 hover:-translate-y-1"
+                        aria-label="Facebook"
                     >
-                        {/* Desktop bg */}
-                        <div
-                            className="hidden md:block absolute inset-0 bg-cover bg-center"
-                            style={{ backgroundImage: `url(${slide.bg})` }}
-                        />
-                        {/* Mobile bg */}
-                        <div
-                            className="md:hidden absolute inset-0 bg-cover bg-right"
-                            style={{ backgroundImage: `url(${slide.bgMobile})` }}
-                        />
-                        {/* Overlay layers */}
-                        <div className="absolute inset-0 bg-black/50" />
-                        <div className="absolute inset-0 bg-chocolate/35 mix-blend-multiply" />
-                        <div className="absolute inset-0 bg-gradient-to-t from-chocolate/90 via-transparent to-chocolate/30" />
-                        <div className="absolute inset-0 bg-gradient-to-r from-chocolate/70 via-transparent to-transparent hidden md:block" />
-                    </motion.div>
-                </AnimatePresence>
-
-
-                {/* Noise texture */}
-                <div className="absolute inset-0 z-[2] opacity-[0.04] pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/marble-similar.png')]" />
-
-                {/* Slide content */}
-                <div className="relative z-10 h-full flex flex-col">
-                    {/* Spacer for header */}
-                    <div className="h-32 md:h-48 shrink-0" />
-
-                    {/* Text content */}
-                    <div className={`flex-grow flex flex-col justify-center px-8 md:px-16 lg:px-24 xl:px-32 ${alignClass}`}>
-                        <AnimatePresence mode="wait">
-                            <motion.div
-                                key={`content-${activeSlide}`}
-                                className="flex flex-col gap-6 max-w-3xl"
-                                initial={{ opacity: 0, y: 30 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                exit={{ opacity: 0, y: -20 }}
-                                transition={{ duration: 0.7, ease: 'easeOut' }}
-                            >
-                                {/* Tag */}
-                                <motion.div
-                                    className="flex items-center gap-3"
-                                    initial={{ opacity: 0, x: -10 }}
-                                    animate={{ opacity: 1, x: 0 }}
-                                    transition={{ delay: 0.1 }}
-                                >
-                                    <div className="w-8 h-[1px] bg-gold/60" />
-                                    <span className="text-[10px] uppercase tracking-[0.5em] text-gold font-bold">
-                                        {slide.tag}
-                                    </span>
-                                </motion.div>
-
-                                {/* Title */}
-                                <motion.h1
-                                    className="font-serif text-cream leading-[0.9] tracking-tight"
-                                    initial={{ opacity: 0, y: 20 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    transition={{ delay: 0.2 }}
-                                >
-                                    <span className="block text-5xl md:text-7xl lg:text-8xl xl:text-9xl uppercase">
-                                        {slide.title[0]}
-                                    </span>
-                                    <span className="block text-5xl md:text-7xl lg:text-8xl xl:text-9xl uppercase text-gold/80">
-                                        {slide.title[1]}
-                                    </span>
-                                </motion.h1>
-
-                                {/* Divider */}
-                                <motion.div
-                                    className="w-16 h-[1px] bg-gold/40"
-                                    initial={{ scaleX: 0, originX: 0 }}
-                                    animate={{ scaleX: 1 }}
-                                    transition={{ delay: 0.35, duration: 0.6 }}
-                                />
-
-                                {/* Subtitle */}
-                                <motion.p
-                                    className="text-cream/70 text-sm md:text-base font-light leading-relaxed max-w-md"
-                                    initial={{ opacity: 0 }}
-                                    animate={{ opacity: 1 }}
-                                    transition={{ delay: 0.4 }}
-                                >
-                                    {slide.subtitle}
-                                </motion.p>
-
-                                {/* CTA Button */}
-                                <motion.div
-                                    initial={{ opacity: 0, y: 10 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    transition={{ delay: 0.5 }}
-                                >
-                                    <Link
-                                        to={slide.cta.to}
-                                        className="inline-flex items-center gap-4 bg-gold text-chocolate px-8 py-4 text-[10px] uppercase tracking-[0.4em] font-bold hover:bg-cream transition-all duration-500 hover:shadow-2xl hover:shadow-gold/30 group"
-                                    >
-                                        {slide.cta.label}
-                                        <FontAwesomeIcon icon={faChevronRight} className="text-[8px] group-hover:translate-x-1 transition-transform" />
-                                    </Link>
-                                </motion.div>
-                            </motion.div>
-                        </AnimatePresence>
-                    </div>
-
-                    {/* Bottom controls */}
-                    <div className="relative z-10 px-8 md:px-16 pb-10 flex items-center justify-between text-cream/60">
-                        {/* Slide indicators */}
-                        <div className="flex items-center gap-3">
-                            {slides.map((_, i) => (
-                                <button
-                                    key={i}
-                                    onClick={() => setActiveSlide(i)}
-                                    className={`transition-all duration-500 ${i === activeSlide ? 'w-8 h-[2px] bg-gold' : 'w-3 h-[1px] bg-cream/30 hover:bg-cream/60'}`}
-                                />
-                            ))}
-                        </div>
-
-                        {/* Prev / Next */}
-                        <div className="flex items-center gap-4">
-                            <button onClick={prev} className="w-10 h-10 border border-cream/20 flex items-center justify-center hover:border-gold hover:text-gold transition-all duration-300">
-                                <FontAwesomeIcon icon={faChevronLeft} className="text-xs" />
-                            </button>
-                            <button onClick={next} className="w-10 h-10 border border-cream/20 flex items-center justify-center hover:border-gold hover:text-gold transition-all duration-300">
-                                <FontAwesomeIcon icon={faChevronRight} className="text-xs" />
-                            </button>
-                        </div>
-                    </div>
+                        <FontAwesomeIcon icon={faFacebook} className="text-xl md:text-2xl drop-shadow-lg group-hover:drop-shadow-[0_0_8px_rgba(197,160,89,0.5)]" />
+                    </a>
+                    <a
+                        href="https://www.instagram.com/ceremonias.arcangel/"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="group flex items-center justify-center text-cream/50 hover:text-gold transition-all duration-500 hover:-translate-y-1"
+                        aria-label="Instagram"
+                    >
+                        <FontAwesomeIcon icon={faInstagram} className="text-xl md:text-2xl drop-shadow-lg group-hover:drop-shadow-[0_0_8px_rgba(197,160,89,0.5)]" />
+                    </a>
                 </div>
-            </section>
+                <div className="w-[1px] h-12 bg-cream/20 mt-2"></div>
+            </aside>
 
-            {/* ════════════════════════════════════════
-                2. TRUST BADGES STRIP
-            ════════════════════════════════════════ */}
-            <section className="bg-chocolate py-6 overflow-hidden">
-                <div className="flex gap-16 animate-[marquee_25s_linear_infinite] w-max">
-                    {[...badges, ...badges].map((b, i) => (
-                        <div key={i} className="flex items-center gap-3 shrink-0 text-cream/50">
-                            <FontAwesomeIcon icon={b.icon} className="text-gold/60 text-sm" />
-                            <span className="text-[9px] uppercase tracking-[0.4em] font-medium whitespace-nowrap">{b.label}</span>
-                            <div className="w-1.5 h-1.5 rounded-full bg-gold/20" />
-                        </div>
-                    ))}
-                </div>
-            </section>
-
-            {/* ════════════════════════════════════════
-                3. FEATURED PRODUCTS
-            ════════════════════════════════════════ */}
-            <section className="py-28 md:py-40 px-6 md:px-12 max-w-[1600px] mx-auto">
-                <RevealOnScroll className="space-y-16">
-                    {/* Section header */}
-                    <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 border-b border-gold/10 pb-12">
-                        <div className="space-y-4">
-                            <div className="flex items-center gap-3">
-                                <div className="w-8 h-[1px] bg-gold/40" />
-                                <span className="text-[9px] uppercase tracking-[0.5em] text-gold font-bold">Colección</span>
-                            </div>
-                            <h2 className="font-serif text-4xl md:text-5xl lg:text-6xl text-chocolate uppercase leading-tight">
-                                Artículos<br />
-                                <span className="text-gold/70">Destacados</span>
-                            </h2>
-                        </div>
-                        <Link
-                            to="/catalogo"
-                            className="group inline-flex items-center gap-3 text-[9px] uppercase tracking-[0.4em] font-bold text-chocolate/50 hover:text-chocolate transition-colors border-b border-gold/20 hover:border-chocolate pb-1"
-                        >
-                            Ver toda la colección
-                            <FontAwesomeIcon icon={faChevronRight} className="text-[7px] group-hover:translate-x-1 transition-transform" />
-                        </Link>
-                    </div>
-
-                    {/* Product grid */}
-                    {loadingProducts ? (
-                        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 md:gap-10">
-                            {[...Array(8)].map((_, i) => (
-                                <div key={i} className="aspect-[3/4] bg-chocolate/5 animate-pulse rounded-sm" />
-                            ))}
-                        </div>
-                    ) : (
-                        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 md:gap-10">
-                            {products.map((product, idx) => (
-                                <ProductCard key={product.id} product={product} index={idx} />
-                            ))}
-                        </div>
-                    )}
-
-                    {/* Bottom CTA */}
-                    <div className="flex justify-center pt-8">
-                        <Link
-                            to="/catalogo"
-                            className="group inline-flex items-center gap-4 border border-gold/30 text-chocolate px-12 py-5 text-[9px] uppercase tracking-[0.4em] font-bold hover:bg-chocolate hover:text-cream hover:border-chocolate transition-all duration-500"
-                        >
-                            <FontAwesomeIcon icon={faStore} className="text-gold group-hover:text-gold text-sm" />
-                            Explorar el Catálogo Completo
-                        </Link>
-                    </div>
-                </RevealOnScroll>
-            </section>
-
-            {/* ════════════════════════════════════════
-                4. CTA WHATSAPP BANNER
-            ════════════════════════════════════════ */}
-            <motion.section
-                className="relative overflow-hidden bg-chocolate"
-                initial={{ opacity: 0 }}
-                whileInView={{ opacity: 1 }}
-                viewport={{ once: true, amount: 0.3 }}
-                transition={{ duration: 0.8 }}
+            {/* --- CUSTOM CURSOR --- */}
+            <div
+                className="fixed pointer-events-none z-[100] hidden md:block mix-blend-difference"
+                style={{
+                    left: mousePosition.x,
+                    top: mousePosition.y,
+                    transform: 'translate(-50%, -50%)'
+                }}
             >
-                {/* Shimmer */}
-                <motion.div
-                    className="absolute inset-0 pointer-events-none"
-                    style={{ background: 'linear-gradient(105deg, transparent 40%, rgba(197,168,112,0.07) 50%, transparent 60%)' }}
-                    animate={{ x: ['-100%', '200%'] }}
-                    transition={{ duration: 4, repeat: Infinity, ease: 'linear', repeatDelay: 3 }}
-                />
-                {/* Floating diamonds */}
-                {[...Array(5)].map((_, i) => (
-                    <motion.div
-                        key={i}
-                        className="absolute text-gold/5"
-                        style={{ top: `${15 + i * 18}%`, left: `${5 + i * 19}%`, fontSize: `${20 + (i % 3) * 14}px` }}
-                        animate={{ y: [0, -20, 0], rotate: [0, 25, 0], opacity: [0.03, 0.1, 0.03] }}
-                        transition={{ duration: 5 + i, repeat: Infinity, ease: 'easeInOut', delay: i * 0.8 }}
-                    >
-                        <FontAwesomeIcon icon={faDiamond} />
-                    </motion.div>
-                ))}
+                <div className="w-4 h-4 bg-white/80 rounded-full blur-[1px]" />
+                <div className="w-12 h-12 border border-white/40 rounded-full absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 transition-all duration-300 ease-out scale-100 opacity-50" />
+            </div>
 
-                <div className="relative z-10 py-24 md:py-32 px-8 md:px-20 flex flex-col md:flex-row items-center justify-between gap-12 max-w-[1600px] mx-auto">
-                    {/* Text */}
-                    <motion.div
-                        className="space-y-6 text-center md:text-left"
-                        initial={{ opacity: 0, x: -30 }}
-                        whileInView={{ opacity: 1, x: 0 }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 0.7, delay: 0.2 }}
-                    >
-                        <span className="text-[9px] uppercase tracking-[0.6em] text-gold/50 font-bold block">¿Tienes alguna duda?</span>
-                        <h2 className="font-serif text-3xl md:text-4xl lg:text-5xl text-cream leading-tight uppercase">
-                            Contáctanos<br />
-                            <span className="text-gold/70">Ahora Mismo</span>
-                        </h2>
-                        <p className="text-cream/50 text-sm font-light leading-relaxed max-w-md">
-                            Nuestro equipo está disponible para asesorarte sobre modelos, tallas, precios y envíos. Respuesta inmediata.
-                        </p>
-                    </motion.div>
+            {/* --- BACKGROUND LAYERS --- */}
+            <div
+                className="fixed inset-0 z-0 bg-no-repeat transition-transform duration-[60s] ease-linear scale-110 motion-safe:animate-[zoom_60s_linear_infinite_alternate] md:hidden"
+                style={{
+                    backgroundImage: `url('${bgMobile}')`,
+                    backgroundAttachment: 'fixed',
+                    backgroundPosition: 'right center',
+                    backgroundSize: 'contain',
+                    filter: 'sepia(0.2) brightness(0.85) contrast(1.1) saturate(0.95)'
+                }}
+            />
+            <div
+                className="fixed inset-0 z-0 bg-cover bg-no-repeat transition-transform duration-[60s] ease-linear scale-110 motion-safe:animate-[zoom_60s_linear_infinite_alternate] hidden md:block"
+                style={{
+                    backgroundImage: `url('${bgDesktop}')`,
+                    backgroundAttachment: 'fixed',
+                    backgroundPosition: 'right center',
+                    filter: 'sepia(0.3) brightness(0.8) contrast(1.05) saturate(1)'
+                }}
+            />
 
-                    {/* Buttons */}
-                    <motion.div
-                        className="flex flex-col sm:flex-row gap-4"
-                        initial={{ opacity: 0, x: 30 }}
-                        whileInView={{ opacity: 1, x: 0 }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 0.7, delay: 0.35 }}
-                    >
-                        <motion.a
-                            href="https://wa.me/523521681197?text=Hola, me interesa recibir información sobre sus productos."
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            whileHover={{ scale: 1.04, boxShadow: '0 20px 50px rgba(37,211,102,0.2)' }}
-                            whileTap={{ scale: 0.97 }}
-                            className="flex items-center gap-4 bg-[#25D366] text-white px-10 py-5 text-[10px] uppercase tracking-[0.4em] font-bold hover:bg-[#1ebe59] transition-all duration-400 group"
-                        >
-                            <FontAwesomeIcon icon={faWhatsapp} className="text-lg group-hover:scale-110 transition-transform" />
-                            WhatsApp
-                        </motion.a>
-                        <motion.a
-                            href="tel:+523525262502"
-                            whileHover={{ scale: 1.04 }}
-                            whileTap={{ scale: 0.97 }}
-                            className="flex items-center gap-4 border border-cream/20 text-cream px-10 py-5 text-[10px] uppercase tracking-[0.4em] font-bold hover:border-gold hover:text-gold transition-all duration-400"
-                        >
-                            Call Center
-                        </motion.a>
-                    </motion.div>
-                </div>
-            </motion.section>
+            <div className="fixed inset-0 z-[1] bg-black/30"></div>
 
-            {/* ════════════════════════════════════════
-                5. EMPRESA INFO + VALORES
-            ════════════════════════════════════════ */}
-            <section className="py-28 md:py-40 px-6 md:px-12 max-w-[1600px] mx-auto">
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 xl:gap-40 items-center">
+            {/* Capas de color dinámicas basadas en la marca - MUCHO MÁS TENUES PARA LIMPIEZA */}
+            <div
+                className="fixed inset-0 z-[1] mix-blend-multiply opacity-25"
+                style={{ backgroundColor: config?.secondary_color || '#2A1810' }}
+            ></div>
 
-                    {/* Left: Story */}
-                    <RevealOnScroll className="space-y-10">
-                        <div className="space-y-4">
-                            <div className="flex items-center gap-3">
-                                <div className="w-8 h-[1px] bg-gold/40" />
-                                <span className="text-[9px] uppercase tracking-[0.5em] text-gold font-bold">Nuestra Historia</span>
-                            </div>
-                            <h2 className="font-serif text-4xl md:text-5xl text-chocolate uppercase leading-tight">
-                                Más de 30 Años<br />
-                                <span className="text-gold/70">de Tradición</span>
-                            </h2>
-                        </div>
-                        <div className="space-y-5 text-chocolate/65 text-sm font-light leading-relaxed">
-                            <p>
-                                En Arcángel Ceremonias llevamos más de tres décadas en el ramo textil, fabricando y manufacturando productos ceremoniales con la dedicación y talento de muchas personas comprometidas con la calidad.
-                            </p>
-                            <p>
-                                Nuestra misión es ser líderes en la fabricación de productos ceremoniales para las nuevas generaciones, satisfaciendo las necesidades de nuestros clientes con calidad y a un precio justo.
-                            </p>
-                            <p>
-                                Creemos firmemente en el comercio justo y en la vocación de servir con valores fundamentales: <strong className="text-chocolate font-medium">calidad, honradez, amabilidad</strong> y especial atención a los detalles.
-                            </p>
-                        </div>
-                        <Link
-                            to="/nosotros"
-                            className="group inline-flex items-center gap-3 text-[9px] uppercase tracking-[0.4em] font-bold text-gold hover:text-chocolate transition-colors border-b border-gold/30 hover:border-chocolate pb-1"
-                        >
-                            Conocer más sobre nosotros
-                            <FontAwesomeIcon icon={faChevronRight} className="text-[7px] group-hover:translate-x-1 transition-transform" />
-                        </Link>
-                    </RevealOnScroll>
+            <div
+                className="fixed inset-0 z-[1] opacity-60 bg-gradient-to-t via-transparent"
+                style={{
+                    backgroundImage: `linear-gradient(to top, ${config?.primary_color || '#1B0F0B'} 0%, transparent 60%, ${config?.accent_color || '#3D261C'} 100%)`
+                }}
+            ></div>
 
-                    {/* Right: Stats */}
-                    <RevealOnScroll delay={0.2} className="grid grid-cols-2 gap-6">
-                        {values.map((v, i) => (
-                            <motion.div
-                                key={i}
-                                className="bg-white/60 border border-gold/10 p-8 md:p-10 space-y-3 hover:bg-white/90 transition-all duration-500 group cursor-default"
-                                whileHover={{ y: -6, boxShadow: '0 20px 50px rgba(139,100,60,0.10)' }}
+            <div
+                className="fixed inset-0 z-[1] hidden md:block opacity-15"
+                style={{
+                    backgroundImage: `radial-gradient(circle at left center, ${config?.secondary_color || '#5D2F1D'} 0%, transparent 70%)`
+                }}
+            ></div>
+
+            <div className="fixed inset-0 z-[1] bg-[radial-gradient(circle_at_right_center,rgba(0,0,0,0.15),transparent_70%)]"></div>
+            <div className="fixed inset-0 z-[1] bg-[linear-gradient(45deg,rgba(0,0,0,0.15)_0%,transparent_100%)]"></div>
+
+            {/* SE ELIMINARON LAS TEXTURAS DE MÁRMOL Y RUIDO (PECAS) PARA CLARIDAD TOTAL */}
+
+            {/* --- CONTENT --- */}
+            <div className="relative z-10 flex flex-col min-h-[100dvh] w-full drop-shadow-lg">
+
+                {/* Top: Logo */}
+                <header className="w-full py-12 md:py-20 flex justify-start md:justify-center fade-in-down shrink-0 px-6 md:px-0">
+                    <div className="w-full max-w-[280px] md:max-w-md lg:max-w-lg opacity-95 transition-transform duration-700 hover:scale-[1.02] hover:opacity-100 drop-shadow-[0_0_30px_rgba(0,0,0,0.3)]">
+                        <Logo className="w-full" variant="dark" />
+                    </div>
+                </header>
+
+                {/* Center: Main Message */}
+                <main className="flex flex-col items-start md:items-center justify-center text-left md:text-center flex-grow px-6 py-4 md:px-12 max-w-5xl mx-auto">
+                    <div className="flex flex-col items-start md:items-center space-y-4 md:space-y-6">
+                        <h1 className="flex flex-col items-start md:items-center justify-center leading-none font-serif">
+                            <span
+                                className="block text-4xl md:text-5xl lg:text-7xl xl:text-[5.5rem] tracking-[0.2em] md:tracking-[0.3em] reveal-text delay-500 uppercase"
+                                style={{ color: config?.accent_color ? 'var(--color-cream)' : 'var(--color-cream)' }}
                             >
-                                <div className="font-serif text-4xl md:text-5xl text-gold leading-none">{v.num}</div>
-                                <div className="w-8 h-[1px] bg-gold/30 group-hover:w-12 transition-all duration-500" />
-                                <p className="text-[10px] uppercase tracking-[0.3em] text-chocolate/60 font-medium">{v.label}</p>
-                            </motion.div>
-                        ))}
-                    </RevealOnScroll>
-                </div>
-            </section>
+                                Próximamente
+                            </span>
+                        </h1>
 
-            {/* ════════════════════════════════════════
-                6. SOCIAL STRIP
-            ════════════════════════════════════════ */}
-            <RevealOnScroll>
-                <section className="py-16 border-t border-b border-gold/10 bg-white/30">
-                    <div className="max-w-[1600px] mx-auto px-6 md:px-12 flex flex-col md:flex-row items-center justify-between gap-8">
-                        <div className="space-y-2">
-                            <span className="text-[9px] uppercase tracking-[0.5em] text-gold font-bold block">Síguenos</span>
-                            <p className="text-base font-serif text-chocolate">Ceremonias que se visten de elegancia</p>
+                        <div className="h-[1px] w-16 md:w-20 bg-cream/30 my-2 md:my-3 reveal-line delay-1000"></div>
+
+                        <p className="max-w-2xl text-cream/80 text-sm md:text-base font-light tracking-widest leading-relaxed reveal-text delay-1000 px-4 md:px-0">
+                            Este año inicia una nueva etapa en Arcángel!<br /><br />
+                            Nos estamos renovando para seguir creciendo con ustedes, manteniendo nuestra esencia con un compromiso aún más fuerte con la calidad y atención al detalle.
+                            <span className="hidden lg:inline"><br /></span>
+                            <span
+                                className="block font-medium mt-4 hover:brightness-125 transition-all duration-300 tracking-[0.15em] italic"
+                                style={{ color: config?.secondary_color || '#C5A059' }}
+                            >
+                                Próximamente nuevo catálogo disponible!
+                            </span>
+                        </p>
+
+                        {config?.catalog_pdf_url && (
+                            <motion.div
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                transition={{ delay: 1.5 }}
+                            >
+                                <a
+                                    href={config.catalog_pdf_url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="mt-8 inline-flex items-center gap-3 bg-white/5 hover:bg-gold/20 text-cream px-8 py-4 border border-white/10 hover:border-gold/30 transition-all duration-500 text-[10px] uppercase tracking-[0.4em] font-bold backdrop-blur-sm group"
+                                >
+                                    <FontAwesomeIcon icon={faFilePdf} className="text-gold group-hover:scale-110 transition-transform" />
+                                    <span>Ver Catálogo PDF</span>
+                                </a>
+                            </motion.div>
+                        )}
+                    </div>
+                </main>
+
+                {/* Bottom: Footer Info */}
+                <footer className="w-full py-6 md:py-8 lg:py-10 px-6 flex flex-col items-start md:items-center justify-end text-left md:text-center fade-in-up z-20 shrink-0">
+                    <div className="flex flex-col items-start md:items-center gap-4 md:gap-6 lg:gap-8">
+                        <div className="flex flex-col md:flex-row gap-6 md:gap-12 lg:gap-24">
+                            {/* Call Center */}
+                            <div className="flex flex-col items-start md:items-center gap-1 md:gap-2">
+                                <span className="text-[10px] md:text-xs text-cream/70 uppercase tracking-[0.2em] font-medium">
+                                    Ventas / Call Center
+                                </span>
+                                <a
+                                    href={`https://wa.me/${(config?.whatsapp || '523521681197').replace(/\D/g, '')}`}
+                                    target="whatsapp_contact"
+                                    rel="noopener noreferrer"
+                                    onClick={() => statsService.trackWhatsAppClick(window.location.href)}
+                                    className="text-lg md:text-xl lg:text-2xl text-cream font-serif tracking-widest hover:text-gold transition-colors duration-300"
+                                >
+                                    <FontAwesomeIcon icon={faWhatsapp} className="mr-2 text-xl md:text-2xl" /> 352 168 1197
+                                </a>
+                            </div>
+
+                            {/* Empresa */}
+                            <div className="flex flex-col items-start md:items-center gap-1 md:gap-2">
+                                <span className="text-[10px] md:text-xs text-cream/70 uppercase tracking-[0.2em] font-medium">
+                                    Empresa
+                                </span>
+                                <a
+                                    href="tel:+523525262502"
+                                    className="text-lg md:text-xl lg:text-2xl text-cream font-serif tracking-widest hover:text-gold transition-colors duration-300"
+                                >
+                                    352 52 62502
+                                </a>
+                            </div>
                         </div>
-                        <div className="flex items-center gap-10">
-                            <a href="https://www.facebook.com/arcangel.ceremonias/" target="_blank" rel="noopener noreferrer"
-                                className="flex flex-col items-center gap-2 text-chocolate/40 hover:text-gold transition-all duration-300 hover:-translate-y-1 group">
+
+                        {/* Social Media (Mobile only, hidden on desktop because of sidebar) */}
+                        <div className="flex flex-row items-center justify-start gap-10 pt-4 md:hidden">
+                            <a
+                                href="https://www.facebook.com/arcangel.ceremonias/"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-cream/50 hover:text-gold transition-colors duration-300"
+                                aria-label="Facebook"
+                            >
                                 <FontAwesomeIcon icon={faFacebook} className="text-2xl" />
-                                <span className="text-[8px] uppercase tracking-widest">Facebook</span>
                             </a>
-                            <a href="https://www.instagram.com/ceremonias.arcangel/" target="_blank" rel="noopener noreferrer"
-                                className="flex flex-col items-center gap-2 text-chocolate/40 hover:text-gold transition-all duration-300 hover:-translate-y-1 group">
+                            <a
+                                href="https://www.instagram.com/ceremonias.arcangel/"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-cream/50 hover:text-gold transition-colors duration-300"
+                                aria-label="Instagram"
+                            >
                                 <FontAwesomeIcon icon={faInstagram} className="text-2xl" />
-                                <span className="text-[8px] uppercase tracking-widest">Instagram</span>
-                            </a>
-                            <a href="https://wa.me/523521681197" target="_blank" rel="noopener noreferrer"
-                                className="flex flex-col items-center gap-2 text-chocolate/40 hover:text-[#25D366] transition-all duration-300 hover:-translate-y-1 group">
-                                <FontAwesomeIcon icon={faWhatsapp} className="text-2xl" />
-                                <span className="text-[8px] uppercase tracking-widest">WhatsApp</span>
                             </a>
                         </div>
                     </div>
-                </section>
-            </RevealOnScroll>
+                </footer>
+            </div>
 
-            <Footer />
+            {/* --- ADMIN ACCESS LOCK --- */}
+            <Link
+                to="/admin"
+                className="fixed top-6 left-6 md:top-auto md:bottom-8 md:left-8 z-[100] text-cream/10 hover:text-gold transition-all duration-700 hover:scale-110 drop-shadow-sm p-2"
+                title="Administración"
+            >
+                <FontAwesomeIcon icon={faLock} className="text-[10px] md:text-xs" />
+            </Link>
         </div>
     );
 };

@@ -1,105 +1,116 @@
-import React from 'react';
-import { motion } from 'framer-motion';
+import React, { useRef } from 'react';
+import { motion, useScroll, useTransform } from 'framer-motion';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faWhatsapp } from '@fortawesome/free-brands-svg-icons';
+import { faPhone } from '@fortawesome/free-solid-svg-icons';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
 import { RevealOnScroll } from '@/components/common/RevealOnScroll';
+import { useConfig } from '@/context/ConfigContext';
+import { statsService } from '@/services/statsService';
+import { CTABanner } from '@/components/common/CTABanner';
 
 const About: React.FC = () => {
+    const { config } = useConfig();
+
+    const title = config?.about_title || 'Más de 30 años de tradición';
+    const subtitle = config?.about_subtitle || 'Nuestra Historia';
+    const quote = config?.about_quote || 'Nuestra misión es ser líderes en la fabricación y manufactura de productos ceremoniales para las nuevas generaciones.';
+    const body1 = config?.about_body_1 || 'Con más de tres décadas en el ramo textil, en Arcángel Ceremonias nos dedicamos a satisfacer las necesidades de nuestros clientes con la más alta calidad y un precio justo.';
+    const body2 = config?.about_body_2 || 'Creemos firmemente en el comercio justo y en la vocación de servir a nuestros clientes con valores fundamentales: calidad, honradez, amabilidad y especial atención a los detalles.';
+    const body3 = config?.about_body_3 || 'Cada pieza que sale de nuestro taller lleva consigo el compromiso de honrar los momentos más importantes de las familias, vistiendo de elegancia y significado cada ceremonia.';
+    const imageUrl = config?.about_image_url || '/catalog/portrait-child-getting-ready-their-first-communion.jpg';
+
+    const stats = [
+        { value: config?.about_stat_1_value || '30+', label: config?.about_stat_1_label || 'Años de Experiencia', desc: config?.about_stat_1_desc || 'Liderando el mercado textil ceremonial.' },
+        { value: config?.about_stat_2_value || '500k+', label: config?.about_stat_2_label || 'Prendas Creadas', desc: config?.about_stat_2_desc || 'Vistiendo momentos inolvidables.' },
+        { value: config?.about_stat_3_value || '150+', label: config?.about_stat_3_label || 'Puntos de Venta', desc: config?.about_stat_3_desc || 'Presencia en toda la República Mexicana.' },
+        { value: config?.about_stat_4_value || '100%', label: config?.about_stat_4_label || 'Calidad Auténtica', desc: config?.about_stat_4_desc || 'Cada detalle es revisado a mano.' },
+    ];
+
+    const mainImgRef = useRef(null);
+
+    // Parallax para la Imagen Principal (Efecto sutil de subida)
+    const { scrollYProgress: scrollMain } = useScroll({
+        target: mainImgRef,
+        offset: ["start end", "end start"]
+    });
+    const mainImgY = useTransform(scrollMain, [0, 1], [0, -50]);
+
     return (
         <div className="min-h-screen bg-cream font-sans text-chocolate selection:bg-gold/20">
             <Header />
 
             <main className="pt-40 md:pt-52 pb-20 px-6 md:px-12 max-w-[1200px] mx-auto overflow-hidden">
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
-                    <RevealOnScroll direction="right" className="space-y-8">
-                        <span className="text-[10px] uppercase tracking-[0.4em] text-gold font-semibold">Nuestra Historia</span>
-                        <h1 className="text-5xl md:text-7xl font-serif leading-tight">
-                            Más de 30 años de <span className="italic text-gold/80">tradición</span>
+                    <RevealOnScroll direction="right" className="section-header !mb-0">
+                        <div className="section-header-tag-wrapper">
+                            <div className="section-header-line" />
+                            <span className="section-header-tag">{subtitle}</span>
+                        </div>
+                        <h1 className="section-header-title">
+                            Más de 30 Años<br />
+                            <span className="section-header-highlight uppercase">de Tradición</span>
                         </h1>
-                        <div className="h-[1px] w-20 bg-gold/30"></div>
                         <div className="space-y-6 text-chocolate/80 leading-relaxed font-light">
-                            <p className="text-lg italic font-serif text-chocolate">
-                                "Nuestra misión es ser líderes en la fabricación y manufactura de productos ceremoniales para las nuevas generaciones."
-                            </p>
-                            <p>
-                                Con más de tres décadas en el ramo textil, en Arcángel Ceremonias nos dedicamos a satisfacer las necesidades de nuestros clientes con la más alta calidad y un precio justo.
-                            </p>
-                            <p>
-                                Creemos firmemente en el comercio justo y en la vocación de servir a nuestros clientes con valores fundamentales: calidad, honradez, amabilidad y especial atención a los detalles de cada uno de nuestros productos, que están elaborados con la dedicación y talento de muchas personas.
-                            </p>
-                            <p>
-                                Cada pieza que sale de nuestro taller lleva consigo el compromiso de honrar los momentos más importantes de las familias, vistiendo de elegancia y significado cada ceremonia.
-                            </p>
+                            {quote && (
+                                <p className="text-lg italic font-serif text-chocolate">
+                                    &ldquo;{quote}&rdquo;
+                                </p>
+                            )}
+                            {body1 && <p>{body1}</p>}
+                            {body2 && <p>{body2}</p>}
+                            {body3 && <p>{body3}</p>}
                         </div>
                     </RevealOnScroll>
 
-                    <RevealOnScroll direction="left" className="relative">
-                        <div className="aspect-[4/5] bg-chocolate/5 overflow-hidden border border-gold/10 shadow-2xl">
-                            <img
-                                src="/catalog/portrait-child-getting-ready-their-first-communion.jpg"
-                                alt="Excelencia Arcángel"
-                                className="w-full h-full object-cover"
+                    <RevealOnScroll direction="left" className="relative" ref={mainImgRef}>
+                        <div className="aspect-[4/5] bg-chocolate/5 overflow-hidden border border-gold/10 shadow-2xl relative">
+                            <motion.img
+                                style={{ y: mainImgY, scale: 1.1 }}
+                                src={imageUrl}
+                                alt={title}
+                                className="absolute inset-0 w-full h-full object-cover"
+                                onError={(e) => {
+                                    (e.target as HTMLImageElement).src = '/catalog/portrait-child-getting-ready-their-first-communion.jpg';
+                                }}
                             />
                         </div>
-                        <div className="absolute -bottom-10 -left-10 w-48 h-48 bg-gold/10 -z-10 blur-3xl"></div>
+                        <div className="absolute -bottom-10 -left-10 w-48 h-48 bg-gold/10 -z-10 blur-3xl" />
                     </RevealOnScroll>
                 </div>
 
-                {/* --- Dynamic Stats Section --- */}
+                {/* Stats */}
                 <section className="mt-40 pt-20 border-t border-gold/10">
-                    <div className="text-center mb-20 space-y-4">
-                        <span className="text-[10px] uppercase tracking-[0.4em] text-gold font-semibold">Nuestra Trayectoria</span>
-                        <h2 className="text-4xl md:text-5xl font-serif font-light text-chocolate">Tres décadas de impacto</h2>
+                    <div className="section-header !text-center !mb-20">
+                        <div className="section-header-tag-wrapper !justify-center">
+                            <div className="section-header-line" />
+                            <span className="section-header-tag">Trayectoria</span>
+                            <div className="section-header-line" />
+                        </div>
+                        <h2 className="section-header-title">
+                            Tres décadas de <br />
+                            <span className="section-header-highlight uppercase">impacto</span>
+                        </h2>
                     </div>
-
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
-                        {[
-                            { value: '30+', label: 'Años de Experiencia', desc: 'Liderando el mercado textil ceremonial.' },
-                            { value: '500k+', label: 'Prendas Creadas', desc: 'Vistiendo momentos inolvidables.' },
-                            { value: '150+', label: 'Puntos de Venta', desc: 'Presencia en toda la República Mexicana.' },
-                            { value: '100%', label: 'Calidad Artesanal', desc: 'Cada detalle es revisado a mano.' }
-                        ].map((stat, idx) => (
+                        {stats.map((stat, idx) => (
                             <RevealOnScroll
                                 key={idx}
                                 delay={idx * 0.1}
                                 className="space-y-4 p-8 bg-white/40 border border-gold/5 hover:border-gold/20 transition-all duration-500"
                             >
                                 <div className="text-4xl font-serif text-gold">{stat.value}</div>
-                                <div className="h-[1px] w-10 bg-gold/30 mx-auto"></div>
+                                <div className="h-[1px] w-10 bg-gold/30 mx-auto" />
                                 <h4 className="text-[10px] uppercase tracking-widest font-bold text-chocolate">{stat.label}</h4>
                                 <p className="text-[11px] text-chocolate/50 font-light leading-relaxed">{stat.desc}</p>
                             </RevealOnScroll>
                         ))}
                     </div>
                 </section>
-
-                {/* --- Call to Action Section --- */}
-                <RevealOnScroll
-                    className="mt-40 p-12 md:p-24 bg-chocolate text-center space-y-10 relative overflow-hidden"
-                >
-                    <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/pinstriped-suit.png')] opacity-5"></div>
-                    <div className="relative z-10 space-y-6">
-                        <h2 className="text-4xl md:text-6xl font-serif text-cream leading-tight">
-                            ¿Listo para encontrar la <br />
-                            <span className="italic text-gold">pieza perfecta?</span>
-                        </h2>
-                        <p className="max-w-2xl mx-auto text-cream/60 font-light text-sm md:text-lg">
-                            Explora nuestra colección curada y descubre por qué somos la elección preferida de las familias más exigentes.
-                        </p>
-                        <div className="pt-6 flex flex-col md:flex-row gap-6 justify-center">
-                            <a href="/catalogo" className="px-12 py-5 bg-gold text-chocolate text-[10px] uppercase tracking-[0.3em] font-bold hover:bg-cream transition-all duration-500 shadow-xl">
-                                Explorar Colección
-                            </a>
-                            <a href="/contacto" className="px-12 py-5 border border-cream/30 text-cream text-[10px] uppercase tracking-[0.3em] font-bold hover:bg-white/10 transition-all duration-500">
-                                Contactar Boutique
-                            </a>
-                        </div>
-                    </div>
-                    {/* Decorative Elements */}
-                    <div className="absolute top-0 left-0 w-32 h-32 border-l border-t border-gold/20"></div>
-                    <div className="absolute bottom-0 right-0 w-32 h-32 border-r border-b border-gold/20"></div>
-                </RevealOnScroll>
             </main>
+
+            <CTABanner />
 
             <Footer />
         </div>

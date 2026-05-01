@@ -2,9 +2,9 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Product } from '@/types/product';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faWhatsapp } from '@fortawesome/free-brands-svg-icons';
-import { faShareNodes, faLeaf, faGem, faScissors, faCloud, faAward } from '@fortawesome/free-solid-svg-icons';
+import { faShareNodes, faLeaf, faGem, faScissors, faCloud, faAward, faEye } from '@fortawesome/free-solid-svg-icons';
 import { Link } from 'react-router-dom';
+import { useConfig } from '@/context/ConfigContext';
 
 interface ProductCardProps {
     product: Product;
@@ -13,6 +13,7 @@ interface ProductCardProps {
 
 export const ProductCard: React.FC<ProductCardProps> = ({ product, index }) => {
     const [isLoaded, setIsLoaded] = React.useState(false);
+    const { config } = useConfig();
 
     return (
         <motion.div
@@ -20,14 +21,17 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, index }) => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: index * 0.1 }}
-            className="group cursor-pointer"
+            className="group cursor-pointer relative"
         >
             <Link to={`/producto/${product.slug}`}>
                 <div className="relative overflow-hidden bg-slate-50 aspect-[3/4] mb-5 shadow-sm group-hover:shadow-xl transition-shadow duration-700">
-                    {/* Skeleton / Placeholder */}
+                    {/* Skeleton / Placeholder Premium */}
                     {!isLoaded && (
-                        <div className="absolute inset-0 bg-chocolate/5 animate-pulse flex items-center justify-center">
-                            <div className="w-10 h-[1px] bg-gold/20" />
+                        <div className="absolute inset-0 bg-chocolate/5 overflow-hidden">
+                            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full animate-[shimmer_2s_infinite]" />
+                            <div className="flex items-center justify-center h-full">
+                                <div className="w-10 h-[1px] bg-gold/20" />
+                            </div>
                         </div>
                     )}
 
@@ -50,11 +54,11 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, index }) => {
                             return displayBadges.map((badge, bIdx) => (
                                 <span
                                     key={bIdx}
-                                    className={`backdrop-blur-md text-[9px] uppercase tracking-[0.3em] px-3 py-1.5 font-bold shadow-sm border ${badge.toUpperCase() === 'NUEVO'
-                                            ? 'bg-gold text-white border-gold/20'
-                                            : badge.toUpperCase() === 'PREMIUM'
-                                                ? 'bg-chocolate text-gold border-gold/30'
-                                                : 'bg-white/90 text-chocolate border-gold/10'
+                                    className={`backdrop-blur-md text-[7px] md:text-[9px] uppercase tracking-[0.2em] md:tracking-[0.3em] px-2 py-1 md:px-3 md:py-1.5 font-bold shadow-sm border ${badge.toUpperCase() === 'NUEVO'
+                                        ? 'bg-gold text-white border-gold/20'
+                                        : badge.toUpperCase() === 'PREMIUM'
+                                            ? 'bg-chocolate text-gold border-gold/30'
+                                            : 'bg-white/90 text-chocolate border-gold/10'
                                         }`}
                                 >
                                     {badge}
@@ -64,7 +68,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, index }) => {
                     </div>
 
                     {/* Share Button Overlay */}
-                    <div className="absolute top-4 right-4 translate-y-2 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500">
+                    <div className="absolute top-4 right-4 translate-y-0 md:translate-y-2 opacity-100 md:opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500">
                         <button
                             onClick={(e) => {
                                 e.preventDefault();
@@ -87,33 +91,58 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, index }) => {
                     </div>
                 </div>
 
-                <div className="text-left space-y-2 px-1">
+                <div className="text-left space-y-1 md:space-y-2 px-1 mt-2 md:mt-0">
                     <div className="relative inline-block">
-                        <h3 className="font-serif text-[19px] text-chocolate group-hover:text-gold transition-colors duration-500 leading-tight">
+                        <h3 className="font-serif text-sm md:text-[19px] text-chocolate group-hover:text-gold transition-colors duration-500 leading-tight">
                             {product.name}
                         </h3>
                         <div className="absolute -bottom-1 left-0 w-0 h-[1px] bg-gold group-hover:w-full transition-all duration-700 ease-out" />
                     </div>
 
-                    <div className="flex items-center gap-2.5 text-chocolate/40 group-hover:text-chocolate/60 transition-colors duration-500">
-                        <FontAwesomeIcon icon={faAward} className="text-[10px] text-gold/60" />
-                        <p className="text-[10px] uppercase tracking-[0.25em] font-medium">
+                    <div className="flex items-center gap-1.5 md:gap-2.5 text-chocolate/40 group-hover:text-chocolate/60 transition-colors duration-500">
+                        <FontAwesomeIcon icon={faAward} className="text-[8px] md:text-[10px] text-gold/60 flex-shrink-0" />
+                        <p className="text-[8px] md:text-[10px] uppercase tracking-[0.15em] md:tracking-[0.25em] font-medium truncate">
                             {product.material || 'Artesanía de Autor'}
                         </p>
                     </div>
 
-                    <div className="pt-2 opacity-0 group-hover:opacity-100 transform translate-y-3 group-hover:translate-y-0 transition-all duration-700">
-                        <button
-                            className="w-full py-3.5 bg-chocolate text-cream text-[9px] uppercase tracking-[0.3em] font-bold hover:bg-gold hover:shadow-lg transition-all duration-500 flex items-center justify-center gap-3"
-                            onClick={(e) => {
-                                e.preventDefault();
-                                e.stopPropagation();
-                                window.open(`https://wa.me/523521681197?text=Hola, me interesa el producto: ${product.name}`, '_blank');
-                            }}
+                    {/* Price Display */}
+                    {(() => {
+                        const showPrices = (config?.show_prices ?? true) && (product.show_price ?? true);
+                        if (!showPrices) return null;
+
+                        const basePrice = Number(product.price);
+                        const hasBasePrice = !isNaN(basePrice) && basePrice > 0;
+
+                        // Intentar obtener el precio mínimo de las variantes
+                        const variantPrices = product.size_variants
+                            ?.map(v => Number(v.price))
+                            .filter(p => !isNaN(p) && p > 0) || [];
+                        
+                        const minVariantPrice = variantPrices.length > 0 ? Math.min(...variantPrices) : null;
+                        
+                        const displayPrice = hasBasePrice ? basePrice : minVariantPrice;
+                        const hasVariantsOnly = !hasBasePrice && minVariantPrice !== null;
+
+                        if (!displayPrice) return null;
+
+                        return (
+                            <div className="pt-1">
+                                <span className="text-xs md:text-sm font-sans font-bold text-gold">
+                                    {hasVariantsOnly && <span className="text-[10px] mr-1 opacity-60 font-medium">Desde</span>}
+                                    ${displayPrice.toLocaleString('es-MX')}
+                                </span>
+                            </div>
+                        );
+                    })()}
+
+                    <div className="pt-2 opacity-100 md:opacity-0 group-hover:opacity-100 transform translate-y-0 md:translate-y-3 group-hover:translate-y-0 transition-all duration-700">
+                        <div
+                            className="w-full py-3.5 bg-chocolate text-cream text-[9px] uppercase tracking-[0.3em] font-bold hover:bg-gold hover:shadow-lg transition-all duration-500 flex items-center justify-center gap-2.5"
                         >
-                            <FontAwesomeIcon icon={faWhatsapp} className="text-sm" />
-                            Consultar Disponibilidad
-                        </button>
+                            <FontAwesomeIcon icon={faEye} className="text-[11px]" />
+                            Ver Producto
+                        </div>
                     </div>
                 </div>
             </Link>

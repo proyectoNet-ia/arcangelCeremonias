@@ -6,11 +6,13 @@ import { Footer } from '@/components/layout/Footer';
 import { ProductCard } from '@/components/catalog/ProductCard';
 import { productService } from '@/services/productService';
 import { Product, Category } from '@/types/product';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSearch, faTimes } from '@fortawesome/free-solid-svg-icons';
-import { Logo } from '@/components/Logo';
 import { RevealOnScroll } from '@/components/common/RevealOnScroll';
 import { trackSearch } from '@/services/cookieService';
+import { useConfig } from '@/context/ConfigContext';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faSearch, faTimes, faFilePdf } from '@fortawesome/free-solid-svg-icons';
+import { CTABanner } from '@/components/common/CTABanner';
+import { ProductSkeleton } from '@/components/common/Skeleton';
 
 const Catalog: React.FC = () => {
     const [searchParams, setSearchParams] = useSearchParams();
@@ -24,6 +26,7 @@ const Catalog: React.FC = () => {
     const [selectedSubcategory, setSelectedSubcategory] = useState<string | null>(null);
     const [searchTerm, setSearchTerm] = useState(searchParams.get('search') || '');
     const [isMegamenuOpen, setIsMegamenuOpen] = useState(false);
+    const { config } = useConfig();
 
     useEffect(() => {
         const queryTerm = searchParams.get('search');
@@ -68,8 +71,8 @@ const Catalog: React.FC = () => {
             try {
                 setLoading(true);
                 const [productsData, categoriesData] = await Promise.all([
-                    productService.getProducts(),
-                    productService.getCategories()
+                    productService.getProducts(true),
+                    productService.getCategories(true)
                 ]);
                 setProducts(productsData);
                 setCategories(categoriesData);
@@ -129,43 +132,25 @@ const Catalog: React.FC = () => {
         return matchesCategory && matchesSubcategory && matchesSearch;
     });
 
-    const [isSeeding, setIsSeeding] = useState(false);
 
-    const handleSeed = async () => {
-        try {
-            setIsSeeding(true);
-            const { seedCatalog } = await import('@/services/seedData');
-            const success = await seedCatalog();
-            if (success) {
-                alert('¡Datos cargados con éxito!');
-                window.location.reload();
-            } else {
-                alert('Error al cargar datos. Revisa la consola.');
-            }
-        } catch (error) {
-            console.error('Seed error:', error);
-            alert('Error crítico al cargar datos.');
-        } finally {
-            setIsSeeding(false);
-        }
-    };
 
     return (
         <div className="min-h-screen bg-cream font-sans text-chocolate selection:bg-gold/20">
             <Header />
 
             {/* --- HERO SECTION --- */}
-            <section className="pt-40 md:pt-52 pb-20 px-6 md:px-12 max-w-[1600px] mx-auto">
+            <section className="pt-32 md:pt-48 pb-20 px-6 md:px-12 max-w-[1600px] mx-auto">
                 <div className="flex flex-col gap-12 mb-16">
                     {/* TOP ROW: LOGO/STATUS & SEARCH */}
                     <div className="flex flex-col md:flex-row md:items-start justify-between gap-6">
-                        <RevealOnScroll direction="right" className="space-y-4">
-                            <span className="block text-[10px] uppercase tracking-[0.4em] text-gold font-semibold">
-                                Ceremonias que se visten de elegancia
-                            </span>
-                            <h1 className="text-5xl md:text-8xl font-serif leading-[1.1]">
+                        <RevealOnScroll direction="right" className="section-header !mb-0">
+                            <div className="section-header-tag-wrapper">
+                                <div className="section-header-line" />
+                                <span className="section-header-tag">Ceremonias que se visten de elegancia</span>
+                            </div>
+                            <h1 className="section-header-title !text-2xl md:!text-5xl lg:!text-6xl">
                                 Nuestro Catálogo <br />
-                                <span className="italic text-gold/80 font-light">Editorial</span>
+                                <span className="section-header-highlight uppercase">Editorial</span>
                             </h1>
                         </RevealOnScroll>
 
@@ -193,18 +178,26 @@ const Catalog: React.FC = () => {
                         </RevealOnScroll>
                     </div>
 
-                    {/* Botón temporal de desarrollo */}
-                    {!loading && (
-                        <div className="-mt-8">
-                            <button
-                                onClick={handleSeed}
-                                disabled={isSeeding}
-                                className={`text-[9px] uppercase tracking-widest text-gold hover:underline ${isSeeding ? 'opacity-50 cursor-not-allowed' : ''}`}
+                    {config?.catalog_pdf_url && (
+                        <RevealOnScroll direction="up" delay={0.4} className="flex justify-center md:justify-start -mt-8">
+                            <a
+                                href={config.catalog_pdf_url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="group flex items-center gap-4 bg-chocolate text-cream px-8 py-4 border border-gold/30 hover:bg-gold hover:text-chocolate transition-all duration-500 shadow-xl"
                             >
-                                {isSeeding ? '↻ Cargando datos...' : '↻ Actualizar catálogo a versión robusta (Supabase)'}
-                            </button>
-                        </div>
+                                <div className="w-10 h-10 rounded-full bg-gold/20 flex items-center justify-center group-hover:bg-white/20 transition-colors">
+                                    <FontAwesomeIcon icon={faFilePdf} className="text-gold group-hover:text-chocolate" />
+                                </div>
+                                <div className="flex flex-col items-start text-left">
+                                    <span className="text-[9px] uppercase tracking-[0.3em] font-bold opacity-60">Colección Editorial</span>
+                                    <span className="text-[11px] uppercase tracking-[0.1em] font-bold">Descargar Catálogo PDF</span>
+                                </div>
+                            </a>
+                        </RevealOnScroll>
                     )}
+
+
 
                     {/* CATEGORY NAV - Optimized for Scalability & Mobile */}
                     <RevealOnScroll direction="up" delay={0.5} className="space-y-6 border-t border-gold/10 pt-10">
@@ -216,7 +209,7 @@ const Catalog: React.FC = () => {
                                 onMouseLeave={handleMouseLeave}
                                 onMouseUp={handleMouseUp}
                                 onMouseMove={handleMouseMove}
-                                className={`overflow-x-auto pb-4 -mb-4 flex gap-3 no-scrollbar mask-fade-right w-full cursor-grab active:cursor-grabbing select-none pr-32`}
+                                className={`overflow-x-auto pb-4 -mb-4 flex gap-3 no-scrollbar mask-fade-right w-full cursor-grab active:cursor-grabbing select-none pr-12 md:pr-32`}
                             >
                                 <button
                                     onClick={() => handleCategoryClick(null)}
@@ -280,16 +273,12 @@ const Catalog: React.FC = () => {
                 </div>
 
                 {/* --- PRODUCT GRID --- */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-8 gap-y-16">
+                <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-3 md:gap-x-8 gap-y-8 md:gap-y-16">
                     <AnimatePresence mode='popLayout'>
                         {loading ? (
-                            // SKELETON LOADERS
+                            // PREMIUM SKELETON LOADERS
                             Array.from({ length: 8 }).map((_, i) => (
-                                <div key={`skeleton-${i}`} className="space-y-4 animate-pulse">
-                                    <div className="bg-chocolate/5 aspect-[3/4] w-full" />
-                                    <div className="h-4 bg-chocolate/5 w-3/4" />
-                                    <div className="h-3 bg-chocolate/5 w-1/2" />
-                                </div>
+                                <ProductSkeleton key={`skeleton-${i}`} />
                             ))
                         ) : filteredProducts.length > 0 ? (
                             filteredProducts.map((product, index) => (
@@ -316,6 +305,8 @@ const Catalog: React.FC = () => {
                     </AnimatePresence>
                 </div>
             </section>
+
+            <CTABanner />
 
             <Footer />
         </div>

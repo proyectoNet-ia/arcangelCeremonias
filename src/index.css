@@ -120,4 +120,41 @@
         background: #C5A059;
         border-radius: 10px;
     }
+
+    @keyframes marquee {
+        from { transform: translateX(0); }
+        to { transform: translateX(-50%); }
+    }
+
+    .animate-marquee {
+        animation: marquee 30s linear infinite;
+    }
+
+    /* ════════════════════════════════════════
+       TITULO DE SECCION (Standard Patterns)
+    ════════════════════════════════════════ */
+    .section-header {
+        @apply space-y-4 mb-16;
+    }
+    .section-header-tag-wrapper {
+        @apply flex items-center gap-3;
+    }
+    .section-header-line {
+        @apply w-6 h-[2px] bg-gold;
+    }
+    .section-header-tag {
+        @apply text-[9px] uppercase tracking-[0.5em] text-gold font-bold;
+    }
+    .section-header-title {
+        @apply text-3xl md:text-5xl lg:text-6xl font-serif text-chocolate leading-none;
+    }
+    .section-header-highlight {
+        @apply italic text-gold font-bold lowercase;
+    }
+}
+
+@keyframes shimmer {
+    100% {
+        transform: translateX(100%);
+    }
 }

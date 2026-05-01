@@ -5,151 +5,106 @@ Este archivo es un resumen actualizado para mantener la continuidad del desarrol
 
 ---
 
-## 📝 Resumen Ejecutivo
+## 🏆 REGLA DE ORO — PROHIBIDO TOCAR MAIN
 
-**Última actualización:** 23 de febrero de 2026 — 22:16 hrs  
-**Rama activa:** `catalog-development`  
-**Objetivo actual:** Desarrollo del sitio completo (catálogo, home, CMS admin) — ya no es modo "Próximamente".
+> **NO TOCAR LA RAMA `main` NI REALIZAR DESPLIEGUES A PRODUCCIÓN (`--prod`) SIN INDICACIÓN EXPLÍCITA DEL USUARIO.**
+> Cualquier cambio debe desarrollarse y probarse en ramas de previsualización o localmente. La estabilidad del sitio público es la prioridad número uno.
+
+---
+
+## ⚠️ REGLA CRÍTICA — Leer Antes de Cualquier Acción
+
+> **ESTAMOS EN FASE DE DESARROLLO LOCAL.**
+> El sitio de producción `https://www.ceremoniasarcangel.com` está mostrando una **página de "Próximamente"** al público.
+> **NO realizar `git push` a main, `vercel --prod`, ni despliegues oficiales** hasta que el cliente apruebe explícitamente hacerlo.
+> Todo el trabajo se desarrolla y prueba en `http://localhost:3000` o URLs de previsualización únicamente.
+
+---
+
+## 📝 Resumen Ejecutivo
+ 
+**Última actualización:** 11 de marzo de 2026 — 23:05 hrs
+**Rama activa:** `main` (local, sincronizada vía OneDrive)
+**Entorno activo:** `http://localhost:3000` (desarrollo local)
+**Producción:** `https://www.ceremoniasarcangel.com` — ⛔ En fase de correcciones de estabilidad y favicon.
 
 ---
 
 ## 🏗️ Arquitectura del Proyecto
 
 - **Stack:** React 19 + Vite + TypeScript + Tailwind CSS + Framer Motion + FontAwesome
-- **Backend:** Supabase (PostgreSQL) — tablas: `products`, `categories`, `users`
-- **Autenticación:** Supabase Auth (admin panel protegido)
+- **Backend:** Supabase (PostgreSQL) — mismo proyecto Supabase para dev y prod (usar con cuidado)
+- **Gestión de Estado:** React Context API (`ConfigContext`) — inyecta colores y config al DOM
+- **Autenticación:** Supabase Auth (admin panel en `/admin`)
 - **Repositorio:** `https://github.com/proyectoNet-ia/arcangelCeremonias`
-- **Producción:** `https://www.ceremoniasarcangel.com` (Vercel, rama `main`)
-- **Paleta de colores Tailwind:** `cream: #FDF8F1`, `chocolate: #3E2723`, `bronze: #8D6E63`, `gold: #C5A059`
-- **Tipografías:** `font-sans → Montserrat`, `font-serif → Cinzel`, `font-elegant → Cormorant Garamond`
+- **Servidor local:** `npm run dev` → `http://localhost:3000`
 
 ---
 
-## 🚀 Avances de la Sesión (23 de febrero de 2026)
+## 🧩 Estado del CMS Admin — Completado al 11/03/2026
 
-### 1. Footer — Títulos de Secciones
-- **Iconos temáticos** añadidos a cada título de sección:
-  - Nosotros → `faUsers`
-  - Ubicación → `faLocationDot`
-  - Contacto → `faPhone`
-  - Social → `faShareNodes` (reemplazó `faHashtag`)
-- **Eliminadas** las viñetas `faDiamond` que acompañaban cada título.
-- **Tamaño** de títulos aumentado de `text-[9px]` a `text-[11px]` (+20%).
-- **Tipografía** cambiada a `font-sans`, `tracking-[0.5em]`, `font-medium`.
+### ✅ Secciones implementadas y funcionales:
 
-### 2. Footer — Sección Ubicación
-- Rediseñada con estructura label + dato (igual que Contacto), más compacta y armoniosa.
-- **Eliminado** el link a Google Maps.
-- **Agregado** bloque "Grupo de Empresas" dentro de la columna Ubicación:
-  - `💼 Grupo ESBASA` → `href="#"` (URL pendiente)
-  - `Uniformes ESBASA` → `href="#"` (URL pendiente)
-  - Con ícono `faArrowUpRightFromSquare` en hover.
-
-### 3. Home — Nueva Página de Inicio Completa (`src/pages/Home.tsx`)
-Se reemplazó totalmente la pantalla "Próximamente" por una página de inicio rica con:
-
-#### Secciones implementadas:
-1. **Hero Slider** (3 diapositivas):
-   - Transición animada con Framer Motion (`AnimatePresence`)
-   - Todas las diapositivas: texto alineado a la **izquierda**
-   - Controles prev/next + indicadores de puntos
-   - Auto-avance cada 6 segundos
-   - Overlays oscuros: `bg-black/50` + `bg-chocolate/35`
-   - Slides: "Arte Ceremonial", "Elegancia Atemporal", "Precios Exclusivos"
-
-2. **Trust Badges Strip** (franja `bg-chocolate`):
-   - Marquee infinito animado (keyframe `marquee` añadido a `tailwind.config.js`)
-   - 6 badges: Artesanal, 30 años, Envío, Mayoreo, Materiales Premium, Calidad
-
-3. **Artículos Destacados**:
-   - Carga los primeros 8 productos de Supabase via `productService.getProducts()`
-   - Grid responsive: 2 / 3 / 4 columnas
-   - Skeleton loaders mientras carga
-   - Usa componente `ProductCard` existente
-
-4. **CTA Banner** (chocolate con shimmer + diamantes flotantes):
-   - Botón WhatsApp (`#25D366`) con mensaje pre-llenado
-   - Botón Call Center con hover dorado
-
-5. **Historia de la Empresa**:
-   - Texto de historia (izquierda)
-   - Grid 2×2 de estadísticas animadas: `30+`, `500+`, `100%`, `∞` (derecha)
-   - `whileHover` con elevación y sombra
-
-6. **Social Strip**:
-   - Facebook, Instagram, WhatsApp con labels y hover
+| Sección Admin | Ruta | Descripción |
+|---------------|------|-------------|
+| Dashboard | `/admin` | Estadísticas reales de visitas y clics de WhatsApp |
+| Productos | `/admin/productos` | CRUD completo + upload de imágenes a Supabase Storage |
+| Categorías | `/admin/productos` | Gestión de categorías incluida en Productos |
+| Hero Slider | `/admin/hero` | CRUD de diapositivas con imagen, textos, alineación y botones |
+| Configuración | `/admin/configuracion` | Favicon, Colores, Logos, Nosotros, CTA Banner |
+| Usuarios | `/admin/usuarios` | Gestión de roles (Admin/Editor) con RLS fix. |
 
 ---
 
-## 📁 Archivos Clave Modificados
+## 📄 Páginas Públicas — Estado
 
-| Archivo | Estado |
-|---------|--------|
-| `src/pages/Home.tsx` | ✅ Reescrito completamente |
-| `src/components/layout/Footer.tsx` | ✅ Actualizado (iconos, tipografía, ESBASA) |
-| `tailwind.config.js` | ✅ Añadida animación `marquee` |
-| `src/services/cookieService.ts` | ✅ Creado (tracking historial productos/búsquedas) |
-| `src/components/common/RevealOnScroll.tsx` | ✅ Creado |
-
----
-
-## 🧩 Estado del CMS Admin (Pendiente de continuación)
-
-El panel admin existe en `/admin` y está protegido por autenticación Supabase.
-
-### Secciones CMS **ya implementadas**:
-- ✅ Login / Sesión
-- ✅ Gestión de Productos (CRUD completo con imágenes)
-- ✅ Gestión de Categorías
-- ✅ Gestión de Usuarios / Agentes
-- ✅ Promoción de agente a Super Agente (admin)
-
-### Secciones CMS **pendientes de desarrollar** (prioridad para mañana):
-- ❌ **Gestión de Sliders/Hero** — que el admin pueda cambiar las diapositivas del hero de Home
-- ❌ **Gestión de Banners CTA** — texto, URL destino, colores
-- ❌ **Configuración General** — nombre empresa, teléfonos, email, redes sociales
-- ❌ **Gestión de Páginas** (Nosotros, Contacto) — contenido editable
-- ❌ **Estadísticas de Visitantes** (básico, usando cookieService)
+| Página | Ruta | Estado | Dinámica desde CMS |
+|--------|------|--------|--------------------|
+| Home | `/` | ✅ Funcional | Hero, CTA Mayoreo, Productos Destacados |
+| Catálogo | `/catalogo` | ✅ Funcional | Productos y categorías desde Supabase |
+| Detalle Producto | `/catalogo/:slug` | ✅ Funcional | Galería, variantes, WhatsApp |
+| Nosotros | `/nosotros` | ✅ Funcional | Todos los textos e imagen desde CMS |
+| Contacto | `/contacto` | ✅ Funcional | Datos desde ConfigContext |
 
 ---
 
-## 🔗 URLs de pendientes
+## 🐛 Issues Corregidos (Marzo 2026)
 
-- **Grupo ESBASA** (corporativa): URL pendiente — actualizar `href="#"` en Footer y en componentes relacionados
-- **Uniformes ESBASA**: URL pendiente — mismo caso
+| ID | Descripción | Solución |
+|----|-------------|----------|
+| B-10 | Login 500 (Confirmation tokens NULL) | Reparados tokens nulos en `auth.users` que bloqueaban el motor GoTrue de Supabase. |
+| B-11 | Recursión RLS en Profiles | Implementada política basada en JWT metadata para evitar consultas cíclicas a la propia tabla. |
+| B-12 | Bundle size excesivo | Implementado **Lazy Loading** en `App.tsx` para separar el CMS de la parte pública. |
+| B-13 | Hangs en subida de medios (móvil) | Solucionado con optimizador de imágenes robusto, paralelismo, timeouts y avisos visuales (batch upload). |
+| B-14 | Guía de Tallas (Size Guide) | Implementada URL de guía de tallas por categoría con visualización dinámica en productos. |
 
 ---
 
-## 📋 Próximos Pasos para Mañana
+## 🛠️ Próximos Pasos (Ordenados por Prioridad)
 
-### 🎯 Prioridad 1 — Afinar sección Hero/Home
-1. **Revisar el Hero Slider** en pantalla real y ajustar:
-   - Posición del texto en mobile
-   - Timing de transición entre slides
-   - Verificar que las 3 imágenes se vean bien
-2. **Overlay del gradient** — ajustar opacidad si el texto compite con la imagen
-3. **Marquee del trust badge strip** — verificar que la velocidad sea la adecuada
-
-### 🎯 Prioridad 2 — CMS Admin (secciones pendientes)
-Desarrollar estas secciones del admin en orden:
-1. `Configuración General` — datos de contacto, redes, nombre empresa
-2. `Gestión de Hero/Sliders` — agregar/editar/eliminar slides
-3. `Gestión de Banners` — banners de CTA editables
-
-### 🎯 Prioridad 3 — Revisión general
-- Revisar página de Catálogo en mobile
-- Revisar ProductDetail en mobile
-- Asegurar que el Footer se vea bien en todos los breakpoints
+1. **🟡 ALTA:** Implementar barra de búsqueda de productos en el catálogo principal.
+2. **🟡 ALTA:** Revisar optimización de imágenes en el catálogo (formato WebP y límites de resolución).
+3. **🟢 BAJO:** Mejorar diseño de los mensajes de error en formularios de contacto.
+4. **⏳ LANZAMIENTO:** Solicitar aprobación final para eliminar el modo mantenimiento por defecto.
 
 ---
 
 ## 🛠️ Notas Técnicas Importantes
 
-- **Linting en `index.css`**: Los errores de `@tailwind` y `@apply` son **falsos positivos** del editor CSS. No afectan el build de Vite. NO intentar corregirlos cambiando el CSS.
-- **Rama de trabajo:** `catalog-development` — NO hacer push directo a `main`. El merge a `main` dispara el deploy a producción en Vercel.
-- **Variables de entorno Supabase:** están en `.env` local y en Vercel. No exponer en el código.
-- **cookieService** (`src/services/cookieService.ts`): maneja tracking de productos vistos, categorías y búsquedas recientes. Usar siempre este servicio en lugar de `localStorage` directo.
+-   **Code Splitting:** Se utiliza `React.lazy` para todas las rutas. El bundle inicial se redujo un ~25%.
+-   **RBAC (Role Based Access Control):** Los editores solo ven inventario y galería. Los admins ven todo.
+-   **Media Optimization:** Las imágenes móviles ahora tienen fallback y timeout para evitar bloqueos infinitos.
+-   **Batch Uploads:** Soporte para subida masiva de imágenes con barra de progreso en tiempo real.
+-   **Supabase Sessions:** Bypass de locks activo para estabilidad en Chrome/Edge.
 
 ---
 
-*Creado por Antigravity — Agente IA de desarrollo. Última actualización: 23/02/2026 22:16 hrs*
+## 🛠️ Archivos Recientemente Modificados:
+- `src/App.tsx` (Lazy loading implementation)
+- `src/pages/Admin.tsx` (Role access restriction for editors)
+- `src/components/admin/AdminLayout.tsx` (Sidebar dynamic visibility per role)
+- `sql_migration_fix_schema.sql` (Final RLS and token fixes)
+
+---
+
+*Actualizado por Antigravity — Agente IA de desarrollo. Última actualización: 11/03/2026 23:05 hrs*

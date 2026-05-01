@@ -9,10 +9,10 @@ export default {
     theme: {
         extend: {
             colors: {
-                cream: '#FDF8F1',
-                chocolate: '#3E2723',
+                cream: 'var(--color-accent, #FDF8F1)',
+                chocolate: 'var(--color-primary, #3E2723)',
                 bronze: '#8D6E63',
-                gold: '#C5A059',
+                gold: 'var(--color-secondary, #C5A059)',
             },
             fontFamily: {
                 sans: ['Montserrat', 'sans-serif'],
@@ -26,8 +26,12 @@ export default {
                 'fade-in-up': 'fadeInUp 1s ease-out forwards',
                 'zoom': 'zoom 60s linear infinite alternate',
                 'marquee': 'marquee 30s linear infinite',
+                'shine': 'shine 1.5s ease-out infinite',
             },
             keyframes: {
+                shine: {
+                    '100%': { transform: 'translateX(100%)' },
+                },
                 revealUp: {
                     'to': { opacity: '1', transform: 'translateY(0)' },
                 },
@@ -35,10 +39,12 @@ export default {
                     'to': { width: '6rem' },
                 },
                 fadeInDown: {
-                    'to': { opacity: '1', transform: 'translateY(0)' },
+                    '0%': { opacity: '0', transform: 'translateY(-20px)' },
+                    '100%': { opacity: '1', transform: 'translateY(0)' },
                 },
                 fadeInUp: {
-                    'to': { opacity: '1', transform: 'translateY(0)' },
+                    '0%': { opacity: '0', transform: 'translateY(20px)' },
+                    '100%': { opacity: '1', transform: 'translateY(0)' },
                 },
                 zoom: {
                     '0%': { transform: 'scale(1.1)' },
