@@ -30,6 +30,7 @@ const ProductDetail: React.FC = () => {
     const [activeImage, setActiveImage] = useState(0);
     const [zoomPos, setZoomPos] = useState({ x: 50, y: 50 });
     const [selectedVariant, setSelectedVariant] = useState<number | null>(null);
+    const [selectedColor, setSelectedColor] = useState<string | null>(null);
     const [relatedProducts, setRelatedProducts] = useState<Product[]>([]);
     const [historyProducts, setHistoryProducts] = useState<Product[]>([]);
     const [showSizeGuide, setShowSizeGuide] = useState(false);
@@ -48,6 +49,12 @@ const ProductDetail: React.FC = () => {
                 // Select first variant by default if variants exist
                 if (data?.size_variants && data.size_variants.length > 0) {
                     setSelectedVariant(0);
+                }
+
+                // Inicializar color si existe
+                if (data?.color) {
+                    const colors = data.color.split(/, | y |\/| - /).map((c: string) => c.trim());
+                    if (colors.length > 0) setSelectedColor(colors[0]);
                 }
 
                 // Track view via cookie (persists 30 days)
@@ -103,9 +110,37 @@ const ProductDetail: React.FC = () => {
     }
 
     const images = [product.main_image, ...(product.gallery || [])];
-    const currentPrice = selectedVariant !== null && product.size_variants
-        ? product.size_variants[selectedVariant].price
-        : product.price;
+    
+    // ── Lógica de Precio Robusta ────────────────────────
+    const currentPrice = (() => {
+        // Forzamos visibilidad si existe el precio, priorizando la configuración global
+        const globalShowPrices = config?.show_prices ?? true;
+        if (!globalShowPrices) return null;
+
+        const cleanPrice = (val: any) => {
+            if (typeof val === 'number') return val;
+            if (!val) return 0;
+            // Limpiar símbolos de moneda, comas y espacios
+            const cleaned = String(val).replace(/[$,\s]/g, '');
+            return parseFloat(cleaned);
+        };
+
+        // 1. Intentar obtener el precio de la variante seleccionada
+        if (selectedVariant !== null && product.size_variants?.[selectedVariant]) {
+            const vPrice = cleanPrice(product.size_variants[selectedVariant].price);
+            if (!isNaN(vPrice) && vPrice > 0) return vPrice;
+        }
+
+        // 2. Intentar el precio base
+        const bPrice = cleanPrice(product.price);
+        if (!isNaN(bPrice) && bPrice > 0) return bPrice;
+
+        // 3. Intentar con la primera variante que tenga precio
+        const firstValidVariant = product.size_variants?.find(v => cleanPrice(v.price) > 0);
+        if (firstValidVariant) return cleanPrice(firstValidVariant.price);
+
+        return null;
+    })();
 
     // ── Abre WhatsApp (mismo comportamiento en los 3 botones) ──────────────
     const waOpen = (msg: string) => {
@@ -117,7 +152,8 @@ const ProductDetail: React.FC = () => {
 
     // ── Mensaje detallado para el vendedor ──────────────────────────────
     const buildWhatsAppMessage = (context: 'interesa' | 'distribuidor' | 'asesoria' = 'interesa') => {
-        const model = product.model_code || product.slug.toUpperCase();
+        const currentSKU = (selectedVariant !== null && product.size_variants?.[selectedVariant]?.sku);
+        const model = currentSKU || product.model_code || product.slug.toUpperCase();
         const color = product.color || 'No especificado';
         const mat = product.material || 'No especificado';
         const desc = product.description || '';
@@ -147,7 +183,7 @@ const ProductDetail: React.FC = () => {
             `-------------------------------------------`,
             `*Producto:* ${product.name}`,
             `*Modelo:* ${model}`,
-            `*Color:* ${color}`,
+            `*Color:* ${selectedColor || color}`,
             `*Material:* ${mat}`,
             tallaLinea,
             ``,
@@ -288,15 +324,18 @@ const ProductDetail: React.FC = () => {
                                     animate={{ opacity: 1, y: 0 }}
                                     transition={{ duration: 0.5, delay: 0.5 }}
                                 >
-                                    {(config?.show_prices ?? true) && product.show_price && currentPrice ? (
-                                        <span className="text-2xl font-sans text-gold">
-                                            ${currentPrice.toLocaleString('es-MX')}
-                                            {selectedVariant !== null && (
-                                                <span className="text-[10px] uppercase tracking-widest text-chocolate/40 ml-4 font-bold">
-                                                    Talla {product.size_variants?.[selectedVariant].size}
-                                                </span>
-                                            )}
-                                        </span>
+                                    {currentPrice ? (
+                                        <div className="flex flex-col">
+                                            <span className="text-4xl font-sans text-gold font-bold">
+                                                ${currentPrice.toLocaleString('es-MX', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                                                {selectedVariant !== null && (
+                                                    <span className="text-[10px] uppercase tracking-widest text-chocolate/40 ml-4 font-bold">
+                                                        Talla {product.size_variants?.[selectedVariant].size}
+                                                    </span>
+                                                )}
+                                            </span>
+                                            <span className="text-[9px] uppercase tracking-[0.2em] text-chocolate/40 font-bold mt-1">Precio de menudeo</span>
+                                        </div>
                                     ) : (
                                         <span className="text-sm uppercase tracking-widest text-gold italic font-medium">Precio bajo consulta</span>
                                     )}
@@ -304,13 +343,79 @@ const ProductDetail: React.FC = () => {
                                 </motion.div>
                             </motion.div>
 
+                            {/* Color Selection */}
+                            <motion.div
+                                className="space-y-4"
+                                initial={{ opacity: 0, y: 16 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ duration: 0.5, delay: 0.6 }}
+                            >
+                                <span className="text-[10px] uppercase tracking-[0.2em] text-chocolate/40 font-bold block">Seleccionar Color</span>
+                                <div className="flex flex-wrap gap-4">
+                                    {product.color ? (
+                                        product.color.split(/, | y |\/| - /).map((color: string, idx: number) => {
+                                            const cName = color.trim().toLowerCase();
+                                            const colorMap: Record<string, string> = {
+                                                'blanco': '#FFFFFF',
+                                                'beige': '#F5F5DC',
+                                                'hueso': '#F9F6EE',
+                                                'marfil': '#FFFFF0',
+                                                'perla': '#EAE0C8',
+                                                'crema': '#FFFDD0',
+                                                'rosa': '#FFC0CB',
+                                                'rosa pastel': '#FFD1DC',
+                                                'azul': '#ADD8E6',
+                                                'azul cielo': '#87CEEB',
+                                                'azul rey': '#0041C2',
+                                                'oro': '#D4AF37',
+                                                'dorado': '#D4AF37',
+                                                'plata': '#C0C0C0',
+                                                'champan': '#F7E7CE',
+                                                'arena': '#C2B280',
+                                                'lila': '#C8A2C8',
+                                                'menta': '#98FF98',
+                                                'hielo': '#F0F8FF'
+                                            };
+                                            
+                                            // Buscar coincidencia exacta o parcial
+                                            const matchedKey = Object.keys(colorMap).find(key => cName.includes(key));
+                                            const bgColor = colorMap[cName] || (matchedKey ? colorMap[matchedKey] : '#E5E7EB');
+                                            const isWhite = bgColor.toLowerCase() === '#ffffff' || bgColor.toLowerCase() === '#f9f6ee' || bgColor.toLowerCase() === '#fffff0';
+
+                                            return (
+                                                <motion.button
+                                                    key={idx}
+                                                    onClick={() => setSelectedColor(color.trim())}
+                                                    whileHover={{ y: -3 }}
+                                                    whileTap={{ scale: 0.95 }}
+                                                    className={`flex items-center gap-3 px-5 py-2.5 transition-all duration-500 rounded-full border ${selectedColor === color.trim()
+                                                        ? 'border-gold bg-gold/5 shadow-md'
+                                                        : 'border-gold/10 bg-white/40 hover:border-gold/30'
+                                                        }`}
+                                                >
+                                                    <div 
+                                                        className={`w-4 h-4 rounded-full border ${isWhite ? 'border-gold/20' : 'border-transparent'} shadow-inner`}
+                                                        style={{ backgroundColor: bgColor }}
+                                                    />
+                                                    <span className={`text-[10px] uppercase tracking-widest font-bold ${selectedColor === color.trim() ? 'text-chocolate' : 'text-chocolate/60'}`}>
+                                                        {color.trim()}
+                                                    </span>
+                                                </motion.button>
+                                            );
+                                        })
+                                    ) : (
+                                        <span className="text-xs italic text-chocolate/40">Color Único</span>
+                                    )}
+                                </div>
+                            </motion.div>
+
                             {/* Size Selection */}
                             {product.size_variants && product.size_variants.length > 0 && (
                                 <motion.div
-                                    className="space-y-4"
+                                    className="space-y-4 pt-4"
                                     initial={{ opacity: 0, y: 16 }}
                                     animate={{ opacity: 1, y: 0 }}
-                                    transition={{ duration: 0.5, delay: 0.6 }}
+                                    transition={{ duration: 0.5, delay: 0.65 }}
                                 >
                                     <span className="text-[10px] uppercase tracking-[0.2em] text-chocolate/40 font-bold block">Seleccionar Talla (El precio varía según la talla)</span>
                                     <div className="flex flex-wrap gap-3">
@@ -320,7 +425,7 @@ const ProductDetail: React.FC = () => {
                                                 onClick={() => setSelectedVariant(idx)}
                                                 initial={{ opacity: 0, scale: 0.88 }}
                                                 animate={{ opacity: 1, scale: 1 }}
-                                                transition={{ duration: 0.3, delay: 0.65 + idx * 0.06 }}
+                                                transition={{ duration: 0.3, delay: 0.7 + idx * 0.06 }}
                                                 whileHover={{ y: -2 }}
                                                 whileTap={{ scale: 0.95 }}
                                                 className={`px-6 py-3 text-xs uppercase tracking-widest transition-all duration-300 border ${selectedVariant === idx
@@ -356,10 +461,12 @@ const ProductDetail: React.FC = () => {
                             {/* Product Technical Specs (Blocks) — staggered */}
                             <div className="grid grid-cols-2 gap-4">
                                 {[
-                                    { label: 'Modelo', value: product.model_code || product.slug.toUpperCase(), icon: faTag },
-                                    { label: 'Color', value: product.color || 'Hueso', icon: faPalette },
-                                    { label: 'Material', value: product.material || 'Organza Premium', icon: faLayerGroup },
-                                    { label: 'Confección', value: product.sizes?.join(', ') || 'Tradicional', icon: faScissors }
+                                    { 
+                                        label: 'Modelo', 
+                                        value: (selectedVariant !== null && product.size_variants?.[selectedVariant]?.sku) || product.model_code || product.slug.toUpperCase(), 
+                                        icon: faTag 
+                                    },
+                                    { label: 'Material', value: product.material || 'Organza Premium', icon: faLayerGroup }
                                 ].map((attr, i) => (
                                     <motion.div
                                         key={i}

@@ -67,29 +67,39 @@ export const Footer: React.FC = () => {
                             </div>
 
                             {/* Grupo de Empresas */}
-                            <div className="flex flex-col gap-3 pt-2 border-t border-gold/10">
+                            <div className="flex flex-col gap-4 pt-2 border-t border-gold/10">
                                 <div className="flex items-center gap-2">
-                                    <FontAwesomeIcon icon={faBriefcase} className="text-[11px] md:text-[9px] text-gold/40" />
-                                    <span className="text-[12px] md:text-[10px] text-gold/50 uppercase tracking-[0.3em]">Grupo de Empresas</span>
+                                    <FontAwesomeIcon icon={faBriefcase} className="text-[10px] md:text-[9px] text-gold/40" />
+                                    <span className="text-[11px] md:text-[10px] text-gold/50 uppercase tracking-[0.1em] font-bold">Grupo Espinoza Baez S.A. de C.V.</span>
                                 </div>
-                                <a
-                                    href="#"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="group flex items-center gap-2 text-cream/40 hover:text-gold transition-colors duration-300"
-                                >
-                                    <span className="text-[11px] md:text-[9px] tracking-[0.1em] font-normal">Grupo ESBASA</span>
-                                    <FontAwesomeIcon icon={faArrowUpRightFromSquare} className="text-[7px] opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                                </a>
-                                <a
-                                    href="#"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="group flex items-center gap-2 text-cream/40 hover:text-gold transition-colors duration-300"
-                                >
-                                    <span className="text-[11px] md:text-[9px] tracking-[0.1em] font-normal">Uniformes ESBASA</span>
-                                    <FontAwesomeIcon icon={faArrowUpRightFromSquare} className="text-[7px] opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                                </a>
+
+                                <div className="flex flex-col gap-2">
+                                    <span className="text-[11px] md:text-[9px] text-gold/30 uppercase tracking-[0.2em] font-bold">Nuestras Marcas</span>
+                                    
+                                    <div className="flex flex-col gap-2.5">
+                                        <a
+                                            href="#"
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="group flex items-center gap-2 text-cream/40 hover:text-gold transition-colors duration-300"
+                                        >
+                                            <span className="text-[11px] md:text-[9px] tracking-[0.1em] font-normal uppercase">ESBASA</span>
+                                            <FontAwesomeIcon icon={faArrowUpRightFromSquare} className="text-[7px] opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                                        </a>
+                                        <a
+                                            href="#"
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="group flex items-center gap-2 text-cream/40 hover:text-gold transition-colors duration-300"
+                                        >
+                                            <span className="text-[11px] md:text-[9px] tracking-[0.1em] font-normal uppercase">Uniformes ESBASA</span>
+                                            <FontAwesomeIcon icon={faArrowUpRightFromSquare} className="text-[7px] opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                                        </a>
+                                        <div className="group flex items-center gap-2 text-cream/60">
+                                            <span className="text-[11px] md:text-[9px] tracking-[0.1em] font-medium uppercase">Ceremonias Arcángel</span>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </RevealOnScroll>
@@ -173,8 +183,16 @@ export const Footer: React.FC = () => {
                                 <FontAwesomeIcon icon={faWhatsapp} className="text-2xl" />
                             </button>
                         </div>
-                        <div className="pt-8 opacity-50 md:opacity-20 hover:opacity-100 transition-opacity duration-700 w-40">
-                            <Logo variant="dark" />
+                        <div className={`pt-8 opacity-50 md:opacity-20 hover:opacity-100 transition-opacity duration-700 ${config?.footer_logos_url ? 'w-full max-w-[300px]' : 'w-40'}`}>
+                            {config?.footer_logos_url ? (
+                                <img 
+                                    src={config.footer_logos_url} 
+                                    alt="Logos Grupo" 
+                                    className="w-full h-auto object-contain"
+                                />
+                            ) : (
+                                <Logo variant="dark" />
+                            )}
                         </div>
                     </RevealOnScroll>
                 </div>

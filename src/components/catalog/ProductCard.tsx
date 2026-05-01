@@ -107,13 +107,34 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, index }) => {
                     </div>
 
                     {/* Price Display */}
-                    {(config?.show_prices ?? true) && product.show_price && product.price && (
-                        <div className="pt-1">
-                            <span className="text-xs md:text-sm font-sans font-bold text-gold">
-                                ${product.price.toLocaleString('es-MX')}
-                            </span>
-                        </div>
-                    )}
+                    {(() => {
+                        const showPrices = (config?.show_prices ?? true) && (product.show_price ?? true);
+                        if (!showPrices) return null;
+
+                        const basePrice = Number(product.price);
+                        const hasBasePrice = !isNaN(basePrice) && basePrice > 0;
+
+                        // Intentar obtener el precio mínimo de las variantes
+                        const variantPrices = product.size_variants
+                            ?.map(v => Number(v.price))
+                            .filter(p => !isNaN(p) && p > 0) || [];
+                        
+                        const minVariantPrice = variantPrices.length > 0 ? Math.min(...variantPrices) : null;
+                        
+                        const displayPrice = hasBasePrice ? basePrice : minVariantPrice;
+                        const hasVariantsOnly = !hasBasePrice && minVariantPrice !== null;
+
+                        if (!displayPrice) return null;
+
+                        return (
+                            <div className="pt-1">
+                                <span className="text-xs md:text-sm font-sans font-bold text-gold">
+                                    {hasVariantsOnly && <span className="text-[10px] mr-1 opacity-60 font-medium">Desde</span>}
+                                    ${displayPrice.toLocaleString('es-MX')}
+                                </span>
+                            </div>
+                        );
+                    })()}
 
                     <div className="pt-2 opacity-100 md:opacity-0 group-hover:opacity-100 transform translate-y-0 md:translate-y-3 group-hover:translate-y-0 transition-all duration-700">
                         <div

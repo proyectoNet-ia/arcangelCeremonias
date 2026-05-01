@@ -275,7 +275,7 @@ export const Header: React.FC<HeaderProps> = ({ variant = 'light' }) => {
                     </Link>
 
                     {/* Desktop Navigation */}
-                    <nav className="hidden md:flex gap-10 lg:gap-14 text-[11px] uppercase tracking-[0.3em] font-medium h-full items-center">
+                    <nav className="hidden md:flex gap-6 lg:gap-8 text-[11px] uppercase tracking-[0.3em] font-medium h-full items-center">
                         {navItems.map((item) => (
                             <div key={item.name} className="relative h-full flex items-center group">
                                 <div className="flex items-center gap-2.5 h-full relative py-2">
@@ -321,7 +321,7 @@ export const Header: React.FC<HeaderProps> = ({ variant = 'light' }) => {
                         ))}
 
                         {/* Search Desktop Toggle */}
-                        <div className="flex items-center pl-6 border-l border-gold/10 ml-4 group">
+                        <div className="flex items-center pl-4 border-l border-gold/10 ml-2 group">
                             <button
                                 onClick={() => setIsSearchOpen(true)}
                                 className={`flex items-center gap-3 transition-colors ${isDark ? 'text-white' : 'text-chocolate/60'} hover:text-gold`}

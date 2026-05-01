@@ -48,6 +48,7 @@ export const ConfigManager: React.FC = () => {
         cta_banner_bg_image_url: '',
         cta_banner_bg_opacity: 0.85,
         catalog_pdf_url: '',
+        footer_logos_url: '',
         maintenance_mode: false,
         show_prices: true,
     });
@@ -56,7 +57,7 @@ export const ConfigManager: React.FC = () => {
     const [activeTab, setActiveTab] = useState<'identity' | 'contact' | 'about' | 'marketing'>('identity');
     const [mediaSelector, setMediaSelector] = useState<{
         isOpen: boolean,
-        field: 'logo_light' | 'logo_dark' | 'favicon' | 'pdf' | 'about' | 'cta_bg'
+        field: 'logo_light' | 'logo_dark' | 'favicon' | 'pdf' | 'about' | 'cta_bg' | 'footer_logos'
     }>({
         isOpen: false,
         field: 'logo_light'
@@ -104,6 +105,7 @@ export const ConfigManager: React.FC = () => {
                         cta_banner_bg_image_url: data.cta_banner_bg_image_url || '',
                         cta_banner_bg_opacity: data.cta_banner_bg_opacity ?? 0.85,
                         catalog_pdf_url: data.catalog_pdf_url || '',
+                        footer_logos_url: data.footer_logos_url || '',
                         maintenance_mode: data.maintenance_mode ?? false,
                         show_prices: data.show_prices ?? true,
                     });
@@ -325,6 +327,45 @@ export const ConfigManager: React.FC = () => {
                                                     <button type="button" onClick={() => setMediaSelector({ isOpen: true, field: 'favicon' })} className="px-4 py-2 border border-slate-100 text-[9px] uppercase font-bold tracking-widest text-slate-400 hover:text-gold transition-all">
                                                         Usar Galería
                                                     </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="pt-8 border-t border-slate-50">
+                                        <div className="space-y-4">
+                                            <div className="space-y-1">
+                                                <label className="text-[10px] uppercase tracking-widest font-bold text-slate-400">Imagen de Marcas (Footer)</label>
+                                                <p className="text-[9px] text-slate-400 lowercase italic">Imagen compuesta con los logos del grupo para el pie de página.</p>
+                                            </div>
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
+                                                <div className="bg-chocolate/5 border-2 border-dashed border-chocolate/10 rounded-xl p-4 flex items-center justify-center min-h-[120px] relative group overflow-hidden">
+                                                    {config.footer_logos_url ? (
+                                                        <>
+                                                            <img src={config.footer_logos_url} className="max-h-24 object-contain" />
+                                                            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                                                <button type="button" onClick={() => setMediaSelector({ isOpen: true, field: 'footer_logos' })} className="text-white text-[9px] font-bold uppercase tracking-widest">Cambiar Imagen</button>
+                                                            </div>
+                                                        </>
+                                                    ) : (
+                                                        <button type="button" onClick={() => setMediaSelector({ isOpen: true, field: 'footer_logos' })} className="flex flex-col items-center gap-2 text-slate-300 hover:text-gold transition-colors">
+                                                            <FontAwesomeIcon icon={faImages} className="text-3xl" />
+                                                            <span className="text-[9px] uppercase font-bold">Seleccionar de Galería</span>
+                                                        </button>
+                                                    )}
+                                                </div>
+                                                <div className="space-y-4">
+                                                    <p className="text-[10px] text-slate-500 leading-relaxed">
+                                                        Esta imagen reemplazará el logo estándar en el footer. Se recomienda un fondo transparente (PNG) y una disposición horizontal de los logos.
+                                                    </p>
+                                                    {config.footer_logos_url && (
+                                                        <button 
+                                                            type="button" 
+                                                            onClick={() => setConfig({...config, footer_logos_url: ''})}
+                                                            className="text-[9px] text-red-400 hover:text-red-600 font-bold uppercase tracking-widest transition-colors"
+                                                        >
+                                                            Restaurar Logo Default
+                                                        </button>
+                                                    )}
                                                 </div>
                                             </div>
                                         </div>
@@ -560,6 +601,7 @@ export const ConfigManager: React.FC = () => {
                     else if (field === 'about') setConfig(prev => ({ ...prev, about_image_url: url }));
                     else if (field === 'cta_bg') setConfig(prev => ({ ...prev, cta_banner_bg_image_url: url }));
                     else if (field === 'pdf') setConfig(prev => ({ ...prev, catalog_pdf_url: url }));
+                    else if (field === 'footer_logos') setConfig(prev => ({ ...prev, footer_logos_url: url }));
                     toast.success('Cambio aplicado');
                 }}
             />
