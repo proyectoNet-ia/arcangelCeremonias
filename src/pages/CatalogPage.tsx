@@ -227,7 +227,7 @@ const Home: React.FC = () => {
                                     transition={{ delay: 0.1 }}
                                 >
                                     <div className="w-6 h-[2px] bg-gold" />
-                                    <span className="text-[10px] uppercase tracking-[0.5em] text-gold font-bold">
+                                    <span className="text-[10px] uppercase tracking-[0.5em] text-bronze font-bold">
                                         {slide.tag}
                                     </span>
                                 </motion.div>
@@ -307,7 +307,7 @@ const Home: React.FC = () => {
                 <div className="flex whitespace-nowrap animate-marquee">
                     {[...Array(6)].map((_, i) => (
                         <div key={i} className="flex items-center">
-                            <span className="text-[10px] uppercase tracking-[0.4em] text-gold font-bold px-12">
+                            <span className="text-[10px] uppercase tracking-[0.4em] text-bronze font-bold px-12">
                                 Fabricantes de Artículos Ceremoniales por más de 30 años
                             </span>
                             <FontAwesomeIcon icon={faDiamond} className="text-[8px] text-gold/40" />
@@ -315,7 +315,7 @@ const Home: React.FC = () => {
                                 Envíos Nacionales e Internacionales
                             </span>
                             <FontAwesomeIcon icon={faDiamond} className="text-[8px] text-gold/40" />
-                            <span className="text-[10px] uppercase tracking-[0.4em] text-gold font-bold px-12">
+                            <span className="text-[10px] uppercase tracking-[0.4em] text-bronze font-bold px-12">
                                 Atención Personalizada y Ventas al Mayoreo
                             </span>
                             <FontAwesomeIcon icon={faDiamond} className="text-[8px] text-gold/40" />
@@ -515,7 +515,7 @@ const Home: React.FC = () => {
             {/* ════════════════════════════════════════
                 4.5 TRENDING CAROUSEL (LOS MÁS BUSCADOS)
             ════════════════════════════════════════ */}
-            <section className="relative py-28 md:py-40 bg-cream/30 overflow-hidden">
+            <section className="relative pt-28 pb-10 md:pt-40 md:pb-16 bg-cream/30 overflow-hidden">
                 <div className="max-w-[1600px] mx-auto px-6 md:px-12">
                     <RevealOnScroll className="space-y-16">
                         {/* Header Left Aligned */}
@@ -546,12 +546,13 @@ const Home: React.FC = () => {
                             <div className="hidden md:block absolute top-1/2 -translate-y-1/2 -right-4 lg:-right-8 z-30">
                                 <motion.button
                                     onClick={() => {
-                                        const max = Math.max(0, products.slice(1, 9).length - 3);
+                                        const visibleItems = window.innerWidth >= 1024 ? 4 : 3;
+                                        const max = Math.max(0, products.slice(1, 9).length - visibleItems);
                                         setTrendingIndex(prev => Math.min(max, prev + 1));
                                     }}
                                     whileHover={{ scale: 1.1, x: 5 }}
                                     whileTap={{ scale: 0.9 }}
-                                    className={`w-14 h-14 rounded-full border border-gold/20 flex items-center justify-center text-gold backdrop-blur-md transition-all duration-300 ${trendingIndex >= Math.max(0, products.slice(1, 9).length - 3) ? 'opacity-20 cursor-not-allowed' : 'opacity-100 hover:bg-gold hover:text-white hover:border-gold'}`}
+                                    className={`w-14 h-14 rounded-full border border-gold/20 flex items-center justify-center text-gold backdrop-blur-md transition-all duration-300 ${trendingIndex >= Math.max(0, products.slice(1, 9).length - (window.innerWidth >= 1024 ? 4 : 3)) ? 'opacity-20 cursor-not-allowed' : 'opacity-100 hover:bg-gold hover:text-white hover:border-gold'}`}
                                 >
                                     <FontAwesomeIcon icon={faChevronRight} />
                                 </motion.button>
@@ -565,13 +566,17 @@ const Home: React.FC = () => {
                                 `}</style>
                                 <motion.div
                                     className="flex gap-10"
-                                    animate={{ x: `calc(-${trendingIndex * 33.333}% - ${trendingIndex * 2.5}rem)` }}
+                                    animate={{ 
+                                        x: window.innerWidth >= 1024 
+                                            ? `calc(-${trendingIndex * 25}% - ${trendingIndex * 10}px)` 
+                                            : `calc(-${trendingIndex * 33.333}% - ${trendingIndex * 13.33}px)` 
+                                    }}
                                     transition={{ type: "spring", stiffness: 200, damping: 25 }}
                                 >
                                     {products.length > 4 ? products.slice(1, 9).map((p, idx) => (
                                         <div
                                             key={idx}
-                                            className="min-w-full md:min-w-[calc(33.333%-27px)]"
+                                            className="min-w-full md:min-w-[calc(33.333%-27px)] lg:min-w-[calc(25%-30px)]"
                                         >
                                             <ProductCard product={p} index={idx} />
                                         </div>
@@ -612,8 +617,7 @@ const Home: React.FC = () => {
             {/* ════════════════════════════════════════
                 5. EMPRESA INFO + VALORES
             ════════════════════════════════════════ */}
-            {/* 5. EMPRESA INFO + VALORES */}
-            <section className="relative py-28 md:py-40 px-6 md:px-12 max-w-[1600px] mx-auto overflow-hidden">
+            <section className="relative pt-10 pb-28 md:pt-16 md:pb-40 px-6 md:px-12 max-w-[1600px] mx-auto overflow-hidden">
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 xl:gap-40 items-center">
 
                     {/* Left: Story */}

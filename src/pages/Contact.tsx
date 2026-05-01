@@ -203,6 +203,51 @@ const Contact: React.FC = () => {
                     </RevealOnScroll>
                 </div>
 
+                {/* 1. CONTACT BLOCKS - Full Width Row */}
+                <RevealOnScroll direction="up" className="mb-24">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                        {/* WhatsApp */}
+                        <div className="space-y-3 group cursor-pointer bg-white/40 p-8 border border-gold/5 hover:border-gold/20 transition-all duration-500 rounded-sm">
+                            <div className="flex items-center gap-3 text-gold">
+                                <FontAwesomeIcon icon={faWhatsapp} className="text-xl" />
+                                <h3 className="text-[10px] uppercase tracking-widest font-bold text-chocolate/40 group-hover:text-gold transition-colors">WhatsApp</h3>
+                            </div>
+                            <a href={`https://wa.me/${whatsapp.replace(/\D/g, '')}`} className="block text-base hover:text-gold transition-colors font-medium border-b border-gold/10 pb-2">
+                                {whatsapp.replace(/(\d{2})(\d{3})(\d{3})(\d{4})/, '+$1 $2 $3 $4')}
+                            </a>
+                        </div>
+
+                        {/* Oficina */}
+                        <div className="space-y-3 group cursor-pointer bg-white/40 p-8 border border-gold/5 hover:border-gold/20 transition-all duration-500 rounded-sm">
+                            <div className="flex items-center gap-3 text-gold">
+                                <FontAwesomeIcon icon={faPhone} className="text-lg" />
+                                <h3 className="text-[10px] uppercase tracking-widest font-bold text-chocolate/40 group-hover:text-gold transition-colors">Oficina</h3>
+                            </div>
+                            <a href={`tel:${phone.replace(/\s+/g, '')}`} className="block text-base hover:text-gold transition-colors font-medium border-b border-gold/10 pb-2">{phone}</a>
+                        </div>
+
+                        {/* Email */}
+                        <div className="space-y-3 group cursor-pointer bg-white/40 p-8 border border-gold/5 hover:border-gold/20 transition-all duration-500 rounded-sm">
+                            <div className="flex items-center gap-3 text-gold">
+                                <FontAwesomeIcon icon={faEnvelope} className="text-lg" />
+                                <h3 className="text-[10px] uppercase tracking-widest font-bold text-chocolate/40 group-hover:text-gold transition-colors">Email</h3>
+                            </div>
+                            <a href={`mailto:${email}`} className="block text-base hover:text-gold transition-colors font-medium border-b border-gold/10 pb-2 truncate">{email}</a>
+                        </div>
+
+                        {/* Dirección */}
+                        <div className="space-y-3 group cursor-pointer bg-white/40 p-8 border border-gold/5 hover:border-gold/20 transition-all duration-500 rounded-sm">
+                            <div className="flex items-center gap-3 text-gold">
+                                <FontAwesomeIcon icon={faMapMarkerAlt} className="text-lg" />
+                                <h3 className="text-[10px] uppercase tracking-widest font-bold text-chocolate/40 group-hover:text-gold transition-colors">Dirección</h3>
+                            </div>
+                            <p className="text-[13px] leading-relaxed text-chocolate/80 whitespace-pre-line border-b border-gold/10 pb-2">
+                                {address}
+                            </p>
+                        </div>
+                    </div>
+                </RevealOnScroll>
+
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 md:gap-24">
                     {/* LEFT COLUMN: CONTACT INFO & MAP */}
                     <div className="lg:col-span-5 space-y-16">
@@ -221,45 +266,7 @@ const Contact: React.FC = () => {
                                 Nuestra vocación es servirte con los más altos estándares de amabilidad y atención al detalle.
                             </p>
 
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-12">
-                                <div className="space-y-3 group cursor-pointer">
-                                    <div className="flex items-center gap-3 text-gold">
-                                        <FontAwesomeIcon icon={faWhatsapp} className="text-xl" />
-                                        <h3 className="text-[10px] uppercase tracking-widest font-bold text-chocolate/40 group-hover:text-gold transition-colors">WhatsApp</h3>
-                                    </div>
-                                    <a href={`https://wa.me/${whatsapp.replace(/\D/g, '')}`} className="block text-base hover:text-gold transition-colors font-medium border-b border-gold/10 pb-2">
-                                        {whatsapp.replace(/(\d{2})(\d{3})(\d{3})(\d{4})/, '+$1 $2 $3 $4')}
-                                    </a>
-                                </div>
-
-                                <div className="space-y-3 group cursor-pointer">
-                                    <div className="flex items-center gap-3 text-gold">
-                                        <FontAwesomeIcon icon={faPhone} className="text-lg" />
-                                        <h3 className="text-[10px] uppercase tracking-widest font-bold text-chocolate/40 group-hover:text-gold transition-colors">Oficina</h3>
-                                    </div>
-                                    <a href={`tel:${phone.replace(/\s+/g, '')}`} className="block text-base hover:text-gold transition-colors font-medium border-b border-gold/10 pb-2">{phone}</a>
-                                </div>
-
-                                <div className="space-y-3 group cursor-pointer">
-                                    <div className="flex items-center gap-3 text-gold">
-                                        <FontAwesomeIcon icon={faEnvelope} className="text-lg" />
-                                        <h3 className="text-[10px] uppercase tracking-widest font-bold text-chocolate/40 group-hover:text-gold transition-colors">Email</h3>
-                                    </div>
-                                    <a href={`mailto:${email}`} className="block text-base hover:text-gold transition-colors font-medium border-b border-gold/10 pb-2 truncate">{email}</a>
-                                </div>
-
-                                <div className="space-y-3 group cursor-pointer">
-                                    <div className="flex items-center gap-3 text-gold">
-                                        <FontAwesomeIcon icon={faMapMarkerAlt} className="text-lg" />
-                                        <h3 className="text-[10px] uppercase tracking-widest font-bold text-chocolate/40 group-hover:text-gold transition-colors">Dirección</h3>
-                                    </div>
-                                    <p className="text-sm leading-relaxed text-chocolate/80 whitespace-pre-line border-b border-gold/10 pb-2">
-                                        {address}
-                                    </p>
-                                </div>
-                            </div>
-
-                            <div className="flex gap-4 items-center">
+                            <div className="flex gap-4 items-center pt-8">
                                 <span className="text-[9px] uppercase tracking-widest text-chocolate/30 font-bold">Síguenos</span>
                                 <div className="h-[1px] w-12 bg-gold/20" />
                                 <a href={facebook} target="_blank" className="w-10 h-10 flex items-center justify-center rounded-full border border-gold/10 text-chocolate/40 hover:text-gold hover:border-gold/50 hover:bg-white transition-all duration-500">

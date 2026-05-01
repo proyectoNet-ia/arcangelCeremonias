@@ -30,11 +30,11 @@ export const CTABanner: React.FC<CTABannerProps> = ({
     const whatsapp = config?.whatsapp || '523521681197';
     const phone = config?.phone || '352 52 62502';
 
-    const ctaTag = config?.cta_banner_tag || 'Alianzas Estratégicas';
-    const ctaTitle = customTitle || config?.cta_banner_title || 'Venta al por mayor';
-    const ctaSubtitle = customSubtitle || config?.cta_banner_subtitle || ' & Socios de Éxito';
-    const ctaBody = customBody || config?.cta_banner_body || 'Forma parte de nuestra Red de Distribuidores y accede a precios especiales. Eleva el prestigio de tu negocio con la distinción de nuestras confecciones exclusivas y calidad de excelencia.';
-    const ctaBtn1 = config?.cta_banner_btn1_label || 'Catálogo Mayoreo';
+    const ctaTag = config?.cta_banner_tag || 'SOCIOS COMERCIALES';
+    const ctaTitle = customTitle || config?.cta_banner_title || 'VENTA AL POR MAYOR';
+    const ctaSubtitle = customSubtitle || config?.cta_banner_subtitle || ' & BOUTIQUES';
+    const ctaBody = customBody || config?.cta_banner_body || 'Forma parte de nuestra Red de Distribuidores y accede a precios especiales';
+    const ctaBtn1 = config?.cta_banner_btn1_label || 'CATÁLOGO MAYOREO';
     const ctaBtn2 = config?.cta_banner_btn2_label || 'Línea de Negocios';
 
     const handleWhatsAppClick = () => {

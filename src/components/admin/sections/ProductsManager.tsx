@@ -280,11 +280,60 @@ export const ProductsManager: React.FC<ProductsManagerProps> = ({ products, cate
                                                 )}
                                             </div>
 
-                                            <div className="grid grid-cols-2 gap-4">
-                                                <input type="text" placeholder="Modelo / Código" value={editingProduct.model_code || ''} onChange={e => setEditingProduct({ ...editingProduct, model_code: e.target.value })} className="w-full p-4 border border-slate-100 focus:border-gold outline-none text-xs" />
-                                                <input type="text" placeholder="Color Principal" value={editingProduct.color || ''} onChange={e => setEditingProduct({ ...editingProduct, color: e.target.value })} className="w-full p-4 border border-slate-100 focus:border-gold outline-none text-xs" />
-                                                <input type="text" placeholder="Material (Ej. Raso, Tul)" value={editingProduct.material || ''} onChange={e => setEditingProduct({ ...editingProduct, material: e.target.value })} className="w-full p-4 border border-slate-100 focus:border-gold outline-none text-xs" />
-                                                <input type="text" placeholder="¿Qué incluye?" value={editingProduct.includes || ''} onChange={e => setEditingProduct({ ...editingProduct, includes: e.target.value })} className="w-full p-4 border border-slate-100 focus:border-gold outline-none text-xs" title="Ej. Tiara, Crinolina" />
+                                            <div className="space-y-4">
+                                                <div className="grid grid-cols-2 gap-4">
+                                                    <div className="space-y-1">
+                                                        <label className="text-[9px] uppercase tracking-widest font-bold text-slate-400 pl-1">Codigo Padre</label>
+                                                        <input type="text" placeholder="Ej. AC2024" value={editingProduct.model_code || ''} onChange={e => setEditingProduct({ ...editingProduct, model_code: e.target.value })} className="w-full p-4 border border-slate-100 focus:border-gold outline-none text-xs" />
+                                                    </div>
+                                                    <div className="space-y-1">
+                                                        <label className="text-[9px] uppercase tracking-widest font-bold text-slate-400 pl-1">Material</label>
+                                                        <input type="text" placeholder="Material (Ej. Raso, Tul)" value={editingProduct.material || ''} onChange={e => setEditingProduct({ ...editingProduct, material: e.target.value })} className="w-full p-4 border border-slate-100 focus:border-gold outline-none text-xs" />
+                                                    </div>
+                                                </div>
+
+                                                <div className="space-y-2">
+                                                    <label className="text-[9px] uppercase tracking-widest font-bold text-slate-400 pl-1">Colores Disponibles (Enter o coma para agregar)</label>
+                                                    <div className="flex flex-wrap gap-2 p-3 border border-slate-100 bg-slate-50/30 min-h-[50px]">
+                                                        {editingProduct.color?.split(',').filter(c => c.trim()).map((c, i) => (
+                                                            <span key={i} className="flex items-center gap-1.5 px-3 py-1 bg-gold/10 text-gold text-[10px] uppercase tracking-widest font-bold border border-gold/20 rounded-full">
+                                                                {c.trim()}
+                                                                <button 
+                                                                    onClick={() => {
+                                                                        const colors = editingProduct.color?.split(',').filter((_, idx) => idx !== i) || [];
+                                                                        setEditingProduct({ ...editingProduct, color: colors.join(',') });
+                                                                    }}
+                                                                    className="hover:text-chocolate transition-colors"
+                                                                >
+                                                                    ×
+                                                                </button>
+                                                            </span>
+                                                        ))}
+                                                        <input 
+                                                            type="text" 
+                                                            placeholder={!editingProduct.color ? "Escribe un color..." : ""}
+                                                            className="flex-grow bg-transparent outline-none text-xs min-w-[120px]"
+                                                            onKeyDown={e => {
+                                                                if (e.key === 'Enter' || e.key === ',') {
+                                                                    e.preventDefault();
+                                                                    const val = e.currentTarget.value.trim();
+                                                                    if (val) {
+                                                                        const current = editingProduct.color ? editingProduct.color.split(',').map(c => c.trim()) : [];
+                                                                        if (!current.includes(val)) {
+                                                                            setEditingProduct({ ...editingProduct, color: [...current, val].join(',') });
+                                                                        }
+                                                                        e.currentTarget.value = '';
+                                                                    }
+                                                                }
+                                                            }}
+                                                        />
+                                                    </div>
+                                                </div>
+
+                                                <div className="space-y-1">
+                                                    <label className="text-[9px] uppercase tracking-widest font-bold text-slate-400 pl-1">¿Qué incluye?</label>
+                                                    <input type="text" placeholder="Ej. Tiara, Crinolina" value={editingProduct.includes || ''} onChange={e => setEditingProduct({ ...editingProduct, includes: e.target.value })} className="w-full p-4 border border-slate-100 focus:border-gold outline-none text-xs" />
+                                                </div>
                                             </div>
 
                                             <textarea

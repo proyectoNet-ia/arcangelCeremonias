@@ -3,11 +3,12 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faWhatsapp } from '@fortawesome/free-brands-svg-icons';
-import { faArrowLeft, faChevronRight, faChevronLeft, faShareNodes, faDiamond, faHands, faTruckFast, faStore, faTag, faPalette, faLayerGroup, faScissors, faStar, faPhone, faRulerHorizontal, faTimes, faCertificate, faMap } from '@fortawesome/free-solid-svg-icons';
+import { faArrowLeft, faChevronRight, faChevronLeft, faShareNodes, faDiamond, faHands, faTruckFast, faStore, faTag, faPalette, faLayerGroup, faScissors, faStar, faPhone, faRulerHorizontal, faTimes, faCertificate, faMap, faQuoteLeft } from '@fortawesome/free-solid-svg-icons';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
 import { Logo } from '@/components/Logo';
 import { ProductCard } from '@/components/catalog/ProductCard';
+import { OrnamentalDivider } from '@/components/common/OrnamentalDivider';
 import { productService } from '@/services/productService';
 import { Product } from '@/types/product';
 import {
@@ -152,8 +153,10 @@ const ProductDetail: React.FC = () => {
 
     // ── Mensaje detallado para el vendedor ──────────────────────────────
     const buildWhatsAppMessage = (context: 'interesa' | 'distribuidor' | 'asesoria' = 'interesa') => {
-        const currentSKU = (selectedVariant !== null && product.size_variants?.[selectedVariant]?.sku);
-        const model = currentSKU || product.model_code || product.slug.toUpperCase();
+        const baseModel = product.model_code || product.slug.toUpperCase();
+        const currentSKU = (selectedVariant !== null && product.size_variants?.[selectedVariant]?.sku) || '';
+        const model = currentSKU ? `${baseModel}${currentSKU}` : baseModel;
+        
         const color = product.color || 'No especificado';
         const mat = product.material || 'No especificado';
         const desc = product.description || '';
@@ -185,6 +188,7 @@ const ProductDetail: React.FC = () => {
             `*Modelo:* ${model}`,
             `*Color:* ${selectedColor || color}`,
             `*Material:* ${mat}`,
+            product.includes ? `*Incluye:* ${product.includes}` : null,
             tallaLinea,
             ``,
             `*Descripción:* ${desc}`,
@@ -194,7 +198,7 @@ const ProductDetail: React.FC = () => {
             badge,
             ``,
             `Por favor, ¿podrían darme más información sobre disponibilidad, tiempos de entrega y formas de pago?`,
-        ].join('\n');
+        ].filter(Boolean).join('\n');
     };
 
     return (
@@ -281,6 +285,46 @@ const ProductDetail: React.FC = () => {
                                     ))}
                                 </motion.div>
                             )}
+                            {/* Desktop only: Premium Editorial Description moved here to fill space under photo */}
+                            <div className="hidden lg:block pt-16 relative">
+                                {/* Ornamental Divider Component */}
+                                <OrnamentalDivider className="absolute top-0 left-0" />
+                                
+                                <motion.div
+                                    initial={{ opacity: 0, y: 30 }}
+                                    whileInView={{ opacity: 1, y: 0 }}
+                                    viewport={{ once: true }}
+                                    transition={{ duration: 0.8 }}
+                                    className="max-w-4xl"
+                                >
+                                    <div className="space-y-8">
+                                        <div className="space-y-2">
+                                            <span className="text-[10px] uppercase tracking-[0.4em] text-bronze font-bold">Pieza Auténtica</span>
+                                            <h3 className="text-3xl font-serif italic text-chocolate">Descripción del Autor</h3>
+                                        </div>
+                                        <div className="relative">
+                                            <FontAwesomeIcon icon={faQuoteLeft} className="absolute -left-12 -top-6 text-gold/10 text-6xl" />
+                                            <p className="text-2xl text-chocolate/80 leading-relaxed font-serif italic font-light first-letter:text-6xl first-letter:font-bold first-letter:text-gold first-letter:mr-4 first-letter:float-left">
+                                                {product.detailed_description || product.description}
+                                            </p>
+                                        </div>
+                                        <div className="pt-8 flex items-center gap-6">
+                                            <div className="h-[1px] flex-grow bg-gradient-to-r from-gold/30 to-transparent" />
+                                            <div className="flex gap-8">
+                                                {[
+                                                    { icon: faMap, label: 'Hecho en México' },
+                                                    { icon: faCertificate, label: 'Calidad Textil' }
+                                                ].map((badge, i) => (
+                                                    <div key={i} className="flex items-center gap-3">
+                                                        <FontAwesomeIcon icon={badge.icon} className="text-gold text-xs" />
+                                                        <span className="text-[9px] uppercase tracking-[0.2em] font-bold text-chocolate/60">{badge.label}</span>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </motion.div>
+                            </div>
                         </motion.div>
 
                         {/* Right: Product Details — slides in from right */}
@@ -353,7 +397,7 @@ const ProductDetail: React.FC = () => {
                                 <span className="text-[10px] uppercase tracking-[0.2em] text-chocolate/40 font-bold block">Seleccionar Color</span>
                                 <div className="flex flex-wrap gap-4">
                                     {product.color ? (
-                                        product.color.split(/, | y |\/| - /).map((color: string, idx: number) => {
+                                        product.color.split(/[,/\-]| y /).filter(c => c.trim()).map((color: string, idx: number) => {
                                             const cName = color.trim().toLowerCase();
                                             const colorMap: Record<string, string> = {
                                                 'blanco': '#FFFFFF',
@@ -458,36 +502,40 @@ const ProductDetail: React.FC = () => {
                                 </motion.div>
                             )}
 
-                            {/* Product Technical Specs (Blocks) — staggered */}
-                            <div className="grid grid-cols-2 gap-4">
-                                {[
-                                    { 
-                                        label: 'Modelo', 
-                                        value: (selectedVariant !== null && product.size_variants?.[selectedVariant]?.sku) || product.model_code || product.slug.toUpperCase(), 
-                                        icon: faTag 
-                                    },
-                                    { label: 'Material', value: product.material || 'Organza Premium', icon: faLayerGroup }
-                                ].map((attr, i) => (
-                                    <motion.div
-                                        key={i}
-                                        className="bg-white/40 border border-gold/10 p-6 md:p-8 rounded-sm space-y-3 shadow-sm relative group hover:bg-white/90 transition-all duration-500 cursor-default"
-                                        initial={{ opacity: 0, y: 20, scale: 0.96 }}
-                                        animate={{ opacity: 1, y: 0, scale: 1 }}
-                                        transition={{ duration: 0.45, delay: 0.7 + i * 0.1 }}
-                                        whileHover={{ y: -4, boxShadow: '0 14px 40px rgba(139,100,60,0.09)' }}
-                                    >
-                                        <div className="flex items-center gap-3 text-gold/60">
-                                            <FontAwesomeIcon icon={attr.icon} className="text-[10px]" />
-                                            <span className="text-[9px] uppercase tracking-[0.3em] font-bold block">{attr.label}</span>
+                            {/* Technical Specs & Description (Mobile & Desktop) */}
+                            <div className="space-y-10">
+                                {/* Technical Specs Block */}
+                                <div className="grid grid-cols-2 gap-4">
+                                    {[
+                                        { 
+                                            label: 'Modelo', 
+                                            value: (() => {
+                                                const base = product.model_code || product.slug.toUpperCase();
+                                                const sku = (selectedVariant !== null && product.size_variants?.[selectedVariant]?.sku) || '';
+                                                return sku ? `${base}${sku}` : base;
+                                            })(), 
+                                            icon: faTag 
+                                        },
+                                        { label: 'Material', value: product.material || 'Organza Premium', icon: faLayerGroup },
+                                        ...(product.includes ? [{ label: 'Incluye', value: product.includes, icon: faScissors, full: true }] : [])
+                                    ].map((attr, i) => (
+                                        <div
+                                            key={i}
+                                            className={`bg-white/40 border border-gold/10 p-6 rounded-sm space-y-2 shadow-sm ${(attr as any).full ? 'col-span-2' : ''}`}
+                                        >
+                                            <div className="flex items-center gap-2 text-gold/60">
+                                                <FontAwesomeIcon icon={attr.icon} className="text-[9px]" />
+                                                <span className="text-[8px] uppercase tracking-[0.2em] font-bold block">{attr.label}</span>
+                                            </div>
+                                            <p className="text-sm font-serif italic text-chocolate leading-tight">{attr.value}</p>
                                         </div>
-                                        <p className="text-sm md:text-lg font-serif italic text-chocolate leading-tight">{attr.value}</p>
-                                    </motion.div>
-                                ))}
+                                    ))}
+                                </div>
                             </div>
 
-                            {/* Description */}
+                            {/* Mobile only Description */}
                             <motion.div
-                                className="space-y-6"
+                                className="lg:hidden space-y-6"
                                 initial={{ opacity: 0, y: 14 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ duration: 0.6, delay: 1.15 }}
@@ -613,15 +661,16 @@ const ProductDetail: React.FC = () => {
                         {/* Related Products */}
                         {relatedProducts.length > 0 && (
                             <section className="space-y-12">
-                                <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-gold/10 pb-10">
+                                <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-10">
                                     <div className="space-y-4">
-                                        <span className="text-[10px] uppercase tracking-[0.4em] text-gold font-bold">Inspiración para tu Ceremonia</span>
-                                        <h2 className="text-4xl md:text-5xl font-serif text-chocolate">Artículos Similares</h2>
+                                        <span className="text-[10px] uppercase tracking-[0.4em] text-bronze font-bold">Inspiración para tu Ceremonia</span>
+                                        <h2 className="text-4xl md:text-5xl font-serif text-chocolate/70">Artículos Similares</h2>
                                     </div>
-                                    <Link to="/catalogo" className="text-[10px] uppercase tracking-[0.3em] font-bold text-gold hover:text-chocolate transition-colors border-b border-gold/40 hover:border-chocolate pb-1">
+                                    <Link to="/catalogo" className="text-[10px] uppercase tracking-[0.3em] font-bold text-gold/60 hover:text-chocolate/80 transition-colors pb-1">
                                         Explorar Toda la Colección
                                     </Link>
                                 </div>
+                                <OrnamentalDivider />
                                 {/* Horizontal scroll on mobile, grid on desktop */}
                                 <div className="flex overflow-x-auto pb-8 snap-x snap-mandatory hide-scrollbar gap-6 lg:grid lg:grid-cols-4 lg:gap-10 -mx-6 px-6 md:mx-0 md:px-0">
                                     {relatedProducts.map((p, idx) => (
@@ -636,10 +685,10 @@ const ProductDetail: React.FC = () => {
                         {/* History Products */}
                         {historyProducts.length > 0 && (
                             <section className="space-y-12">
-                                <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-gold/10 pb-10">
+                                <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-10">
                                     <div className="space-y-4">
-                                        <span className="text-[10px] uppercase tracking-[0.4em] text-gold font-bold">Basado en tu búsqueda</span>
-                                        <h2 className="text-4xl md:text-5xl font-serif text-chocolate">Vistos Recientemente</h2>
+                                        <span className="text-[10px] uppercase tracking-[0.4em] text-bronze font-bold">Basado en tu búsqueda</span>
+                                        <h2 className="text-4xl md:text-5xl font-serif text-chocolate/70">Vistos Recientemente</h2>
                                     </div>
                                     <button
                                         onClick={() => {
@@ -651,6 +700,7 @@ const ProductDetail: React.FC = () => {
                                         Limpiar Historial
                                     </button>
                                 </div>
+                                <OrnamentalDivider />
                                 {/* Horizontal scroll on mobile, grid on desktop */}
                                 <div className="flex overflow-x-auto pb-8 snap-x snap-mandatory hide-scrollbar gap-6 lg:grid lg:grid-cols-4 lg:gap-10 -mx-6 px-6 md:mx-0 md:px-0">
                                     {historyProducts.map((p, idx) => (
@@ -665,11 +715,7 @@ const ProductDetail: React.FC = () => {
                 </section>
             </main>
 
-            <CTABanner
-                customTitle={config?.product_cta_title || "Encuentra la pieza perfecta"}
-                customSubtitle={config?.product_cta_subtitle || " con nuestra ayuda"}
-                customBody={config?.product_cta_body || "Nuestros asesores te ayudan a encontrar la pieza ideal para tu ocasión especial. Atención directa, sin compromiso."}
-            />
+            <CTABanner />
 
             <Footer />
 
