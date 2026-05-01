@@ -19,6 +19,7 @@ import { Product } from '@/types/product';
 import { useConfig } from '@/context/ConfigContext';
 import { CTABanner } from '@/components/common/CTABanner';
 import { SEO } from '@/components/common/SEO';
+import { OrnamentalDivider } from '@/components/common/OrnamentalDivider';
 import bgDesktop from '@/assets/fondo-horizontal.jpeg';
 import bgMobile from '@/assets/fondo-movil.jpg';
 import bgDesktop2 from '@/assets/fondo-pc.jpg';
