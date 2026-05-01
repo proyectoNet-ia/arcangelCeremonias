@@ -379,7 +379,7 @@ const Home: React.FC = () => {
             <section className="relative pt-28 pb-20 md:pt-40 md:pb-32 px-6 md:px-12 max-w-[1600px] mx-auto overflow-hidden">
                 <RevealOnScroll>
                     {/* Section header */}
-                    <div className="section-header flex flex-col md:flex-row md:items-end justify-between border-b border-gold/10 pb-12">
+                    <div className="section-header flex flex-col md:flex-row md:items-end justify-between pb-12">
                         <div>
                             <div className="section-header-tag-wrapper">
                                 <div className="section-header-line" />
@@ -398,6 +398,7 @@ const Home: React.FC = () => {
                             <FontAwesomeIcon icon={faChevronRight} className="text-[7px] group-hover:translate-x-1 transition-transform" />
                         </Link>
                     </div>
+                    <OrnamentalDivider className="!py-0 mb-12" />
 
                     {/* Product grid / Mobile Carousel */}
                     {loadingProducts ? (

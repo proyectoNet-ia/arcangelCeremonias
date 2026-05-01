@@ -6,6 +6,7 @@ import { faUsers, faLocationDot, faPhone, faShareNodes, faBriefcase, faArrowUpRi
 import { Logo } from '@/components/Logo';
 import { RevealOnScroll } from '@/components/common/RevealOnScroll';
 import { useConfig } from '@/context/ConfigContext';
+import { OrnamentalDivider } from '../common/OrnamentalDivider';
 import { statsService } from '@/services/statsService';
 
 export const Footer: React.FC = () => {
@@ -28,7 +29,11 @@ export const Footer: React.FC = () => {
     };
 
     return (
-        <footer className="bg-chocolate text-cream py-24 px-6 md:px-12 border-t border-gold/10">
+        <>
+            <div className="bg-chocolate px-6 md:px-12">
+                <OrnamentalDivider light className="!py-0" />
+            </div>
+            <footer className="bg-chocolate text-cream py-24 px-6 md:px-12">
             <div className="max-w-[1600px] mx-auto">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-16 md:gap-12 lg:gap-16">
                     {/* NOSOTROS - Abstract - Hidden on mobile per user request */}
@@ -216,5 +221,6 @@ export const Footer: React.FC = () => {
                 </div>
             </div >
         </footer >
+        </>
     );
 };

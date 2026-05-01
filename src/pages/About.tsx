@@ -9,6 +9,7 @@ import { RevealOnScroll } from '@/components/common/RevealOnScroll';
 import { useConfig } from '@/context/ConfigContext';
 import { statsService } from '@/services/statsService';
 import { CTABanner } from '@/components/common/CTABanner';
+import { OrnamentalDivider } from '@/components/common/OrnamentalDivider';
 
 const About: React.FC = () => {
     const { config } = useConfig();
@@ -81,7 +82,8 @@ const About: React.FC = () => {
                 </div>
 
                 {/* Stats */}
-                <section className="mt-40 pt-20 border-t border-gold/10">
+                <section className="mt-40 pt-20">
+                    <OrnamentalDivider className="mb-20" />
                     <div className="section-header !text-center !mb-20">
                         <div className="section-header-tag-wrapper !justify-center">
                             <div className="section-header-line" />

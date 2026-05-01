@@ -10,6 +10,7 @@ import { RevealOnScroll } from '@/components/common/RevealOnScroll';
 import { useConfig } from '@/context/ConfigContext';
 import { contactService } from '@/services/contactService';
 import { CTABanner } from '@/components/common/CTABanner';
+import { OrnamentalDivider } from '@/components/common/OrnamentalDivider';
 
 const Contact: React.FC = () => {
     const { config } = useConfig();
@@ -496,7 +497,8 @@ const Contact: React.FC = () => {
                 </div>
 
                 {/* FAQ SHORTCUT or SECONDARY CTA */}
-                <RevealOnScroll className="mt-40 text-center space-y-8 border-t border-gold/10 pt-20">
+                <RevealOnScroll className="mt-40 text-center space-y-8 pt-20">
+                    <OrnamentalDivider />
                     <p className="text-chocolate/40 text-sm italic font-serif">"La excelencia no es un acto, sino un hábito."</p>
                     <div className="flex justify-center gap-12">
                         <motion.div animate={{ y: [0, -10, 0] }} transition={{ duration: 4, repeat: Infinity }} className="text-gold/20 text-4xl"><FontAwesomeIcon icon={faDiamond} /></motion.div>

@@ -13,6 +13,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch, faTimes, faFilePdf } from '@fortawesome/free-solid-svg-icons';
 import { CTABanner } from '@/components/common/CTABanner';
 import { ProductSkeleton } from '@/components/common/Skeleton';
+import { OrnamentalDivider } from '@/components/common/OrnamentalDivider';
 
 const Catalog: React.FC = () => {
     const [searchParams, setSearchParams] = useSearchParams();
@@ -200,7 +201,8 @@ const Catalog: React.FC = () => {
 
 
                     {/* CATEGORY NAV - Optimized for Scalability & Mobile */}
-                    <RevealOnScroll direction="up" delay={0.5} className="space-y-6 border-t border-gold/10 pt-10">
+                    <RevealOnScroll direction="up" delay={0.5} className="space-y-6 pt-10">
+                        <OrnamentalDivider className="!py-0 mb-10" />
                         {/* Parent Categories - Horizontal Scroll on Mobile & Drag on PC */}
                         <div className="flex items-center gap-4">
                             <div
