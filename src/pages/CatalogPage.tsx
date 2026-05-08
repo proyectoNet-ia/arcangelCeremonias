@@ -169,7 +169,7 @@ const Home: React.FC = () => {
 
             {/* 1. HERO SLIDER */}
             <section
-                className="relative h-[75vh] md:h-[85vh] max-h-[800px] min-h-[450px] w-full overflow-hidden"
+                className="relative h-[68vh] md:h-[85vh] max-h-[800px] min-h-[450px] w-full overflow-hidden"
                 style={{ paddingTop: 'var(--header-height, 80px)' }}
                 onMouseEnter={() => setIsHoveringSlider(true)}
                 onMouseLeave={() => setIsHoveringSlider(false)}
@@ -240,7 +240,7 @@ const Home: React.FC = () => {
                                     transition={{ delay: 0.1 }}
                                 >
                                     <div className="w-6 h-[2px] bg-gold" />
-                                    <span className="text-[10px] uppercase tracking-[0.5em] text-white font-bold">
+                                    <span className="text-[10px] uppercase tracking-[0.5em] text-white font-bold drop-shadow-[0_1px_1px_rgba(0,0,0,1)]">
                                         {slide.tag}
                                     </span>
                                 </motion.div>
@@ -252,10 +252,10 @@ const Home: React.FC = () => {
                                     animate={{ opacity: 1, y: 0 }}
                                     transition={{ delay: 0.2 }}
                                 >
-                                    <span className="block text-4xl xs:text-5xl md:text-4xl lg:text-5xl xl:text-6xl uppercase">
+                                    <span className="block text-4xl xs:text-5xl md:text-4xl lg:text-5xl xl:text-6xl uppercase drop-shadow-[0_1.5px_2px_rgba(0,0,0,1)]">
                                         {slide.title[0]}
                                     </span>
-                                    <span className="block text-4xl xs:text-5xl md:text-4xl lg:text-5xl xl:text-6xl uppercase text-gold">
+                                    <span className="block text-4xl xs:text-5xl md:text-4xl lg:text-5xl xl:text-6xl uppercase text-[#EBC07F] drop-shadow-[0_1.5px_2px_rgba(0,0,0,1)]">
                                         {slide.title[1]}
                                     </span>
                                 </motion.h1>
@@ -270,7 +270,7 @@ const Home: React.FC = () => {
 
                                 {/* Subtitle */}
                                 <motion.p
-                                    className="text-white md:text-cream/90 text-lg md:text-base font-light leading-relaxed max-w-[50%] drop-shadow-md"
+                                    className="text-white md:text-cream/90 text-lg md:text-base font-light leading-relaxed max-w-[50%] drop-shadow-[0_1px_1px_rgba(0,0,0,1)]"
                                     initial={{ opacity: 0 }}
                                     animate={{ opacity: 1 }}
                                     transition={{ delay: 0.4 }}
