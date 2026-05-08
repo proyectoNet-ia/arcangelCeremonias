@@ -270,7 +270,7 @@ const Home: React.FC = () => {
 
                                 {/* Subtitle */}
                                 <motion.p
-                                    className="text-white md:text-cream/90 text-lg md:text-base font-light leading-relaxed max-w-md drop-shadow-md"
+                                    className="text-white md:text-cream/90 text-lg md:text-base font-light leading-relaxed max-w-[50%] drop-shadow-md"
                                     initial={{ opacity: 0 }}
                                     animate={{ opacity: 1 }}
                                     transition={{ delay: 0.4 }}
