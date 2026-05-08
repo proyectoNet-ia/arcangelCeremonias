@@ -507,7 +507,7 @@ export const ProductsManager: React.FC<ProductsManagerProps> = ({ products, cate
                                                         newV[idx].size = e.target.value;
                                                         setEditingProduct({ ...editingProduct, size_variants: newV });
                                                     }} className="w-1/4 p-3 border border-slate-100 outline-none text-xs" />
-                                                    <input type="text" placeholder="SKU" value={v.sku || ''} onChange={e => {
+                                                    <input type="text" placeholder="Código Hijo" value={v.sku || ''} onChange={e => {
                                                         const newV = [...(editingProduct.size_variants || [])];
                                                         newV[idx].sku = e.target.value;
                                                         setEditingProduct({ ...editingProduct, size_variants: newV });
