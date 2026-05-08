@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
-    faPlus, faTrash, faEdit, faTimes, faImage, faImages
+    faPlus, faTrash, faEdit, faTimes, faImage, faImages, faChevronLeft, faChevronRight
 } from '@fortawesome/free-solid-svg-icons';
 import { productService } from '@/services/productService';
 import { Product, Category } from '@/types/product';
@@ -567,13 +567,51 @@ export const ProductsManager: React.FC<ProductsManagerProps> = ({ products, cate
                                         <label className="text-[10px] uppercase tracking-widest font-bold text-slate-400">Galería Secundaria</label>
                                         <div className="grid grid-cols-4 gap-4">
                                             {editingProduct.gallery?.map((url, idx) => (
-                                                <div key={idx} className="relative aspect-square bg-slate-50 border border-slate-100 flex items-center justify-center overflow-hidden">
+                                                <div key={idx} className="relative aspect-square bg-slate-50 border border-slate-100 flex items-center justify-center overflow-hidden group/img">
                                                     {url ? (
-                                                        <img src={url} className="w-full h-full object-cover" />
+                                                        <>
+                                                            <img src={url} className="w-full h-full object-cover" />
+                                                            {/* Controles de Orden */}
+                                                            <div className="absolute inset-0 bg-black/20 opacity-0 group-hover/img:opacity-100 transition-opacity flex items-center justify-center gap-2">
+                                                                <button 
+                                                                    disabled={idx === 0}
+                                                                    onClick={() => {
+                                                                        const g = [...(editingProduct.gallery || [])];
+                                                                        [g[idx], g[idx - 1]] = [g[idx - 1], g[idx]];
+                                                                        setEditingProduct({ ...editingProduct, gallery: g });
+                                                                    }}
+                                                                    className="w-7 h-7 bg-white text-chocolate rounded-full flex items-center justify-center hover:bg-gold hover:text-white transition-all disabled:opacity-30 disabled:hover:bg-white disabled:hover:text-chocolate"
+                                                                >
+                                                                    <FontAwesomeIcon icon={faChevronLeft} className="text-[10px]" />
+                                                                </button>
+                                                                <button 
+                                                                    disabled={idx === (editingProduct.gallery?.length || 0) - 1}
+                                                                    onClick={() => {
+                                                                        const g = [...(editingProduct.gallery || [])];
+                                                                        [g[idx], g[idx + 1]] = [g[idx + 1], g[idx]];
+                                                                        setEditingProduct({ ...editingProduct, gallery: g });
+                                                                    }}
+                                                                    className="w-7 h-7 bg-white text-chocolate rounded-full flex items-center justify-center hover:bg-gold hover:text-white transition-all disabled:opacity-30 disabled:hover:bg-white disabled:hover:text-chocolate"
+                                                                >
+                                                                    <FontAwesomeIcon icon={faChevronRight} className="text-[10px]" />
+                                                                </button>
+                                                            </div>
+                                                        </>
                                                     ) : (
                                                         <label className="cursor-pointer flex items-center justify-center w-full h-full"><FontAwesomeIcon icon={faPlus} className="text-slate-200" /><input type="file" className="hidden" onChange={e => handleFileUpload(e, 'gallery', idx)} /></label>
                                                     )}
-                                                    {url && <button onClick={() => { const g = [...(editingProduct.gallery || [])]; g[idx] = ''; setEditingProduct({ ...editingProduct, gallery: g }); }} className="absolute top-1 right-1 bg-white/80 w-5 h-5 flex items-center justify-center text-[10px] rounded-full text-red-500 shadow-sm"><FontAwesomeIcon icon={faTimes} /></button>}
+                                                    {url && (
+                                                        <button 
+                                                            onClick={() => { 
+                                                                const g = [...(editingProduct.gallery || [])]; 
+                                                                g.splice(idx, 1); // Borrado real del elemento
+                                                                setEditingProduct({ ...editingProduct, gallery: g }); 
+                                                            }} 
+                                                            className="absolute top-1 right-1 bg-white/80 w-5 h-5 flex items-center justify-center text-[10px] rounded-full text-red-500 shadow-sm hover:bg-red-500 hover:text-white transition-all"
+                                                        >
+                                                            <FontAwesomeIcon icon={faTimes} />
+                                                        </button>
+                                                    )}
                                                     {!url && (
                                                         <button
                                                             type="button"
