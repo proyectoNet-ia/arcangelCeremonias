@@ -11,6 +11,7 @@ import { MediaSelectorModal } from '../MediaSelectorModal';
 import { ConfirmModal } from '../ConfirmModal';
 import { generateSlug, smartFormatTitle } from '@/lib/adminUtils';
 import toast from 'react-hot-toast';
+import { COLOR_NAMES, COLOR_MAP } from '@/constants/colors';
 
 interface ProductsManagerProps {
     products: Product[];
@@ -36,6 +37,8 @@ export const ProductsManager: React.FC<ProductsManagerProps> = ({ products, cate
     });
     const [isSlugCustomized, setIsSlugCustomized] = useState(false);
     const [focusedField, setFocusedField] = useState<string | null>(null);
+    const [colorSuggestions, setColorSuggestions] = useState<string[]>([]);
+    const [showColorSuggestions, setShowColorSuggestions] = useState(false);
 
     const getPriceDisplay = (val: number | undefined, fieldId: string) => {
         const num = val || 0;
@@ -309,10 +312,37 @@ export const ProductsManager: React.FC<ProductsManagerProps> = ({ products, cate
                                                                 </button>
                                                             </span>
                                                         ))}
+                                                    <div className="relative flex-grow">
                                                         <input 
                                                             type="text" 
                                                             placeholder={!editingProduct.color ? "Escribe un color..." : ""}
-                                                            className="flex-grow bg-transparent outline-none text-xs min-w-[120px]"
+                                                            className="w-full bg-transparent outline-none text-xs min-w-[120px]"
+                                                            onChange={e => {
+                                                                const val = e.target.value.toLowerCase();
+                                                                const isCombinedSearch = val.includes(' con ');
+                                                                
+                                                                if (val.trim()) {
+                                                                    let searchTerm = val.trim();
+                                                                    if (isCombinedSearch) {
+                                                                        const parts = val.split(' con ');
+                                                                        searchTerm = parts[parts.length - 1].trim();
+                                                                    }
+                                                                    
+                                                                    if (searchTerm) {
+                                                                        const filtered = COLOR_NAMES.filter(name => name.includes(searchTerm));
+                                                                        setColorSuggestions(filtered);
+                                                                        setShowColorSuggestions(true);
+                                                                    } else {
+                                                                        setShowColorSuggestions(false);
+                                                                    }
+                                                                } else {
+                                                                    setShowColorSuggestions(false);
+                                                                }
+                                                            }}
+                                                            onBlur={() => {
+                                                                // Pequeño delay para permitir el click en la sugerencia
+                                                                setTimeout(() => setShowColorSuggestions(false), 200);
+                                                            }}
                                                             onKeyDown={e => {
                                                                 if (e.key === 'Enter' || e.key === ',') {
                                                                     e.preventDefault();
@@ -323,10 +353,49 @@ export const ProductsManager: React.FC<ProductsManagerProps> = ({ products, cate
                                                                             setEditingProduct({ ...editingProduct, color: [...current, val].join(',') });
                                                                         }
                                                                         e.currentTarget.value = '';
+                                                                        setShowColorSuggestions(false);
                                                                     }
                                                                 }
                                                             }}
                                                         />
+                                                        {/* Sugerencias de Colores */}
+                                                        {showColorSuggestions && colorSuggestions.length > 0 && (
+                                                            <div className="absolute left-0 bottom-full mb-2 w-64 bg-white border border-slate-200 shadow-2xl z-[110] rounded-sm max-h-48 overflow-y-auto overflow-x-hidden">
+                                                                <div className="p-2 border-b border-slate-50 bg-slate-50/50">
+                                                                    <p className="text-[8px] uppercase tracking-widest font-bold text-slate-400">Tonos Sugeridos</p>
+                                                                </div>
+                                                                {colorSuggestions.map(name => (
+                                                                    <button
+                                                                        key={name}
+                                                                        type="button"
+                                                                        onClick={() => {
+                                                                            const input = document.querySelector('input[placeholder="Escribe un color..."]') as HTMLInputElement;
+                                                                            let finalName = name;
+                                                                            
+                                                                            if (input && input.value.toLowerCase().includes(' con ')) {
+                                                                                const parts = input.value.split(/ con /i);
+                                                                                finalName = `${parts[0].trim()} con ${name}`;
+                                                                            }
+
+                                                                            const current = editingProduct.color ? editingProduct.color.split(',').map(c => c.trim()) : [];
+                                                                            if (!current.includes(finalName)) {
+                                                                                setEditingProduct({ ...editingProduct, color: [...current, finalName].join(',') });
+                                                                            }
+                                                                            setShowColorSuggestions(false);
+                                                                            if (input) input.value = '';
+                                                                        }}
+                                                                        className="w-full text-left px-3 py-2.5 hover:bg-gold/5 flex items-center gap-3 transition-colors border-b border-slate-50 last:border-0 group"
+                                                                    >
+                                                                        <div 
+                                                                            className="w-3 h-3 rounded-full border border-slate-200 shadow-sm"
+                                                                            style={{ backgroundColor: COLOR_MAP[name] }}
+                                                                        />
+                                                                        <span className="text-[10px] uppercase tracking-widest font-bold text-chocolate group-hover:text-gold transition-colors">{name}</span>
+                                                                    </button>
+                                                                ))}
+                                                            </div>
+                                                        )}
+                                                    </div>
                                                     </div>
                                                 </div>
 

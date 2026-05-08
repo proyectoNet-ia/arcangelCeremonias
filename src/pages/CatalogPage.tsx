@@ -180,10 +180,18 @@ const Home: React.FC = () => {
                     <motion.div
                         key={`bg-${activeSlide}`}
                         className="absolute inset-0 z-0 overflow-hidden"
-                        initial={{ opacity: 0, scale: 1.06 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        exit={{ opacity: 0 }}
-                        transition={{ duration: 1.2, ease: 'easeInOut' }}
+                        initial={{ opacity: 0, scale: 1.1, filter: 'blur(10px)' }}
+                        animate={{ 
+                            opacity: 1, 
+                            scale: [1.05, 1.12], // Zoom continuo (Efecto Ken Burns)
+                            filter: 'blur(0px)',
+                        }}
+                        exit={{ opacity: 0, scale: 1.15, filter: 'blur(10px)' }}
+                        transition={{ 
+                            opacity: { duration: 1.5, ease: [0.22, 1, 0.36, 1] },
+                            scale: { duration: 7, ease: "linear" }, // El zoom es constante y lineal
+                            filter: { duration: 1.5, ease: [0.22, 1, 0.36, 1] }
+                        }}
                     >
                         {/* Desktop bg */}
                         <div
@@ -195,11 +203,15 @@ const Home: React.FC = () => {
                             className="md:hidden absolute inset-0 bg-cover bg-right"
                             style={{ backgroundImage: `url(${slide.bgMobile})` }}
                         />
-                        {/* Overlay layers */}
-                        <div className="absolute inset-0 bg-black/80 md:bg-black/50" />
-                        <div className="absolute inset-0 bg-chocolate/10 md:bg-chocolate/35 mix-blend-multiply md:block hidden" />
-                        <div className="absolute inset-0 bg-gradient-to-t from-chocolate/95 via-chocolate/20 to-chocolate/40 md:from-chocolate/90 md:via-transparent md:to-chocolate/30" />
-                        <div className="absolute inset-0 bg-gradient-to-r from-chocolate/80 via-transparent to-transparent hidden md:block" />
+                        {/* Capas de Overlay optimizadas para viveza de color */}
+                        {/* 1. Oscurecimiento base mínimo para legibilidad general */}
+                        <div className="absolute inset-0 bg-black/20 md:bg-black/10" />
+                        
+                        {/* 2. Degradado lateral sutil (solo detrás del texto) */}
+                        <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/20 to-transparent hidden md:block" />
+                        
+                        {/* 3. Degradado inferior suave para integrar con la página */}
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
                     </motion.div>
                 </AnimatePresence>
 
@@ -218,7 +230,7 @@ const Home: React.FC = () => {
                                 initial={{ opacity: 0, y: 30 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 exit={{ opacity: 0, y: -20 }}
-                                transition={{ duration: 0.7, ease: 'easeOut' }}
+                                transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
                             >
                                 {/* Tag */}
                                 <motion.div
@@ -228,22 +240,22 @@ const Home: React.FC = () => {
                                     transition={{ delay: 0.1 }}
                                 >
                                     <div className="w-6 h-[2px] bg-gold" />
-                                    <span className="text-[10px] uppercase tracking-[0.5em] text-bronze font-bold">
+                                    <span className="text-[10px] uppercase tracking-[0.5em] text-white font-bold">
                                         {slide.tag}
                                     </span>
                                 </motion.div>
 
                                 {/* Title */}
-                                <motion.h1
-                                    className="font-serif text-cream leading-[0.95] tracking-tight"
-                                    initial={{ opacity: 0, y: 20 }}
+                                    <motion.h1
+                                        className="font-serif text-cream leading-[0.95] tracking-tight drop-shadow-2xl"
+                                        initial={{ opacity: 0, y: 20 }}
                                     animate={{ opacity: 1, y: 0 }}
                                     transition={{ delay: 0.2 }}
                                 >
                                     <span className="block text-2xl xs:text-3xl md:text-4xl lg:text-5xl xl:text-6xl uppercase">
                                         {slide.title[0]}
                                     </span>
-                                    <span className="block text-2xl xs:text-3xl md:text-4xl lg:text-5xl xl:text-6xl uppercase text-gold/80">
+                                    <span className="block text-2xl xs:text-3xl md:text-4xl lg:text-5xl xl:text-6xl uppercase text-gold">
                                         {slide.title[1]}
                                     </span>
                                 </motion.h1>
@@ -258,7 +270,7 @@ const Home: React.FC = () => {
 
                                 {/* Subtitle */}
                                 <motion.p
-                                    className="text-white md:text-cream/70 text-sm md:text-base font-light leading-relaxed max-w-md"
+                                    className="text-white md:text-cream/90 text-sm md:text-base font-light leading-relaxed max-w-md drop-shadow-md"
                                     initial={{ opacity: 0 }}
                                     animate={{ opacity: 1 }}
                                     transition={{ delay: 0.4 }}

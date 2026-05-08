@@ -22,6 +22,7 @@ import { statsService } from '@/services/statsService';
 import { CTABanner } from '@/components/common/CTABanner';
 import { SEO } from '@/components/common/SEO';
 import { ProductDetailSkeleton } from '@/components/common/Skeleton';
+import { COLOR_MAP } from '@/constants/colors';
 
 const ProductDetail: React.FC = () => {
     const { slug } = useParams<{ slug: string }>();
@@ -399,31 +400,23 @@ const ProductDetail: React.FC = () => {
                                     {product.color ? (
                                         product.color.split(/[,/\-]| y /).filter(c => c.trim()).map((color: string, idx: number) => {
                                             const cName = color.trim().toLowerCase();
-                                            const colorMap: Record<string, string> = {
-                                                'blanco': '#FFFFFF',
-                                                'beige': '#F5F5DC',
-                                                'hueso': '#F9F6EE',
-                                                'marfil': '#FFFFF0',
-                                                'perla': '#EAE0C8',
-                                                'crema': '#FFFDD0',
-                                                'rosa': '#FFC0CB',
-                                                'rosa pastel': '#FFD1DC',
-                                                'azul': '#ADD8E6',
-                                                'azul cielo': '#87CEEB',
-                                                'azul rey': '#0041C2',
-                                                'oro': '#D4AF37',
-                                                'dorado': '#D4AF37',
-                                                'plata': '#C0C0C0',
-                                                'champan': '#F7E7CE',
-                                                'arena': '#C2B280',
-                                                'lila': '#C8A2C8',
-                                                'menta': '#98FF98',
-                                                'hielo': '#F0F8FF'
-                                            };
                                             
-                                            // Buscar coincidencia exacta o parcial
-                                            const matchedKey = Object.keys(colorMap).find(key => cName.includes(key));
-                                            const bgColor = colorMap[cName] || (matchedKey ? colorMap[matchedKey] : '#E5E7EB');
+                                            // Lógica para detectar bicolores (ej: "Azul con Kaki")
+                                            const isCombined = cName.includes(' con ');
+                                            let bgColor = '#E5E7EB';
+                                            let secondColor = '';
+
+                                            if (isCombined) {
+                                                const parts = cName.split(' con ').map(p => p.trim());
+                                                const color1 = COLOR_MAP[parts[0]] || Object.entries(COLOR_MAP).find(([key]) => parts[0].includes(key))?.[1] || '#E5E7EB';
+                                                const color2 = COLOR_MAP[parts[1]] || Object.entries(COLOR_MAP).find(([key]) => parts[1].includes(key))?.[1] || '#E5E7EB';
+                                                bgColor = color1;
+                                                secondColor = color2;
+                                            } else {
+                                                const matchedKey = Object.keys(COLOR_MAP).find(key => cName.includes(key));
+                                                bgColor = COLOR_MAP[cName] || (matchedKey ? COLOR_MAP[matchedKey] : '#E5E7EB');
+                                            }
+
                                             const isWhite = bgColor.toLowerCase() === '#ffffff' || bgColor.toLowerCase() === '#f9f6ee' || bgColor.toLowerCase() === '#fffff0';
 
                                             return (
@@ -437,10 +430,18 @@ const ProductDetail: React.FC = () => {
                                                         : 'border-gold/10 bg-white/40 hover:border-gold/30'
                                                         }`}
                                                 >
-                                                    <div 
-                                                        className={`w-4 h-4 rounded-full border ${isWhite ? 'border-gold/20' : 'border-transparent'} shadow-inner`}
-                                                        style={{ backgroundColor: bgColor }}
-                                                    />
+                                                    <div className="flex -space-x-1.5 items-center">
+                                                        <div 
+                                                            className={`w-4 h-4 rounded-full border ${isWhite ? 'border-gold/20' : 'border-transparent'} shadow-inner relative z-10`}
+                                                            style={{ backgroundColor: bgColor }}
+                                                        />
+                                                        {secondColor && (
+                                                            <div 
+                                                                className="w-4 h-4 rounded-full border border-white shadow-inner relative z-0"
+                                                                style={{ backgroundColor: secondColor }}
+                                                            />
+                                                        )}
+                                                    </div>
                                                     <span className={`text-[10px] uppercase tracking-widest font-bold ${selectedColor === color.trim() ? 'text-chocolate' : 'text-chocolate/60'}`}>
                                                         {color.trim()}
                                                     </span>
