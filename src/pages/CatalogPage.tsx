@@ -99,7 +99,7 @@ const Home: React.FC = () => {
         if (slides.length <= 1 || isHoveringSlider) return;
         const timer = setInterval(() => {
             setActiveSlide(prev => (prev + 1) % slides.length);
-        }, 6000);
+        }, 9000);
         return () => clearInterval(timer);
     }, [slides.length, isHoveringSlider]);
 
@@ -188,9 +188,9 @@ const Home: React.FC = () => {
                         }}
                         exit={{ opacity: 0, scale: 1.15, filter: 'blur(10px)' }}
                         transition={{ 
-                            opacity: { duration: 1.5, ease: [0.22, 1, 0.36, 1] },
-                            scale: { duration: 7, ease: "linear" }, // El zoom es constante y lineal
-                            filter: { duration: 1.5, ease: [0.22, 1, 0.36, 1] }
+                            opacity: { duration: 4, ease: [0.4, 0, 0.2, 1] },
+                            scale: { duration: 10, ease: "linear" }, 
+                            filter: { duration: 4, ease: [0.4, 0, 0.2, 1] }
                         }}
                     >
                         {/* Desktop bg */}
@@ -230,7 +230,7 @@ const Home: React.FC = () => {
                                 initial={{ opacity: 0, y: 30 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 exit={{ opacity: 0, y: -20 }}
-                                transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
+                                transition={{ duration: 1.8, ease: [0.22, 1, 0.36, 1] }}
                             >
                                 {/* Tag */}
                                 <motion.div
