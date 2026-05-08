@@ -179,18 +179,13 @@ const Home: React.FC = () => {
                 <AnimatePresence mode="sync">
                     <motion.div
                         key={`bg-${activeSlide}`}
-                        className="absolute inset-0 z-0 overflow-hidden"
-                        initial={{ opacity: 0, scale: 1.1, filter: 'blur(10px)' }}
-                        animate={{ 
-                            opacity: 1, 
-                            scale: [1.05, 1.12], // Zoom continuo (Efecto Ken Burns)
-                            filter: 'blur(0px)',
-                        }}
-                        exit={{ opacity: 0, scale: 1.15, filter: 'blur(10px)' }}
+                        className="absolute inset-0 z-0 overflow-hidden bg-chocolate"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1, scale: 1.05 }}
+                        exit={{ opacity: 0 }}
                         transition={{ 
-                            opacity: { duration: 4, ease: [0.4, 0, 0.2, 1] },
-                            scale: { duration: 10, ease: "linear" }, 
-                            filter: { duration: 4, ease: [0.4, 0, 0.2, 1] }
+                            opacity: { duration: 1.5, ease: "easeInOut" },
+                            scale: { duration: 10, ease: "linear" }
                         }}
                     >
                         {/* Desktop bg */}
@@ -203,15 +198,11 @@ const Home: React.FC = () => {
                             className="md:hidden absolute inset-0 bg-cover bg-right"
                             style={{ backgroundImage: `url(${slide.bgMobile})` }}
                         />
-                        {/* Capas de Overlay optimizadas para viveza de color */}
-                        {/* 1. Oscurecimiento base mínimo para legibilidad general */}
-                        <div className="absolute inset-0 bg-black/20 md:bg-black/10" />
                         
-                        {/* 2. Degradado lateral sutil (solo detrás del texto) */}
-                        <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/20 to-transparent hidden md:block" />
-                        
-                        {/* 3. Degradado inferior suave para integrar con la página */}
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
+                        {/* Capas de Overlay optimizadas para tono BLANCO (Celestial) */}
+                        <div className="absolute inset-0 bg-white/20" />
+                        <div className="absolute inset-0 bg-gradient-to-r from-white/60 via-white/20 to-transparent hidden md:block" />
+                        <div className="absolute inset-0 bg-gradient-to-t from-white/70 via-transparent to-transparent" />
                     </motion.div>
                 </AnimatePresence>
 
@@ -240,25 +231,25 @@ const Home: React.FC = () => {
                                     transition={{ delay: 0.1 }}
                                 >
                                     <div className="w-6 h-[2px] bg-gold" />
-                                    <span className="text-[10px] uppercase tracking-[0.5em] text-white font-bold drop-shadow-[0_1px_1px_rgba(0,0,0,1)]">
+                                    <span className="text-[10px] uppercase tracking-[0.5em] text-chocolate font-bold">
                                         {slide.tag}
                                     </span>
                                 </motion.div>
 
                                 {/* Title */}
                                     <motion.h1
-                                        className="font-serif text-cream leading-[0.95] tracking-tight drop-shadow-2xl"
+                                        className="font-serif text-chocolate leading-[0.95] tracking-tight"
                                         initial={{ opacity: 0, y: 20 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    transition={{ delay: 0.2 }}
-                                >
-                                    <span className="block text-4xl xs:text-5xl md:text-4xl lg:text-5xl xl:text-6xl uppercase drop-shadow-[0_1.5px_2px_rgba(0,0,0,1)]">
-                                        {slide.title[0]}
-                                    </span>
-                                    <span className="block text-4xl xs:text-5xl md:text-4xl lg:text-5xl xl:text-6xl uppercase text-[#EBC07F] drop-shadow-[0_1.5px_2px_rgba(0,0,0,1)]">
-                                        {slide.title[1]}
-                                    </span>
-                                </motion.h1>
+                                        animate={{ opacity: 1, y: 0 }}
+                                        transition={{ delay: 0.2 }}
+                                    >
+                                        <span className="block text-4xl xs:text-5xl md:text-4xl lg:text-5xl xl:text-6xl uppercase">
+                                            {slide.title[0]}
+                                        </span>
+                                        <span className="block text-4xl xs:text-5xl md:text-4xl lg:text-5xl xl:text-6xl uppercase text-gold">
+                                            {slide.title[1]}
+                                        </span>
+                                    </motion.h1>
 
                                 {/* Divider */}
                                 <motion.div
@@ -270,7 +261,7 @@ const Home: React.FC = () => {
 
                                 {/* Subtitle */}
                                 <motion.p
-                                    className="text-white md:text-cream/90 text-lg md:text-base font-light leading-relaxed max-w-[50%] drop-shadow-[0_1px_1px_rgba(0,0,0,1)]"
+                                    className="text-chocolate/80 text-lg md:text-xl font-light leading-relaxed max-w-[50%] md:max-w-[70%]"
                                     initial={{ opacity: 0 }}
                                     animate={{ opacity: 1 }}
                                     transition={{ delay: 0.4 }}
