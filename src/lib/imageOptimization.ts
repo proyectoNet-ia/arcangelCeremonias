@@ -60,9 +60,11 @@ export const optimizeImage = (file: File, options: OptimizationOptions = {}): Pr
                     return reject('Could not get canvas context');
                 }
 
-                // Fondo blanco para WebP/JPEG
-                ctx.fillStyle = 'white';
-                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                // Solo añadir fondo blanco si el formato no soporta transparencia (JPEG)
+                if (format === 'image/jpeg') {
+                    ctx.fillStyle = 'white';
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+                }
 
                 if (fit === 'none') {
                     ctx.drawImage(img, 0, 0, width, height);

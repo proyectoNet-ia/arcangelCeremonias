@@ -136,7 +136,7 @@ export const ConfigManager: React.FC = () => {
         }
     };
 
-    const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>, type: 'light' | 'dark' | 'favicon') => {
+    const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>, type: 'light' | 'dark' | 'favicon' | 'footer') => {
         const file = e.target.files?.[0];
         if (!file) return;
         try {
@@ -145,6 +145,7 @@ export const ConfigManager: React.FC = () => {
             if (type === 'light') setConfig(prev => ({ ...prev, logo_light_url: url }));
             else if (type === 'dark') setConfig(prev => ({ ...prev, logo_dark_url: url }));
             else if (type === 'favicon') setConfig(prev => ({ ...prev, favicon_url: url }));
+            else if (type === 'footer') setConfig(prev => ({ ...prev, footer_logos_url: url }));
             toast.success(type === 'favicon' ? 'Favicon cargado' : 'Logo cargado correctamente');
         } catch (error: any) {
             toast.error(error.message || 'Error al subir el archivo');
@@ -342,15 +343,26 @@ export const ConfigManager: React.FC = () => {
                                                     {config.footer_logos_url ? (
                                                         <>
                                                             <img src={config.footer_logos_url} className="max-h-24 object-contain" />
-                                                            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                                                                <button type="button" onClick={() => setMediaSelector({ isOpen: true, field: 'footer_logos' })} className="text-white text-[9px] font-bold uppercase tracking-widest">Cambiar Imagen</button>
+                                                            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-2">
+                                                                <label className="cursor-pointer text-white text-[9px] font-bold uppercase tracking-widest hover:text-gold transition-colors">
+                                                                    Subir Nuevo
+                                                                    <input type="file" className="hidden" accept="image/*" onChange={e => handleLogoUpload(e, 'footer')} />
+                                                                </label>
+                                                                <button type="button" onClick={() => setMediaSelector({ isOpen: true, field: 'footer_logos' })} className="text-white text-[9px] font-bold uppercase tracking-widest hover:text-gold transition-colors">Galería</button>
                                                             </div>
                                                         </>
                                                     ) : (
-                                                        <button type="button" onClick={() => setMediaSelector({ isOpen: true, field: 'footer_logos' })} className="flex flex-col items-center gap-2 text-slate-300 hover:text-gold transition-colors">
-                                                            <FontAwesomeIcon icon={faImages} className="text-3xl" />
-                                                            <span className="text-[9px] uppercase font-bold">Seleccionar de Galería</span>
-                                                        </button>
+                                                        <div className="flex gap-4">
+                                                            <label className="cursor-pointer flex flex-col items-center gap-2 text-slate-400 hover:text-chocolate transition-colors border border-slate-200 p-4 rounded bg-white">
+                                                                <FontAwesomeIcon icon={faImage} className="text-2xl" />
+                                                                <span className="text-[9px] uppercase font-bold">Subir Directo</span>
+                                                                <input type="file" className="hidden" accept="image/*" onChange={e => handleLogoUpload(e, 'footer')} />
+                                                            </label>
+                                                            <button type="button" onClick={() => setMediaSelector({ isOpen: true, field: 'footer_logos' })} className="flex flex-col items-center gap-2 text-slate-300 hover:text-gold transition-colors border border-slate-100 p-4 rounded">
+                                                                <FontAwesomeIcon icon={faImages} className="text-2xl" />
+                                                                <span className="text-[9px] uppercase font-bold">Galería</span>
+                                                            </button>
+                                                        </div>
                                                     )}
                                                 </div>
                                                 <div className="space-y-4">

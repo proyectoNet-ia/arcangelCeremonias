@@ -33,7 +33,7 @@ export const Footer: React.FC = () => {
             <div className="bg-chocolate px-6 md:px-12">
                 <OrnamentalDivider light className="!py-0" />
             </div>
-            <footer className="bg-chocolate text-cream py-24 px-6 md:px-12">
+            <footer className="bg-chocolate text-[#D4C3A3] py-24 px-6 md:px-12">
             <div className="max-w-[1600px] mx-auto">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-16 md:gap-12 lg:gap-16">
                     {/* NOSOTROS - Abstract - Hidden on mobile per user request */}
@@ -44,7 +44,7 @@ export const Footer: React.FC = () => {
                                 Nosotros
                             </h3>
                         </div>
-                        <div className="space-y-4 text-white md:text-cream/70 text-[10px] md:text-[11px] leading-relaxed font-light text-justify">
+                        <div className="space-y-4 text-white md:text-[#D4C3A3]/70 text-[10px] md:text-[11px] leading-relaxed font-light text-justify">
                             <p>
                                 Con más de 30 años en el ramo textil, nuestra misión es ser líderes en la fabricación y manufactura de productos ceremoniales para las nuevas generaciones, satisfaciendo las necesidades de nuestros clientes con calidad y a un precio justo.
                             </p>
@@ -66,13 +66,13 @@ export const Footer: React.FC = () => {
                             {/* Dirección */}
                             <div className="flex flex-col gap-2">
                                 <span className="text-[12px] md:text-[10px] text-gold/50 tracking-[0.3em] font-bold uppercase">Dirección</span>
-                                <p className="text-cream/70 text-[14px] md:text-[13px] tracking-[0.05em] leading-relaxed whitespace-pre-line">
+                                <p className="text-[#D4C3A3]/70 text-[14px] md:text-[13px] tracking-[0.05em] leading-relaxed whitespace-pre-line">
                                     {address}
                                 </p>
                             </div>
 
                             {/* Grupo de Empresas */}
-                            <div className="flex flex-col gap-4 pt-2 border-t border-gold/10">
+                            <div className="flex flex-col gap-4 pt-2 border-t border-[#D4C3A3]/10">
                                 <div className="flex items-center gap-2">
                                     <FontAwesomeIcon icon={faBriefcase} className="text-[10px] md:text-[9px] text-gold/40" />
                                     <span className="text-[11px] md:text-[10px] text-gold/50 uppercase tracking-[0.1em] font-bold">Grupo Espinoza Baez S.A. de C.V.</span>
@@ -86,7 +86,7 @@ export const Footer: React.FC = () => {
                                             href="#"
                                             target="_blank"
                                             rel="noopener noreferrer"
-                                            className="group flex items-center gap-2 text-cream/40 hover:text-gold transition-colors duration-300"
+                                            className="group flex items-center gap-2 text-[#D4C3A3]/40 hover:text-gold transition-colors duration-300"
                                         >
                                             <span className="text-[11px] md:text-[9px] tracking-[0.1em] font-normal uppercase">ESBASA</span>
                                             <FontAwesomeIcon icon={faArrowUpRightFromSquare} className="text-[7px] opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
@@ -95,12 +95,12 @@ export const Footer: React.FC = () => {
                                             href="#"
                                             target="_blank"
                                             rel="noopener noreferrer"
-                                            className="group flex items-center gap-2 text-cream/40 hover:text-gold transition-colors duration-300"
+                                            className="group flex items-center gap-2 text-[#D4C3A3]/40 hover:text-gold transition-colors duration-300"
                                         >
                                             <span className="text-[11px] md:text-[9px] tracking-[0.1em] font-normal uppercase">Uniformes ESBASA</span>
                                             <FontAwesomeIcon icon={faArrowUpRightFromSquare} className="text-[7px] opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                                         </a>
-                                        <div className="group flex items-center gap-2 text-cream/60">
+                                        <div className="group flex items-center gap-2 text-[#D4C3A3]/60">
                                             <span className="text-[11px] md:text-[9px] tracking-[0.1em] font-medium uppercase">Ceremonias Arcángel</span>
                                         </div>
                                     </div>
@@ -118,32 +118,32 @@ export const Footer: React.FC = () => {
                                 Contacto
                             </h3>
                         </div>
-                        <div className="space-y-4 text-cream/70 text-[14px] md:text-[13px] font-normal">
+                        <div className="space-y-4 text-[#D4C3A3]/70 text-[14px] md:text-[13px] font-normal">
                             <div className="flex flex-col gap-2">
                                 <span className="text-[12px] md:text-[10px] text-gold/50 tracking-[0.2em] font-bold uppercase">Call Center / WhatsApp</span>
                                 <button
                                     onClick={() => handleWhatsAppClick()}
-                                    className="text-cream hover:text-gold transition-colors duration-300 text-left font-medium"
+                                    className="text-[#D4C3A3] hover:text-gold transition-colors duration-300 text-left font-medium"
                                 >
                                     {whatsapp.replace(/(\d{2})(\d{3})(\d{3})(\d{4})/, '+$1 $2 $3 $4')}
                                 </button>
                             </div>
                             <div className="flex flex-col gap-2">
                                 <span className="text-[12px] md:text-[10px] text-gold/50 tracking-[0.2em] font-bold uppercase">Oficina</span>
-                                <a href={`tel:${phone.replace(/\s+/g, '')}`} className="text-cream hover:text-gold transition-colors duration-300 font-medium">{phone}</a>
+                                <a href={`tel:${phone.replace(/\s+/g, '')}`} className="text-[#D4C3A3] hover:text-gold transition-colors duration-300 font-medium">{phone}</a>
                             </div>
                             <div className="flex flex-col gap-2 pt-2">
                                 <span className="text-[12px] md:text-[10px] text-gold/50 tracking-[0.2em] font-bold uppercase">Email</span>
-                                <a href={`mailto:${email}`} className="text-cream hover:text-gold transition-colors duration-300 lowercase tracking-widest">{email}</a>
+                                <a href={`mailto:${email}`} className="text-[#D4C3A3] hover:text-gold transition-colors duration-300 lowercase tracking-widest">{email}</a>
                             </div>
                             {config?.catalog_pdf_url && (
-                                <div className="flex flex-col gap-2 pt-4 border-t border-gold/10">
+                                <div className="flex flex-col gap-2 pt-4 border-t border-[#D4C3A3]/10">
                                     <span className="text-[12px] md:text-[10px] text-gold/50 tracking-[0.2em] font-bold uppercase">Catálogo 2026</span>
                                     <a
                                         href={config.catalog_pdf_url}
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className="text-cream hover:text-gold transition-colors duration-300 flex items-center gap-2 font-medium"
+                                        className="text-[#D4C3A3] hover:text-gold transition-colors duration-300 flex items-center gap-2 font-medium"
                                     >
                                         <FontAwesomeIcon icon={faFilePdf} className="text-gold" />
                                         <span>Descargar PDF</span>
@@ -166,7 +166,7 @@ export const Footer: React.FC = () => {
                                 href={facebook}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="text-cream/40 hover:text-gold transition-all duration-300 hover:-translate-y-1"
+                                className="text-[#D4C3A3]/40 hover:text-gold transition-all duration-300 hover:-translate-y-1"
                                 aria-label="Facebook"
                             >
                                 <FontAwesomeIcon icon={faFacebook} className="text-2xl" />
@@ -175,25 +175,25 @@ export const Footer: React.FC = () => {
                                 href={instagram}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="text-cream/40 hover:text-gold transition-all duration-300 hover:-translate-y-1"
+                                className="text-[#D4C3A3]/40 hover:text-gold transition-all duration-300 hover:-translate-y-1"
                                 aria-label="Instagram"
                             >
                                 <FontAwesomeIcon icon={faInstagram} className="text-2xl" />
                             </a>
                             <button
                                 onClick={() => handleWhatsAppClick()}
-                                className="text-cream/40 hover:text-gold transition-all duration-300 hover:-translate-y-1"
+                                className="text-[#D4C3A3]/40 hover:text-gold transition-all duration-300 hover:-translate-y-1"
                                 aria-label="WhatsApp"
                             >
                                 <FontAwesomeIcon icon={faWhatsapp} className="text-2xl" />
                             </button>
                         </div>
-                        <div className={`pt-8 opacity-50 md:opacity-20 hover:opacity-100 transition-opacity duration-700 ${config?.footer_logos_url ? 'w-full max-w-[300px]' : 'w-40'}`}>
+                        <div className={`mt-8 opacity-60 ${config?.footer_logos_url ? 'w-[200px] h-[200px]' : 'w-40'}`}>
                             {config?.footer_logos_url ? (
                                 <img 
                                     src={config.footer_logos_url} 
                                     alt="Logos Grupo" 
-                                    className="w-full h-auto object-contain"
+                                    className="w-full h-full object-contain"
                                 />
                             ) : (
                                 <Logo variant="dark" />
@@ -204,14 +204,14 @@ export const Footer: React.FC = () => {
 
 
                 {/* ── Copyright bar ── */}
-                <div className="mt-10 pt-8 border-t border-gold/5 flex flex-col md:flex-row justify-between items-start md:items-center gap-6 text-[12px] md:text-[10px] tracking-[0.1em] font-medium text-cream/30">
+                <div className="mt-10 pt-8 border-t border-[#D4C3A3]/5 flex flex-col md:flex-row justify-between items-start md:items-center gap-6 text-[12px] md:text-[10px] tracking-[0.1em] font-medium text-[#D4C3A3]/30">
                     <p>© 2026. Grupo Espinoza Baez S.A. de C.V. Todos los derechos reservados.</p>
                     <div className="flex flex-wrap gap-x-8 gap-y-4 items-center">
                         <Link to="#" className="hover:text-gold transition-colors">Términos & Condiciones</Link>
                         <Link to="#" className="hover:text-gold transition-colors">Aviso de Privacidad</Link>
                         <Link
                             to="/admin/login"
-                            className="text-cream/10 hover:text-gold transition-colors duration-500 flex items-center gap-1 group"
+                            className="text-[#D4C3A3]/10 hover:text-gold transition-colors duration-500 flex items-center gap-1 group"
                             title="Acceso Administrativo"
                         >
                             <FontAwesomeIcon icon={faLock} className="text-[12px] group-hover:scale-110 transition-transform" />
