@@ -252,10 +252,10 @@ const Home: React.FC = () => {
                                     animate={{ opacity: 1, y: 0 }}
                                     transition={{ delay: 0.2 }}
                                 >
-                                    <span className="block text-2xl xs:text-3xl md:text-4xl lg:text-5xl xl:text-6xl uppercase">
+                                    <span className="block text-4xl xs:text-5xl md:text-4xl lg:text-5xl xl:text-6xl uppercase">
                                         {slide.title[0]}
                                     </span>
-                                    <span className="block text-2xl xs:text-3xl md:text-4xl lg:text-5xl xl:text-6xl uppercase text-gold">
+                                    <span className="block text-4xl xs:text-5xl md:text-4xl lg:text-5xl xl:text-6xl uppercase text-gold">
                                         {slide.title[1]}
                                     </span>
                                 </motion.h1>
@@ -270,7 +270,7 @@ const Home: React.FC = () => {
 
                                 {/* Subtitle */}
                                 <motion.p
-                                    className="text-white md:text-cream/90 text-sm md:text-base font-light leading-relaxed max-w-md drop-shadow-md"
+                                    className="text-white md:text-cream/90 text-lg md:text-base font-light leading-relaxed max-w-md drop-shadow-md"
                                     initial={{ opacity: 0 }}
                                     animate={{ opacity: 1 }}
                                     transition={{ delay: 0.4 }}
