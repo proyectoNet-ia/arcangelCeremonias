@@ -330,7 +330,7 @@ export const MediaGallery: React.FC<MediaGalleryProps> = ({ onSelect, allowSelec
                         <p className="text-[10px] uppercase tracking-widest font-bold">Escaneando Storage...</p>
                     </div>
                 </div>
-            ) : filteredFiles.length === 0 ? (
+            ) : sortedFiles.length === 0 ? (
                 <div className="flex-grow flex flex-col items-center justify-center py-20 text-slate-300 space-y-4 border-2 border-dashed border-slate-100">
                     <FontAwesomeIcon icon={faImage} className="text-5xl opacity-20" />
                     <p className="font-serif text-lg">No se encontraron archivos</p>
