@@ -8,6 +8,7 @@ import {
     faTh, faList
 } from '@fortawesome/free-solid-svg-icons';
 import { mediaService, MediaFile, ALL_ALLOWED_FORMATS } from '@/services/mediaService';
+import { cleanupService } from '@/services/cleanupService';
 import { ConfirmModal } from './ConfirmModal';
 import toast from 'react-hot-toast';
 
@@ -28,6 +29,10 @@ export const MediaGallery: React.FC<MediaGalleryProps> = ({ onSelect, allowSelec
         file: null
     });
 
+    const [isScanning, setIsScanning] = useState(false);
+    const [unusedUrls, setUnusedUrls] = useState<Set<string>>(new Set());
+    const [showOnlyUnused, setShowOnlyUnused] = useState(false);
+
     const [viewType, setViewType] = useState<'grid' | 'list'>('grid');
     const [sortConfig, setSortConfig] = useState<{ key: string, direction: 'asc' | 'desc' } | null>({ key: 'name', direction: 'asc' });
     const [currentPage, setCurrentPage] = useState(1);
@@ -37,7 +42,8 @@ export const MediaGallery: React.FC<MediaGalleryProps> = ({ onSelect, allowSelec
         let items = files.filter(file => {
             const matchesSearch = file.name.toLowerCase().includes(searchTerm.toLowerCase());
             const matchesFolder = filterFolder === 'all' || file.folder === filterFolder;
-            return matchesSearch && matchesFolder;
+            const matchesUnused = !showOnlyUnused || unusedUrls.has(file.url);
+            return matchesSearch && matchesFolder && matchesUnused;
         });
 
         if (sortConfig) {
@@ -82,6 +88,26 @@ export const MediaGallery: React.FC<MediaGalleryProps> = ({ onSelect, allowSelec
             direction = 'desc';
         }
         setSortConfig({ key, direction });
+    };
+
+    const handleScanUnused = async () => {
+        setIsScanning(true);
+        try {
+            const unused = await cleanupService.findUnusedMedia();
+            setUnusedUrls(new Set(unused.map(f => f.url)));
+            setShowOnlyUnused(true);
+            
+            if (unused.length > 0) {
+                toast.success(`Se encontraron ${unused.length} archivos sin usar`, { icon: '🔍' });
+            } else {
+                toast.success('¡Todos los archivos están en uso!', { icon: '✨' });
+            }
+        } catch (error) {
+            console.error('Scan error:', error);
+            toast.error('Error al analizar archivos');
+        } finally {
+            setIsScanning(false);
+        }
     };
 
     const loadMedia = async (silent = false) => {
@@ -251,7 +277,21 @@ export const MediaGallery: React.FC<MediaGalleryProps> = ({ onSelect, allowSelec
 
                     <div className="flex items-center gap-4">
                         <button
-                            onClick={loadMedia}
+                            onClick={handleScanUnused}
+                            disabled={isScanning}
+                            className={`flex items-center gap-2 px-4 py-4 text-[10px] font-bold uppercase tracking-widest transition-all border ${isScanning ? 'opacity-50' : showOnlyUnused ? 'bg-amber-50 text-amber-600 border-amber-200' : 'bg-slate-50 text-slate-500 border-slate-100 hover:text-gold'}`}
+                            title="Buscar archivos que no se usan en ninguna sección"
+                        >
+                            <FontAwesomeIcon icon={faSearch} className={isScanning ? 'animate-pulse' : ''} />
+                            {isScanning ? 'Escaneando...' : showOnlyUnused ? 'Viendo Sin Uso' : 'Detectar Sin Uso'}
+                        </button>
+
+                        <button
+                            onClick={() => {
+                                setShowOnlyUnused(false);
+                                setUnusedUrls(new Set());
+                                loadMedia();
+                            }}
                             className="p-4 text-slate-400 hover:text-gold transition-colors border border-slate-100 bg-slate-50/30"
                             title="Actualizar Galería"
                         >
@@ -371,6 +411,13 @@ export const MediaGallery: React.FC<MediaGalleryProps> = ({ onSelect, allowSelec
                                     transition={{ delay: idx * 0.02 }}
                                     className={`group relative aspect-square bg-slate-50 border border-slate-200 overflow-hidden cursor-default transition-all duration-300 hover:border-gold hover:shadow-lg ${allowSelection ? 'active:scale-95' : ''} ${isUnauthorized ? 'border-red-400' : ''}`}
                                 >
+                                    {/* Unused Indicator */}
+                                    {unusedUrls.has(file.url) && (
+                                        <div className="absolute top-10 left-2 px-2 py-0.5 bg-amber-500 text-[7px] text-white font-black uppercase tracking-widest z-10 shadow-sm animate-pulse">
+                                            Sin Uso detectado
+                                        </div>
+                                    )}
+
                                     {/* Preview */}
                                     {isPdf ? (
                                         <div className="w-full h-full flex flex-col items-center justify-center gap-2 bg-slate-100 p-4">
