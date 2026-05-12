@@ -30,7 +30,7 @@ export const Header: React.FC<HeaderProps> = ({ variant = 'light' }) => {
     const [isMegamenuOpen, setIsMegamenuOpen] = useState(false);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [isSearchOpen, setIsSearchOpen] = useState(false);
-    const [isMobileSubmenuOpen, setIsMobileSubmenuOpen] = useState(false);
+    const [isMobileSubmenuOpen, setIsMobileSubmenuOpen] = useState(true);
     const [categories, setCategories] = useState<any[]>([]);
     const [scrolled, setScrolled] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
@@ -420,31 +420,31 @@ export const Header: React.FC<HeaderProps> = ({ variant = 'light' }) => {
                                             </div>
 
                                             {/* Submenu categories */}
-                                            {item.hasMegamenu && isMobileSubmenuOpen && (
-                                                <motion.div
-                                                    initial={{ height: 0, opacity: 0 }}
-                                                    animate={{ height: 'auto', opacity: 1 }}
-                                                    className="pl-14 flex flex-col gap-4 py-2"
-                                                >
-                                                    {categories.map((cat, cIdx) => (
-                                                        <motion.div
-                                                            key={cat.id}
-                                                            initial={{ opacity: 0, x: 10 }}
-                                                            animate={{ opacity: 1, x: 0 }}
-                                                            transition={{ delay: 0.3 + cIdx * 0.05 }}
-                                                        >
-                                                            <Link
-                                                                to={`/catalogo?categoria=${cat.slug}`}
-                                                                onClick={() => setIsMobileMenuOpen(false)}
-                                                                className="text-[10px] uppercase tracking-[0.2em] text-cream/70 hover:text-gold flex items-center gap-3 py-1"
-                                                            >
-                                                                <div className="w-1 h-1 rounded-full bg-gold/40" />
-                                                                {cat.name}
-                                                            </Link>
-                                                        </motion.div>
-                                                    ))}
-                                                </motion.div>
-                                            )}
+                                            <AnimatePresence>
+                                                {item.hasMegamenu && isMobileSubmenuOpen && (
+                                                    <motion.div
+                                                        initial={{ height: 0, opacity: 0 }}
+                                                        animate={{ height: 'auto', opacity: 1 }}
+                                                        exit={{ height: 0, opacity: 0 }}
+                                                        className="pl-14 flex flex-col overflow-hidden"
+                                                    >
+                                                        <div className="py-2 flex flex-col gap-4">
+                                                            {categories.map((cat) => (
+                                                                <div key={cat.id}>
+                                                                    <Link
+                                                                        to={`/catalogo?categoria=${cat.slug}`}
+                                                                        onClick={() => setIsMobileMenuOpen(false)}
+                                                                        className="text-[11px] uppercase tracking-[0.2em] text-cream hover:text-gold flex items-center gap-3 py-1 transition-colors font-medium"
+                                                                    >
+                                                                        <div className="w-1.5 h-1.5 rounded-full bg-gold/50" />
+                                                                        {cat.name}
+                                                                    </Link>
+                                                                </div>
+                                                            ))}
+                                                        </div>
+                                                    </motion.div>
+                                                )}
+                                            </AnimatePresence>
                                         </motion.div>
                                     ))}
                                 </div>
