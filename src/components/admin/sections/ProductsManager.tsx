@@ -44,6 +44,8 @@ export const ProductsManager: React.FC<ProductsManagerProps> = ({ products, cate
     const [inlineEditId, setInlineEditId] = useState<string | null>(null);
     const [inlineEditData, setInlineEditData] = useState<Partial<Product> | null>(null);
     const [isSavingInline, setIsSavingInline] = useState(false);
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 10;
 
     const sortedProducts = React.useMemo(() => {
         let sortableItems = [...products];
@@ -82,6 +84,17 @@ export const ProductsManager: React.FC<ProductsManagerProps> = ({ products, cate
         }
         return sortableItems;
     }, [products, sortConfig, searchTerm]);
+
+    const paginatedProducts = React.useMemo(() => {
+        const startIndex = (currentPage - 1) * itemsPerPage;
+        return sortedProducts.slice(startIndex, startIndex + itemsPerPage);
+    }, [sortedProducts, currentPage]);
+
+    const totalPages = Math.ceil(sortedProducts.length / itemsPerPage);
+
+    React.useEffect(() => {
+        setCurrentPage(1);
+    }, [searchTerm, sortConfig]);
 
     const requestSort = (key: 'name' | 'category' | 'status') => {
         let direction: 'asc' | 'desc' = 'asc';
@@ -299,7 +312,7 @@ export const ProductsManager: React.FC<ProductsManagerProps> = ({ products, cate
                             </tr>
                         </thead>
                         <tbody>
-                            {sortedProducts.map(prod => {
+                            {paginatedProducts.map(prod => {
                                 const isInline = inlineEditId === prod.id;
                                 return (
                                 <tr key={prod.id} className={`border-b border-slate-100 hover:bg-slate-50/50 transition-colors ${isInline ? 'bg-gold/5' : 'group'}`}>
@@ -441,6 +454,47 @@ export const ProductsManager: React.FC<ProductsManagerProps> = ({ products, cate
                     </table>
                 </div>
             </div>
+
+            {totalPages > 1 && (
+                <div className="flex flex-col sm:flex-row justify-between items-center gap-4 bg-white p-4 border border-slate-200">
+                    <p className="text-[10px] uppercase tracking-widest font-bold text-slate-400">
+                        Mostrando {Math.min(sortedProducts.length, (currentPage - 1) * itemsPerPage + 1)}-{Math.min(sortedProducts.length, currentPage * itemsPerPage)} de {sortedProducts.length} productos
+                    </p>
+                    <div className="flex items-center gap-2">
+                        <button
+                            onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                            disabled={currentPage === 1}
+                            className="px-4 py-2 border border-slate-200 text-[10px] uppercase font-bold tracking-widest hover:bg-slate-50 disabled:opacity-30 transition-colors"
+                        >
+                            <FontAwesomeIcon icon={faChevronLeft} className="mr-2" />
+                            Anterior
+                        </button>
+                        <div className="flex gap-1">
+                            {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
+                                <button
+                                    key={page}
+                                    onClick={() => setCurrentPage(page)}
+                                    className={`w-8 h-8 flex items-center justify-center text-[10px] font-bold border transition-colors ${
+                                        currentPage === page 
+                                        ? 'bg-gold text-chocolate border-gold' 
+                                        : 'border-slate-200 text-slate-400 hover:bg-slate-50'
+                                    }`}
+                                >
+                                    {page}
+                                </button>
+                            ))}
+                        </div>
+                        <button
+                            onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                            disabled={currentPage === totalPages}
+                            className="px-4 py-2 border border-slate-200 text-[10px] uppercase font-bold tracking-widest hover:bg-slate-50 disabled:opacity-30 transition-colors"
+                        >
+                            Siguiente
+                            <FontAwesomeIcon icon={faChevronRight} className="ml-2" />
+                        </button>
+                    </div>
+                </div>
+            )}
 
             <AnimatePresence>
                 {isModalOpen && editingProduct && (
