@@ -32,7 +32,44 @@ const ProductDetail: React.FC = () => {
     const [activeImage, setActiveImage] = useState(0);
     const [zoomPos, setZoomPos] = useState({ x: 50, y: 50 });
     const [selectedVariant, setSelectedVariant] = useState<number | null>(null);
+    const [selectedSpecificSize, setSelectedSpecificSize] = useState<string | null>(null);
     const [selectedColor, setSelectedColor] = useState<string | null>(null);
+
+    const sizeOptions = React.useMemo(() => {
+        if (!product?.size_variants) return [];
+        const options: { label: string; variantIndex: number }[] = [];
+        product.size_variants.forEach((v, idx) => {
+            const sizeStr = v.size.trim();
+            const rangeMatch = sizeStr.match(/^(\d+)\s*-\s*(\d+)$/);
+            if (rangeMatch) {
+                const start = parseInt(rangeMatch[1], 10);
+                const end = parseInt(rangeMatch[2], 10);
+                if (start <= end && end - start <= 50) {
+                    for (let i = start; i <= end; i++) {
+                        options.push({ label: i.toString(), variantIndex: idx });
+                    }
+                } else {
+                    options.push({ label: sizeStr, variantIndex: idx });
+                }
+            } else {
+                if (sizeStr.includes(',')) {
+                    sizeStr.split(',').forEach(part => {
+                        options.push({ label: part.trim(), variantIndex: idx });
+                    });
+                } else {
+                    options.push({ label: sizeStr, variantIndex: idx });
+                }
+            }
+        });
+        return options;
+    }, [product?.size_variants]);
+
+    useEffect(() => {
+        if (sizeOptions.length > 0 && !selectedSpecificSize) {
+            setSelectedSpecificSize(sizeOptions[0].label);
+            setSelectedVariant(sizeOptions[0].variantIndex);
+        }
+    }, [sizeOptions, selectedSpecificSize]);
     const [relatedProducts, setRelatedProducts] = useState<Product[]>([]);
     const [historyProducts, setHistoryProducts] = useState<Product[]>([]);
     const [showSizeGuide, setShowSizeGuide] = useState(false);
@@ -168,7 +205,8 @@ const ProductDetail: React.FC = () => {
         if (selectedVariant !== null && product.size_variants) {
             const v = product.size_variants[selectedVariant];
             const priceInfo = showPrices ? `\n*Precio:* $${v.price.toLocaleString('es-MX')} MXN` : '';
-            tallaLinea = `*Talla seleccionada:* ${v.size}${priceInfo}`;
+            const sizeLabel = selectedSpecificSize ? selectedSpecificSize : v.size;
+            tallaLinea = `*Talla seleccionada:* ${sizeLabel}${priceInfo}`;
         } else if (product.sizes && product.sizes.length > 0) {
             tallaLinea = `*Tallas disponibles:* ${product.sizes.join(', ')}`;
         } else {
@@ -375,7 +413,7 @@ const ProductDetail: React.FC = () => {
                                                 ${currentPrice.toLocaleString('es-MX', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                                                 {selectedVariant !== null && (
                                                     <span className="text-[10px] uppercase tracking-widest text-chocolate/40 ml-4 font-bold">
-                                                        Talla {product.size_variants?.[selectedVariant].size}
+                                                        Talla {selectedSpecificSize || product.size_variants?.[selectedVariant].size}
                                                     </span>
                                                 )}
                                             </span>
@@ -462,25 +500,29 @@ const ProductDetail: React.FC = () => {
                                     animate={{ opacity: 1, y: 0 }}
                                     transition={{ duration: 0.5, delay: 0.65 }}
                                 >
-                                    <span className="text-[10px] uppercase tracking-[0.2em] text-chocolate/40 font-bold block">Seleccionar Talla (El precio varía según la talla)</span>
-                                    <div className="flex flex-wrap gap-3">
-                                        {product.size_variants.map((v, idx) => (
-                                            <motion.button
-                                                key={idx}
-                                                onClick={() => setSelectedVariant(idx)}
-                                                initial={{ opacity: 0, scale: 0.88 }}
-                                                animate={{ opacity: 1, scale: 1 }}
-                                                transition={{ duration: 0.3, delay: 0.7 + idx * 0.06 }}
-                                                whileHover={{ y: -2 }}
-                                                whileTap={{ scale: 0.95 }}
-                                                className={`px-6 py-3 text-xs uppercase tracking-widest transition-all duration-300 border ${selectedVariant === idx
-                                                    ? 'bg-chocolate text-cream border-chocolate shadow-lg'
-                                                    : 'border-gold/20 text-chocolate hover:border-gold opacity-60 hover:opacity-100'
-                                                    }`}
-                                            >
-                                                {v.size}
-                                            </motion.button>
-                                        ))}
+                                    <span className="text-[10px] uppercase tracking-[0.2em] text-chocolate/40 font-bold block">Selecciona la talla (El precio varía según la talla)</span>
+                                    <div className="relative max-w-[200px]">
+                                        <select
+                                            value={selectedSpecificSize || ''}
+                                            onChange={(e) => {
+                                                const val = e.target.value;
+                                                const opt = sizeOptions.find(o => o.label === val);
+                                                if (opt) {
+                                                    setSelectedSpecificSize(val);
+                                                    setSelectedVariant(opt.variantIndex);
+                                                }
+                                            }}
+                                            className="w-full bg-white/40 border border-gold/30 text-chocolate px-6 py-4 text-xs uppercase tracking-widest outline-none focus:border-gold focus:ring-1 focus:ring-gold/30 transition-all appearance-none cursor-pointer hover:bg-white/80"
+                                        >
+                                            {sizeOptions.map((opt, idx) => (
+                                                <option key={idx} value={opt.label}>
+                                                    TALLA {opt.label}
+                                                </option>
+                                            ))}
+                                        </select>
+                                        <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-gold">
+                                            <FontAwesomeIcon icon={faChevronRight} className="rotate-90 text-[10px]" />
+                                        </div>
                                     </div>
                                 </motion.div>
                             )}

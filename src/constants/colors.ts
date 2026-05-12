@@ -7,7 +7,7 @@ export const COLOR_MAP: Record<string, string> = {
     'gris oscuro': '#36454F',
     'azul': '#0000FF',
     'azul marino': '#000080',
-    'azul claro': '#87CEEB',
+    'azul celeste': '#90D5FF',
     'rojo': '#FF0000',
     'vino': '#800020',
     'rosa': '#FFC0CB',
