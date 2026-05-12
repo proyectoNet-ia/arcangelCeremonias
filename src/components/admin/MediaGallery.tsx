@@ -4,7 +4,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
     faImage, faTrash, faCopy, faTimes, faSearch,
     faFolder, faSync, faExternalLinkAlt, faCheck,
-    faLock, faSort, faSortAmountDown, faChevronLeft, faChevronRight
+    faLock, faSort, faSortAmountDown, faChevronLeft, faChevronRight,
+    faTh, faList
 } from '@fortawesome/free-solid-svg-icons';
 import { mediaService, MediaFile, ALL_ALLOWED_FORMATS } from '@/services/mediaService';
 import { ConfirmModal } from './ConfirmModal';
@@ -27,6 +28,7 @@ export const MediaGallery: React.FC<MediaGalleryProps> = ({ onSelect, allowSelec
         file: null
     });
 
+    const [viewType, setViewType] = useState<'grid' | 'list'>('grid');
     const [sortConfig, setSortConfig] = useState<{ key: string, direction: 'asc' | 'desc' } | null>({ key: 'name', direction: 'asc' });
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 24;
@@ -267,6 +269,24 @@ export const MediaGallery: React.FC<MediaGalleryProps> = ({ onSelect, allowSelec
                     ))}
                 </div>
 
+                {/* View Switcher */}
+                <div className="flex bg-slate-100 p-1 border border-slate-200">
+                    <button
+                        onClick={() => setViewType('grid')}
+                        className={`px-4 py-2 text-xs transition-all ${viewType === 'grid' ? 'bg-white text-gold shadow-sm' : 'text-slate-400 hover:text-chocolate'}`}
+                        title="Vista Cuadrícula"
+                    >
+                        <FontAwesomeIcon icon={faTh} />
+                    </button>
+                    <button
+                        onClick={() => setViewType('list')}
+                        className={`px-4 py-2 text-xs transition-all ${viewType === 'list' ? 'bg-white text-gold shadow-sm' : 'text-slate-400 hover:text-chocolate'}`}
+                        title="Vista Detallada"
+                    >
+                        <FontAwesomeIcon icon={faList} />
+                    </button>
+                </div>
+
                 {/* Actions & Categories Wrapper */}
                 <div className="w-full lg:w-auto flex flex-col md:flex-row items-center gap-6">
                     <div className="w-full md:w-auto flex items-center justify-between gap-4">
@@ -335,6 +355,157 @@ export const MediaGallery: React.FC<MediaGalleryProps> = ({ onSelect, allowSelec
                     <FontAwesomeIcon icon={faImage} className="text-5xl opacity-20" />
                     <p className="font-serif text-lg">No se encontraron archivos</p>
                     <p className="text-[10px] uppercase tracking-widest">Intenta cambiar el filtro o subir nuevos archivos</p>
+                </div>
+            ) : viewType === 'grid' ? (
+                <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6 overflow-y-auto pr-2 pb-10">
+                    <AnimatePresence>
+                        {paginatedFiles.map((file, idx) => {
+                            const size = file.metadata?.size || 0;
+                            const mime = file.metadata?.mimetype || 'unknown';
+                            const isPdf = mime === 'application/pdf';
+                            const isUnauthorized = !ALL_ALLOWED_FORMATS.includes(mime);
+
+                            return (
+                                <motion.div
+                                    key={`${file.folder}-${file.name}`}
+                                    layout
+                                    initial={{ opacity: 0, scale: 0.9 }}
+                                    animate={{ opacity: 1, scale: 1 }}
+                                    exit={{ opacity: 0, scale: 0.9 }}
+                                    transition={{ delay: idx * 0.02 }}
+                                    className={`group relative aspect-square bg-slate-50 border border-slate-200 overflow-hidden cursor-default transition-all duration-300 hover:border-gold hover:shadow-lg ${allowSelection ? 'active:scale-95' : ''} ${isUnauthorized ? 'border-red-400' : ''}`}
+                                >
+                                    {/* Preview */}
+                                    {isPdf ? (
+                                        <div className="w-full h-full flex flex-col items-center justify-center gap-2 bg-slate-100 p-4">
+                                            <div className="w-12 h-12 bg-red-50 text-red-500 flex items-center justify-center rounded-lg">
+                                                <span className="font-bold text-lg">PDF</span>
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <img src={file.url} alt={file.name} className="w-full h-full object-cover transition-transform group-hover:scale-110" loading="lazy" />
+                                    )}
+
+                                    {/* Format Badge */}
+                                    <div className="absolute top-2 right-2 px-2 py-0.5 bg-white/80 text-[8px] text-chocolate font-bold uppercase tracking-tighter backdrop-blur-sm z-10 border border-slate-200">
+                                        {mime.split('/').pop()}
+                                    </div>
+
+                                    {/* Folder Badge */}
+                                    <div className="absolute top-2 left-2 px-2 py-0.5 bg-black/60 text-[8px] text-white uppercase tracking-widest backdrop-blur-sm z-10">
+                                        {file.folder}
+                                    </div>
+
+                                    {/* Size Badge */}
+                                    <div className="absolute bottom-2 right-2 px-2 py-0.5 bg-white text-[8px] text-chocolate font-bold uppercase tracking-widest z-10 border border-slate-100 shadow-sm">
+                                        {formatSize(size)}
+                                    </div>
+
+                                    {/* Overlay Buttons */}
+                                    <div className="absolute inset-0 bg-slate-900/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-3 z-20">
+                                        {allowSelection ? (
+                                            <button
+                                                onClick={() => onSelect?.(file.url)}
+                                                className="bg-gold text-chocolate px-4 py-2 text-[10px] font-bold uppercase tracking-widest hover:bg-white transition-all shadow-xl"
+                                            >
+                                                <FontAwesomeIcon icon={faCheck} className="mr-2" /> Seleccionar
+                                            </button>
+                                        ) : (
+                                            <>
+                                                <div className="flex gap-2">
+                                                    <button
+                                                        onClick={() => copyToClipboard(file.url)}
+                                                        className="w-10 h-10 bg-white/20 text-white hover:bg-white hover:text-chocolate rounded-full transition-all flex items-center justify-center"
+                                                        title="Copiar URL"
+                                                    >
+                                                        <FontAwesomeIcon icon={faCopy} />
+                                                    </button>
+                                                    <a
+                                                        href={file.url}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        className="w-10 h-10 bg-white/20 text-white hover:bg-white hover:text-chocolate rounded-full transition-all flex items-center justify-center"
+                                                        title="Ver original"
+                                                    >
+                                                        <FontAwesomeIcon icon={faExternalLinkAlt} />
+                                                    </a>
+                                                </div>
+                                                <button
+                                                    onClick={() => setConfirmDelete({ isOpen: true, file })}
+                                                    className="mt-2 text-white/50 hover:text-red-400 text-[10px] uppercase font-bold tracking-widest transition-colors flex items-center gap-2"
+                                                >
+                                                    <FontAwesomeIcon icon={faTrash} className="text-xs" /> Eliminar
+                                                </button>
+                                            </>
+                                        )}
+                                    </div>
+
+                                    {/* Filename Footer */}
+                                    <div className="absolute bottom-0 left-0 right-0 bg-white/90 backdrop-blur-sm p-2 border-t border-slate-100 transform translate-y-full group-hover:translate-y-0 transition-transform z-30">
+                                        <p className="text-[9px] font-medium truncate text-slate-800" title={file.name}>
+                                            {file.name}
+                                        </p>
+                                    </div>
+                                </motion.div>
+                            );
+                        })}
+                    </AnimatePresence>
+                </div>
+            ) : (
+                <div className="bg-white border border-slate-200 overflow-x-auto">
+                    <table className="w-full text-left">
+                        <thead>
+                            <tr className="bg-slate-50 border-b border-slate-100">
+                                <th className="px-6 py-4 text-[10px] uppercase tracking-widest font-bold text-slate-400">Miniatura</th>
+                                <th className="px-6 py-4 text-[10px] uppercase tracking-widest font-bold text-slate-400">Nombre</th>
+                                <th className="px-6 py-4 text-[10px] uppercase tracking-widest font-bold text-slate-400 text-center">Formato</th>
+                                <th className="px-6 py-4 text-[10px] uppercase tracking-widest font-bold text-slate-400 text-center">Tamaño</th>
+                                <th className="px-6 py-4 text-[10px] uppercase tracking-widest font-bold text-slate-400 text-right">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody className="divide-y divide-slate-50">
+                            {paginatedFiles.map(file => (
+                                <tr key={`${file.folder}-${file.name}`} className="hover:bg-slate-50 transition-colors group">
+                                    <td className="px-6 py-4">
+                                        <img src={file.url} className="w-12 h-12 object-cover rounded border border-slate-100" alt="" />
+                                    </td>
+                                    <td className="px-6 py-4">
+                                        <p className="text-sm font-bold text-slate-800 truncate max-w-xs">{file.name}</p>
+                                        <p className="text-[10px] text-slate-400 uppercase tracking-widest">{file.folder}</p>
+                                    </td>
+                                    <td className="px-6 py-4 text-center">
+                                        <span className="px-2 py-0.5 bg-slate-100 text-slate-600 text-[8px] font-black uppercase tracking-tighter border border-slate-200 rounded">
+                                            {file.metadata?.mimetype?.split('/').pop()}
+                                        </span>
+                                    </td>
+                                    <td className="px-6 py-4 text-center text-[10px] font-bold text-slate-500 uppercase tracking-widest">
+                                        {formatSize(file.metadata?.size || 0)}
+                                    </td>
+                                    <td className="px-6 py-4">
+                                        <div className="flex justify-end gap-2">
+                                            {allowSelection ? (
+                                                <button onClick={() => onSelect?.(file.url)} className="px-4 py-2 bg-gold text-chocolate text-[10px] font-bold uppercase tracking-widest hover:bg-chocolate hover:text-white transition-all">
+                                                    Seleccionar
+                                                </button>
+                                            ) : (
+                                                <>
+                                                    <button onClick={() => copyToClipboard(file.url)} className="p-2 border border-slate-100 hover:bg-gold hover:text-white transition-all rounded shadow-sm">
+                                                        <FontAwesomeIcon icon={faCopy} className="text-xs" />
+                                                    </button>
+                                                    <a href={file.url} target="_blank" rel="noopener noreferrer" className="p-2 border border-slate-100 hover:bg-gold hover:text-white transition-all rounded shadow-sm">
+                                                        <FontAwesomeIcon icon={faExternalLinkAlt} className="text-xs" />
+                                                    </a>
+                                                    <button onClick={() => setConfirmDelete({ isOpen: true, file })} className="p-2 border border-slate-100 hover:bg-red-500 hover:text-white transition-all rounded shadow-sm">
+                                                        <FontAwesomeIcon icon={faTrash} className="text-xs" />
+                                                    </button>
+                                                </>
+                                            )}
+                                        </div>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
                 </div>
             ) : (
                 <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6 overflow-y-auto pr-2 pb-10">
