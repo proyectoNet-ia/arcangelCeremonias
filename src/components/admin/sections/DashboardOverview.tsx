@@ -212,7 +212,9 @@ export const DashboardOverview: React.FC<DashboardOverviewProps> = ({ products, 
                                     <p className="text-sm font-medium">{prod.name}</p>
                                     <p className="text-[10px] text-slate-400 uppercase">{(prod as any).categories?.name}</p>
                                 </div>
-                                <span className="text-xs font-serif text-gold">${prod.price}</span>
+                                <span className="text-[10px] font-bold text-gold uppercase tracking-widest">
+                                    {prod.created_at ? new Date(prod.created_at).toLocaleDateString('es-MX', { day: '2-digit', month: 'short' }) : 'Nuevo'}
+                                </span>
                             </div>
                         ))}
                     </div>
