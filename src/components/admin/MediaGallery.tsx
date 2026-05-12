@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
     faImage, faTrash, faCopy, faTimes, faSearch,
     faFolder, faSync, faExternalLinkAlt, faCheck,
-    faLock
+    faLock, faSort, faSortAmountDown, faChevronLeft, faChevronRight
 } from '@fortawesome/free-solid-svg-icons';
 import { mediaService, MediaFile, ALL_ALLOWED_FORMATS } from '@/services/mediaService';
 import { ConfirmModal } from './ConfirmModal';
@@ -26,6 +26,61 @@ export const MediaGallery: React.FC<MediaGalleryProps> = ({ onSelect, allowSelec
         isOpen: false,
         file: null
     });
+
+    const [sortConfig, setSortConfig] = useState<{ key: string, direction: 'asc' | 'desc' } | null>({ key: 'name', direction: 'asc' });
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 24;
+
+    const sortedFiles = React.useMemo(() => {
+        let items = files.filter(file => {
+            const matchesSearch = file.name.toLowerCase().includes(searchTerm.toLowerCase());
+            const matchesFolder = filterFolder === 'all' || file.folder === filterFolder;
+            return matchesSearch && matchesFolder;
+        });
+
+        if (sortConfig) {
+            items.sort((a, b) => {
+                let aValue: any;
+                let bValue: any;
+
+                if (sortConfig.key === 'size') {
+                    aValue = a.metadata?.size || 0;
+                    bValue = b.metadata?.size || 0;
+                } else if (sortConfig.key === 'name') {
+                    aValue = a.name.toLowerCase();
+                    bValue = b.name.toLowerCase();
+                } else if (sortConfig.key === 'date') {
+                    // Si no hay fecha en metadata, intentamos usar el nombre si tiene timestamp o simplemente 0
+                    aValue = new Date(a.metadata?.lastModified || 0).getTime();
+                    bValue = new Date(b.metadata?.lastModified || 0).getTime();
+                }
+
+                if (aValue < bValue) return sortConfig.direction === 'asc' ? -1 : 1;
+                if (aValue > bValue) return sortConfig.direction === 'asc' ? 1 : -1;
+                return 0;
+            });
+        }
+        return items;
+    }, [files, searchTerm, filterFolder, sortConfig]);
+
+    const paginatedFiles = React.useMemo(() => {
+        const startIndex = (currentPage - 1) * itemsPerPage;
+        return sortedFiles.slice(startIndex, startIndex + itemsPerPage);
+    }, [sortedFiles, currentPage]);
+
+    const totalPages = Math.ceil(sortedFiles.length / itemsPerPage);
+
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [searchTerm, filterFolder, sortConfig]);
+
+    const requestSort = (key: string) => {
+        let direction: 'asc' | 'desc' = 'asc';
+        if (sortConfig && sortConfig.key === key && sortConfig.direction === 'asc') {
+            direction = 'desc';
+        }
+        setSortConfig({ key, direction });
+    };
 
     const loadMedia = async (silent = false) => {
         try {
@@ -130,13 +185,48 @@ export const MediaGallery: React.FC<MediaGalleryProps> = ({ onSelect, allowSelec
         return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
     };
 
-    const filteredFiles = files.filter(file => {
-        const matchesSearch = file.name.toLowerCase().includes(searchTerm.toLowerCase());
-        const matchesFolder = filterFolder === 'all' || file.folder === filterFolder;
-        return matchesSearch && matchesFolder;
-    });
-
     const folders = ['all', 'products', 'hero', 'branding', 'files'];
+
+    const paginationUI = totalPages > 1 ? (
+        <div className="flex flex-col sm:flex-row justify-between items-center gap-4 bg-white p-4 border border-slate-200">
+            <p className="text-[10px] uppercase tracking-widest font-bold text-slate-400">
+                Mostrando {Math.min(sortedFiles.length, (currentPage - 1) * itemsPerPage + 1)}-{Math.min(sortedFiles.length, currentPage * itemsPerPage)} de {sortedFiles.length} archivos
+            </p>
+            <div className="flex items-center gap-2">
+                <button
+                    onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                    disabled={currentPage === 1}
+                    className="px-4 py-2 border border-slate-200 text-[10px] uppercase font-bold tracking-widest hover:bg-slate-50 disabled:opacity-30 transition-colors"
+                >
+                    <FontAwesomeIcon icon={faChevronLeft} className="mr-2" />
+                    Anterior
+                </button>
+                <div className="flex gap-1">
+                    {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
+                        <button
+                            key={page}
+                            onClick={() => setCurrentPage(page)}
+                            className={`w-8 h-8 flex items-center justify-center text-[10px] font-bold border transition-colors ${
+                                currentPage === page 
+                                ? 'bg-gold text-chocolate border-gold' 
+                                : 'border-slate-200 text-slate-400 hover:bg-slate-50'
+                            }`}
+                        >
+                            {page}
+                        </button>
+                    ))}
+                </div>
+                <button
+                    onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                    disabled={currentPage === totalPages}
+                    className="px-4 py-2 border border-slate-200 text-[10px] uppercase font-bold tracking-widest hover:bg-slate-50 disabled:opacity-30 transition-colors"
+                >
+                    Siguiente
+                    <FontAwesomeIcon icon={faChevronRight} className="ml-2" />
+                </button>
+            </div>
+        </div>
+    ) : null;
 
     return (
         <div className="space-y-8 min-h-[600px] flex flex-col">
@@ -154,6 +244,27 @@ export const MediaGallery: React.FC<MediaGalleryProps> = ({ onSelect, allowSelec
                             className="w-full pl-10 pr-4 py-3 border border-slate-100 focus:border-gold outline-none text-xs"
                         />
                     </div>
+                </div>
+
+                {/* Sort Bar */}
+                <div className="flex items-center gap-2 bg-slate-50 p-1 border border-slate-100">
+                    <span className="text-[8px] uppercase font-black text-slate-400 px-2">Ordenar por:</span>
+                    {[
+                        { key: 'name', label: 'Nombre' },
+                        { key: 'size', label: 'Tamaño' },
+                        { key: 'date', label: 'Fecha' }
+                    ].map(opt => (
+                        <button
+                            key={opt.key}
+                            onClick={() => requestSort(opt.key)}
+                            className={`px-3 py-1.5 text-[9px] uppercase font-bold tracking-widest transition-all ${sortConfig?.key === opt.key ? 'bg-white text-gold shadow-sm' : 'text-slate-400 hover:text-chocolate'}`}
+                        >
+                            {opt.label}
+                            {sortConfig?.key === opt.key && (
+                                <FontAwesomeIcon icon={sortConfig.direction === 'asc' ? faSort : faSortAmountDown} className="ml-1.5" />
+                            )}
+                        </button>
+                    ))}
                 </div>
 
                 {/* Actions & Categories Wrapper */}
@@ -209,6 +320,8 @@ export const MediaGallery: React.FC<MediaGalleryProps> = ({ onSelect, allowSelec
                 </p>
             </div>
 
+            {paginationUI}
+
             {/* Content grid */}
             {loading ? (
                 <div className="flex-grow flex items-center justify-center py-20">
@@ -226,7 +339,7 @@ export const MediaGallery: React.FC<MediaGalleryProps> = ({ onSelect, allowSelec
             ) : (
                 <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6 overflow-y-auto pr-2 pb-10">
                     <AnimatePresence>
-                        {filteredFiles.map((file, idx) => {
+                        {paginatedFiles.map((file, idx) => {
                             const size = file.metadata?.size || 0;
                             const mime = file.metadata?.mimetype || 'unknown';
                             const isPdf = mime === 'application/pdf';
@@ -319,6 +432,8 @@ export const MediaGallery: React.FC<MediaGalleryProps> = ({ onSelect, allowSelec
                     </AnimatePresence>
                 </div>
             )}
+
+            {paginationUI}
 
             <ConfirmModal
                 isOpen={confirmDelete.isOpen}
