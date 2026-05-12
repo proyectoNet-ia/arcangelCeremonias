@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
-    faTrash, faEdit, faTimes, faImages
+    faTrash, faEdit, faTimes, faImages, faSearch, faSort, faChevronLeft, faChevronRight
 } from '@fortawesome/free-solid-svg-icons';
 import { productService } from '@/services/productService';
 import { Category } from '@/types/product';
@@ -32,6 +32,62 @@ export const CategoriesManager: React.FC<CategoriesManagerProps> = ({ categories
         isOpen: false,
         id: null
     });
+
+    const [searchTerm, setSearchTerm] = useState('');
+    const [sortConfig, setSortConfig] = useState<{ key: string, direction: 'asc' | 'desc' } | null>(null);
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 10;
+
+    const sortedCategories = React.useMemo(() => {
+        let sortableItems = [...categories];
+        
+        // Filter
+        if (searchTerm) {
+            const lower = searchTerm.toLowerCase();
+            sortableItems = sortableItems.filter(c => 
+                c.name.toLowerCase().includes(lower) || 
+                c.slug.toLowerCase().includes(lower) ||
+                (c.description?.toLowerCase().includes(lower) ?? false)
+            );
+        }
+
+        // Sort
+        if (sortConfig !== null) {
+            sortableItems.sort((a, b) => {
+                let aValue: any = a[sortConfig.key as keyof Category] || '';
+                let bValue: any = b[sortConfig.key as keyof Category] || '';
+                
+                if (aValue < bValue) return sortConfig.direction === 'asc' ? -1 : 1;
+                if (aValue > bValue) return sortConfig.direction === 'asc' ? 1 : -1;
+                return 0;
+            });
+        }
+        return sortableItems;
+    }, [categories, sortConfig, searchTerm]);
+
+    const paginatedCategories = React.useMemo(() => {
+        const startIndex = (currentPage - 1) * itemsPerPage;
+        return sortedCategories.slice(startIndex, startIndex + itemsPerPage);
+    }, [sortedCategories, currentPage]);
+
+    const totalPages = Math.ceil(sortedCategories.length / itemsPerPage);
+
+    React.useEffect(() => {
+        setCurrentPage(1);
+    }, [searchTerm, sortConfig]);
+
+    const requestSort = (key: string) => {
+        let direction: 'asc' | 'desc' = 'asc';
+        if (sortConfig && sortConfig.key === key && sortConfig.direction === 'asc') {
+            direction = 'desc';
+        }
+        setSortConfig({ key, direction });
+    };
+
+    const getSortIcon = (key: string) => {
+        if (!sortConfig || sortConfig.key !== key) return faSort;
+        return sortConfig.direction === 'asc' ? faSort : faSort; // We can add specific icons if needed
+    };
 
     const handleEdit = (category: Category) => {
         setEditingCategory({ ...category });
@@ -76,34 +132,95 @@ export const CategoriesManager: React.FC<CategoriesManagerProps> = ({ categories
         }
     };
 
-    return (
-        <div className="space-y-8">
-            <div className="flex justify-between items-center bg-white p-6 border border-slate-200">
-                <h2 className="text-xl font-serif">Gestión de Categorías</h2>
+    const paginationUI = totalPages > 1 ? (
+        <div className="flex flex-col sm:flex-row justify-between items-center gap-4 bg-white p-4 border border-slate-200">
+            <p className="text-[10px] uppercase tracking-widest font-bold text-slate-400">
+                Mostrando {Math.min(sortedCategories.length, (currentPage - 1) * itemsPerPage + 1)}-{Math.min(sortedCategories.length, currentPage * itemsPerPage)} de {sortedCategories.length} categorías
+            </p>
+            <div className="flex items-center gap-2">
                 <button
-                    onClick={() => {
-                        setEditingCategory({ name: '', slug: '', description: '', image_url: '' });
-                        setIsModalOpen(true);
-                        setIsSlugCustomized(false);
-                    }}
-                    className="bg-gold text-chocolate px-6 py-3 text-[10px] uppercase tracking-widest font-bold hover:bg-chocolate hover:text-white transition-all shadow-lg"
+                    onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                    disabled={currentPage === 1}
+                    className="px-4 py-2 border border-slate-200 text-[10px] uppercase font-bold tracking-widest hover:bg-slate-50 disabled:opacity-30 transition-colors"
                 >
-                    + Nueva Categoría
+                    <FontAwesomeIcon icon={faChevronLeft} className="mr-2" />
+                    Anterior
+                </button>
+                <div className="flex gap-1">
+                    {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
+                        <button
+                            key={page}
+                            onClick={() => setCurrentPage(page)}
+                            className={`w-8 h-8 flex items-center justify-center text-[10px] font-bold border transition-colors ${
+                                currentPage === page 
+                                ? 'bg-gold text-chocolate border-gold' 
+                                : 'border-slate-200 text-slate-400 hover:bg-slate-50'
+                            }`}
+                        >
+                            {page}
+                        </button>
+                    ))}
+                </div>
+                <button
+                    onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                    disabled={currentPage === totalPages}
+                    className="px-4 py-2 border border-slate-200 text-[10px] uppercase font-bold tracking-widest hover:bg-slate-50 disabled:opacity-30 transition-colors"
+                >
+                    Siguiente
+                    <FontAwesomeIcon icon={faChevronRight} className="ml-2" />
                 </button>
             </div>
+        </div>
+    ) : null;
+
+    return (
+        <div className="space-y-6 md:space-y-8">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center bg-white p-4 md:p-6 border border-slate-200 gap-4">
+                <div className="flex items-center gap-4 w-full sm:w-auto flex-grow max-w-md">
+                    <div className="relative w-full">
+                        <input
+                            type="text"
+                            placeholder="Buscar por nombre, slug o descripción..."
+                            value={searchTerm}
+                            onChange={e => setSearchTerm(e.target.value)}
+                            className="w-full pl-10 pr-4 py-3 border border-slate-200 text-xs focus:border-gold outline-none"
+                        />
+                        <FontAwesomeIcon icon={faSearch} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300" />
+                    </div>
+                </div>
+                <div className="flex items-center gap-4 w-full sm:w-auto justify-between sm:justify-end">
+                    <p className="hidden md:block text-[10px] uppercase tracking-widest font-bold text-slate-400">Total: {sortedCategories.length}</p>
+                    <button
+                        onClick={() => {
+                            setEditingCategory({ name: '', slug: '', description: '', image_url: '' });
+                            setIsModalOpen(true);
+                            setIsSlugCustomized(false);
+                        }}
+                        className="w-full sm:w-auto bg-gold text-chocolate px-6 py-3 text-[10px] uppercase tracking-widest font-bold hover:bg-chocolate hover:text-white transition-all shadow-lg text-center whitespace-nowrap"
+                    >
+                        + Nueva Categoría
+                    </button>
+                </div>
+            </div>
+
+            {paginationUI}
 
             <div className="bg-white border border-slate-200 overflow-x-auto scrollbar-thin scrollbar-thumb-slate-200 scrollbar-track-transparent">
                 <table className="w-full text-left border-collapse min-w-[700px]">
                     <thead>
                         <tr className="bg-slate-50 border-b border-slate-100">
                             <th className="px-4 md:px-8 py-4 text-[10px] uppercase tracking-widest font-bold text-slate-400">Imagen</th>
-                            <th className="px-4 md:px-8 py-4 text-[10px] uppercase tracking-widest font-bold text-slate-400">Nombre / URL</th>
-                            <th className="px-4 md:px-8 py-4 text-[10px] uppercase tracking-widest font-bold text-slate-400">Descripción</th>
+                            <th className="px-4 md:px-8 py-4 text-[10px] uppercase tracking-widest font-bold text-slate-400 cursor-pointer hover:text-chocolate transition-colors" onClick={() => requestSort('name')}>
+                                Nombre / URL <FontAwesomeIcon icon={getSortIcon('name')} className="ml-1" />
+                            </th>
+                            <th className="px-4 md:px-8 py-4 text-[10px] uppercase tracking-widest font-bold text-slate-400 cursor-pointer hover:text-chocolate transition-colors" onClick={() => requestSort('description')}>
+                                Descripción <FontAwesomeIcon icon={getSortIcon('description')} className="ml-1" />
+                            </th>
                             <th className="px-4 md:px-8 py-4 text-[10px] uppercase tracking-widest font-bold text-slate-400 text-right">Acciones</th>
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100">
-                        {categories.map(cat => {
+                        {paginatedCategories.map(cat => {
                             const parent = categories.find(c => c.id === cat.parent_id);
                             return (
                                 <tr key={cat.id} className="hover:bg-slate-50/50 transition-colors">
@@ -159,6 +276,8 @@ export const CategoriesManager: React.FC<CategoriesManagerProps> = ({ categories
                     </tbody>
                 </table>
             </div>
+
+            {paginationUI}
 
             <AnimatePresence>
                 {isModalOpen && editingCategory && (
