@@ -24,7 +24,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, index }) => {
             className="group cursor-pointer relative"
         >
             <Link to={`/producto/${product.slug}`}>
-                <div className="relative overflow-hidden bg-slate-50 aspect-[3/4] mb-5 shadow-sm group-hover:shadow-xl transition-shadow duration-700">
+                <div className="relative overflow-hidden bg-white aspect-[3/4] mb-5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] group-hover:shadow-[0_20px_50px_rgba(139,100,60,0.15)] transition-all duration-700 ring-1 ring-gold/5">
                     {/* Skeleton / Placeholder Premium */}
                     {!isLoaded && (
                         <div className="absolute inset-0 bg-chocolate/5 overflow-hidden">
@@ -41,8 +41,14 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, index }) => {
                         loading="lazy"
                         decoding="async"
                         onLoad={() => setIsLoaded(true)}
-                        className={`w-full h-full object-cover transition-all duration-1000 group-hover:scale-105 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
+                        className={`w-full h-full object-cover transition-all duration-1000 group-hover:scale-110 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
                     />
+                    
+                    {/* Editorial Framing & Overlays */}
+                    <div className="absolute inset-0 bg-gradient-to-b from-black/5 via-transparent to-black/20 opacity-60 group-hover:opacity-40 transition-opacity duration-700" />
+                    
+                    {/* Internal Border (Editorial Frame) */}
+                    <div className="absolute inset-3 border border-white/30 pointer-events-none group-hover:inset-5 transition-all duration-700 ease-out" />
                     <div className="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
 
                     {/* Dynamic Badges System */}
