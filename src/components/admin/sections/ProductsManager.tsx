@@ -284,17 +284,18 @@ export const ProductsManager: React.FC<ProductsManagerProps> = ({ products, cate
                     <table className="w-full text-left border-collapse">
                         <thead className="bg-slate-50">
                             <tr>
-                                <th className="px-4 md:px-8 py-4 text-[10px] uppercase tracking-widest font-bold text-slate-400">Preview</th>
-                                <th className="px-4 md:px-8 py-4 text-[10px] uppercase tracking-widest font-bold text-slate-400 cursor-pointer hover:text-chocolate transition-colors" onClick={() => requestSort('name')}>
+                                <th className="px-4 md:px-8 py-4 text-[9px] uppercase tracking-widest font-bold text-slate-400">Preview</th>
+                                <th className="px-4 md:px-8 py-4 text-[9px] uppercase tracking-widest font-bold text-slate-400 cursor-pointer hover:text-chocolate transition-colors" onClick={() => requestSort('name')}>
                                     Información <FontAwesomeIcon icon={getSortIcon('name')} className="ml-1" />
                                 </th>
-                                <th className="hidden md:table-cell px-8 py-4 text-[10px] uppercase tracking-widest font-bold text-slate-400 cursor-pointer hover:text-chocolate transition-colors" onClick={() => requestSort('category')}>
+                                <th className="hidden md:table-cell px-8 py-4 text-[9px] uppercase tracking-widest font-bold text-slate-400 cursor-pointer hover:text-chocolate transition-colors" onClick={() => requestSort('category')}>
                                     Categoría <FontAwesomeIcon icon={getSortIcon('category')} className="ml-1" />
                                 </th>
-                                <th className="px-4 md:px-8 py-4 text-[10px] uppercase tracking-widest font-bold text-slate-400 text-right cursor-pointer hover:text-chocolate transition-colors" onClick={() => requestSort('status')}>
+                                <th className="hidden lg:table-cell px-8 py-4 text-[9px] uppercase tracking-widest font-bold text-slate-400">Subcategoría</th>
+                                <th className="px-4 md:px-8 py-4 text-[9px] uppercase tracking-widest font-bold text-slate-400 text-right cursor-pointer hover:text-chocolate transition-colors" onClick={() => requestSort('status')}>
                                     Estado <FontAwesomeIcon icon={getSortIcon('status')} className="ml-1" />
                                 </th>
-                                <th className="px-4 md:px-8 py-4 text-[10px] uppercase tracking-widest font-bold text-slate-400 text-right">Acciones</th>
+                                <th className="px-4 md:px-8 py-4 text-[9px] uppercase tracking-widest font-bold text-slate-400 text-right">Acciones</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -312,33 +313,33 @@ export const ProductsManager: React.FC<ProductsManagerProps> = ({ products, cate
                                                     type="text" 
                                                     value={inlineEditData?.name || ''} 
                                                     onChange={e => setInlineEditData({...inlineEditData, name: e.target.value})}
-                                                    className="w-full text-xs md:text-sm font-serif p-1.5 border border-gold outline-none"
+                                                    className="w-full text-[10px] md:text-xs font-serif p-1 border border-gold outline-none"
                                                     placeholder="Nombre del producto"
                                                 />
                                                 <input 
                                                     type="text" 
                                                     value={inlineEditData?.model_code || ''} 
                                                     onChange={e => setInlineEditData({...inlineEditData, model_code: e.target.value})}
-                                                    className="w-24 text-[9px] p-1.5 border border-gold outline-none"
+                                                    className="w-24 text-[8px] p-1 border border-gold outline-none"
                                                     placeholder="Código"
                                                 />
                                             </div>
                                         ) : (
-                                            <div className="space-y-1">
-                                                <p className="text-xs md:text-sm font-serif truncate max-w-[120px] md:max-w-none cursor-text hover:text-gold" onClick={() => handleInlineEditStart(prod)} title="Clic para editar rápido">{prod.name}</p>
+                                            <div className="space-y-0.5">
+                                                <p className="text-[10px] md:text-xs font-serif truncate max-w-[120px] md:max-w-none cursor-text hover:text-gold" onClick={() => handleInlineEditStart(prod)} title="Clic para editar rápido">{prod.name}</p>
                                                 <div className="flex flex-wrap gap-1 md:gap-2 items-center">
-                                                    <span className="text-[8px] md:text-[9px] text-slate-400 border border-slate-100 px-1 cursor-text hover:border-gold" onClick={() => handleInlineEditStart(prod)} title="Clic para editar rápido">{prod.model_code || 'S/M'}</span>
-                                                    <span className="md:hidden text-[8px] text-gold font-bold">{(prod as any).categories?.name}</span>
+                                                    <span className="text-[7px] md:text-[8px] text-slate-400 border border-slate-100 px-1 cursor-text hover:border-gold" onClick={() => handleInlineEditStart(prod)} title="Clic para editar rápido">{prod.model_code || 'S/M'}</span>
+                                                    <span className="md:hidden text-[7px] text-gold font-bold">{(prod as any).categories?.name}</span>
                                                 </div>
                                             </div>
                                         )}
                                     </td>
-                                    <td className="hidden md:table-cell px-8 py-4 text-xs">
+                                    <td className="hidden md:table-cell px-8 py-4 text-[9px]">
                                         {isInline ? (
                                             <select
                                                 value={inlineEditData?.category_id || ''}
                                                 onChange={e => setInlineEditData({...inlineEditData, category_id: e.target.value, subcategory: ''})}
-                                                className="w-full p-1.5 border border-gold outline-none text-xs"
+                                                className="w-full p-1 border border-gold outline-none text-[9px]"
                                             >
                                                 {categories.filter(c => !c.parent_id).map(c => (
                                                     <option key={c.id} value={c.id}>{c.name}</option>
@@ -348,7 +349,7 @@ export const ProductsManager: React.FC<ProductsManagerProps> = ({ products, cate
                                             <select
                                                 value={prod.category_id || ''}
                                                 onChange={e => handleQuickUpdate(prod, { category_id: e.target.value, subcategory: '' })}
-                                                className="w-full p-1.5 border border-transparent hover:border-slate-200 outline-none text-xs bg-transparent cursor-pointer"
+                                                className="w-full p-1 border border-transparent hover:border-slate-200 outline-none text-[9px] bg-transparent cursor-pointer"
                                                 title="Cambio rápido de categoría"
                                             >
                                                 {categories.filter(c => !c.parent_id).map(c => (
@@ -357,11 +358,45 @@ export const ProductsManager: React.FC<ProductsManagerProps> = ({ products, cate
                                             </select>
                                         )}
                                     </td>
+                                    <td className="hidden lg:table-cell px-8 py-4 text-[9px]">
+                                        {isInline ? (
+                                            <select
+                                                value={inlineEditData?.subcategory || ''}
+                                                onChange={e => setInlineEditData({...inlineEditData, subcategory: e.target.value})}
+                                                className="w-full p-1 border border-gold outline-none text-[9px]"
+                                                disabled={!inlineEditData?.category_id}
+                                            >
+                                                <option value="">Ninguna</option>
+                                                {categories
+                                                    .filter(c => c.parent_id === inlineEditData?.category_id)
+                                                    .map(c => (
+                                                        <option key={c.id} value={c.slug}>{c.name}</option>
+                                                    ))
+                                                }
+                                            </select>
+                                        ) : (
+                                            <select
+                                                value={prod.subcategory || ''}
+                                                onChange={e => handleQuickUpdate(prod, { subcategory: e.target.value })}
+                                                className="w-full p-1 border border-transparent hover:border-slate-200 outline-none text-[9px] bg-transparent cursor-pointer"
+                                                disabled={!prod.category_id}
+                                                title="Cambio rápido de subcategoría"
+                                            >
+                                                <option value="">Ninguna</option>
+                                                {categories
+                                                    .filter(c => c.parent_id === prod.category_id)
+                                                    .map(c => (
+                                                        <option key={c.id} value={c.slug}>{c.name}</option>
+                                                    ))
+                                                }
+                                            </select>
+                                        )}
+                                    </td>
                                     <td className="px-4 md:px-8 py-4 text-right">
                                         {isInline ? (
                                             <button 
                                                 onClick={() => setInlineEditData({...inlineEditData, is_active: inlineEditData?.is_active === false ? true : false})}
-                                                className={`text-[8px] font-bold px-2 py-1 rounded border uppercase tracking-tighter inline-block transition-colors ${inlineEditData?.is_active === false ? 'bg-red-50 text-red-500 border-red-100' : 'bg-green-50 text-green-500 border-green-100'}`}
+                                                className={`text-[7px] md:text-[8px] font-bold px-2 py-1 rounded border uppercase tracking-tighter inline-block transition-colors ${inlineEditData?.is_active === false ? 'bg-red-50 text-red-500 border-red-100' : 'bg-green-50 text-green-500 border-green-100'}`}
                                             >
                                                 {inlineEditData?.is_active === false ? 'OCULTO' : 'PÚBLICO'}
                                             </button>
