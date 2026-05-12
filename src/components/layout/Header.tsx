@@ -399,7 +399,7 @@ export const Header: React.FC<HeaderProps> = ({ variant = 'light' }) => {
                                                 <Link
                                                     to={item.path}
                                                     onClick={() => setIsMobileMenuOpen(false)}
-                                                    className="flex items-center gap-4 md:gap-6 w-full"
+                                                    className="flex items-center gap-4 md:gap-6 flex-1 min-w-0"
                                                 >
                                                     <div className={`flex-shrink-0 w-8 h-8 rounded-sm flex items-center justify-center transition-colors ${location.pathname === item.path ? 'bg-gold text-chocolate shadow-lg shadow-gold/20' : 'bg-white/10 text-gold/80'}`}>
                                                         <FontAwesomeIcon icon={item.icon} className="text-sm" />
@@ -412,10 +412,10 @@ export const Header: React.FC<HeaderProps> = ({ variant = 'light' }) => {
                                                 {item.hasMegamenu && (
                                                     <button
                                                         onClick={() => setIsMobileSubmenuOpen(!isMobileSubmenuOpen)}
-                                                        className={`w-10 h-10 transition-all duration-300 outline-none focus:outline-none focus:ring-0 active:bg-transparent ${isMobileSubmenuOpen ? 'rotate-180 text-gold' : 'text-gold/70'}`}
+                                                        className={`flex-shrink-0 w-12 h-12 flex items-center justify-end pr-2 transition-all duration-300 outline-none focus:outline-none focus:ring-0 active:bg-transparent ${isMobileSubmenuOpen ? 'rotate-180 text-gold' : 'text-gold/70'}`}
                                                         style={{ WebkitTapHighlightColor: 'transparent' }}
                                                     >
-                                                        <FontAwesomeIcon icon={faChevronDown} />
+                                                        <FontAwesomeIcon icon={faChevronDown} className="text-sm" />
                                                     </button>
                                                 )}
                                             </div>
