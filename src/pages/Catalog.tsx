@@ -10,7 +10,7 @@ import { RevealOnScroll } from '@/components/common/RevealOnScroll';
 import { trackSearch } from '@/services/cookieService';
 import { useConfig } from '@/context/ConfigContext';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSearch, faTimes, faFilePdf } from '@fortawesome/free-solid-svg-icons';
+import { faSearch, faTimes, faFilePdf, faChevronDown } from '@fortawesome/free-solid-svg-icons';
 import { CTABanner } from '@/components/common/CTABanner';
 import { ProductSkeleton } from '@/components/common/Skeleton';
 import { OrnamentalDivider } from '@/components/common/OrnamentalDivider';
@@ -203,74 +203,125 @@ const Catalog: React.FC = () => {
                     {/* CATEGORY NAV - Optimized for Scalability & Mobile */}
                     <RevealOnScroll direction="up" delay={0.5} className="space-y-6 pt-10">
                         <OrnamentalDivider className="!py-0 mb-10" />
-                        {/* Parent Categories - Horizontal Scroll on Mobile & Drag on PC */}
-                        <div className="flex items-center gap-4">
-                            <div
-                                ref={scrollRef}
-                                onMouseDown={handleMouseDown}
-                                onMouseLeave={handleMouseLeave}
-                                onMouseUp={handleMouseUp}
-                                onMouseMove={handleMouseMove}
-                                className={`overflow-x-auto pb-4 -mb-4 flex gap-3 no-scrollbar mask-fade-right w-full cursor-grab active:cursor-grabbing select-none pr-12 md:pr-32`}
-                            >
-                                <button
-                                    onClick={() => handleCategoryClick(null)}
-                                    className={`whitespace-nowrap text-[11px] uppercase tracking-[0.2em] px-8 py-3.5 border transition-all duration-300 font-medium flex-shrink-0 ${!selectedCategory ? 'bg-chocolate text-cream border-chocolate shadow-lg' : 'border-chocolate/10 text-chocolate/70 hover:border-chocolate/40 hover:text-chocolate'}`}
+                        {/* CATEGORY NAV - MOBILE SELECTS */}
+                        <div className="flex md:hidden flex-col gap-4">
+                            <div className="relative w-full">
+                                <select
+                                    value={selectedCategory || ''}
+                                    onChange={(e) => handleCategoryClick(e.target.value || null)}
+                                    className="w-full bg-transparent border border-gold/40 px-4 py-3.5 text-[11px] uppercase tracking-[0.2em] font-bold text-chocolate focus:outline-none focus:border-gold appearance-none"
                                 >
-                                    Todos
-                                </button>
-                                {categories.filter(c => !c.parent_id).map((cat) => (
-                                    <button
-                                        key={cat.id}
-                                        onClick={() => handleCategoryClick(cat.id)}
-                                        className={`whitespace-nowrap text-[11px] uppercase tracking-[0.2em] px-8 py-3.5 border transition-all duration-300 font-medium flex-shrink-0 ${selectedCategory === cat.id ? 'bg-chocolate text-cream border-chocolate shadow-lg' : 'border-chocolate/10 text-chocolate/70 hover:border-chocolate/40 hover:text-chocolate'}`}
-                                    >
-                                        {cat.name}
-                                    </button>
-                                ))}
-                                {/* Spacer for mask safety */}
-                                <div className="w-20 flex-shrink-0" />
+                                    <option value="">Todas las Categorías</option>
+                                    {categories.filter(c => !c.parent_id).map(cat => (
+                                        <option key={cat.id} value={cat.id}>{cat.name}</option>
+                                    ))}
+                                </select>
+                                <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-gold">
+                                    <FontAwesomeIcon icon={faChevronDown} className="text-xs" />
+                                </div>
                             </div>
+
+                            {selectedCategory && categories.some(c => c.parent_id === selectedCategory) && (
+                                <div className="relative w-full">
+                                    <select
+                                        value={selectedSubcategory || ''}
+                                        onChange={(e) => {
+                                            const subSlug = e.target.value;
+                                            setSelectedSubcategory(subSlug || null);
+                                            const cat = categories.find(c => c.id === selectedCategory);
+                                            if (cat) {
+                                                if (subSlug) {
+                                                    setSearchParams({ categoria: cat.slug, subcategoria: subSlug });
+                                                } else {
+                                                    setSearchParams({ categoria: cat.slug });
+                                                }
+                                            }
+                                        }}
+                                        className="w-full bg-gold/5 border border-gold/40 px-4 py-3 text-[10px] uppercase tracking-[0.2em] font-medium text-chocolate focus:outline-none focus:border-gold appearance-none"
+                                    >
+                                        <option value="">Ver todo de {categories.find(c => c.id === selectedCategory)?.name}</option>
+                                        {categories.filter(c => c.parent_id === selectedCategory).map(sub => (
+                                            <option key={sub.id} value={sub.slug}>{sub.name}</option>
+                                        ))}
+                                    </select>
+                                    <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-gold/70">
+                                        <FontAwesomeIcon icon={faChevronDown} className="text-xs" />
+                                    </div>
+                                </div>
+                            )}
                         </div>
 
-                        {/* Subcategories - Refined Chips (Only if parent selected) */}
-                        <AnimatePresence mode="wait">
-                            {selectedCategory && categories.some(c => c.parent_id === selectedCategory) && (
-                                <motion.div
-                                    initial={{ opacity: 0, y: -10 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    exit={{ opacity: 0, y: -10 }}
-                                    className="flex flex-wrap gap-2.5 pt-2"
+                        {/* CATEGORY NAV - DESKTOP CHIPS */}
+                        <div className="hidden md:flex flex-col gap-4">
+                            {/* Parent Categories - Drag on PC */}
+                            <div className="flex items-center gap-4">
+                                <div
+                                    ref={scrollRef}
+                                    onMouseDown={handleMouseDown}
+                                    onMouseLeave={handleMouseLeave}
+                                    onMouseUp={handleMouseUp}
+                                    onMouseMove={handleMouseMove}
+                                    className={`overflow-x-auto pb-4 -mb-4 flex gap-3 no-scrollbar mask-fade-right w-full cursor-grab active:cursor-grabbing select-none pr-12 md:pr-32`}
                                 >
                                     <button
-                                        onClick={() => {
-                                            setSelectedSubcategory(null);
-                                            const cat = categories.find(c => c.id === selectedCategory);
-                                            if (cat) setSearchParams({ categoria: cat.slug });
-                                        }}
-                                        className={`text-[10px] uppercase tracking-widest px-5 py-2 rounded-full border transition-all font-medium ${!selectedSubcategory ? 'bg-gold/15 border-gold text-chocolate shadow-sm' : 'border-chocolate/10 text-chocolate/50 hover:border-gold/30 hover:text-gold'}`}
+                                        onClick={() => handleCategoryClick(null)}
+                                        className={`whitespace-nowrap text-[11px] uppercase tracking-[0.2em] px-8 py-3.5 border transition-all duration-300 font-medium flex-shrink-0 ${!selectedCategory ? 'bg-chocolate text-cream border-chocolate shadow-lg' : 'border-chocolate/10 text-chocolate/70 hover:border-chocolate/40 hover:text-chocolate'}`}
                                     >
-                                        Ver Todo {categories.find(c => c.id === selectedCategory)?.name}
+                                        Todos
                                     </button>
-                                    {categories
-                                        .filter(c => c.parent_id === selectedCategory)
-                                        .map((sub) => (
-                                            <button
-                                                key={sub.id}
-                                                onClick={() => {
-                                                    setSelectedSubcategory(sub.slug);
-                                                    const cat = categories.find(c => c.id === selectedCategory);
-                                                    if (cat) setSearchParams({ categoria: cat.slug, subcategoria: sub.slug });
-                                                }}
-                                                className={`text-[10px] uppercase tracking-widest px-5 py-2 rounded-full border transition-all font-medium ${selectedSubcategory === sub.slug ? 'bg-gold/15 border-gold text-chocolate shadow-sm' : 'border-chocolate/10 text-chocolate/50 hover:border-gold/30 hover:text-gold'}`}
-                                            >
-                                                {sub.name}
-                                            </button>
-                                        ))
-                                    }
-                                </motion.div>
-                            )}
-                        </AnimatePresence>
+                                    {categories.filter(c => !c.parent_id).map((cat) => (
+                                        <button
+                                            key={cat.id}
+                                            onClick={() => handleCategoryClick(cat.id)}
+                                            className={`whitespace-nowrap text-[11px] uppercase tracking-[0.2em] px-8 py-3.5 border transition-all duration-300 font-medium flex-shrink-0 ${selectedCategory === cat.id ? 'bg-chocolate text-cream border-chocolate shadow-lg' : 'border-chocolate/10 text-chocolate/70 hover:border-chocolate/40 hover:text-chocolate'}`}
+                                        >
+                                            {cat.name}
+                                        </button>
+                                    ))}
+                                    {/* Spacer for mask safety */}
+                                    <div className="w-20 flex-shrink-0" />
+                                </div>
+                            </div>
+
+                            {/* Subcategories - Refined Chips (Only if parent selected) */}
+                            <AnimatePresence mode="wait">
+                                {selectedCategory && categories.some(c => c.parent_id === selectedCategory) && (
+                                    <motion.div
+                                        initial={{ opacity: 0, y: -10 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        exit={{ opacity: 0, y: -10 }}
+                                        className="flex flex-wrap gap-2.5 pt-2"
+                                    >
+                                        <button
+                                            onClick={() => {
+                                                setSelectedSubcategory(null);
+                                                const cat = categories.find(c => c.id === selectedCategory);
+                                                if (cat) setSearchParams({ categoria: cat.slug });
+                                            }}
+                                            className={`text-[10px] uppercase tracking-widest px-5 py-2 rounded-full border transition-all font-medium ${!selectedSubcategory ? 'bg-gold/15 border-gold text-chocolate shadow-sm' : 'border-chocolate/10 text-chocolate/50 hover:border-gold/30 hover:text-gold'}`}
+                                        >
+                                            Ver Todo {categories.find(c => c.id === selectedCategory)?.name}
+                                        </button>
+                                        {categories
+                                            .filter(c => c.parent_id === selectedCategory)
+                                            .map((sub) => (
+                                                <button
+                                                    key={sub.id}
+                                                    onClick={() => {
+                                                        setSelectedSubcategory(sub.slug);
+                                                        const cat = categories.find(c => c.id === selectedCategory);
+                                                        if (cat) setSearchParams({ categoria: cat.slug, subcategoria: sub.slug });
+                                                    }}
+                                                    className={`text-[10px] uppercase tracking-widest px-5 py-2 rounded-full border transition-all font-medium ${selectedSubcategory === sub.slug ? 'bg-gold/15 border-gold text-chocolate shadow-sm' : 'border-chocolate/10 text-chocolate/50 hover:border-gold/30 hover:text-gold'}`}
+                                                >
+                                                    {sub.name}
+                                                </button>
+                                            ))
+                                        }
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
+                        </div>
                     </RevealOnScroll>
                 </div>
 

@@ -36,7 +36,8 @@ export const CategoriesManager: React.FC<CategoriesManagerProps> = ({ categories
     const handleEdit = (category: Category) => {
         setEditingCategory({ ...category });
         setIsModalOpen(true);
-        setIsSlugCustomized(true);
+        // Solo marcar como personalizado si el slug actual es diferente al generado automáticamente
+        setIsSlugCustomized(category.slug !== generateSlug(category.name));
     };
 
     const handleDelete = async () => {
