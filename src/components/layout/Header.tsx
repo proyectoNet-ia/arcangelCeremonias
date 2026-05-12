@@ -429,15 +429,15 @@ export const Header: React.FC<HeaderProps> = ({ variant = 'light' }) => {
                                                         exit={{ height: 0, opacity: 0 }}
                                                         className="pl-6 flex flex-col overflow-hidden"
                                                     >
-                                                        <div className="ml-6 pl-5 border-l border-gold/20 py-2 flex flex-col gap-3 pb-4">
+                                                        <div className="ml-6 pl-5 border-l border-[#C5A059]/30 py-2 flex flex-col gap-3 pb-4">
                                                             {categories.map((cat) => (
                                                                 <div key={cat.id}>
                                                                     <Link
                                                                         to={`/catalogo?categoria=${cat.slug}`}
                                                                         onClick={() => setIsMobileMenuOpen(false)}
-                                                                        className="text-[10px] uppercase tracking-[0.25em] text-cream/80 hover:text-gold flex items-center gap-4 py-1.5 transition-all duration-300 font-medium group/sub"
+                                                                        className="text-[10px] uppercase tracking-[0.25em] text-cream opacity-80 hover:opacity-100 hover:text-gold flex items-center gap-4 py-1.5 transition-all duration-300 font-medium group/sub"
                                                                     >
-                                                                        <div className="w-1 h-1 flex-shrink-0 rounded-full bg-gold/40 group-hover/sub:bg-gold group-hover/sub:scale-150 transition-all duration-300" />
+                                                                        <div className="w-1 h-1 flex-shrink-0 rounded-full bg-[#C5A059]/50 group-hover/sub:bg-gold group-hover/sub:scale-150 transition-all duration-300" />
                                                                         <span className="group-hover/sub:translate-x-1 transition-transform duration-300">{cat.name}</span>
                                                                     </Link>
                                                                 </div>
