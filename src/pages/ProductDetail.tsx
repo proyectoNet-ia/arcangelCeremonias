@@ -559,7 +559,7 @@ const ProductDetail: React.FC = () => {
                                             })(), 
                                             icon: faTag 
                                         },
-                                        { label: 'Material', value: product.material || 'Organza Premium', icon: faLayerGroup },
+                                        { label: 'Material', value: product.material || 'Artesanía de Autor', icon: faAward },
                                         ...(product.includes ? [{ label: 'Incluye', value: product.includes, icon: faScissors, full: true }] : [])
                                     ].map((attr, i) => (
                                         <div

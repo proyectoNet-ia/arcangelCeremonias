@@ -102,7 +102,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, index }) => {
                     <div className="flex items-center gap-1.5 md:gap-2.5 text-chocolate/40 group-hover:text-chocolate/60 transition-colors duration-500">
                         <FontAwesomeIcon icon={faAward} className="text-[8px] md:text-[10px] text-gold/60 flex-shrink-0" />
                         <p className="text-[8px] md:text-[10px] uppercase tracking-[0.15em] md:tracking-[0.25em] font-medium truncate">
-                            {product.material || 'Artesanía de Autor'}
+                            {product.material ? `Material: ${product.material}` : 'Artesanía de Autor'}
                         </p>
                     </div>
 
