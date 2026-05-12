@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
-    faPlus, faTrash, faEdit, faTimes, faImage, faImages, faChevronLeft, faChevronRight, faCopy
+    faPlus, faTrash, faEdit, faTimes, faImage, faImages, faChevronLeft, faChevronRight, faCopy, faSort, faSortUp, faSortDown
 } from '@fortawesome/free-solid-svg-icons';
 import { productService } from '@/services/productService';
 import { Product, Category } from '@/types/product';
@@ -39,6 +39,49 @@ export const ProductsManager: React.FC<ProductsManagerProps> = ({ products, cate
     const [focusedField, setFocusedField] = useState<string | null>(null);
     const [colorSuggestions, setColorSuggestions] = useState<string[]>([]);
     const [showColorSuggestions, setShowColorSuggestions] = useState(false);
+    const [sortConfig, setSortConfig] = useState<{ key: 'name' | 'category' | 'status', direction: 'asc' | 'desc' } | null>(null);
+
+    const sortedProducts = React.useMemo(() => {
+        let sortableItems = [...products];
+        if (sortConfig !== null) {
+            sortableItems.sort((a, b) => {
+                let aValue: any = a[sortConfig.key as keyof Product] || '';
+                let bValue: any = b[sortConfig.key as keyof Product] || '';
+                
+                if (sortConfig.key === 'category') {
+                    aValue = (a as any).categories?.name || '';
+                    bValue = (b as any).categories?.name || '';
+                } else if (sortConfig.key === 'status') {
+                    aValue = a.is_active === false ? 0 : 1;
+                    bValue = b.is_active === false ? 0 : 1;
+                }
+
+                if (aValue < bValue) {
+                    return sortConfig.direction === 'asc' ? -1 : 1;
+                }
+                if (aValue > bValue) {
+                    return sortConfig.direction === 'asc' ? 1 : -1;
+                }
+                return 0;
+            });
+        }
+        return sortableItems;
+    }, [products, sortConfig]);
+
+    const requestSort = (key: 'name' | 'category' | 'status') => {
+        let direction: 'asc' | 'desc' = 'asc';
+        if (sortConfig && sortConfig.key === key && sortConfig.direction === 'asc') {
+            direction = 'desc';
+        }
+        setSortConfig({ key, direction });
+    };
+
+    const getSortIcon = (columnName: string) => {
+        if (!sortConfig || sortConfig.key !== columnName) {
+            return faSort;
+        }
+        return sortConfig.direction === 'asc' ? faSortUp : faSortDown;
+    };
 
     const getPriceDisplay = (val: number | undefined, fieldId: string) => {
         const num = val || 0;
@@ -181,13 +224,20 @@ export const ProductsManager: React.FC<ProductsManagerProps> = ({ products, cate
                         <thead className="bg-slate-50">
                             <tr>
                                 <th className="px-4 md:px-8 py-4 text-[10px] uppercase tracking-widest font-bold text-slate-400">Preview</th>
-                                <th className="px-4 md:px-8 py-4 text-[10px] uppercase tracking-widest font-bold text-slate-400">Información</th>
-                                <th className="hidden md:table-cell px-8 py-4 text-[10px] uppercase tracking-widest font-bold text-slate-400">Categoría</th>
+                                <th className="px-4 md:px-8 py-4 text-[10px] uppercase tracking-widest font-bold text-slate-400 cursor-pointer hover:text-chocolate transition-colors" onClick={() => requestSort('name')}>
+                                    Información <FontAwesomeIcon icon={getSortIcon('name')} className="ml-1" />
+                                </th>
+                                <th className="hidden md:table-cell px-8 py-4 text-[10px] uppercase tracking-widest font-bold text-slate-400 cursor-pointer hover:text-chocolate transition-colors" onClick={() => requestSort('category')}>
+                                    Categoría <FontAwesomeIcon icon={getSortIcon('category')} className="ml-1" />
+                                </th>
+                                <th className="px-4 md:px-8 py-4 text-[10px] uppercase tracking-widest font-bold text-slate-400 text-right cursor-pointer hover:text-chocolate transition-colors" onClick={() => requestSort('status')}>
+                                    Estado <FontAwesomeIcon icon={getSortIcon('status')} className="ml-1" />
+                                </th>
                                 <th className="px-4 md:px-8 py-4 text-[10px] uppercase tracking-widest font-bold text-slate-400 text-right">Acciones</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {products.map(prod => (
+                            {sortedProducts.map(prod => (
                                 <tr key={prod.id} className="border-b border-slate-100 hover:bg-slate-50/50 transition-colors group">
                                     <td className="px-4 md:px-8 py-4">
                                         <img src={prod.main_image} className="w-10 h-14 md:w-12 md:h-16 object-cover border border-slate-200 group-hover:scale-105 transition-transform" />
@@ -198,16 +248,17 @@ export const ProductsManager: React.FC<ProductsManagerProps> = ({ products, cate
                                             <div className="flex flex-wrap gap-1 md:gap-2 items-center">
                                                 <span className="text-[8px] md:text-[9px] text-slate-400 border border-slate-100 px-1">{prod.model_code || 'S/M'}</span>
                                                 <span className="md:hidden text-[8px] text-gold font-bold">{(prod as any).categories?.name}</span>
-                                                {prod.is_active === false && (
-                                                    <span className="text-[7px] md:text-[8px] bg-red-50 text-red-500 font-black px-1.5 py-0.5 rounded border border-red-100 animate-pulse">OCULTO</span>
-                                                )}
-                                                {prod.is_active !== false && (
-                                                    <span className="text-[7px] md:text-[8px] bg-green-50 text-green-500 font-bold px-1.5 py-0.5 rounded border border-green-100 uppercase tracking-tighter">Público</span>
-                                                )}
                                             </div>
                                         </div>
                                     </td>
                                     <td className="hidden md:table-cell px-8 py-4 text-xs">{(prod as any).categories?.name}</td>
+                                    <td className="px-4 md:px-8 py-4 text-right">
+                                        {prod.is_active === false ? (
+                                            <span className="text-[7px] md:text-[8px] bg-red-50 text-red-500 font-black px-2 py-1 rounded border border-red-100 uppercase inline-block">Oculto</span>
+                                        ) : (
+                                            <span className="text-[7px] md:text-[8px] bg-green-50 text-green-500 font-bold px-2 py-1 rounded border border-green-100 uppercase tracking-tighter inline-block">Público</span>
+                                        )}
+                                    </td>
                                     <td className="px-4 md:px-8 py-4">
                                         <div className="flex justify-end gap-2 md:gap-3">
                                             <button onClick={() => handleDuplicate(prod)} title="Duplicar Producto" className="p-2 border border-slate-100 hover:bg-blue-500 hover:text-white transition-all rounded shadow-sm">
