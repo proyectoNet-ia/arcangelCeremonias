@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
-    faPlus, faTrash, faEdit, faTimes, faImage, faImages, faChevronLeft, faChevronRight
+    faPlus, faTrash, faEdit, faTimes, faImage, faImages, faChevronLeft, faChevronRight, faCopy
 } from '@fortawesome/free-solid-svg-icons';
 import { productService } from '@/services/productService';
 import { Product, Category } from '@/types/product';
@@ -68,6 +68,22 @@ export const ProductsManager: React.FC<ProductsManagerProps> = ({ products, cate
         setIsModalOpen(true);
         setErrors({});
         setIsSlugCustomized(true);
+    };
+
+    const handleDuplicate = (product: Product) => {
+        const { id, created_at, categories, ...rest } = product as any;
+        const duplicatedName = `Copia de ${product.name}`;
+        
+        setEditingProduct({ 
+            ...rest, 
+            name: duplicatedName,
+            slug: generateSlug(duplicatedName),
+            main_image: '',
+            gallery: []
+        });
+        setIsModalOpen(true);
+        setErrors({});
+        setIsSlugCustomized(false);
     };
 
     const handleDelete = async () => {
@@ -194,10 +210,13 @@ export const ProductsManager: React.FC<ProductsManagerProps> = ({ products, cate
                                     <td className="hidden md:table-cell px-8 py-4 text-xs">{(prod as any).categories?.name}</td>
                                     <td className="px-4 md:px-8 py-4">
                                         <div className="flex justify-end gap-2 md:gap-3">
-                                            <button onClick={() => handleEdit(prod)} className="p-2 border border-slate-100 hover:bg-gold hover:text-white transition-all rounded shadow-sm">
+                                            <button onClick={() => handleDuplicate(prod)} title="Duplicar Producto" className="p-2 border border-slate-100 hover:bg-blue-500 hover:text-white transition-all rounded shadow-sm">
+                                                <FontAwesomeIcon icon={faCopy} className="text-[10px] md:text-xs" />
+                                            </button>
+                                            <button onClick={() => handleEdit(prod)} title="Editar Producto" className="p-2 border border-slate-100 hover:bg-gold hover:text-white transition-all rounded shadow-sm">
                                                 <FontAwesomeIcon icon={faEdit} className="text-[10px] md:text-xs" />
                                             </button>
-                                            <button onClick={() => setConfirmDelete({ isOpen: true, id: prod.id })} className="p-2 border border-slate-100 hover:bg-red-500 hover:text-white transition-all rounded shadow-sm">
+                                            <button onClick={() => setConfirmDelete({ isOpen: true, id: prod.id })} title="Eliminar Producto" className="p-2 border border-slate-100 hover:bg-red-500 hover:text-white transition-all rounded shadow-sm">
                                                 <FontAwesomeIcon icon={faTrash} className="text-[10px] md:text-xs" />
                                             </button>
                                         </div>
