@@ -361,7 +361,7 @@ export const Header: React.FC<HeaderProps> = ({ variant = 'light' }) => {
                                 animate={{ opacity: 1 }}
                                 exit={{ opacity: 0 }}
                                 onClick={() => setIsMobileMenuOpen(false)}
-                                className="fixed inset-0 bg-chocolate/40 backdrop-blur-sm z-[55] md:hidden"
+                                className="fixed inset-0 bg-chocolate/60 backdrop-blur-md z-[55] md:hidden"
                             />
 
                             {/* Main Drawer Panel */}
@@ -369,43 +369,42 @@ export const Header: React.FC<HeaderProps> = ({ variant = 'light' }) => {
                                 initial={{ x: '100%', opacity: 0 }}
                                 animate={{ x: 0, opacity: 1 }}
                                 exit={{ x: '100%', opacity: 0 }}
-                                transition={{ type: 'spring', damping: 30, stiffness: 200 }}
-                                className="fixed top-0 right-0 h-full w-[85%] max-w-sm bg-chocolate/95 backdrop-blur-3xl border-l border-gold/20 z-[60] md:hidden shadow-[-20px_0_50px_rgba(62,39,35,0.3)] flex flex-col overflow-y-auto"
+                                transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+                                className="fixed top-0 right-0 h-full w-[85%] max-w-sm bg-chocolate z-[60] md:hidden shadow-2xl flex flex-col overflow-y-auto"
                             >
                                 {/* Drawer Header */}
-                                <div className="flex justify-between items-center p-8 border-b border-gold/10 relative">
+                                <div className="flex justify-between items-center p-8 border-b border-gold/10">
                                     <div className="w-32">
                                         <Logo variant="dark" />
                                     </div>
                                     <button
                                         onClick={() => setIsMobileMenuOpen(false)}
-                                        className="w-10 h-10 flex items-center justify-center text-gold/70 hover:text-gold hover:rotate-90 transition-all duration-500"
+                                        className="w-10 h-10 flex items-center justify-center text-gold bg-white/5 rounded-full"
                                     >
-                                        <FontAwesomeIcon icon={faTimes} className="text-2xl font-light" />
+                                        <FontAwesomeIcon icon={faTimes} className="text-xl" />
                                     </button>
-                                    <div className="absolute bottom-0 left-8 right-8 h-[1px] bg-gradient-to-r from-transparent via-gold/30 to-transparent" />
                                 </div>
 
                                 {/* Navigation items with staggered animation */}
-                                <div className="flex-grow py-8 px-8 flex flex-col gap-1">
+                                <div className="flex-grow py-12 px-8 flex flex-col gap-2">
                                     {navItems.map((item, idx) => (
                                         <motion.div
                                             key={item.name}
                                             initial={{ opacity: 0, x: 20 }}
                                             animate={{ opacity: 1, x: 0 }}
-                                            transition={{ delay: 0.1 + idx * 0.08, ease: 'easeOut' }}
-                                            className="flex flex-col border-b border-gold/5 last:border-none"
+                                            transition={{ delay: 0.1 + idx * 0.08 }}
+                                            className="flex flex-col"
                                         >
-                                            <div className="flex items-center justify-between group py-5 relative overflow-hidden">
+                                            <div className="flex items-center justify-between group py-4">
                                                 <Link
                                                     to={item.path}
                                                     onClick={() => setIsMobileMenuOpen(false)}
-                                                    className="flex items-center gap-5 w-full relative z-10"
+                                                    className="flex items-center gap-4 md:gap-6 w-full"
                                                 >
-                                                    <div className={`flex-shrink-0 w-8 h-8 rounded-full border flex items-center justify-center transition-all duration-500 ${location.pathname === item.path ? 'border-gold/50 bg-gold/10 text-gold shadow-[0_0_15px_rgba(197,160,89,0.2)]' : 'border-gold/20 text-gold/60'}`}>
-                                                        <FontAwesomeIcon icon={item.icon} className="text-xs" />
+                                                    <div className={`flex-shrink-0 w-8 h-8 rounded-sm flex items-center justify-center transition-colors ${location.pathname === item.path ? 'bg-gold text-chocolate shadow-lg shadow-gold/20' : 'bg-white/10 text-gold/80'}`}>
+                                                        <FontAwesomeIcon icon={item.icon} className="text-sm" />
                                                     </div>
-                                                    <span className={`text-[12px] uppercase tracking-[0.3em] font-medium transition-all duration-500 ${location.pathname === item.path ? 'text-gold' : 'text-cream/90 group-hover:text-gold'}`}>
+                                                    <span className={`text-xs md:text-sm uppercase tracking-[0.3em] md:tracking-[0.4em] font-bold transition-all ${location.pathname === item.path ? 'text-gold' : 'text-cream group-hover:text-gold group-hover:translate-x-2'}`}>
                                                         {item.name}
                                                     </span>
                                                 </Link>
@@ -413,14 +412,11 @@ export const Header: React.FC<HeaderProps> = ({ variant = 'light' }) => {
                                                 {item.hasMegamenu && (
                                                     <button
                                                         onClick={() => setIsMobileSubmenuOpen(!isMobileSubmenuOpen)}
-                                                        className={`w-12 h-12 flex items-center justify-end transition-transform duration-500 relative z-10 ${isMobileSubmenuOpen ? 'rotate-180 text-gold' : 'text-gold/50 hover:text-gold'}`}
+                                                        className={`w-10 h-10 transition-transform duration-300 ${isMobileSubmenuOpen ? 'rotate-180 text-gold' : 'text-gold/50'}`}
                                                     >
-                                                        <FontAwesomeIcon icon={faChevronDown} className="text-sm font-light" />
+                                                        <FontAwesomeIcon icon={faChevronDown} />
                                                     </button>
                                                 )}
-                                                
-                                                {/* Hover accent */}
-                                                <div className="absolute inset-0 bg-gradient-to-r from-gold/[0.03] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                                             </div>
 
                                             {/* Submenu categories */}
@@ -430,24 +426,17 @@ export const Header: React.FC<HeaderProps> = ({ variant = 'light' }) => {
                                                         initial={{ height: 0, opacity: 0 }}
                                                         animate={{ height: 'auto', opacity: 1 }}
                                                         exit={{ height: 0, opacity: 0 }}
-                                                        transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-                                                        className="pl-[42px] flex flex-col overflow-hidden relative"
+                                                        className="pl-14 flex flex-col overflow-hidden"
                                                     >
-                                                        {/* Vertical connection line */}
-                                                        <div className="absolute left-[15px] top-0 bottom-4 w-[1px] bg-gold/10" />
-                                                        
-                                                        <div className="py-2 flex flex-col gap-5 pb-6 pt-2">
+                                                        <div className="py-2 flex flex-col gap-4">
                                                             {categories.map((cat) => (
-                                                                <div key={cat.id} className="relative">
-                                                                    {/* Horizontal connection branch */}
-                                                                    <div className="absolute -left-[27px] top-1/2 -translate-y-1/2 w-[18px] h-[1px] bg-gold/20" />
-                                                                    
+                                                                <div key={cat.id}>
                                                                     <Link
                                                                         to={`/catalogo?categoria=${cat.slug}`}
                                                                         onClick={() => setIsMobileMenuOpen(false)}
-                                                                        className="group/sub text-[11px] uppercase tracking-[0.25em] text-cream/70 hover:text-gold flex items-center gap-3 py-1 transition-colors font-medium relative z-10"
+                                                                        className="text-[11px] uppercase tracking-[0.2em] text-cream hover:text-gold flex items-center gap-3 py-1 transition-colors font-medium"
                                                                     >
-                                                                        <div className="w-1.5 h-1.5 rotate-45 border border-gold/40 group-hover/sub:bg-gold transition-all duration-300" />
+                                                                        <div className="w-1.5 h-1.5 rounded-full bg-gold/50" />
                                                                         {cat.name}
                                                                     </Link>
                                                                 </div>
@@ -461,11 +450,9 @@ export const Header: React.FC<HeaderProps> = ({ variant = 'light' }) => {
                                 </div>
 
                                 {/* Drawer Footer with enhanced info */}
-                                <div className="mt-auto bg-black/40 p-8 space-y-8 relative overflow-hidden border-t border-gold/20">
-                                    <div className="absolute -top-24 -right-24 w-48 h-48 bg-gold/5 rounded-full blur-3xl pointer-events-none" />
-                                    
-                                    <div className="space-y-5 relative z-10">
-                                        <p className="text-[9px] uppercase tracking-[0.4em] text-gold/80 font-bold border-b border-gold/20 pb-2 inline-block">Atención Personalizada</p>
+                                <div className="mt-auto bg-black/30 p-8 space-y-8">
+                                    <div className="space-y-4">
+                                        <p className="text-[10px] uppercase tracking-[0.3em] text-gold font-bold">Asesoría Directa</p>
                                         <a
                                             href={`https://wa.me/${whatsapp.replace(/\D/g, '')}?text=${encodeURIComponent("Hola me gustaría recibir más información de los productos")}`}
                                             target="_blank"
@@ -473,24 +460,24 @@ export const Header: React.FC<HeaderProps> = ({ variant = 'light' }) => {
                                             onClick={() => statsService.trackWhatsAppClick(window.location.href)}
                                             className="flex items-center gap-4 text-cream hover:text-gold transition-colors group"
                                         >
-                                            <div className="w-10 h-10 rounded-full border border-gold/20 bg-white/5 flex items-center justify-center group-hover:border-[#25D366]/50 group-hover:bg-[#25D366]/20 group-hover:text-white transition-all duration-500">
-                                                <FontAwesomeIcon icon={faWhatsapp} className="text-gold/80 group-hover:text-[#25D366]" />
+                                            <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center group-hover:bg-[#25D366]/30 group-hover:text-white transition-all">
+                                                <FontAwesomeIcon icon={faWhatsapp} className="text-gold/80 group-hover:text-white" />
                                             </div>
-                                            <span className="text-[11px] uppercase tracking-widest font-medium whitespace-nowrap">Whatsapp</span>
+                                            <span className="text-[12px] font-medium tracking-tight whitespace-nowrap">Ventas: {whatsapp.replace(/(\d{2})(\d{3})(\d{3})(\d{4})/, '+$1 $2 $3 $4')}</span>
                                         </a>
                                         <a href={`tel:${phone.replace(/\s+/g, '')}`} className="flex items-center gap-4 text-cream hover:text-gold transition-colors group">
-                                            <div className="w-10 h-10 rounded-full border border-gold/20 bg-white/5 flex items-center justify-center group-hover:border-gold/50 group-hover:bg-gold/20 group-hover:text-white transition-all duration-500">
-                                                <FontAwesomeIcon icon={faPhone} className="text-gold/80 group-hover:text-gold" />
+                                            <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center group-hover:bg-gold/30 group-hover:text-white transition-all">
+                                                <FontAwesomeIcon icon={faPhone} className="text-gold/80 group-hover:text-white" />
                                             </div>
-                                            <span className="text-[11px] uppercase tracking-widest font-medium">Llamada Directa</span>
+                                            <span className="text-[12px] font-medium tracking-tight">Oficina: {phone}</span>
                                         </a>
                                     </div>
 
-                                    <div className="flex gap-4 pt-6 border-t border-white/5 relative z-10">
-                                        <a href={facebook} target="_blank" rel="noopener noreferrer" className="w-12 h-12 flex items-center justify-center border border-gold/20 bg-white/5 text-gold rounded-full hover:text-white hover:bg-gold hover:border-gold transition-all duration-500 hover:scale-110">
+                                    <div className="flex gap-4 pt-4 border-t border-white/10">
+                                        <a href={facebook} target="_blank" rel="noopener noreferrer" className="w-10 h-10 flex items-center justify-center bg-white/10 text-gold rounded-lg hover:text-white hover:bg-gold transition-all">
                                             <FontAwesomeIcon icon={faFacebook} className="text-lg" />
                                         </a>
-                                        <a href={instagram} target="_blank" rel="noopener noreferrer" className="w-12 h-12 flex items-center justify-center border border-gold/20 bg-white/5 text-gold rounded-full hover:text-white hover:bg-gold hover:border-gold transition-all duration-500 hover:scale-110">
+                                        <a href={instagram} target="_blank" rel="noopener noreferrer" className="w-10 h-10 flex items-center justify-center bg-white/10 text-gold rounded-lg hover:text-white hover:bg-gold transition-all">
                                             <FontAwesomeIcon icon={faInstagram} className="text-lg" />
                                         </a>
                                     </div>
