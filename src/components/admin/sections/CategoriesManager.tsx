@@ -33,6 +33,7 @@ export const CategoriesManager: React.FC<CategoriesManagerProps> = ({ categories
         id: null
     });
 
+    const [activeTab, setActiveTab] = useState<'parents' | 'subs'>('parents');
     const [searchTerm, setSearchTerm] = useState('');
     const [sortConfig, setSortConfig] = useState<{ key: string, direction: 'asc' | 'desc' } | null>(null);
     const [currentPage, setCurrentPage] = useState(1);
@@ -41,7 +42,14 @@ export const CategoriesManager: React.FC<CategoriesManagerProps> = ({ categories
     const sortedCategories = React.useMemo(() => {
         let sortableItems = [...categories];
         
-        // Filter
+        // Filter by Tab
+        if (activeTab === 'parents') {
+            sortableItems = sortableItems.filter(c => !c.parent_id);
+        } else {
+            sortableItems = sortableItems.filter(c => c.parent_id);
+        }
+
+        // Filter by Search
         if (searchTerm) {
             const lower = searchTerm.toLowerCase();
             sortableItems = sortableItems.filter(c => 
@@ -74,7 +82,7 @@ export const CategoriesManager: React.FC<CategoriesManagerProps> = ({ categories
 
     React.useEffect(() => {
         setCurrentPage(1);
-    }, [searchTerm, sortConfig]);
+    }, [searchTerm, sortConfig, activeTab]);
 
     const requestSort = (key: string) => {
         let direction: 'asc' | 'desc' = 'asc';
@@ -201,6 +209,21 @@ export const CategoriesManager: React.FC<CategoriesManagerProps> = ({ categories
                         + Nueva Categoría
                     </button>
                 </div>
+            </div>
+
+            <div className="flex border-b border-slate-200">
+                <button
+                    onClick={() => setActiveTab('parents')}
+                    className={`px-8 py-4 text-[10px] uppercase tracking-[0.2em] font-bold transition-all border-b-2 ${activeTab === 'parents' ? 'border-gold text-chocolate bg-gold/5' : 'border-transparent text-slate-400 hover:text-chocolate'}`}
+                >
+                    Categorías Principales
+                </button>
+                <button
+                    onClick={() => setActiveTab('subs')}
+                    className={`px-8 py-4 text-[10px] uppercase tracking-[0.2em] font-bold transition-all border-b-2 ${activeTab === 'subs' ? 'border-gold text-chocolate bg-gold/5' : 'border-transparent text-slate-400 hover:text-chocolate'}`}
+                >
+                    Subcategorías
+                </button>
             </div>
 
             {paginationUI}
