@@ -436,7 +436,7 @@ export const Header: React.FC<HeaderProps> = ({ variant = 'light' }) => {
                                                                         onClick={() => setIsMobileMenuOpen(false)}
                                                                         className="text-[11px] uppercase tracking-[0.2em] text-cream hover:text-gold flex items-center gap-3 py-1 transition-colors font-medium"
                                                                     >
-                                                                        <div className="w-1.5 h-1.5 rounded-full bg-gold/50" />
+                                                                        <div className="w-1.5 h-1.5 flex-shrink-0 rounded-full bg-gold" />
                                                                         {cat.name}
                                                                     </Link>
                                                                 </div>
