@@ -233,87 +233,91 @@ export const MediaGallery: React.FC<MediaGalleryProps> = ({ onSelect, allowSelec
     return (
         <div className="space-y-8 min-h-[600px] flex flex-col">
             {/* Toolbar */}
-            <div className="flex flex-col lg:flex-row items-center justify-between gap-6 bg-white p-6 border border-slate-200">
-                {/* Search Bar */}
-                <div className="w-full lg:max-w-md">
-                    <div className="relative">
+            {/* Toolbar - New Organized Layout */}
+            <div className="space-y-4">
+                {/* Main Actions Row */}
+                <div className="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-4 bg-white p-4 md:p-6 border border-slate-200 shadow-sm">
+                    {/* Search Bar */}
+                    <div className="relative flex-grow max-w-xl">
                         <FontAwesomeIcon icon={faSearch} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 text-xs" />
                         <input
                             type="text"
                             placeholder="Buscar por nombre..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
-                            className="w-full pl-10 pr-4 py-3 border border-slate-100 focus:border-gold outline-none text-xs"
+                            className="w-full pl-10 pr-4 py-4 border border-slate-100 focus:border-gold outline-none text-xs bg-slate-50/50"
                         />
                     </div>
-                </div>
 
-                {/* Sort Bar */}
-                <div className="flex items-center gap-2 bg-slate-50 p-1 border border-slate-100">
-                    <span className="text-[8px] uppercase font-black text-slate-400 px-2">Ordenar por:</span>
-                    {[
-                        { key: 'name', label: 'Nombre' },
-                        { key: 'size', label: 'Tamaño' },
-                        { key: 'date', label: 'Fecha' }
-                    ].map(opt => (
+                    <div className="flex items-center gap-4">
                         <button
-                            key={opt.key}
-                            onClick={() => requestSort(opt.key)}
-                            className={`px-3 py-1.5 text-[9px] uppercase font-bold tracking-widest transition-all ${sortConfig?.key === opt.key ? 'bg-white text-gold shadow-sm' : 'text-slate-400 hover:text-chocolate'}`}
+                            onClick={loadMedia}
+                            className="p-4 text-slate-400 hover:text-gold transition-colors border border-slate-100 bg-slate-50/30"
+                            title="Actualizar Galería"
                         >
-                            {opt.label}
-                            {sortConfig?.key === opt.key && (
-                                <FontAwesomeIcon icon={sortConfig.direction === 'asc' ? faSort : faSortAmountDown} className="ml-1.5" />
-                            )}
+                            <FontAwesomeIcon icon={faSync} className={loading ? 'animate-spin' : ''} />
                         </button>
-                    ))}
-                </div>
-
-                {/* View Switcher */}
-                <div className="flex bg-slate-100 p-1 border border-slate-200">
-                    <button
-                        onClick={() => setViewType('grid')}
-                        className={`px-4 py-2 text-xs transition-all ${viewType === 'grid' ? 'bg-white text-gold shadow-sm' : 'text-slate-400 hover:text-chocolate'}`}
-                        title="Vista Cuadrícula"
-                    >
-                        <FontAwesomeIcon icon={faTh} />
-                    </button>
-                    <button
-                        onClick={() => setViewType('list')}
-                        className={`px-4 py-2 text-xs transition-all ${viewType === 'list' ? 'bg-white text-gold shadow-sm' : 'text-slate-400 hover:text-chocolate'}`}
-                        title="Vista Detallada"
-                    >
-                        <FontAwesomeIcon icon={faList} />
-                    </button>
-                </div>
-
-                {/* Actions & Categories Wrapper */}
-                <div className="w-full lg:w-auto flex flex-col md:flex-row items-center gap-6">
-                    <div className="w-full md:w-auto flex items-center justify-between gap-4">
-                        {/* Botón de Carga */}
-                        <label className={`flex-grow md:flex-grow-0 flex items-center justify-center gap-2 px-6 py-3 bg-chocolate text-gold text-[10px] font-bold uppercase tracking-widest cursor-pointer hover:bg-gold hover:text-chocolate transition-all shadow-lg ${uploading ? 'opacity-50 pointer-events-none' : ''}`}>
+                        
+                        <label className={`flex-grow lg:flex-grow-0 flex items-center justify-center gap-3 px-8 py-4 bg-chocolate text-gold text-[10px] font-bold uppercase tracking-[0.2em] cursor-pointer hover:bg-gold hover:text-chocolate transition-all shadow-xl active:scale-95 ${uploading ? 'opacity-50 pointer-events-none' : ''}`}>
                             <FontAwesomeIcon icon={uploading ? faSync : faImage} className={uploading ? 'animate-spin' : ''} />
                             {uploading ? 'Subiendo...' : 'Subir Archivo'}
                             <input type="file" className="hidden" onChange={handleUpload} accept={ALL_ALLOWED_FORMATS.join(',')} multiple />
                         </label>
+                    </div>
+                </div>
 
-                        <button
-                            onClick={loadMedia}
-                            className="p-3 text-slate-400 hover:text-gold transition-colors block lg:hidden"
-                            title="Actualizar"
-                        >
-                            <FontAwesomeIcon icon={faSync} className={loading ? 'animate-spin' : ''} />
-                        </button>
+                {/* Filters & Display Row */}
+                <div className="flex flex-col xl:flex-row items-stretch xl:items-center justify-between gap-4 bg-white p-3 md:p-4 border border-slate-200">
+                    <div className="flex flex-wrap items-center gap-4">
+                        {/* Sort Bar */}
+                        <div className="flex items-center gap-1 bg-slate-50 p-1 border border-slate-100 rounded">
+                            <span className="text-[8px] uppercase font-black text-slate-400 px-3 py-1">Ordenar:</span>
+                            {[
+                                { key: 'name', label: 'Nombre' },
+                                { key: 'size', label: 'Tamaño' },
+                                { key: 'date', label: 'Fecha' }
+                            ].map(opt => (
+                                <button
+                                    key={opt.key}
+                                    onClick={() => requestSort(opt.key)}
+                                    className={`px-4 py-2 text-[9px] uppercase font-bold tracking-widest transition-all rounded ${sortConfig?.key === opt.key ? 'bg-white text-gold shadow-sm ring-1 ring-gold/10' : 'text-slate-400 hover:text-chocolate'}`}
+                                >
+                                    {opt.label}
+                                    {sortConfig?.key === opt.key && (
+                                        <FontAwesomeIcon icon={sortConfig.direction === 'asc' ? faSort : faSortAmountDown} className="ml-2" />
+                                    )}
+                                </button>
+                            ))}
+                        </div>
+
+                        {/* View Switcher */}
+                        <div className="flex bg-slate-50 p-1 border border-slate-100 rounded">
+                            <button
+                                onClick={() => setViewType('grid')}
+                                className={`px-4 py-2 text-xs transition-all rounded ${viewType === 'grid' ? 'bg-white text-gold shadow-sm ring-1 ring-gold/10' : 'text-slate-400 hover:text-chocolate'}`}
+                                title="Vista Cuadrícula"
+                            >
+                                <FontAwesomeIcon icon={faTh} />
+                            </button>
+                            <button
+                                onClick={() => setViewType('list')}
+                                className={`px-4 py-2 text-xs transition-all rounded ${viewType === 'list' ? 'bg-white text-gold shadow-sm ring-1 ring-gold/10' : 'text-slate-400 hover:text-chocolate'}`}
+                                title="Vista Detallada"
+                            >
+                                <FontAwesomeIcon icon={faList} />
+                            </button>
+                        </div>
                     </div>
 
-                    {/* Categorías (Scrollable) */}
-                    <div className="w-full md:w-auto flex bg-slate-50 p-1 overflow-x-auto no-scrollbar border border-slate-100">
+                    {/* Categorías / Carpetas */}
+                    <div className="flex items-center gap-2 bg-slate-50 p-1 overflow-x-auto no-scrollbar border border-slate-100 rounded">
+                        <span className="text-[8px] uppercase font-black text-slate-400 px-3 hidden sm:block">Filtro:</span>
                         {folders.map(folder => (
                             <button
                                 key={folder}
                                 onClick={() => setFilterFolder(folder)}
-                                className={`flex-shrink-0 px-4 py-2 text-[10px] uppercase font-bold tracking-widest transition-all ${filterFolder === folder
-                                    ? 'bg-white text-gold shadow-sm'
+                                className={`flex-shrink-0 px-4 py-2 text-[10px] uppercase font-bold tracking-widest transition-all rounded ${filterFolder === folder
+                                    ? 'bg-white text-gold shadow-sm ring-1 ring-gold/10'
                                     : 'text-slate-400 hover:text-chocolate'
                                     }`}
                             >
@@ -321,14 +325,6 @@ export const MediaGallery: React.FC<MediaGalleryProps> = ({ onSelect, allowSelec
                             </button>
                         ))}
                     </div>
-
-                    <button
-                        onClick={loadMedia}
-                        className="hidden lg:block p-3 text-slate-400 hover:text-gold transition-colors"
-                        title="Actualizar"
-                    >
-                        <FontAwesomeIcon icon={faSync} className={loading ? 'animate-spin' : ''} />
-                    </button>
                 </div>
             </div>
 
