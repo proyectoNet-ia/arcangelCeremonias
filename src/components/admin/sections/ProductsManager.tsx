@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
-    faPlus, faTrash, faEdit, faTimes, faImage, faImages, faChevronLeft, faChevronRight, faCopy, faSort, faSortUp, faSortDown, faSearch
+    faPlus, faTrash, faEdit, faTimes, faImage, faImages, faChevronLeft, faChevronRight, faCopy, faSort, faSortUp, faSortDown, faSearch, faCheck
 } from '@fortawesome/free-solid-svg-icons';
 import { productService } from '@/services/productService';
 import { Product, Category } from '@/types/product';
@@ -41,6 +41,9 @@ export const ProductsManager: React.FC<ProductsManagerProps> = ({ products, cate
     const [showColorSuggestions, setShowColorSuggestions] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
     const [sortConfig, setSortConfig] = useState<{ key: 'name' | 'category' | 'status', direction: 'asc' | 'desc' } | null>(null);
+    const [inlineEditId, setInlineEditId] = useState<string | null>(null);
+    const [inlineEditData, setInlineEditData] = useState<Partial<Product> | null>(null);
+    const [isSavingInline, setIsSavingInline] = useState(false);
 
     const sortedProducts = React.useMemo(() => {
         let sortableItems = [...products];
@@ -139,6 +142,27 @@ export const ProductsManager: React.FC<ProductsManagerProps> = ({ products, cate
         setIsModalOpen(true);
         setErrors({});
         setIsSlugCustomized(false);
+    };
+
+    const handleInlineEditStart = (product: Product) => {
+        setInlineEditId(product.id || null);
+        setInlineEditData({ ...product });
+    };
+
+    const handleInlineSave = async () => {
+        if (!inlineEditData || !inlineEditId) return;
+        setIsSavingInline(true);
+        try {
+            const { categories: _, created_at: __, ...productData } = inlineEditData as any;
+            await productService.upsertProduct(productData);
+            toast.success('Cambios rápidos guardados');
+            setInlineEditId(null);
+            refresh();
+        } catch (error) {
+            toast.error('Error al guardar cambios');
+        } finally {
+            setIsSavingInline(false);
+        }
     };
 
     const handleDelete = async () => {
@@ -263,43 +287,97 @@ export const ProductsManager: React.FC<ProductsManagerProps> = ({ products, cate
                             </tr>
                         </thead>
                         <tbody>
-                            {sortedProducts.map(prod => (
-                                <tr key={prod.id} className="border-b border-slate-100 hover:bg-slate-50/50 transition-colors group">
+                            {sortedProducts.map(prod => {
+                                const isInline = inlineEditId === prod.id;
+                                return (
+                                <tr key={prod.id} className={`border-b border-slate-100 hover:bg-slate-50/50 transition-colors ${isInline ? 'bg-gold/5' : 'group'}`}>
                                     <td className="px-4 md:px-8 py-4">
                                         <img src={prod.main_image} className="w-10 h-14 md:w-12 md:h-16 object-cover border border-slate-200 group-hover:scale-105 transition-transform" />
                                     </td>
                                     <td className="px-4 md:px-8 py-4">
-                                        <div className="space-y-1">
-                                            <p className="text-xs md:text-sm font-serif truncate max-w-[120px] md:max-w-none">{prod.name}</p>
-                                            <div className="flex flex-wrap gap-1 md:gap-2 items-center">
-                                                <span className="text-[8px] md:text-[9px] text-slate-400 border border-slate-100 px-1">{prod.model_code || 'S/M'}</span>
-                                                <span className="md:hidden text-[8px] text-gold font-bold">{(prod as any).categories?.name}</span>
+                                        {isInline ? (
+                                            <div className="space-y-2">
+                                                <input 
+                                                    type="text" 
+                                                    value={inlineEditData?.name || ''} 
+                                                    onChange={e => setInlineEditData({...inlineEditData, name: e.target.value})}
+                                                    className="w-full text-xs md:text-sm font-serif p-1.5 border border-gold outline-none"
+                                                    placeholder="Nombre del producto"
+                                                />
+                                                <input 
+                                                    type="text" 
+                                                    value={inlineEditData?.model_code || ''} 
+                                                    onChange={e => setInlineEditData({...inlineEditData, model_code: e.target.value})}
+                                                    className="w-24 text-[9px] p-1.5 border border-gold outline-none"
+                                                    placeholder="Código"
+                                                />
                                             </div>
-                                        </div>
-                                    </td>
-                                    <td className="hidden md:table-cell px-8 py-4 text-xs">{(prod as any).categories?.name}</td>
-                                    <td className="px-4 md:px-8 py-4 text-right">
-                                        {prod.is_active === false ? (
-                                            <span className="text-[7px] md:text-[8px] bg-red-50 text-red-500 font-black px-2 py-1 rounded border border-red-100 uppercase inline-block">Oculto</span>
                                         ) : (
-                                            <span className="text-[7px] md:text-[8px] bg-green-50 text-green-500 font-bold px-2 py-1 rounded border border-green-100 uppercase tracking-tighter inline-block">Público</span>
+                                            <div className="space-y-1">
+                                                <p className="text-xs md:text-sm font-serif truncate max-w-[120px] md:max-w-none cursor-text hover:text-gold" onClick={() => handleInlineEditStart(prod)} title="Clic para editar rápido">{prod.name}</p>
+                                                <div className="flex flex-wrap gap-1 md:gap-2 items-center">
+                                                    <span className="text-[8px] md:text-[9px] text-slate-400 border border-slate-100 px-1 cursor-text hover:border-gold" onClick={() => handleInlineEditStart(prod)} title="Clic para editar rápido">{prod.model_code || 'S/M'}</span>
+                                                    <span className="md:hidden text-[8px] text-gold font-bold">{(prod as any).categories?.name}</span>
+                                                </div>
+                                            </div>
+                                        )}
+                                    </td>
+                                    <td className="hidden md:table-cell px-8 py-4 text-xs">
+                                        {isInline ? (
+                                            <select
+                                                value={inlineEditData?.category_id || ''}
+                                                onChange={e => setInlineEditData({...inlineEditData, category_id: e.target.value, subcategory: ''})}
+                                                className="w-full p-1.5 border border-gold outline-none text-xs"
+                                            >
+                                                {categories.filter(c => !c.parent_id).map(c => (
+                                                    <option key={c.id} value={c.id}>{c.name}</option>
+                                                ))}
+                                            </select>
+                                        ) : (
+                                            <span className="cursor-text hover:text-gold" onClick={() => handleInlineEditStart(prod)} title="Clic para editar rápido">{(prod as any).categories?.name}</span>
+                                        )}
+                                    </td>
+                                    <td className="px-4 md:px-8 py-4 text-right">
+                                        {isInline ? (
+                                            <button 
+                                                onClick={() => setInlineEditData({...inlineEditData, is_active: inlineEditData?.is_active === false ? true : false})}
+                                                className={`text-[8px] font-bold px-2 py-1 rounded border uppercase tracking-tighter inline-block transition-colors ${inlineEditData?.is_active === false ? 'bg-red-50 text-red-500 border-red-100' : 'bg-green-50 text-green-500 border-green-100'}`}
+                                            >
+                                                {inlineEditData?.is_active === false ? 'OCULTO' : 'PÚBLICO'}
+                                            </button>
+                                        ) : (
+                                            <span onClick={() => handleInlineEditStart(prod)} className={`cursor-pointer text-[7px] md:text-[8px] font-bold px-2 py-1 rounded border uppercase inline-block ${prod.is_active === false ? 'bg-red-50 text-red-500 border-red-100' : 'bg-green-50 text-green-500 border-green-100 tracking-tighter'}`} title="Clic para cambiar estado">
+                                                {prod.is_active === false ? 'Oculto' : 'Público'}
+                                            </span>
                                         )}
                                     </td>
                                     <td className="px-4 md:px-8 py-4">
-                                        <div className="flex justify-end gap-2 md:gap-3">
-                                            <button onClick={() => handleDuplicate(prod)} title="Duplicar Producto" className="p-2 border border-slate-100 hover:bg-blue-500 hover:text-white transition-all rounded shadow-sm">
-                                                <FontAwesomeIcon icon={faCopy} className="text-[10px] md:text-xs" />
-                                            </button>
-                                            <button onClick={() => handleEdit(prod)} title="Editar Producto" className="p-2 border border-slate-100 hover:bg-gold hover:text-white transition-all rounded shadow-sm">
-                                                <FontAwesomeIcon icon={faEdit} className="text-[10px] md:text-xs" />
-                                            </button>
-                                            <button onClick={() => setConfirmDelete({ isOpen: true, id: prod.id })} title="Eliminar Producto" className="p-2 border border-slate-100 hover:bg-red-500 hover:text-white transition-all rounded shadow-sm">
-                                                <FontAwesomeIcon icon={faTrash} className="text-[10px] md:text-xs" />
-                                            </button>
-                                        </div>
+                                        {isInline ? (
+                                            <div className="flex justify-end gap-2 md:gap-3">
+                                                <button onClick={() => setInlineEditId(null)} title="Cancelar" className="p-2 border border-slate-100 hover:bg-slate-200 text-slate-500 transition-all rounded shadow-sm">
+                                                    <FontAwesomeIcon icon={faTimes} className="text-[10px] md:text-xs" />
+                                                </button>
+                                                <button onClick={handleInlineSave} disabled={isSavingInline} title="Guardar Cambios Rápidos" className="p-2 border border-green-500 bg-green-500 text-white hover:bg-green-600 transition-all rounded shadow-sm">
+                                                    <FontAwesomeIcon icon={faCheck} className={`text-[10px] md:text-xs ${isSavingInline ? 'animate-pulse' : ''}`} />
+                                                </button>
+                                            </div>
+                                        ) : (
+                                            <div className="flex justify-end gap-2 md:gap-3">
+                                                <button onClick={() => handleDuplicate(prod)} title="Duplicar Producto" className="p-2 border border-slate-100 hover:bg-blue-500 hover:text-white transition-all rounded shadow-sm">
+                                                    <FontAwesomeIcon icon={faCopy} className="text-[10px] md:text-xs" />
+                                                </button>
+                                                <button onClick={() => handleEdit(prod)} title="Editar Producto (Avanzado)" className="p-2 border border-slate-100 hover:bg-gold hover:text-white transition-all rounded shadow-sm">
+                                                    <FontAwesomeIcon icon={faEdit} className="text-[10px] md:text-xs" />
+                                                </button>
+                                                <button onClick={() => setConfirmDelete({ isOpen: true, id: prod.id })} title="Eliminar Producto" className="p-2 border border-slate-100 hover:bg-red-500 hover:text-white transition-all rounded shadow-sm">
+                                                    <FontAwesomeIcon icon={faTrash} className="text-[10px] md:text-xs" />
+                                                </button>
+                                            </div>
+                                        )}
                                     </td>
                                 </tr>
-                            ))}
+                                );
+                            })}
                         </tbody>
                     </table>
                 </div>
