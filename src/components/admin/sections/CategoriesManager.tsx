@@ -71,7 +71,7 @@ export const CategoriesManager: React.FC<CategoriesManagerProps> = ({ categories
             });
         }
         return sortableItems;
-    }, [categories, sortConfig, searchTerm]);
+    }, [categories, sortConfig, searchTerm, activeTab]);
 
     const paginatedCategories = React.useMemo(() => {
         const startIndex = (currentPage - 1) * itemsPerPage;
