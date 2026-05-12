@@ -96,6 +96,47 @@ export const ProductsManager: React.FC<ProductsManagerProps> = ({ products, cate
         setCurrentPage(1);
     }, [searchTerm, sortConfig]);
 
+    const paginationUI = totalPages > 1 ? (
+        <div className="flex flex-col sm:flex-row justify-between items-center gap-4 bg-white p-4 border border-slate-200">
+            <p className="text-[10px] uppercase tracking-widest font-bold text-slate-400">
+                Mostrando {Math.min(sortedProducts.length, (currentPage - 1) * itemsPerPage + 1)}-{Math.min(sortedProducts.length, currentPage * itemsPerPage)} de {sortedProducts.length} productos
+            </p>
+            <div className="flex items-center gap-2">
+                <button
+                    onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                    disabled={currentPage === 1}
+                    className="px-4 py-2 border border-slate-200 text-[10px] uppercase font-bold tracking-widest hover:bg-slate-50 disabled:opacity-30 transition-colors"
+                >
+                    <FontAwesomeIcon icon={faChevronLeft} className="mr-2" />
+                    Anterior
+                </button>
+                <div className="flex gap-1">
+                    {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
+                        <button
+                            key={page}
+                            onClick={() => setCurrentPage(page)}
+                            className={`w-8 h-8 flex items-center justify-center text-[10px] font-bold border transition-colors ${
+                                currentPage === page 
+                                ? 'bg-gold text-chocolate border-gold' 
+                                : 'border-slate-200 text-slate-400 hover:bg-slate-50'
+                            }`}
+                        >
+                            {page}
+                        </button>
+                    ))}
+                </div>
+                <button
+                    onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                    disabled={currentPage === totalPages}
+                    className="px-4 py-2 border border-slate-200 text-[10px] uppercase font-bold tracking-widest hover:bg-slate-50 disabled:opacity-30 transition-colors"
+                >
+                    Siguiente
+                    <FontAwesomeIcon icon={faChevronRight} className="ml-2" />
+                </button>
+            </div>
+        </div>
+    ) : null;
+
     const requestSort = (key: 'name' | 'category' | 'status') => {
         let direction: 'asc' | 'desc' = 'asc';
         if (sortConfig && sortConfig.key === key && sortConfig.direction === 'asc') {
@@ -292,6 +333,8 @@ export const ProductsManager: React.FC<ProductsManagerProps> = ({ products, cate
                 </div>
             </div>
 
+            {paginationUI}
+
             <div className="bg-white border border-slate-200 overflow-hidden shadow-sm">
                 <div className="overflow-x-auto">
                     <table className="w-full text-left border-collapse">
@@ -455,46 +498,7 @@ export const ProductsManager: React.FC<ProductsManagerProps> = ({ products, cate
                 </div>
             </div>
 
-            {totalPages > 1 && (
-                <div className="flex flex-col sm:flex-row justify-between items-center gap-4 bg-white p-4 border border-slate-200">
-                    <p className="text-[10px] uppercase tracking-widest font-bold text-slate-400">
-                        Mostrando {Math.min(sortedProducts.length, (currentPage - 1) * itemsPerPage + 1)}-{Math.min(sortedProducts.length, currentPage * itemsPerPage)} de {sortedProducts.length} productos
-                    </p>
-                    <div className="flex items-center gap-2">
-                        <button
-                            onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-                            disabled={currentPage === 1}
-                            className="px-4 py-2 border border-slate-200 text-[10px] uppercase font-bold tracking-widest hover:bg-slate-50 disabled:opacity-30 transition-colors"
-                        >
-                            <FontAwesomeIcon icon={faChevronLeft} className="mr-2" />
-                            Anterior
-                        </button>
-                        <div className="flex gap-1">
-                            {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
-                                <button
-                                    key={page}
-                                    onClick={() => setCurrentPage(page)}
-                                    className={`w-8 h-8 flex items-center justify-center text-[10px] font-bold border transition-colors ${
-                                        currentPage === page 
-                                        ? 'bg-gold text-chocolate border-gold' 
-                                        : 'border-slate-200 text-slate-400 hover:bg-slate-50'
-                                    }`}
-                                >
-                                    {page}
-                                </button>
-                            ))}
-                        </div>
-                        <button
-                            onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
-                            disabled={currentPage === totalPages}
-                            className="px-4 py-2 border border-slate-200 text-[10px] uppercase font-bold tracking-widest hover:bg-slate-50 disabled:opacity-30 transition-colors"
-                        >
-                            Siguiente
-                            <FontAwesomeIcon icon={faChevronRight} className="ml-2" />
-                        </button>
-                    </div>
-                </div>
-            )}
+            {paginationUI}
 
             <AnimatePresence>
                 {isModalOpen && editingProduct && (
