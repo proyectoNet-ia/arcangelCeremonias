@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
-    faPlus, faTrash, faEdit, faTimes, faImage, faImages, faChevronLeft, faChevronRight, faCopy, faSort, faSortUp, faSortDown
+    faPlus, faTrash, faEdit, faTimes, faImage, faImages, faChevronLeft, faChevronRight, faCopy, faSort, faSortUp, faSortDown, faSearch
 } from '@fortawesome/free-solid-svg-icons';
 import { productService } from '@/services/productService';
 import { Product, Category } from '@/types/product';
@@ -39,10 +39,22 @@ export const ProductsManager: React.FC<ProductsManagerProps> = ({ products, cate
     const [focusedField, setFocusedField] = useState<string | null>(null);
     const [colorSuggestions, setColorSuggestions] = useState<string[]>([]);
     const [showColorSuggestions, setShowColorSuggestions] = useState(false);
+    const [searchTerm, setSearchTerm] = useState('');
     const [sortConfig, setSortConfig] = useState<{ key: 'name' | 'category' | 'status', direction: 'asc' | 'desc' } | null>(null);
 
     const sortedProducts = React.useMemo(() => {
         let sortableItems = [...products];
+
+        if (searchTerm) {
+            const lowerSearch = searchTerm.toLowerCase();
+            sortableItems = sortableItems.filter(p => 
+                p.name.toLowerCase().includes(lowerSearch) ||
+                (p.model_code && p.model_code.toLowerCase().includes(lowerSearch)) ||
+                (p.material && p.material.toLowerCase().includes(lowerSearch)) ||
+                ((p as any).categories?.name && (p as any).categories.name.toLowerCase().includes(lowerSearch))
+            );
+        }
+
         if (sortConfig !== null) {
             sortableItems.sort((a, b) => {
                 let aValue: any = a[sortConfig.key as keyof Product] || '';
@@ -200,22 +212,36 @@ export const ProductsManager: React.FC<ProductsManagerProps> = ({ products, cate
     return (
         <div className="space-y-6 md:space-y-8">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center bg-white p-4 md:p-6 border border-slate-200 gap-4">
-                <p className="text-[10px] uppercase tracking-widest font-bold text-slate-400">Total: {products.length} productos / Auditoría: Activa</p>
-                <button
-                    onClick={() => {
-                        setEditingProduct({
-                            name: '', slug: '', description: '', price: 0,
-                            category_id: categories[0]?.id, gallery: [],
-                            stock_status: 'available', is_active: true
-                        });
-                        setIsModalOpen(true);
-                        setIsSlugCustomized(false);
-                        setErrors({});
-                    }}
-                    className="w-full sm:w-auto bg-gold text-chocolate px-6 py-3 text-[10px] uppercase tracking-widest font-bold hover:bg-chocolate hover:text-white transition-all shadow-lg text-center"
-                >
-                    + Nuevo Producto
-                </button>
+                <div className="flex items-center gap-4 w-full sm:w-auto flex-grow max-w-md">
+                    <div className="relative w-full">
+                        <input
+                            type="text"
+                            placeholder="Buscar por nombre, código o categoría..."
+                            value={searchTerm}
+                            onChange={e => setSearchTerm(e.target.value)}
+                            className="w-full pl-10 pr-4 py-3 border border-slate-200 text-xs focus:border-gold outline-none"
+                        />
+                        <FontAwesomeIcon icon={faSearch} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300" />
+                    </div>
+                </div>
+                <div className="flex items-center gap-4 w-full sm:w-auto justify-between sm:justify-end">
+                    <p className="hidden md:block text-[10px] uppercase tracking-widest font-bold text-slate-400">Total: {sortedProducts.length}</p>
+                    <button
+                        onClick={() => {
+                            setEditingProduct({
+                                name: '', slug: '', description: '', price: 0,
+                                category_id: categories[0]?.id, gallery: [],
+                                stock_status: 'available', is_active: true
+                            });
+                            setIsModalOpen(true);
+                            setIsSlugCustomized(false);
+                            setErrors({});
+                        }}
+                        className="w-full sm:w-auto bg-gold text-chocolate px-6 py-3 text-[10px] uppercase tracking-widest font-bold hover:bg-chocolate hover:text-white transition-all shadow-lg text-center whitespace-nowrap"
+                    >
+                        + Nuevo Producto
+                    </button>
+                </div>
             </div>
 
             <div className="bg-white border border-slate-200 overflow-hidden shadow-sm">
