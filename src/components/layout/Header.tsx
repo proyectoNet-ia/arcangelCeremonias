@@ -412,7 +412,7 @@ export const Header: React.FC<HeaderProps> = ({ variant = 'light' }) => {
                                                 {item.hasMegamenu && (
                                                     <button
                                                         onClick={() => setIsMobileSubmenuOpen(!isMobileSubmenuOpen)}
-                                                        className={`flex-shrink-0 w-12 h-12 flex items-center justify-end pr-2 transition-all duration-300 outline-none focus:outline-none focus:ring-0 active:bg-transparent ${isMobileSubmenuOpen ? 'rotate-180 text-gold' : 'text-gold/70'}`}
+                                                        className={`flex-shrink-0 w-12 h-12 flex items-center justify-end pr-2 transition-all duration-300 outline-none focus:outline-none focus:ring-0 active:bg-transparent ${isMobileSubmenuOpen ? 'rotate-180 text-gold' : 'text-gold opacity-70'}`}
                                                         style={{ WebkitTapHighlightColor: 'transparent' }}
                                                     >
                                                         <FontAwesomeIcon icon={faChevronDown} className="text-sm" />
