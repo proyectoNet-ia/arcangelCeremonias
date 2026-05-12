@@ -165,6 +165,17 @@ export const ProductsManager: React.FC<ProductsManagerProps> = ({ products, cate
         }
     };
 
+    const handleQuickUpdate = async (product: Product, updates: Partial<Product>) => {
+        try {
+            const { categories: _, created_at: __, ...productData } = product as any;
+            await productService.upsertProduct({ ...productData, ...updates });
+            toast.success('Actualizado correctamente');
+            refresh();
+        } catch (error) {
+            toast.error('Error al actualizar');
+        }
+    };
+
     const handleDelete = async () => {
         if (!confirmDelete.id) return;
         try {
@@ -334,7 +345,16 @@ export const ProductsManager: React.FC<ProductsManagerProps> = ({ products, cate
                                                 ))}
                                             </select>
                                         ) : (
-                                            <span className="cursor-text hover:text-gold" onClick={() => handleInlineEditStart(prod)} title="Clic para editar rápido">{(prod as any).categories?.name}</span>
+                                            <select
+                                                value={prod.category_id || ''}
+                                                onChange={e => handleQuickUpdate(prod, { category_id: e.target.value, subcategory: '' })}
+                                                className="w-full p-1.5 border border-transparent hover:border-slate-200 outline-none text-xs bg-transparent cursor-pointer"
+                                                title="Cambio rápido de categoría"
+                                            >
+                                                {categories.filter(c => !c.parent_id).map(c => (
+                                                    <option key={c.id} value={c.id}>{c.name}</option>
+                                                ))}
+                                            </select>
                                         )}
                                     </td>
                                     <td className="px-4 md:px-8 py-4 text-right">
@@ -346,9 +366,13 @@ export const ProductsManager: React.FC<ProductsManagerProps> = ({ products, cate
                                                 {inlineEditData?.is_active === false ? 'OCULTO' : 'PÚBLICO'}
                                             </button>
                                         ) : (
-                                            <span onClick={() => handleInlineEditStart(prod)} className={`cursor-pointer text-[7px] md:text-[8px] font-bold px-2 py-1 rounded border uppercase inline-block ${prod.is_active === false ? 'bg-red-50 text-red-500 border-red-100' : 'bg-green-50 text-green-500 border-green-100 tracking-tighter'}`} title="Clic para cambiar estado">
-                                                {prod.is_active === false ? 'Oculto' : 'Público'}
-                                            </span>
+                                            <button 
+                                                onClick={() => handleQuickUpdate(prod, { is_active: prod.is_active === false ? true : false })} 
+                                                className={`cursor-pointer text-[7px] md:text-[8px] font-bold px-2 py-1 rounded border uppercase inline-block transition-all hover:scale-105 ${prod.is_active === false ? 'bg-red-50 text-red-500 border-red-100 hover:bg-red-100' : 'bg-green-50 text-green-500 border-green-100 tracking-tighter hover:bg-green-100'}`} 
+                                                title="Clic para cambiar estado"
+                                            >
+                                                {prod.is_active === false ? 'OCULTO' : 'PÚBLICO'}
+                                            </button>
                                         )}
                                     </td>
                                     <td className="px-4 md:px-8 py-4">
