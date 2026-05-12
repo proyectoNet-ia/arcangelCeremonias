@@ -78,7 +78,7 @@ export const ProductsManager: React.FC<ProductsManagerProps> = ({ products, cate
             });
         }
         return sortableItems;
-    }, [products, sortConfig]);
+    }, [products, sortConfig, searchTerm]);
 
     const requestSort = (key: 'name' | 'category' | 'status') => {
         let direction: 'asc' | 'desc' = 'asc';
