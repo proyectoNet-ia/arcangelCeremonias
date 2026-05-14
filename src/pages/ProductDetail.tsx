@@ -45,8 +45,13 @@ const ProductDetail: React.FC = () => {
                 const start = parseInt(rangeMatch[1], 10);
                 const end = parseInt(rangeMatch[2], 10);
                 if (start <= end && end - start <= 50) {
-                    for (let i = start; i <= end; i++) {
+                    for (let i = start; i <= end; ) {
                         options.push({ label: i.toString(), variantIndex: idx });
+                        if (i < 4) {
+                            i += 1;
+                        } else {
+                            i += 2;
+                        }
                     }
                 } else {
                     options.push({ label: sizeStr, variantIndex: idx });
