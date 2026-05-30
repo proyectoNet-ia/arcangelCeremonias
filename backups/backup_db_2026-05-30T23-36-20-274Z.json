@@ -1,0 +1,1454 @@
+{
+  "timestamp": "2026-05-30T23:36:20.275Z",
+  "categories": [
+    {
+      "id": "ed394dca-3136-42ab-b354-7565ec202611",
+      "name": "Manga Corta",
+      "slug": "manga-corta",
+      "image_url": "",
+      "parent_id": "0178d082-bf1a-4dec-ac8f-06ee3112cc16",
+      "icon_url": null,
+      "description": "",
+      "is_active": true,
+      "size_guide_url": null
+    },
+    {
+      "id": "9e3a25c9-2189-4f45-a265-0693a17aff14",
+      "name": "Manga Larga",
+      "slug": "manga-larga",
+      "image_url": "",
+      "parent_id": "0178d082-bf1a-4dec-ac8f-06ee3112cc16",
+      "icon_url": null,
+      "description": "",
+      "is_active": true,
+      "size_guide_url": null
+    },
+    {
+      "id": "75320244-bcf4-477f-9f61-4c626289bd80",
+      "name": "Traje Venecia",
+      "slug": "traje-venecia",
+      "image_url": "",
+      "parent_id": "6c1bfb5f-5a16-43f7-b526-431ad2f583ef",
+      "icon_url": null,
+      "description": "",
+      "is_active": true,
+      "size_guide_url": null
+    },
+    {
+      "id": "70760aa5-5ee3-40ed-971a-cf0e7afd5927",
+      "name": "Traje Ciprés",
+      "slug": "traje-cipres",
+      "image_url": "",
+      "parent_id": "6c1bfb5f-5a16-43f7-b526-431ad2f583ef",
+      "icon_url": null,
+      "description": "",
+      "is_active": true,
+      "size_guide_url": null
+    },
+    {
+      "id": "1155bf7d-b815-4035-b7e4-151094b0e457",
+      "name": "Esmóquines",
+      "slug": "esmoquines",
+      "image_url": "",
+      "parent_id": "6c1bfb5f-5a16-43f7-b526-431ad2f583ef",
+      "icon_url": null,
+      "description": "",
+      "is_active": true,
+      "size_guide_url": null
+    },
+    {
+      "id": "d8486433-b36d-4512-9d31-b3eb333e67d1",
+      "name": "Guayabera Short Bebé",
+      "slug": "guayabera-short-bebe",
+      "image_url": "",
+      "parent_id": "0178d082-bf1a-4dec-ac8f-06ee3112cc16",
+      "icon_url": null,
+      "description": "",
+      "is_active": true,
+      "size_guide_url": null
+    },
+    {
+      "id": "2fd7f2d2-394b-4e10-85d2-e702af60cab6",
+      "name": "Traje San Pedro",
+      "slug": "traje-san-pedro",
+      "image_url": "",
+      "parent_id": "6c1bfb5f-5a16-43f7-b526-431ad2f583ef",
+      "icon_url": null,
+      "description": "",
+      "is_active": true,
+      "size_guide_url": null
+    },
+    {
+      "id": "45ee2f5e-6c75-4cfa-a11f-1695d574e4ac",
+      "name": "Traje San José",
+      "slug": "traje-san-jose",
+      "image_url": "",
+      "parent_id": "6c1bfb5f-5a16-43f7-b526-431ad2f583ef",
+      "icon_url": null,
+      "description": "",
+      "is_active": true,
+      "size_guide_url": null
+    },
+    {
+      "id": "8fa9aba2-a7c7-4f8d-bae3-75575305fed9",
+      "name": "Traje Príncipe",
+      "slug": "traje-principe",
+      "image_url": "",
+      "parent_id": "6c1bfb5f-5a16-43f7-b526-431ad2f583ef",
+      "icon_url": null,
+      "description": "",
+      "is_active": true,
+      "size_guide_url": null
+    },
+    {
+      "id": "39383156-77ac-432c-8a22-7aae79e11b21",
+      "name": "Traje Arcángel",
+      "slug": "traje-arcangel",
+      "image_url": "",
+      "parent_id": "6c1bfb5f-5a16-43f7-b526-431ad2f583ef",
+      "icon_url": null,
+      "description": "",
+      "is_active": true,
+      "size_guide_url": null
+    },
+    {
+      "id": "a2a72b6d-57b9-41ca-9a6a-cf3f70e7f0ac",
+      "name": "Frac de Ceremonia",
+      "slug": "frac-de-ceremonia",
+      "image_url": "",
+      "parent_id": "6c1bfb5f-5a16-43f7-b526-431ad2f583ef",
+      "icon_url": null,
+      "description": "",
+      "is_active": true,
+      "size_guide_url": null
+    },
+    {
+      "id": "0fe527dd-9578-4d9d-b5e6-157d98839ce9",
+      "name": "Túnicas",
+      "slug": "tunicas",
+      "image_url": "",
+      "parent_id": null,
+      "icon_url": null,
+      "description": "",
+      "is_active": true,
+      "size_guide_url": null
+    },
+    {
+      "id": "9357a823-3c62-4bd7-ba82-dd87a713ecb5",
+      "name": "Traje Charro",
+      "slug": "traje-charro",
+      "image_url": "",
+      "parent_id": "6c1bfb5f-5a16-43f7-b526-431ad2f583ef",
+      "icon_url": null,
+      "description": "",
+      "is_active": true,
+      "size_guide_url": null
+    },
+    {
+      "id": "0178d082-bf1a-4dec-ac8f-06ee3112cc16",
+      "name": "Conjunto Guayabera",
+      "slug": "conjunto-guayabera",
+      "image_url": "",
+      "parent_id": null,
+      "icon_url": null,
+      "description": "",
+      "is_active": true,
+      "size_guide_url": null
+    },
+    {
+      "id": "891de872-e9a9-470e-820c-4968900c5b6a",
+      "name": "Traje de Lino",
+      "slug": "traje-de-lino",
+      "image_url": "",
+      "parent_id": "6c1bfb5f-5a16-43f7-b526-431ad2f583ef",
+      "icon_url": null,
+      "description": "",
+      "is_active": true,
+      "size_guide_url": null
+    },
+    {
+      "id": "6c1bfb5f-5a16-43f7-b526-431ad2f583ef",
+      "name": "Traje de Vestir",
+      "slug": "traje-de-vestir",
+      "image_url": "",
+      "parent_id": null,
+      "icon_url": null,
+      "description": "",
+      "is_active": true,
+      "size_guide_url": null
+    }
+  ],
+  "products": [
+    {
+      "id": "2b75c3a0-1429-450f-999a-0bfef92d93ce",
+      "created_at": "2026-05-30T04:30:51.874179+00:00",
+      "name": "Esmóquin Celestial",
+      "slug": "esmoquin-celestial",
+      "description": "Esmoquin de 5 piezas corte recto, sólido, redonda.",
+      "detailed_description": null,
+      "price": 0,
+      "show_price": false,
+      "category_id": "6c1bfb5f-5a16-43f7-b526-431ad2f583ef",
+      "material": "Tafetán",
+      "includes": "Saco, chaleco, pantalón, camisa y moño",
+      "sizes": null,
+      "main_image": "https://uijtnyffwfzbpclxiyzs.supabase.co/storage/v1/object/public/catalog/products/1780115391562_hpjljf.webp",
+      "gallery": [
+        "https://uijtnyffwfzbpclxiyzs.supabase.co/storage/v1/object/public/catalog/products/1780115404905_6sy94b.webp",
+        "https://uijtnyffwfzbpclxiyzs.supabase.co/storage/v1/object/public/catalog/products/1780115420236_o4jrsd.webp",
+        "https://uijtnyffwfzbpclxiyzs.supabase.co/storage/v1/object/public/catalog/products/1780115432471_g6o577.webp"
+      ],
+      "featured": false,
+      "stock_status": "available",
+      "subcategory": "esmoquines",
+      "model_code": "23",
+      "color": "beige",
+      "size_variants": [
+        {
+          "sku": "374",
+          "size": "0 - 3",
+          "price": 1095
+        },
+        {
+          "sku": "373",
+          "size": "4 - 8",
+          "price": 1220
+        }
+      ],
+      "badges": null,
+      "is_active": true
+    },
+    {
+      "id": "b2562759-f9f8-4b07-a7f2-74f7857d3c5a",
+      "created_at": "2026-05-29T23:41:43.001652+00:00",
+      "name": "Guayabera Primavera",
+      "slug": "guayabera-primavera",
+      "description": "Guayabera de 2 piezas en LINO con BORDADO SOUTACHE al frente y CUELLO MAO.",
+      "detailed_description": null,
+      "price": 0,
+      "show_price": false,
+      "category_id": "0178d082-bf1a-4dec-ac8f-06ee3112cc16",
+      "material": "Lino",
+      "includes": "Guayabera y pantalón",
+      "sizes": null,
+      "main_image": "https://uijtnyffwfzbpclxiyzs.supabase.co/storage/v1/object/public/catalog/products/1780098081364_wy0u2b.webp",
+      "gallery": [
+        "https://uijtnyffwfzbpclxiyzs.supabase.co/storage/v1/object/public/catalog/products/1780098093747_py48p0.webp"
+      ],
+      "featured": false,
+      "stock_status": "available",
+      "subcategory": "manga-corta",
+      "model_code": "23",
+      "color": "blanco",
+      "size_variants": [
+        {
+          "sku": "476",
+          "size": "0 - 3",
+          "price": 824
+        },
+        {
+          "sku": "477",
+          "size": "4 - 8",
+          "price": 965
+        },
+        {
+          "sku": "478",
+          "size": "10 - 18",
+          "price": 1176
+        }
+      ],
+      "badges": null,
+      "is_active": true
+    },
+    {
+      "id": "85d3ec59-31e8-4d04-9782-fe39e562b9fb",
+      "created_at": "2026-05-30T00:24:56.338058+00:00",
+      "name": "Traje Charro con Virgen Beige",
+      "slug": "traje-charro-con-virgen-beige",
+      "description": "Traje charro de 6 piezas con fino bordado en chaqueta, chaleco, pantalón y sombrero.",
+      "detailed_description": null,
+      "price": 0,
+      "show_price": false,
+      "category_id": "6c1bfb5f-5a16-43f7-b526-431ad2f583ef",
+      "material": "Hawaii",
+      "includes": "Chaqueta, chaleco, pantalon, camisa, moño y sombrero",
+      "sizes": null,
+      "main_image": "https://uijtnyffwfzbpclxiyzs.supabase.co/storage/v1/object/public/catalog/products/1778352645234_0xczsz.webp",
+      "gallery": [
+        "https://uijtnyffwfzbpclxiyzs.supabase.co/storage/v1/object/public/catalog/products/1778352675672_bbeboa.webp",
+        "https://uijtnyffwfzbpclxiyzs.supabase.co/storage/v1/object/public/catalog/products/1780100187834_4c7vqa.webp",
+        "https://uijtnyffwfzbpclxiyzs.supabase.co/storage/v1/object/public/catalog/products/1778352763447_onh43t.webp"
+      ],
+      "featured": false,
+      "stock_status": "available",
+      "subcategory": "trajes-charros",
+      "model_code": "23",
+      "color": "beige",
+      "size_variants": [
+        {
+          "sku": "834",
+          "size": "0 - 3",
+          "price": 3043
+        },
+        {
+          "sku": "835",
+          "size": "4 - 8",
+          "price": 3043
+        }
+      ],
+      "badges": [
+        "Premium"
+      ],
+      "is_active": true
+    },
+    {
+      "id": "a3fb7c86-5a90-4b54-8bb5-84ed48f57d6a",
+      "created_at": "2026-05-30T02:37:31.966812+00:00",
+      "name": "Traje Charro Tradicional Beige",
+      "slug": "traje-charro-tradicional-beige",
+      "description": "Traje charro de 6 piezas con fino bordado en chaqueta, chaleco, pantalón y sombrero.",
+      "detailed_description": null,
+      "price": 0,
+      "show_price": false,
+      "category_id": "6c1bfb5f-5a16-43f7-b526-431ad2f583ef",
+      "material": "Hawaii",
+      "includes": "Chaqueta, chaleco, pantalon, camisa, moño y sombrero",
+      "sizes": null,
+      "main_image": "https://uijtnyffwfzbpclxiyzs.supabase.co/storage/v1/object/public/catalog/products/1780108614899_um3i1f.webp",
+      "gallery": [
+        "https://uijtnyffwfzbpclxiyzs.supabase.co/storage/v1/object/public/catalog/products/1780108632106_jvfn9h.webp",
+        "https://uijtnyffwfzbpclxiyzs.supabase.co/storage/v1/object/public/catalog/products/1780108643618_f372ne.webp"
+      ],
+      "featured": false,
+      "stock_status": "available",
+      "subcategory": "trajes-charros",
+      "model_code": "23",
+      "color": "beige",
+      "size_variants": [
+        {
+          "sku": "846",
+          "size": "0 - 3",
+          "price": 3043
+        },
+        {
+          "sku": "847",
+          "size": "4 - 8",
+          "price": 3043
+        }
+      ],
+      "badges": [
+        "Premium"
+      ],
+      "is_active": true
+    },
+    {
+      "id": "0725e46b-8fea-42ba-a9a2-70da14a94e0e",
+      "created_at": "2026-05-30T04:23:58.839908+00:00",
+      "name": "Frac Ceremonia",
+      "slug": "frac-ceremonia",
+      "description": "Esmoquin de 5 piezas corte FRAC, con estilo JACQUARD en solapa redonda, chaleco y moño.",
+      "detailed_description": null,
+      "price": 0,
+      "show_price": false,
+      "category_id": "6c1bfb5f-5a16-43f7-b526-431ad2f583ef",
+      "material": "Tafetán",
+      "includes": "Saco, chaleco, pantalón, camisa y moño",
+      "sizes": null,
+      "main_image": "https://uijtnyffwfzbpclxiyzs.supabase.co/storage/v1/object/public/catalog/products/1780114927049_273x2s.webp",
+      "gallery": [
+        "https://uijtnyffwfzbpclxiyzs.supabase.co/storage/v1/object/public/catalog/products/1780114937598_57u88i.webp",
+        "https://uijtnyffwfzbpclxiyzs.supabase.co/storage/v1/object/public/catalog/products/1780114948357_f4pyay.webp",
+        "https://uijtnyffwfzbpclxiyzs.supabase.co/storage/v1/object/public/catalog/products/1780114968941_ccx3rj.webp",
+        "https://uijtnyffwfzbpclxiyzs.supabase.co/storage/v1/object/public/catalog/products/1780114981928_7edw8n.webp",
+        "https://uijtnyffwfzbpclxiyzs.supabase.co/storage/v1/object/public/catalog/products/1780114991771_v1xvbq.webp",
+        "https://uijtnyffwfzbpclxiyzs.supabase.co/storage/v1/object/public/catalog/products/1780115008112_c6pmse.webp",
+        "https://uijtnyffwfzbpclxiyzs.supabase.co/storage/v1/object/public/catalog/products/1780115030762_y598xi.webp"
+      ],
+      "featured": false,
+      "stock_status": "available",
+      "subcategory": "frac-de-ceremonia",
+      "model_code": "23",
+      "color": "blanco,negro",
+      "size_variants": [
+        {
+          "sku": "608",
+          "size": "0 - 3",
+          "price": 1095
+        },
+        {
+          "sku": "609",
+          "size": "4 - 8",
+          "price": 1220
+        }
+      ],
+      "badges": [
+        "Edición Especial",
+        "Premium"
+      ],
+      "is_active": true
+    },
+    {
+      "id": "7958190d-407d-4662-8bf0-f1abb8c7e139",
+      "created_at": "2026-05-30T21:37:12.060086+00:00",
+      "name": "Guayabera Bebé 23460",
+      "slug": "copia-de-guayabera-bebe-23460",
+      "description": "Conjunto infantil de guayabera con short confeccionado en lino 80/20, una combinación fresca, ligera y cómoda.",
+      "detailed_description": null,
+      "price": 0,
+      "show_price": false,
+      "category_id": "0178d082-bf1a-4dec-ac8f-06ee3112cc16",
+      "material": "Lino",
+      "includes": "Guayabera y short",
+      "sizes": null,
+      "main_image": "https://uijtnyffwfzbpclxiyzs.supabase.co/storage/v1/object/public/catalog/products/1780177009799_ul1gmt.webp",
+      "gallery": [],
+      "featured": false,
+      "stock_status": "available",
+      "subcategory": "guayabera-short-bebe",
+      "model_code": "23",
+      "color": "blanco",
+      "size_variants": [
+        {
+          "sku": "460",
+          "size": "0 - 3",
+          "price": 751
+        }
+      ],
+      "badges": null,
+      "is_active": true
+    },
+    {
+      "id": "402b87c5-6207-4c11-9373-73cca10b2b31",
+      "created_at": "2026-05-30T21:47:54.640236+00:00",
+      "name": "Guayabera Caribeña",
+      "slug": "guayabera-caribena",
+      "description": "Guayabera de 2 piezas en LINO con BORDADO SOUTACHE al frente.",
+      "detailed_description": null,
+      "price": 0,
+      "show_price": false,
+      "category_id": "0178d082-bf1a-4dec-ac8f-06ee3112cc16",
+      "material": "Lino",
+      "includes": "Guayabera y pantalón",
+      "sizes": null,
+      "main_image": "https://uijtnyffwfzbpclxiyzs.supabase.co/storage/v1/object/public/catalog/products/1780177713835_1ovwjf.webp",
+      "gallery": [
+        "https://uijtnyffwfzbpclxiyzs.supabase.co/storage/v1/object/public/catalog/products/1780177728145_1dvi5c.webp",
+        "https://uijtnyffwfzbpclxiyzs.supabase.co/storage/v1/object/public/catalog/products/1780177739376_hrh7n5.webp"
+      ],
+      "featured": false,
+      "stock_status": "available",
+      "subcategory": "manga-corta",
+      "model_code": "23",
+      "color": "blanco",
+      "size_variants": [
+        {
+          "sku": "436",
+          "size": "0 - 3",
+          "price": 824
+        },
+        {
+          "sku": "437",
+          "size": "4 - 8",
+          "price": 965
+        },
+        {
+          "sku": "438",
+          "size": "10 - 18",
+          "price": 1176
+        }
+      ],
+      "badges": null,
+      "is_active": true
+    },
+    {
+      "id": "6868ac37-cc95-4962-9dcd-812a963cc350",
+      "created_at": "2026-05-30T03:10:05.320253+00:00",
+      "name": "Traje de Lino Blanco",
+      "slug": "traje-de-lino",
+      "description": "Traje de 5 piezas en LINO corte recto, sólido, con solapa en muesca.",
+      "detailed_description": null,
+      "price": 0,
+      "show_price": false,
+      "category_id": "6c1bfb5f-5a16-43f7-b526-431ad2f583ef",
+      "material": "Lino",
+      "includes": "Saco, chaleco, pantalón, camisa y corbata",
+      "sizes": null,
+      "main_image": "https://uijtnyffwfzbpclxiyzs.supabase.co/storage/v1/object/public/catalog/products/1780109912427_5uv1od.webp",
+      "gallery": [
+        "https://uijtnyffwfzbpclxiyzs.supabase.co/storage/v1/object/public/catalog/products/1780109986062_lsysv2.webp",
+        "https://uijtnyffwfzbpclxiyzs.supabase.co/storage/v1/object/public/catalog/products/1780110081645_78w5lp.webp"
+      ],
+      "featured": false,
+      "stock_status": "available",
+      "subcategory": "traje-de-lino",
+      "model_code": "23",
+      "color": "blanco",
+      "size_variants": [
+        {
+          "sku": "394",
+          "size": "0 - 8",
+          "price": 1669
+        },
+        {
+          "sku": "395",
+          "size": "10 - 18",
+          "price": 1835
+        }
+      ],
+      "badges": [
+        "Premium",
+        "Edición Especial"
+      ],
+      "is_active": true
+    },
+    {
+      "id": "8778a0fe-e030-4f53-8696-e25c49f3f6d2",
+      "created_at": "2026-05-30T00:26:54.57006+00:00",
+      "name": "Traje Charro con Virgen Negro",
+      "slug": "traje-charro-con-virgen-negro",
+      "description": "Traje charro de 6 piezas con fino bordado en chaqueta, chaleco, pantalón y sombrero.",
+      "detailed_description": null,
+      "price": 0,
+      "show_price": false,
+      "category_id": "6c1bfb5f-5a16-43f7-b526-431ad2f583ef",
+      "material": "Hawaii",
+      "includes": "Chaqueta, chaleco, pantalon, camisa, moño y sombrero",
+      "sizes": null,
+      "main_image": "https://uijtnyffwfzbpclxiyzs.supabase.co/storage/v1/object/public/catalog/products/1778353766570_gfvrkv.webp",
+      "gallery": [
+        "https://uijtnyffwfzbpclxiyzs.supabase.co/storage/v1/object/public/catalog/products/1778353802307_d4eh4x.webp",
+        "https://uijtnyffwfzbpclxiyzs.supabase.co/storage/v1/object/public/catalog/products/1778353775247_x52za1.webp",
+        "https://uijtnyffwfzbpclxiyzs.supabase.co/storage/v1/object/public/catalog/products/1778353827146_mnhcvi.webp"
+      ],
+      "featured": false,
+      "stock_status": "available",
+      "subcategory": "trajes-charros",
+      "model_code": "23",
+      "color": "negro",
+      "size_variants": [
+        {
+          "sku": "834",
+          "size": "0 - 3",
+          "price": 3043
+        },
+        {
+          "sku": "835",
+          "size": "4 - 8",
+          "price": 3043
+        }
+      ],
+      "badges": [
+        "Premium"
+      ],
+      "is_active": true
+    },
+    {
+      "id": "f587bfa7-64c3-4ab2-bc37-cdd65a56b0e2",
+      "created_at": "2026-05-29T23:45:57.556832+00:00",
+      "name": "Guayabera Paraíso",
+      "slug": "guayabera-paraiso",
+      "description": "Guayabera de 2 piezas en LINO con BORDADO SOUTACHE.",
+      "detailed_description": null,
+      "price": 0,
+      "show_price": false,
+      "category_id": "0178d082-bf1a-4dec-ac8f-06ee3112cc16",
+      "material": "Lino",
+      "includes": "Guayabera y pantalón",
+      "sizes": null,
+      "main_image": "https://uijtnyffwfzbpclxiyzs.supabase.co/storage/v1/object/public/catalog/products/1780098326681_wcba2t.webp",
+      "gallery": [
+        "https://uijtnyffwfzbpclxiyzs.supabase.co/storage/v1/object/public/catalog/products/1780098341828_85gpza.webp",
+        "https://uijtnyffwfzbpclxiyzs.supabase.co/storage/v1/object/public/catalog/products/1780098348292_pmpbkg.webp"
+      ],
+      "featured": false,
+      "stock_status": "available",
+      "subcategory": "manga-corta",
+      "model_code": "23",
+      "color": "blanco,beige",
+      "size_variants": [
+        {
+          "sku": "448",
+          "size": "0 - 3",
+          "price": 824
+        },
+        {
+          "sku": "449",
+          "size": "4 - 8",
+          "price": 965
+        },
+        {
+          "sku": "450",
+          "size": "10 - 18",
+          "price": 1176
+        }
+      ],
+      "badges": null,
+      "is_active": true
+    },
+    {
+      "id": "4ce02aba-1be9-40d7-8d7a-4c7c822fddaf",
+      "created_at": "2026-05-30T02:42:18.699874+00:00",
+      "name": "Traje Charro Tradicional Azul Rey",
+      "slug": "traje-charro-tradicional-azul-rey",
+      "description": "Traje charro de 6 piezas con fino bordado en chaqueta, chaleco, pantalón y sombrero.",
+      "detailed_description": null,
+      "price": 0,
+      "show_price": false,
+      "category_id": "6c1bfb5f-5a16-43f7-b526-431ad2f583ef",
+      "material": "Venecia",
+      "includes": "Chaqueta, chaleco, pantalon, camisa, moño y sombrero",
+      "sizes": null,
+      "main_image": "https://uijtnyffwfzbpclxiyzs.supabase.co/storage/v1/object/public/catalog/products/1780108895725_stivpv.webp",
+      "gallery": [
+        "https://uijtnyffwfzbpclxiyzs.supabase.co/storage/v1/object/public/catalog/products/1780108906202_z9alxs.webp",
+        "https://uijtnyffwfzbpclxiyzs.supabase.co/storage/v1/object/public/catalog/products/1780108931368_tuaog9.webp",
+        "https://uijtnyffwfzbpclxiyzs.supabase.co/storage/v1/object/public/catalog/products/1780108914988_dxospb.webp"
+      ],
+      "featured": false,
+      "stock_status": "available",
+      "subcategory": "trajes-charros",
+      "model_code": "23",
+      "color": "azul rey",
+      "size_variants": [
+        {
+          "sku": "846",
+          "size": "0 - 3",
+          "price": 3043
+        },
+        {
+          "sku": "847",
+          "size": "4 - 8",
+          "price": 3043
+        }
+      ],
+      "badges": [
+        "Premium"
+      ],
+      "is_active": true
+    },
+    {
+      "id": "b066678c-8f23-449b-90df-a1e51f8ae7f4",
+      "created_at": "2026-05-30T03:44:54.004052+00:00",
+      "name": "Traje San José",
+      "slug": "traje-san-jose",
+      "description": "Traje de 5 piezas corte recto, sólido, con solapa en muesca.",
+      "detailed_description": null,
+      "price": 0,
+      "show_price": false,
+      "category_id": "6c1bfb5f-5a16-43f7-b526-431ad2f583ef",
+      "material": "Venecia",
+      "includes": "Saco, chaleco, pantalón, camisa y moño",
+      "sizes": null,
+      "main_image": "https://uijtnyffwfzbpclxiyzs.supabase.co/storage/v1/object/public/catalog/products/1780112565546_w0q8t7.webp",
+      "gallery": [
+        "https://uijtnyffwfzbpclxiyzs.supabase.co/storage/v1/object/public/catalog/products/1780112620708_vhtbvo.webp",
+        "https://uijtnyffwfzbpclxiyzs.supabase.co/storage/v1/object/public/catalog/products/1780112629339_kqh2dg.webp",
+        "https://uijtnyffwfzbpclxiyzs.supabase.co/storage/v1/object/public/catalog/products/1780112640053_q94n4k.webp",
+        "https://uijtnyffwfzbpclxiyzs.supabase.co/storage/v1/object/public/catalog/products/1780112646954_941vej.webp",
+        "https://uijtnyffwfzbpclxiyzs.supabase.co/storage/v1/object/public/catalog/products/1780112663323_qdgvxa.webp"
+      ],
+      "featured": false,
+      "stock_status": "available",
+      "subcategory": "traje-san-jose",
+      "model_code": "23",
+      "color": "blanco,negro",
+      "size_variants": [
+        {
+          "sku": "305",
+          "size": "10 - 18",
+          "price": 1220
+        }
+      ],
+      "badges": null,
+      "is_active": true
+    },
+    {
+      "id": "e871becb-312a-43d1-94d1-f17c7e04ff79",
+      "created_at": "2026-05-30T03:28:04.720838+00:00",
+      "name": "Traje de Venecia",
+      "slug": "traje-de-venecia",
+      "description": "Traje de 5 piezas VENECIA corte recto, sólido, con solapa en muesca.",
+      "detailed_description": null,
+      "price": 0,
+      "show_price": false,
+      "category_id": "6c1bfb5f-5a16-43f7-b526-431ad2f583ef",
+      "material": "Venecia",
+      "includes": "Saco, chaleco, pantalón, camisa y corbata",
+      "sizes": null,
+      "main_image": "https://uijtnyffwfzbpclxiyzs.supabase.co/storage/v1/object/public/catalog/products/1780111594133_grjqlv.webp",
+      "gallery": [
+        "https://uijtnyffwfzbpclxiyzs.supabase.co/storage/v1/object/public/catalog/products/1780111605053_iddgyq.webp",
+        "https://uijtnyffwfzbpclxiyzs.supabase.co/storage/v1/object/public/catalog/products/1780111611601_27e891.webp"
+      ],
+      "featured": false,
+      "stock_status": "available",
+      "subcategory": "traje-venecia",
+      "model_code": "23",
+      "color": "kaki",
+      "size_variants": [
+        {
+          "sku": "827",
+          "size": "0 - 3",
+          "price": 1000
+        },
+        {
+          "sku": "828",
+          "size": "4 - 8",
+          "price": 1095
+        },
+        {
+          "sku": "829",
+          "size": "10 - 18",
+          "price": 1307
+        }
+      ],
+      "badges": null,
+      "is_active": true
+    },
+    {
+      "id": "bf9c73cd-26d4-4b2b-ad67-b9351678de99",
+      "created_at": "2026-05-30T02:38:38.149663+00:00",
+      "name": "Traje Charro Tradicional Gris",
+      "slug": "traje-charro-tradicional-gris",
+      "description": "Traje charro de 6 piezas con fino bordado en chaqueta, chaleco, pantalón y sombrero.",
+      "detailed_description": null,
+      "price": 0,
+      "show_price": false,
+      "category_id": "6c1bfb5f-5a16-43f7-b526-431ad2f583ef",
+      "material": "Venecia",
+      "includes": "Chaqueta, chaleco, pantalon, camisa, moño y sombrero",
+      "sizes": null,
+      "main_image": "https://uijtnyffwfzbpclxiyzs.supabase.co/storage/v1/object/public/catalog/products/1780108685501_nvgdn5.webp",
+      "gallery": [
+        "https://uijtnyffwfzbpclxiyzs.supabase.co/storage/v1/object/public/catalog/products/1780108704785_d7hvv3.webp",
+        "https://uijtnyffwfzbpclxiyzs.supabase.co/storage/v1/object/public/catalog/products/1780108711839_hbtll5.webp"
+      ],
+      "featured": false,
+      "stock_status": "available",
+      "subcategory": "trajes-charros",
+      "model_code": "23",
+      "color": "gris",
+      "size_variants": [
+        {
+          "sku": "846",
+          "size": "0 - 3",
+          "price": 3043
+        },
+        {
+          "sku": "847",
+          "size": "4 - 8",
+          "price": 3043
+        }
+      ],
+      "badges": [
+        "Premium"
+      ],
+      "is_active": true
+    },
+    {
+      "id": "696f3bba-b2d0-48e8-a04d-361e2cd0ea9a",
+      "created_at": "2026-05-29T23:51:36.745595+00:00",
+      "name": "Guayabera Chazarilla",
+      "slug": "guayabera-chazarilla",
+      "description": "Guayabera de 2 piezas en LINO con BORDADO SOUTACHE al frente en color kaki.",
+      "detailed_description": null,
+      "price": 0,
+      "show_price": false,
+      "category_id": "0178d082-bf1a-4dec-ac8f-06ee3112cc16",
+      "material": "Lino",
+      "includes": "Guayabera y pantalón",
+      "sizes": null,
+      "main_image": "https://uijtnyffwfzbpclxiyzs.supabase.co/storage/v1/object/public/catalog/products/1780098643798_w2boc8.webp",
+      "gallery": [
+        "https://uijtnyffwfzbpclxiyzs.supabase.co/storage/v1/object/public/catalog/products/1780098661608_7t1jue.webp",
+        "https://uijtnyffwfzbpclxiyzs.supabase.co/storage/v1/object/public/catalog/products/1780098669491_3gpg19.webp",
+        "https://uijtnyffwfzbpclxiyzs.supabase.co/storage/v1/object/public/catalog/products/1780098677791_ju2xp2.webp",
+        "https://uijtnyffwfzbpclxiyzs.supabase.co/storage/v1/object/public/catalog/products/1780098684965_pz9p0g.webp",
+        "https://uijtnyffwfzbpclxiyzs.supabase.co/storage/v1/object/public/catalog/products/1780098691167_hse1pn.webp"
+      ],
+      "featured": false,
+      "stock_status": "available",
+      "subcategory": "manga-corta",
+      "model_code": "23",
+      "color": "blanco,beige",
+      "size_variants": [
+        {
+          "sku": "488",
+          "size": "0 - 3",
+          "price": 824
+        },
+        {
+          "sku": "489",
+          "size": "4 - 8",
+          "price": 965
+        },
+        {
+          "sku": "490",
+          "size": "10 - 18",
+          "price": 1176
+        }
+      ],
+      "badges": null,
+      "is_active": true
+    },
+    {
+      "id": "67a9526b-191b-4c71-9e32-c8a0277e9724",
+      "created_at": "2026-05-30T03:57:44.337424+00:00",
+      "name": "Traje Príncipe",
+      "slug": "traje-principe",
+      "description": "Traje de 5 piezas corte recto con solapa en muesca y diseño JACQUARD en chaleco y moño.",
+      "detailed_description": null,
+      "price": 0,
+      "show_price": false,
+      "category_id": "6c1bfb5f-5a16-43f7-b526-431ad2f583ef",
+      "material": "Venecia",
+      "includes": "Saco, chaleco, pantalón, camisa y moño",
+      "sizes": null,
+      "main_image": "https://uijtnyffwfzbpclxiyzs.supabase.co/storage/v1/object/public/catalog/products/1780113458812_9xakr4.webp",
+      "gallery": [
+        "https://uijtnyffwfzbpclxiyzs.supabase.co/storage/v1/object/public/catalog/products/1780113479646_4u6b1q.webp",
+        "https://uijtnyffwfzbpclxiyzs.supabase.co/storage/v1/object/public/catalog/products/1780113488351_e2iuhr.webp",
+        "https://uijtnyffwfzbpclxiyzs.supabase.co/storage/v1/object/public/catalog/products/1780113498403_zbz1zp.webp",
+        "https://uijtnyffwfzbpclxiyzs.supabase.co/storage/v1/object/public/catalog/products/1780113510105_yfyx6c.webp",
+        "https://uijtnyffwfzbpclxiyzs.supabase.co/storage/v1/object/public/catalog/products/1780113524331_szlufg.webp"
+      ],
+      "featured": false,
+      "stock_status": "available",
+      "subcategory": "traje-principe",
+      "model_code": "23",
+      "color": "blanco,negro",
+      "size_variants": [
+        {
+          "sku": "364",
+          "size": "0 - 3",
+          "price": 1095
+        },
+        {
+          "sku": "365",
+          "size": "4 - 8",
+          "price": 1220
+        }
+      ],
+      "badges": null,
+      "is_active": true
+    },
+    {
+      "id": "3be0ee1f-b0bf-42c4-ae28-2b9a4e2a54d9",
+      "created_at": "2026-05-29T23:35:58.197282+00:00",
+      "name": "Guayabera Verano",
+      "slug": "guayabera-verano",
+      "description": "Guayabera de 2 piezas en LINO con BORDADO SOUTACHE al frente.",
+      "detailed_description": null,
+      "price": 0,
+      "show_price": false,
+      "category_id": "0178d082-bf1a-4dec-ac8f-06ee3112cc16",
+      "material": "Lino",
+      "includes": "Guayabera y pantalón",
+      "sizes": null,
+      "main_image": "https://uijtnyffwfzbpclxiyzs.supabase.co/storage/v1/object/public/catalog/products/1776979152958_yf6xkc.webp",
+      "gallery": [
+        "https://uijtnyffwfzbpclxiyzs.supabase.co/storage/v1/object/public/catalog/products/1776979165859_i0w80w.webp",
+        "https://uijtnyffwfzbpclxiyzs.supabase.co/storage/v1/object/public/catalog/products/1776979188214_bypz8n.webp",
+        "https://uijtnyffwfzbpclxiyzs.supabase.co/storage/v1/object/public/catalog/products/1780097638372_vzu911.webp",
+        "https://uijtnyffwfzbpclxiyzs.supabase.co/storage/v1/object/public/catalog/products/1780097712746_z3sfhz.webp",
+        "https://uijtnyffwfzbpclxiyzs.supabase.co/storage/v1/object/public/catalog/products/1780097751959_seh08j.webp"
+      ],
+      "featured": false,
+      "stock_status": "available",
+      "subcategory": "manga-corta",
+      "model_code": "23",
+      "color": "blanco,beige",
+      "size_variants": [
+        {
+          "sku": "473",
+          "size": "0 - 3",
+          "price": 824
+        },
+        {
+          "sku": "474",
+          "size": "4 - 8",
+          "price": 965
+        },
+        {
+          "sku": "475",
+          "size": "10 - 18",
+          "price": 1176
+        }
+      ],
+      "badges": null,
+      "is_active": true
+    },
+    {
+      "id": "f1dff9a7-8a3c-474c-8090-121c8291c4c7",
+      "created_at": "2026-05-30T03:35:55.628162+00:00",
+      "name": " Traje San Pedro",
+      "slug": "traje-san-pedro",
+      "description": "Traje de 5 piezas corte recto, sólido, con solapa en muesca.",
+      "detailed_description": null,
+      "price": 0,
+      "show_price": false,
+      "category_id": "6c1bfb5f-5a16-43f7-b526-431ad2f583ef",
+      "material": "Venecia",
+      "includes": "Saco, chaleco, pantalón, camisa y moño",
+      "sizes": null,
+      "main_image": "https://uijtnyffwfzbpclxiyzs.supabase.co/storage/v1/object/public/catalog/products/1780112124719_8k5qzy.webp",
+      "gallery": [
+        "https://uijtnyffwfzbpclxiyzs.supabase.co/storage/v1/object/public/catalog/products/1780112139078_zl52e9.webp",
+        "https://uijtnyffwfzbpclxiyzs.supabase.co/storage/v1/object/public/catalog/products/1780112148921_slxe24.webp"
+      ],
+      "featured": false,
+      "stock_status": "available",
+      "subcategory": "traje-san-pedro",
+      "model_code": "23",
+      "color": "blanco",
+      "size_variants": [
+        {
+          "sku": "335",
+          "size": "0 - 3",
+          "price": 824
+        },
+        {
+          "sku": "336",
+          "size": "4 - 8",
+          "price": 1021
+        }
+      ],
+      "badges": null,
+      "is_active": true
+    },
+    {
+      "id": "99b3bd04-f611-4ade-9935-ced6e24d927a",
+      "created_at": "2026-05-30T02:36:22.474416+00:00",
+      "name": "Traje Charro Tradicional Blanco",
+      "slug": "traje-charro-tradicional-blanco",
+      "description": "Traje charro de 6 piezas con fino bordado en chaqueta, chaleco, pantalón y sombrero.",
+      "detailed_description": null,
+      "price": 0,
+      "show_price": false,
+      "category_id": "6c1bfb5f-5a16-43f7-b526-431ad2f583ef",
+      "material": "Hawaii",
+      "includes": "Chaqueta, chaleco, pantalon, camisa, moño y sombrero",
+      "sizes": null,
+      "main_image": "https://uijtnyffwfzbpclxiyzs.supabase.co/storage/v1/object/public/catalog/products/1780108528873_mesg4k.webp",
+      "gallery": [
+        "https://uijtnyffwfzbpclxiyzs.supabase.co/storage/v1/object/public/catalog/products/1780108541543_giruhj.webp",
+        "https://uijtnyffwfzbpclxiyzs.supabase.co/storage/v1/object/public/catalog/products/1780108560446_w3uzo2.webp"
+      ],
+      "featured": false,
+      "stock_status": "available",
+      "subcategory": "trajes-charros",
+      "model_code": "23",
+      "color": "blanco",
+      "size_variants": [
+        {
+          "sku": "846",
+          "size": "0 - 3",
+          "price": 3043
+        },
+        {
+          "sku": "847",
+          "size": "4 - 8",
+          "price": 3043
+        }
+      ],
+      "badges": [
+        "Premium"
+      ],
+      "is_active": true
+    },
+    {
+      "id": "59c904a8-e3ac-4f1c-aad6-b5340e6be461",
+      "created_at": "2026-05-30T04:04:23.505315+00:00",
+      "name": "Traje Arcángel",
+      "slug": "traje-arcangel",
+      "description": "Traje Esmoquin recto con solapa en muesca y camisa con alforzas.",
+      "detailed_description": null,
+      "price": 0,
+      "show_price": false,
+      "category_id": "6c1bfb5f-5a16-43f7-b526-431ad2f583ef",
+      "material": "Hawaii",
+      "includes": "Saco, chaleco, pantalón, camisa y moño",
+      "sizes": null,
+      "main_image": "https://uijtnyffwfzbpclxiyzs.supabase.co/storage/v1/object/public/catalog/products/1780113711922_48vw3k.webp",
+      "gallery": [
+        "https://uijtnyffwfzbpclxiyzs.supabase.co/storage/v1/object/public/catalog/products/1780113726698_cocgya.webp",
+        "https://uijtnyffwfzbpclxiyzs.supabase.co/storage/v1/object/public/catalog/products/1780113739668_syk9ra.webp",
+        "https://uijtnyffwfzbpclxiyzs.supabase.co/storage/v1/object/public/catalog/products/1780113750727_jdh58k.webp",
+        "https://uijtnyffwfzbpclxiyzs.supabase.co/storage/v1/object/public/catalog/products/1780113796665_zkzxbj.webp",
+        "https://uijtnyffwfzbpclxiyzs.supabase.co/storage/v1/object/public/catalog/products/1780113829523_pgmaea.webp",
+        "https://uijtnyffwfzbpclxiyzs.supabase.co/storage/v1/object/public/catalog/products/1780113842270_9bbukr.webp",
+        "https://uijtnyffwfzbpclxiyzs.supabase.co/storage/v1/object/public/catalog/products/1780113849205_nlqqva.webp",
+        "https://uijtnyffwfzbpclxiyzs.supabase.co/storage/v1/object/public/catalog/products/1780113857423_2cp7hk.webp"
+      ],
+      "featured": false,
+      "stock_status": "available",
+      "subcategory": "traje-arcangel",
+      "model_code": "23",
+      "color": "blanco,beige,negro",
+      "size_variants": [
+        {
+          "sku": "303",
+          "size": "10 - 18",
+          "price": 1529
+        }
+      ],
+      "badges": null,
+      "is_active": true
+    },
+    {
+      "id": "aa704f96-2f02-4d10-80c6-9f7a8f226dee",
+      "created_at": "2026-05-30T04:37:22.667497+00:00",
+      "name": "Esmóquin San Gabriel",
+      "slug": "esmoquin-san-gabriel",
+      "description": "Esmoquin de 5 piezas corte recto con solapa redonda satinada y estilo JACQUARD en chaleco y moño.",
+      "detailed_description": null,
+      "price": 0,
+      "show_price": false,
+      "category_id": "6c1bfb5f-5a16-43f7-b526-431ad2f583ef",
+      "material": "Tafetán",
+      "includes": "Saco, chaleco, pantalón, camisa y moño",
+      "sizes": null,
+      "main_image": "https://uijtnyffwfzbpclxiyzs.supabase.co/storage/v1/object/public/catalog/products/1780115761337_wga4xn.webp",
+      "gallery": [
+        "https://uijtnyffwfzbpclxiyzs.supabase.co/storage/v1/object/public/catalog/products/1780115772710_8ehfvq.webp",
+        "https://uijtnyffwfzbpclxiyzs.supabase.co/storage/v1/object/public/catalog/products/1780115782088_vztbq7.webp",
+        "https://uijtnyffwfzbpclxiyzs.supabase.co/storage/v1/object/public/catalog/products/1780115791197_y73t3o.webp",
+        "https://uijtnyffwfzbpclxiyzs.supabase.co/storage/v1/object/public/catalog/products/1780115801745_kcwfsw.webp",
+        "https://uijtnyffwfzbpclxiyzs.supabase.co/storage/v1/object/public/catalog/products/1780115809990_rlrbqz.webp",
+        "https://uijtnyffwfzbpclxiyzs.supabase.co/storage/v1/object/public/catalog/products/1780115822652_jxv3jn.webp",
+        "https://uijtnyffwfzbpclxiyzs.supabase.co/storage/v1/object/public/catalog/products/1780115833575_b3miu9.webp"
+      ],
+      "featured": false,
+      "stock_status": "available",
+      "subcategory": "esmoquines",
+      "model_code": "23",
+      "color": "blanco,negro",
+      "size_variants": [
+        {
+          "sku": "370",
+          "size": "0 - 3",
+          "price": 1095
+        },
+        {
+          "sku": "371",
+          "size": "4 - 8",
+          "price": 1220
+        }
+      ],
+      "badges": null,
+      "is_active": true
+    },
+    {
+      "id": "0679329e-fd28-4c7e-a27b-36c1a0080ea1",
+      "created_at": "2026-05-30T02:40:31.812234+00:00",
+      "name": "Traje Charro Tradicional Kaki",
+      "slug": "traje-charro-tradicional-kaki",
+      "description": "Traje charro de 6 piezas con fino bordado en chaqueta, chaleco, pantalón y sombrero.",
+      "detailed_description": null,
+      "price": 0,
+      "show_price": false,
+      "category_id": "6c1bfb5f-5a16-43f7-b526-431ad2f583ef",
+      "material": "Venecia",
+      "includes": "Chaqueta, chaleco, pantalon, camisa, moño y sombrero",
+      "sizes": null,
+      "main_image": "https://uijtnyffwfzbpclxiyzs.supabase.co/storage/v1/object/public/catalog/products/1780108772615_02rq9q.webp",
+      "gallery": [
+        "https://uijtnyffwfzbpclxiyzs.supabase.co/storage/v1/object/public/catalog/products/1780108789646_8c4657.webp",
+        "https://uijtnyffwfzbpclxiyzs.supabase.co/storage/v1/object/public/catalog/products/1780108802296_l870yu.webp",
+        "https://uijtnyffwfzbpclxiyzs.supabase.co/storage/v1/object/public/catalog/products/1780108826425_ouyi97.webp"
+      ],
+      "featured": false,
+      "stock_status": "available",
+      "subcategory": "trajes-charros",
+      "model_code": "23",
+      "color": "kaki",
+      "size_variants": [
+        {
+          "sku": "846",
+          "size": "0 - 3",
+          "price": 3043
+        },
+        {
+          "sku": "847",
+          "size": "4 - 8",
+          "price": 3043
+        }
+      ],
+      "badges": [
+        "Premium"
+      ],
+      "is_active": true
+    },
+    {
+      "id": "b677dfa7-bfd9-43f6-a8e1-5aed45b5b286",
+      "created_at": "2026-05-30T00:16:53.195959+00:00",
+      "name": "Traje Charro con Virgen Blanco",
+      "slug": "traje-charro-con-virgen",
+      "description": "Traje charro de 6 piezas con fino bordado en chaqueta, chaleco, pantalón y sombrero.",
+      "detailed_description": null,
+      "price": 0,
+      "show_price": false,
+      "category_id": "6c1bfb5f-5a16-43f7-b526-431ad2f583ef",
+      "material": "Hawaii",
+      "includes": "Chaqueta, chaleco, pantalon, camisa, moño y sombrero",
+      "sizes": null,
+      "main_image": "https://uijtnyffwfzbpclxiyzs.supabase.co/storage/v1/object/public/catalog/products/1778351008094_55e52y.webp",
+      "gallery": [
+        "https://uijtnyffwfzbpclxiyzs.supabase.co/storage/v1/object/public/catalog/products/1778352659269_or54sa.webp",
+        "https://uijtnyffwfzbpclxiyzs.supabase.co/storage/v1/object/public/catalog/products/1778352712470_ijxcec.webp",
+        "https://uijtnyffwfzbpclxiyzs.supabase.co/storage/v1/object/public/catalog/products/1778352740296_i8sfdp.webp",
+        "https://uijtnyffwfzbpclxiyzs.supabase.co/storage/v1/object/public/catalog/products/1778352788490_2voivh.webp"
+      ],
+      "featured": false,
+      "stock_status": "available",
+      "subcategory": "trajes-charros",
+      "model_code": "23",
+      "color": "blanco",
+      "size_variants": [
+        {
+          "sku": "834",
+          "size": "0 - 3",
+          "price": 3043
+        },
+        {
+          "sku": "835",
+          "size": "4 - 8",
+          "price": 3043
+        }
+      ],
+      "badges": [
+        "Premium"
+      ],
+      "is_active": true
+    },
+    {
+      "id": "16825c50-974c-4658-9bca-e773962ee4f7",
+      "created_at": "2026-05-30T21:28:19.852548+00:00",
+      "name": "Guayabera Bebé 23451",
+      "slug": "guayabera-bebe",
+      "description": "Conjunto infantil de guayabera con short confeccionado en lino 80/20, una combinación fresca, ligera y cómoda.",
+      "detailed_description": null,
+      "price": 0,
+      "show_price": false,
+      "category_id": "0178d082-bf1a-4dec-ac8f-06ee3112cc16",
+      "material": "Lino",
+      "includes": "Guayabera y short",
+      "sizes": null,
+      "main_image": "https://uijtnyffwfzbpclxiyzs.supabase.co/storage/v1/object/public/catalog/products/1780175873556_tdxi30.webp",
+      "gallery": [
+        "https://uijtnyffwfzbpclxiyzs.supabase.co/storage/v1/object/public/catalog/products/1780175893601_g8ep2y.webp",
+        "https://uijtnyffwfzbpclxiyzs.supabase.co/storage/v1/object/public/catalog/products/1780175903986_p2pq4w.webp"
+      ],
+      "featured": false,
+      "stock_status": "available",
+      "subcategory": "guayabera-short-bebe",
+      "model_code": "23",
+      "color": "blanco",
+      "size_variants": [
+        {
+          "sku": "451",
+          "size": "0 - 3",
+          "price": 751
+        }
+      ],
+      "badges": null,
+      "is_active": true
+    },
+    {
+      "id": "f36a3167-9c81-4760-b90f-92df13d1b24c",
+      "created_at": "2026-05-30T21:34:27.757554+00:00",
+      "name": "Guayabera Bebé 23454",
+      "slug": "guayabera-bebe-ii",
+      "description": "Conjunto infantil de guayabera con short confeccionado en lino 80/20, una combinación fresca, ligera y cómoda.",
+      "detailed_description": null,
+      "price": 0,
+      "show_price": false,
+      "category_id": "0178d082-bf1a-4dec-ac8f-06ee3112cc16",
+      "material": "Lino",
+      "includes": "Guayabera y short",
+      "sizes": null,
+      "main_image": "https://uijtnyffwfzbpclxiyzs.supabase.co/storage/v1/object/public/catalog/products/1780176676787_mk9ais.webp",
+      "gallery": [
+        "https://uijtnyffwfzbpclxiyzs.supabase.co/storage/v1/object/public/catalog/products/1780176684285_teon74.webp",
+        "https://uijtnyffwfzbpclxiyzs.supabase.co/storage/v1/object/public/catalog/products/1780176691121_ifq6tm.webp"
+      ],
+      "featured": false,
+      "stock_status": "available",
+      "subcategory": "guayabera-short-bebe",
+      "model_code": "23",
+      "color": "blanco",
+      "size_variants": [
+        {
+          "sku": "454",
+          "size": "0 - 3",
+          "price": 751
+        }
+      ],
+      "badges": null,
+      "is_active": true
+    },
+    {
+      "id": "7d7bbda8-5f6b-4da2-a246-84b56075e3e3",
+      "created_at": "2026-05-30T00:07:18.624848+00:00",
+      "name": "Guayabera Tropical",
+      "slug": "guayabera-tropical",
+      "description": "Guayabera de 2 piezas de MANGA LARGA en LINO con BORDADO SOUTACHE al frente color kaki.",
+      "detailed_description": null,
+      "price": 0,
+      "show_price": false,
+      "category_id": "0178d082-bf1a-4dec-ac8f-06ee3112cc16",
+      "material": "Lino",
+      "includes": "Guayabera y pantalón",
+      "sizes": null,
+      "main_image": "https://uijtnyffwfzbpclxiyzs.supabase.co/storage/v1/object/public/catalog/products/1780099587865_01mrbt.webp",
+      "gallery": [
+        "https://uijtnyffwfzbpclxiyzs.supabase.co/storage/v1/object/public/catalog/products/1780099606515_v5au1f.webp",
+        "https://uijtnyffwfzbpclxiyzs.supabase.co/storage/v1/object/public/catalog/products/1780099614941_swr39d.webp",
+        "https://uijtnyffwfzbpclxiyzs.supabase.co/storage/v1/object/public/catalog/products/1780099626228_u8g44r.webp",
+        "https://uijtnyffwfzbpclxiyzs.supabase.co/storage/v1/object/public/catalog/products/1780099633571_v5v6sa.webp"
+      ],
+      "featured": false,
+      "stock_status": "available",
+      "subcategory": "manga-larga",
+      "model_code": "23",
+      "color": "blanco,beige",
+      "size_variants": [
+        {
+          "sku": "485",
+          "size": "0 - 3",
+          "price": 898
+        },
+        {
+          "sku": "486",
+          "size": "4 - 8",
+          "price": 1051
+        },
+        {
+          "sku": "487",
+          "size": "10 - 18",
+          "price": 1228
+        }
+      ],
+      "badges": null,
+      "is_active": true
+    },
+    {
+      "id": "6a844c06-094a-44e3-851c-a6b9bcca76bf",
+      "created_at": "2026-05-30T00:01:37.253564+00:00",
+      "name": "Guayabera Maya",
+      "slug": "guayabera-maya",
+      "description": "Guayabera de 2 piezas de MANGA LARGA en LINO con BORDADO SOUTACHE al frente en color kaki",
+      "detailed_description": null,
+      "price": 0,
+      "show_price": false,
+      "category_id": "0178d082-bf1a-4dec-ac8f-06ee3112cc16",
+      "material": "Lino",
+      "includes": "Guayabera y pantalón",
+      "sizes": null,
+      "main_image": "https://uijtnyffwfzbpclxiyzs.supabase.co/storage/v1/object/public/catalog/products/1780099254816_jigjuv.webp",
+      "gallery": [
+        "https://uijtnyffwfzbpclxiyzs.supabase.co/storage/v1/object/public/catalog/products/1780099284179_fnmqeg.webp",
+        "https://uijtnyffwfzbpclxiyzs.supabase.co/storage/v1/object/public/catalog/products/1780099325381_x21miz.webp",
+        "https://uijtnyffwfzbpclxiyzs.supabase.co/storage/v1/object/public/catalog/products/1780099335589_4o24og.webp"
+      ],
+      "featured": false,
+      "stock_status": "available",
+      "subcategory": "manga-larga",
+      "model_code": "23",
+      "color": "blanco,beige",
+      "size_variants": [
+        {
+          "sku": "479",
+          "size": "0 - 3",
+          "price": 898
+        },
+        {
+          "sku": "480",
+          "size": "4 - 8",
+          "price": 1051
+        },
+        {
+          "sku": "481",
+          "size": "10 - 18",
+          "price": 1228
+        }
+      ],
+      "badges": null,
+      "is_active": true
+    },
+    {
+      "id": "9e1faff4-87cb-4ead-876e-58c0143857a4",
+      "created_at": "2026-05-30T21:52:35.272357+00:00",
+      "name": "Traje de Lino Beige",
+      "slug": "traje-de-lino-beige",
+      "description": "Traje de 5 piezas en LINO corte recto, sólido, con solapa en muesca.",
+      "detailed_description": null,
+      "price": 0,
+      "show_price": false,
+      "category_id": "6c1bfb5f-5a16-43f7-b526-431ad2f583ef",
+      "material": "Lino",
+      "includes": "Saco, chaleco, pantalón, camisa y corbata",
+      "sizes": null,
+      "main_image": "https://uijtnyffwfzbpclxiyzs.supabase.co/storage/v1/object/public/catalog/products/1780110383477_8yfd5o.webp",
+      "gallery": [
+        "https://uijtnyffwfzbpclxiyzs.supabase.co/storage/v1/object/public/catalog/products/1780110401752_d97qo9.webp",
+        "https://uijtnyffwfzbpclxiyzs.supabase.co/storage/v1/object/public/catalog/products/1780110411133_y4yyac.webp",
+        "https://uijtnyffwfzbpclxiyzs.supabase.co/storage/v1/object/public/catalog/products/1780110422481_h8jgvv.webp"
+      ],
+      "featured": false,
+      "stock_status": "available",
+      "subcategory": "traje-de-lino",
+      "model_code": "23",
+      "color": "beige",
+      "size_variants": [
+        {
+          "sku": "394",
+          "size": "0 - 8",
+          "price": 1669
+        },
+        {
+          "sku": "395",
+          "size": "10 - 18",
+          "price": 1835
+        }
+      ],
+      "badges": [
+        "Premium",
+        "Edición Especial"
+      ],
+      "is_active": true
+    },
+    {
+      "id": "221a5d5a-7787-40ff-b8e1-8b51af40c174",
+      "created_at": "2026-05-30T22:01:42.221765+00:00",
+      "name": "Traje de Venecia Gris",
+      "slug": "traje-de-venecia-gris",
+      "description": "Traje de 5 piezas VENECIA corte recto, sólido, con solapa en muesca.",
+      "detailed_description": null,
+      "price": 0,
+      "show_price": false,
+      "category_id": "6c1bfb5f-5a16-43f7-b526-431ad2f583ef",
+      "material": "Venecia",
+      "includes": "Saco, chaleco, pantalón, camisa y corbata",
+      "sizes": null,
+      "main_image": "https://uijtnyffwfzbpclxiyzs.supabase.co/storage/v1/object/public/catalog/products/1780111623520_c9abm0.webp",
+      "gallery": [
+        "https://uijtnyffwfzbpclxiyzs.supabase.co/storage/v1/object/public/catalog/products/1780111630151_doiq9w.webp",
+        "https://uijtnyffwfzbpclxiyzs.supabase.co/storage/v1/object/public/catalog/products/1780111639461_rarlsl.webp"
+      ],
+      "featured": false,
+      "stock_status": "available",
+      "subcategory": "traje-venecia",
+      "model_code": "23",
+      "color": "gris",
+      "size_variants": [
+        {
+          "sku": "827",
+          "size": "0 - 3",
+          "price": 1000
+        },
+        {
+          "sku": "828",
+          "size": "4 - 8",
+          "price": 1095
+        },
+        {
+          "sku": "829",
+          "size": "10 - 18",
+          "price": 1307
+        }
+      ],
+      "badges": null,
+      "is_active": true
+    },
+    {
+      "id": "80aea9e3-76f7-406b-98e3-a51834d91225",
+      "created_at": "2026-05-30T22:02:49.404259+00:00",
+      "name": "Traje de Venecia Azul Marino",
+      "slug": "traje-de-venecia-azul-marino",
+      "description": "Traje de 5 piezas VENECIA corte recto, sólido, con solapa en muesca.",
+      "detailed_description": null,
+      "price": 0,
+      "show_price": false,
+      "category_id": "6c1bfb5f-5a16-43f7-b526-431ad2f583ef",
+      "material": "Venecia",
+      "includes": "Saco, chaleco, pantalón, camisa y corbata",
+      "sizes": null,
+      "main_image": "https://uijtnyffwfzbpclxiyzs.supabase.co/storage/v1/object/public/catalog/products/1780111650412_8mhi2g.webp",
+      "gallery": [
+        "https://uijtnyffwfzbpclxiyzs.supabase.co/storage/v1/object/public/catalog/products/1780111658860_pgzj1c.webp",
+        "https://uijtnyffwfzbpclxiyzs.supabase.co/storage/v1/object/public/catalog/products/1780111666632_q3hix4.webp"
+      ],
+      "featured": false,
+      "stock_status": "available",
+      "subcategory": "traje-venecia",
+      "model_code": "23",
+      "color": "azul marino",
+      "size_variants": [
+        {
+          "sku": "827",
+          "size": "0 - 3",
+          "price": 1000
+        },
+        {
+          "sku": "828",
+          "size": "4 - 8",
+          "price": 1095
+        },
+        {
+          "sku": "829",
+          "size": "10 - 18",
+          "price": 1307
+        }
+      ],
+      "badges": null,
+      "is_active": true
+    },
+    {
+      "id": "5af16be2-babb-4678-9f39-13fbcd78c2bd",
+      "created_at": "2026-05-30T21:58:06.248054+00:00",
+      "name": "Traje de Lino Azul",
+      "slug": "traje-de-lino-azul",
+      "description": "Traje de 5 piezas en LINO corte recto, sólido, con solapa en muesca.",
+      "detailed_description": null,
+      "price": 0,
+      "show_price": false,
+      "category_id": "6c1bfb5f-5a16-43f7-b526-431ad2f583ef",
+      "material": "Lino",
+      "includes": "Saco, chaleco, pantalón, camisa y corbata",
+      "sizes": null,
+      "main_image": "https://uijtnyffwfzbpclxiyzs.supabase.co/storage/v1/object/public/catalog/products/1780110524920_apdzcz.webp",
+      "gallery": [
+        "https://uijtnyffwfzbpclxiyzs.supabase.co/storage/v1/object/public/catalog/products/1780110544697_tbf5ov.webp",
+        "https://uijtnyffwfzbpclxiyzs.supabase.co/storage/v1/object/public/catalog/products/1780110555236_rly5qe.webp",
+        "https://uijtnyffwfzbpclxiyzs.supabase.co/storage/v1/object/public/catalog/products/1780110564133_guhgfa.webp",
+        "https://uijtnyffwfzbpclxiyzs.supabase.co/storage/v1/object/public/catalog/products/1780114422744_dq1250.webp",
+        "https://uijtnyffwfzbpclxiyzs.supabase.co/storage/v1/object/public/catalog/products/1780114451680_gshj5n.webp",
+        "https://uijtnyffwfzbpclxiyzs.supabase.co/storage/v1/object/public/catalog/products/1780114461185_djydec.webp",
+        "https://uijtnyffwfzbpclxiyzs.supabase.co/storage/v1/object/public/catalog/products/1780114470456_po3nbj.webp"
+      ],
+      "featured": false,
+      "stock_status": "available",
+      "subcategory": "traje-de-lino",
+      "model_code": "23",
+      "color": "azul celeste,azul celeste con kaki",
+      "size_variants": [
+        {
+          "sku": "394",
+          "size": "0 - 8",
+          "price": 1669
+        },
+        {
+          "sku": "395",
+          "size": "10 - 18",
+          "price": 1835
+        }
+      ],
+      "badges": [
+        "Premium",
+        "Edición Especial"
+      ],
+      "is_active": true
+    }
+  ]
+}

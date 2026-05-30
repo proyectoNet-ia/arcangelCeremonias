@@ -88,7 +88,7 @@ export const Header: React.FC<HeaderProps> = ({ variant = 'light' }) => {
             try {
                 const { productService } = await import('@/services/productService');
                 const data = await productService.getCategories();
-                setCategories(data.filter((c: any) => !c.parent_id));
+                setCategories(data);
             } catch (err) {
                 console.error("Error loading categories for mobile menu:", err);
             }
@@ -427,21 +427,39 @@ export const Header: React.FC<HeaderProps> = ({ variant = 'light' }) => {
                                                         initial={{ height: 0, opacity: 0 }}
                                                         animate={{ height: 'auto', opacity: 1 }}
                                                         exit={{ height: 0, opacity: 0 }}
-                                                        className="pl-6 flex flex-col overflow-hidden"
+                                                        className="pl-2 flex flex-col overflow-hidden"
                                                     >
-                                                        <div className="ml-6 pl-5 border-l border-[#C5A059]/30 py-2 flex flex-col gap-3 pb-4">
-                                                            {categories.map((cat) => (
-                                                                <div key={cat.id}>
+                                                        <div className="ml-2 pl-4 border-l border-[#C5A059]/30 py-2 flex flex-col gap-5 pb-4">
+                                                            {categories.filter(c => !c.parent_id).map((cat) => {
+                                                                const subcategories = categories.filter(sub => sub.parent_id === cat.id);
+                                                                return (
+                                                                <div key={cat.id} className="flex flex-col gap-2">
                                                                     <Link
                                                                         to={`/catalogo?categoria=${cat.slug}`}
                                                                         onClick={() => setIsMobileMenuOpen(false)}
-                                                                        className="text-[10px] uppercase tracking-[0.25em] text-cream opacity-80 hover:opacity-100 hover:text-gold flex items-center gap-4 py-1.5 transition-all duration-300 font-medium group/sub"
+                                                                        className="text-[11px] uppercase tracking-[0.2em] text-cream opacity-90 hover:opacity-100 hover:text-gold flex items-center gap-3 transition-all duration-300 font-bold group/sub"
                                                                     >
-                                                                        <div className="w-1 h-1 flex-shrink-0 rounded-full bg-[#C5A059]/50 group-hover/sub:bg-gold group-hover/sub:scale-150 transition-all duration-300" />
+                                                                        <div className="w-1.5 h-1.5 flex-shrink-0 rounded-full bg-[#C5A059] group-hover/sub:bg-gold group-hover/sub:scale-150 transition-all duration-300" />
                                                                         <span className="group-hover/sub:translate-x-1 transition-transform duration-300">{cat.name}</span>
                                                                     </Link>
+                                                                    
+                                                                    {subcategories.length > 0 && (
+                                                                        <div className="pl-4 flex flex-col gap-2.5 mt-1 border-l border-gold/10 ml-0.5">
+                                                                            {subcategories.map(sub => (
+                                                                                <Link
+                                                                                    key={sub.id}
+                                                                                    to={`/catalogo?categoria=${cat.slug}&subcategoria=${sub.slug}`}
+                                                                                    onClick={() => setIsMobileMenuOpen(false)}
+                                                                                    className="text-[10px] uppercase tracking-[0.1em] text-cream opacity-70 hover:opacity-100 flex items-center gap-3 transition-all duration-300 group/item"
+                                                                                >
+                                                                                    <div className="w-1 h-1 flex-shrink-0 rounded-full bg-gold opacity-40 group-hover/item:opacity-100 group-hover/item:scale-150 transition-all duration-300" />
+                                                                                    <span className="group-hover/item:translate-x-1 transition-transform duration-300">{sub.name}</span>
+                                                                                </Link>
+                                                                            ))}
+                                                                        </div>
+                                                                    )}
                                                                 </div>
-                                                            ))}
+                                                            )})}
                                                         </div>
                                                     </motion.div>
                                                 )}

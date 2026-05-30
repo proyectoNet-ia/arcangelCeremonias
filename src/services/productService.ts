@@ -21,7 +21,8 @@ export const productService = {
     async getCategories(onlyActive = false) {
         let query = supabase
             .from('categories')
-            .select('*');
+            .select('*')
+            .order('name', { ascending: true });
 
         if (onlyActive) {
             query = query.eq('is_active', true);

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
-    faPlus, faBox, faChartBar, faEye, faArrowUp, faDiamond, faMagic, faTrophy
+    faPlus, faBox, faChartBar, faEye, faArrowUp, faDiamond, faMagic, faTrophy, faFileDownload
 } from '@fortawesome/free-solid-svg-icons';
 import { faWhatsapp } from '@fortawesome/free-brands-svg-icons';
 import { statsService } from '@/services/statsService';
@@ -102,6 +102,34 @@ export const DashboardOverview: React.FC<DashboardOverviewProps> = ({ products, 
         }
     };
 
+    const handleDownloadBackup = async () => {
+        try {
+            const toastId = toast.loading('Generando respaldo...');
+            
+            const backupData = {
+                timestamp: new Date().toISOString(),
+                categories,
+                products
+            };
+
+            const blob = new Blob([JSON.stringify(backupData, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `arcangel_backup_${new Date().toISOString().replace(/[:.]/g, '-')}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+
+            toast.success('¡Respaldo descargado con éxito!', { id: toastId });
+        } catch (error) {
+            console.error('Error backup:', error);
+            toast.error('Error al generar el respaldo');
+        }
+    };
+
     const stats = [
         { label: 'Catálogo', value: products.length, icon: faBox, color: 'text-blue-500', bg: 'bg-blue-50', sub: 'Productos' },
         { label: 'Secciones', value: categories.length, icon: faChartBar, color: 'text-purple-500', bg: 'bg-purple-50', sub: 'Categorías' },
@@ -159,9 +187,17 @@ export const DashboardOverview: React.FC<DashboardOverviewProps> = ({ products, 
                             <p className="text-xs uppercase tracking-widest font-bold">Nuevo Producto</p>
                         </button>
                         <button
+                            onClick={handleDownloadBackup}
+                            className="p-4 md:p-6 border border-slate-100 bg-slate-50 hover:bg-gold hover:text-white transition-all text-left space-y-2 group"
+                        >
+                            <FontAwesomeIcon icon={faFileDownload} className="text-gold group-hover:text-white" />
+                            <p className="text-xs uppercase tracking-widest font-bold">Respaldar Datos</p>
+                            <p className="text-[8px] opacity-60">Descarga un archivo JSON</p>
+                        </button>
+                        <button
                             onClick={triggerStandardize}
                             disabled={isStandardizing}
-                            className="p-4 md:p-6 border border-slate-100 bg-slate-50 hover:bg-gold hover:text-white transition-all text-left space-y-2 group disabled:opacity-50"
+                            className="p-4 md:p-6 border border-slate-100 bg-slate-50 hover:bg-gold hover:text-white transition-all text-left space-y-2 group disabled:opacity-50 col-span-2"
                         >
                             <FontAwesomeIcon icon={faMagic} className={`text-gold group-hover:text-white ${isStandardizing ? 'animate-spin' : ''}`} />
                             <p className="text-xs uppercase tracking-widest font-bold">Estandarizar Títulos</p>
