@@ -50,12 +50,12 @@ export const cleanupService = {
 
         // 3. Cruzar datos: ¿Cuáles archivos del Storage NO están en usedUrls?
         const unused = allMedia.filter(media => {
-            // Normalizamos las URLs para la comparación por si acaso (aunque Supabase suele ser consistente)
-            const cleanUrl = media.url.split('?')[0]; // Eliminar query params si los hay
+            const cleanMediaUrl = decodeURI(media.url.split('?')[0]);
             
-            // Verificamos si la URL del medio está en el set de usadas
-            // Usamos .some porque las URLs en la DB pueden tener params o ligeras variaciones
-            return !Array.from(usedUrls).some(used => used.includes(media.name));
+            return !Array.from(usedUrls).some(used => {
+                const cleanUsedUrl = decodeURI(used.split('?')[0]);
+                return cleanUsedUrl === cleanMediaUrl || cleanUsedUrl.includes(media.name);
+            });
         });
 
         return unused;

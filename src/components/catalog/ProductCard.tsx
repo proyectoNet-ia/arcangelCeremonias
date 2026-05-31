@@ -36,11 +36,15 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, index }) => {
                     )}
 
                     <img
-                        src={product.main_image}
+                        src={product.main_image || '/placeholder-image.jpg'}
                         alt={product.name}
                         loading="lazy"
                         decoding="async"
                         onLoad={() => setIsLoaded(true)}
+                        onError={(e) => {
+                            setIsLoaded(true);
+                            e.currentTarget.src = 'https://placehold.co/400x600/f8f5f2/8b643c?text=Imagen+No+Disponible';
+                        }}
                         className={`w-full h-full object-cover transition-all duration-1000 group-hover:scale-110 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
                     />
                     
