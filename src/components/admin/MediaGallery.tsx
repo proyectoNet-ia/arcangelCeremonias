@@ -5,7 +5,7 @@ import {
     faImage, faTrash, faCopy, faTimes, faSearch,
     faFolder, faSync, faExternalLinkAlt, faCheck,
     faLock, faSort, faSortAmountDown, faChevronLeft, faChevronRight,
-    faTh, faList
+    faTh, faList, faEye
 } from '@fortawesome/free-solid-svg-icons';
 import { mediaService, MediaFile, ALL_ALLOWED_FORMATS } from '@/services/mediaService';
 import { cleanupService } from '@/services/cleanupService';
@@ -28,6 +28,7 @@ export const MediaGallery: React.FC<MediaGalleryProps> = ({ onSelect, allowSelec
         isOpen: false,
         file: null
     });
+    const [previewImage, setPreviewImage] = useState<MediaFile | null>(null);
 
     const [isScanning, setIsScanning] = useState(false);
     const [unusedUrls, setUnusedUrls] = useState<Set<string>>(new Set());
@@ -426,7 +427,7 @@ export const MediaGallery: React.FC<MediaGalleryProps> = ({ onSelect, allowSelec
                                             </div>
                                         </div>
                                     ) : (
-                                        <img src={file.url} alt={file.name} className="w-full h-full object-cover transition-transform group-hover:scale-110" loading="lazy" />
+                                        <img src={file.url} alt={file.name} className={`w-full h-full transition-transform group-hover:scale-110 ${file.folder === 'products' ? 'object-contain p-2 bg-white' : 'object-cover'}`} loading="lazy" />
                                     )}
 
                                     {/* Format Badge */}
@@ -447,12 +448,24 @@ export const MediaGallery: React.FC<MediaGalleryProps> = ({ onSelect, allowSelec
                                     {/* Overlay Buttons */}
                                     <div className="absolute inset-0 bg-slate-900/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-3 z-20">
                                         {allowSelection ? (
-                                            <button
-                                                onClick={() => onSelect?.(file.url)}
-                                                className="bg-gold text-chocolate px-4 py-2 text-[10px] font-bold uppercase tracking-widest hover:bg-white transition-all shadow-xl"
-                                            >
-                                                <FontAwesomeIcon icon={faCheck} className="mr-2" /> Seleccionar
-                                            </button>
+                                            <>
+                                                <button
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        setPreviewImage(file);
+                                                    }}
+                                                    className="w-10 h-10 bg-white/20 text-white hover:bg-white hover:text-chocolate rounded-full transition-all flex items-center justify-center mb-2"
+                                                    title="Ver en grande"
+                                                >
+                                                    <FontAwesomeIcon icon={faEye} />
+                                                </button>
+                                                <button
+                                                    onClick={() => onSelect?.(file.url)}
+                                                    className="bg-gold text-chocolate px-4 py-2 text-[10px] font-bold uppercase tracking-widest hover:bg-white transition-all shadow-xl"
+                                                >
+                                                    <FontAwesomeIcon icon={faCheck} className="mr-2" /> Seleccionar
+                                                </button>
+                                            </>
                                         ) : (
                                             <>
                                                 <div className="flex gap-2">
@@ -462,6 +475,13 @@ export const MediaGallery: React.FC<MediaGalleryProps> = ({ onSelect, allowSelec
                                                         title="Copiar URL"
                                                     >
                                                         <FontAwesomeIcon icon={faCopy} />
+                                                    </button>
+                                                    <button
+                                                        onClick={() => setPreviewImage(file)}
+                                                        className="w-10 h-10 bg-white/20 text-white hover:bg-white hover:text-chocolate rounded-full transition-all flex items-center justify-center"
+                                                        title="Ver en grande"
+                                                    >
+                                                        <FontAwesomeIcon icon={faEye} />
                                                     </button>
                                                     <a
                                                         href={file.url}
@@ -527,13 +547,21 @@ export const MediaGallery: React.FC<MediaGalleryProps> = ({ onSelect, allowSelec
                                     <td className="px-6 py-4">
                                         <div className="flex justify-end gap-2">
                                             {allowSelection ? (
-                                                <button onClick={() => onSelect?.(file.url)} className="px-4 py-2 bg-gold text-chocolate text-[10px] font-bold uppercase tracking-widest hover:bg-chocolate hover:text-white transition-all">
-                                                    Seleccionar
-                                                </button>
+                                                <>
+                                                    <button onClick={() => setPreviewImage(file)} className="p-2 border border-slate-100 hover:bg-gold hover:text-white transition-all rounded shadow-sm" title="Ver en grande">
+                                                        <FontAwesomeIcon icon={faEye} className="text-xs" />
+                                                    </button>
+                                                    <button onClick={() => onSelect?.(file.url)} className="px-4 py-2 bg-gold text-chocolate text-[10px] font-bold uppercase tracking-widest hover:bg-chocolate hover:text-white transition-all">
+                                                        Seleccionar
+                                                    </button>
+                                                </>
                                             ) : (
                                                 <>
-                                                    <button onClick={() => copyToClipboard(file.url)} className="p-2 border border-slate-100 hover:bg-gold hover:text-white transition-all rounded shadow-sm">
+                                                    <button onClick={() => copyToClipboard(file.url)} className="p-2 border border-slate-100 hover:bg-gold hover:text-white transition-all rounded shadow-sm" title="Copiar URL">
                                                         <FontAwesomeIcon icon={faCopy} className="text-xs" />
+                                                    </button>
+                                                    <button onClick={() => setPreviewImage(file)} className="p-2 border border-slate-100 hover:bg-gold hover:text-white transition-all rounded shadow-sm" title="Ver en grande">
+                                                        <FontAwesomeIcon icon={faEye} className="text-xs" />
                                                     </button>
                                                     <a href={file.url} target="_blank" rel="noopener noreferrer" className="p-2 border border-slate-100 hover:bg-gold hover:text-white transition-all rounded shadow-sm">
                                                         <FontAwesomeIcon icon={faExternalLinkAlt} className="text-xs" />
@@ -563,6 +591,35 @@ export const MediaGallery: React.FC<MediaGalleryProps> = ({ onSelect, allowSelec
                 confirmLabel="Eliminar Permanentemente"
                 variant="danger"
             />
+
+            {/* Image Preview Modal */}
+            <AnimatePresence>
+                {previewImage && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-10 bg-black/80 backdrop-blur-sm"
+                        onClick={() => setPreviewImage(null)}
+                    >
+                        <button
+                            onClick={() => setPreviewImage(null)}
+                            className="absolute top-6 right-6 w-12 h-12 flex items-center justify-center text-white bg-white/10 rounded-full hover:bg-white/20 transition-all z-50"
+                        >
+                            <FontAwesomeIcon icon={faTimes} className="text-xl" />
+                        </button>
+                        <motion.img
+                            initial={{ scale: 0.9 }}
+                            animate={{ scale: 1 }}
+                            exit={{ scale: 0.9 }}
+                            src={previewImage.url}
+                            alt={previewImage.name}
+                            className="max-w-full max-h-full object-contain rounded-md shadow-2xl"
+                            onClick={(e) => e.stopPropagation()}
+                        />
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </div>
     );
 };

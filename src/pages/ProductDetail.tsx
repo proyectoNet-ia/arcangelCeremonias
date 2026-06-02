@@ -87,6 +87,10 @@ const ProductDetail: React.FC = () => {
             if (!slug) return;
             try {
                 setLoading(true);
+                setActiveImage(0);
+                setSelectedVariant(null);
+                setSelectedSpecificSize(null);
+                setSelectedColor(null);
                 const data = await productService.getProductBySlug(slug);
                 setProduct(data);
 
@@ -284,7 +288,7 @@ const ProductDetail: React.FC = () => {
                             transition={{ duration: 0.8, ease: 'easeOut' }}
                         >
                             <div
-                                className="relative w-full h-[500px] md:h-[800px] lg:h-[950px] overflow-hidden bg-white shadow-md cursor-zoom-in rounded-sm"
+                                className="relative w-full overflow-hidden bg-white shadow-md cursor-zoom-in rounded-sm mx-auto p-2 md:p-4 lg:p-6"
                                 onMouseMove={handleMouseMove}
                             >
                                 <AnimatePresence mode="wait">
@@ -301,7 +305,7 @@ const ProductDetail: React.FC = () => {
                                             originY: `${zoomPos.y}%`
                                         }}
                                         whileHover={{ scale: 2 }}
-                                        className="w-full h-full object-cover"
+                                        className="w-full h-auto rounded-sm"
                                     />
                                 </AnimatePresence>
                             </div>

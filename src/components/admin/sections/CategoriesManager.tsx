@@ -390,7 +390,7 @@ export const CategoriesManager: React.FC<CategoriesManagerProps> = ({ categories
                                         </div>
                                     </div>
 
-                                    <div className="space-y-2">
+                                    <div className="hidden space-y-2">
                                         <label className="text-[10px] uppercase tracking-widest font-bold text-slate-400">Descripción Corta</label>
                                         <textarea
                                             value={editingCategory.description || ''}
@@ -403,7 +403,7 @@ export const CategoriesManager: React.FC<CategoriesManagerProps> = ({ categories
 
                                     {!editingCategory.parent_id && (
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                            <div className="space-y-2">
+                                            <div className="hidden space-y-2">
                                                 <label className="text-[10px] uppercase tracking-widest font-bold text-slate-400">Imagen Representativa</label>
                                                 <div className="flex gap-2">
                                                     <input

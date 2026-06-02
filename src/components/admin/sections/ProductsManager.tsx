@@ -37,6 +37,7 @@ export const ProductsManager: React.FC<ProductsManagerProps> = ({ products, cate
     });
     const [isSlugCustomized, setIsSlugCustomized] = useState(false);
     const [focusedField, setFocusedField] = useState<string | null>(null);
+    const [focusedValue, setFocusedValue] = useState<string>('');
     const [colorSuggestions, setColorSuggestions] = useState<string[]>([]);
     const [showColorSuggestions, setShowColorSuggestions] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
@@ -51,12 +52,16 @@ export const ProductsManager: React.FC<ProductsManagerProps> = ({ products, cate
         let sortableItems = [...products];
 
         if (searchTerm) {
-            const lowerSearch = searchTerm.toLowerCase();
+            const normalizeString = (str: string) => str ? str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase() : '';
+            const lowerSearch = normalizeString(searchTerm);
+            
             sortableItems = sortableItems.filter(p => 
-                p.name.toLowerCase().includes(lowerSearch) ||
-                (p.model_code && p.model_code.toLowerCase().includes(lowerSearch)) ||
-                (p.material && p.material.toLowerCase().includes(lowerSearch)) ||
-                ((p as any).categories?.name && (p as any).categories.name.toLowerCase().includes(lowerSearch))
+                normalizeString(p.name).includes(lowerSearch) ||
+                normalizeString(p.model_code || '').includes(lowerSearch) ||
+                normalizeString(p.material || '').includes(lowerSearch) ||
+                normalizeString((p as any).categories?.name || '').includes(lowerSearch) ||
+                normalizeString(p.subcategory || '').includes(lowerSearch) ||
+                (p.size_variants && p.size_variants.some(v => normalizeString(v.sku || '').includes(lowerSearch)))
             );
         }
 
@@ -155,7 +160,7 @@ export const ProductsManager: React.FC<ProductsManagerProps> = ({ products, cate
     const getPriceDisplay = (val: number | undefined, fieldId: string) => {
         const num = val || 0;
         if (focusedField === fieldId) {
-            return num === 0 ? '' : num.toString();
+            return focusedValue;
         }
         return num === 0 ? '' : new Intl.NumberFormat('es-MX', {
             style: 'currency',
@@ -179,7 +184,7 @@ export const ProductsManager: React.FC<ProductsManagerProps> = ({ products, cate
         setEditingProduct({ ...product });
         setIsModalOpen(true);
         setErrors({});
-        setIsSlugCustomized(true);
+        setIsSlugCustomized(false);
     };
 
     const handleDuplicate = (product: Product) => {
@@ -381,11 +386,14 @@ export const ProductsManager: React.FC<ProductsManagerProps> = ({ products, cate
                                                 />
                                             </div>
                                         ) : (
-                                            <div className="space-y-0.5">
+                                            <div className="space-y-1.5">
                                                 <p className="text-[10px] md:text-xs font-serif truncate max-w-[120px] md:max-w-none cursor-text hover:text-gold" onClick={() => handleInlineEditStart(prod)} title="Clic para editar rápido">{prod.name}</p>
                                                 <div className="flex flex-wrap gap-1 md:gap-2 items-center">
-                                                    <span className="text-[7px] md:text-[8px] text-slate-400 border border-slate-100 px-1 cursor-text hover:border-gold" onClick={() => handleInlineEditStart(prod)} title="Clic para editar rápido">{prod.model_code || 'S/M'}</span>
-                                                    <span className="md:hidden text-[7px] text-gold font-bold">{(prod as any).categories?.name}</span>
+                                                    <span className="text-[10px] md:text-[11px] text-slate-800 font-medium border border-slate-300 bg-white px-1.5 py-0.5 cursor-text hover:border-gold" onClick={() => handleInlineEditStart(prod)} title="Clic para editar rápido">
+                                                        <span className="font-bold text-slate-500 mr-1">ID:</span>
+                                                        {[prod.model_code, prod.size_variants?.map(v => v.sku).filter(Boolean).join(', ')].filter(Boolean).join(' ') || 'S/M'}
+                                                    </span>
+                                                    <span className="md:hidden text-[10px] text-gold font-bold">{(prod as any).categories?.name}</span>
                                                 </div>
                                             </div>
                                         )}
@@ -738,26 +746,11 @@ export const ProductsManager: React.FC<ProductsManagerProps> = ({ products, cate
                                         <label className="text-[10px] uppercase tracking-widest font-bold text-slate-400">Precios y Clasificación</label>
                                         <div className="grid grid-cols-2 gap-4">
                                             <div className="space-y-2">
-                                                <label className="text-[10px] uppercase tracking-widest font-bold text-slate-400">Precio Base</label>
-                                                <input
-                                                    type="text"
-                                                    placeholder="$ 0.00"
-                                                    value={getPriceDisplay(editingProduct.price, 'base_price')}
-                                                    onChange={e => {
-                                                        const val = e.target.value.replace(/[^0-9.]/g, '');
-                                                        setEditingProduct({ ...editingProduct, price: Number(val) });
-                                                    }}
-                                                    onFocus={() => setFocusedField('base_price')}
-                                                    onBlur={() => setFocusedField(null)}
-                                                    className="w-full p-4 border border-slate-100 focus:border-gold outline-none"
-                                                />
-                                            </div>
-                                            <div className="space-y-2">
                                                 <label className="text-[10px] uppercase tracking-widest font-bold text-slate-400">Categoría Padre</label>
                                                 <select
                                                     value={editingProduct.category_id}
                                                     onChange={e => setEditingProduct({ ...editingProduct, category_id: e.target.value, subcategory: '' })}
-                                                    className="w-full p-4 border border-slate-100 focus:border-gold outline-none"
+                                                    className="w-full p-4 border border-slate-100 focus:border-gold outline-none text-xs"
                                                 >
                                                     <option value="">Seleccione Categoría</option>
                                                     {categories.filter(c => !c.parent_id).map(c => (
@@ -765,23 +758,44 @@ export const ProductsManager: React.FC<ProductsManagerProps> = ({ products, cate
                                                     ))}
                                                 </select>
                                             </div>
+                                            <div className="space-y-2">
+                                                <label className="text-[10px] uppercase tracking-widest font-bold text-slate-400">Subcategoría</label>
+                                                <select
+                                                    value={editingProduct.subcategory || ''}
+                                                    onChange={e => setEditingProduct({ ...editingProduct, subcategory: e.target.value })}
+                                                    className="w-full p-4 border border-slate-100 focus:border-gold outline-none text-xs"
+                                                    disabled={!editingProduct.category_id}
+                                                >
+                                                    <option value="">Ninguna / Ver Todas</option>
+                                                    {categories
+                                                        .filter(c => c.parent_id === editingProduct.category_id)
+                                                        .map(c => (
+                                                            <option key={c.id} value={c.slug}>{c.name}</option>
+                                                        ))
+                                                    }
+                                                </select>
+                                            </div>
                                         </div>
                                         <div className="space-y-2">
-                                            <label className="text-[10px] uppercase tracking-widest font-bold text-slate-400">Subcategoría</label>
-                                            <select
-                                                value={editingProduct.subcategory || ''}
-                                                onChange={e => setEditingProduct({ ...editingProduct, subcategory: e.target.value })}
+                                            <label className="text-[10px] uppercase tracking-widest font-bold text-slate-400">Precio Base</label>
+                                            <input
+                                                type="text"
+                                                placeholder="$ 0.00"
+                                                value={getPriceDisplay(editingProduct.price, 'base_price')}
+                                                onChange={e => {
+                                                    let val = e.target.value.replace(/[^0-9.]/g, '');
+                                                    const parts = val.split('.');
+                                                    if (parts.length > 2) val = parts[0] + '.' + parts.slice(1).join('');
+                                                    setFocusedValue(val);
+                                                    setEditingProduct({ ...editingProduct, price: Number(val) || 0 });
+                                                }}
+                                                onFocus={() => {
+                                                    setFocusedField('base_price');
+                                                    setFocusedValue(editingProduct.price ? editingProduct.price.toString() : '');
+                                                }}
+                                                onBlur={() => setFocusedField(null)}
                                                 className="w-full p-4 border border-slate-100 focus:border-gold outline-none"
-                                                disabled={!editingProduct.category_id}
-                                            >
-                                                <option value="">Ninguna / Ver Todas</option>
-                                                {categories
-                                                    .filter(c => c.parent_id === editingProduct.category_id)
-                                                    .map(c => (
-                                                        <option key={c.id} value={c.slug}>{c.name}</option>
-                                                    ))
-                                                }
-                                            </select>
+                                            />
                                         </div>
                                     </div>
 
@@ -808,12 +822,18 @@ export const ProductsManager: React.FC<ProductsManagerProps> = ({ products, cate
                                                         placeholder="Precio"
                                                         value={getPriceDisplay(v.price, `variant_${idx}`)}
                                                         onChange={e => {
-                                                            const val = e.target.value.replace(/[^0-9.]/g, '');
+                                                            let val = e.target.value.replace(/[^0-9.]/g, '');
+                                                            const parts = val.split('.');
+                                                            if (parts.length > 2) val = parts[0] + '.' + parts.slice(1).join('');
+                                                            setFocusedValue(val);
                                                             const newV = [...(editingProduct.size_variants || [])];
                                                             newV[idx].price = Number(val);
                                                             setEditingProduct({ ...editingProduct, size_variants: newV });
                                                         }}
-                                                        onFocus={() => setFocusedField(`variant_${idx}`)}
+                                                        onFocus={() => {
+                                                            setFocusedField(`variant_${idx}`);
+                                                            setFocusedValue(v.price ? v.price.toString() : '');
+                                                        }}
                                                         onBlur={() => setFocusedField(null)}
                                                         className="flex-grow p-3 border border-slate-100 outline-none text-xs"
                                                     />
