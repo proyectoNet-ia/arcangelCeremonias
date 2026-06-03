@@ -19,7 +19,17 @@ export const Megamenu: React.FC<{ isOpen: boolean; onClose: () => void; onOpen: 
         if (isOpen && allCategories.length === 0) loadCategories();
     }, [isOpen, allCategories.length]);
 
-    const parentCategories = allCategories.filter(c => !c.parent_id);
+    const getSortIndex = (name: string) => {
+        const lower = name.toLowerCase();
+        if (lower.includes('traje')) return 1;
+        if (lower.includes('guayabera')) return 2;
+        if (lower.includes('túnica') || lower.includes('tunica')) return 3;
+        return 999;
+    };
+
+    const parentCategories = allCategories
+        .filter(c => !c.parent_id)
+        .sort((a, b) => getSortIndex(a.name) - getSortIndex(b.name));
 
     return (
         <AnimatePresence>

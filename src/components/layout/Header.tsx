@@ -430,7 +430,16 @@ export const Header: React.FC<HeaderProps> = ({ variant = 'light' }) => {
                                                         className="pl-2 flex flex-col overflow-hidden"
                                                     >
                                                         <div className="ml-2 pl-4 border-l border-[#C5A059]/30 py-2 flex flex-col gap-5 pb-4">
-                                                            {categories.filter(c => !c.parent_id).map((cat) => {
+                                                            {categories.filter(c => !c.parent_id).sort((a, b) => {
+                                                                const getSortIndex = (name: string) => {
+                                                                    const lower = name.toLowerCase();
+                                                                    if (lower.includes('traje')) return 1;
+                                                                    if (lower.includes('guayabera')) return 2;
+                                                                    if (lower.includes('túnica') || lower.includes('tunica')) return 3;
+                                                                    return 999;
+                                                                };
+                                                                return getSortIndex(a.name) - getSortIndex(b.name);
+                                                            }).map((cat) => {
                                                                 const subcategories = categories.filter(sub => sub.parent_id === cat.id);
                                                                 return (
                                                                 <div key={cat.id} className="flex flex-col gap-2">
