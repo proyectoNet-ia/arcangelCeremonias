@@ -3,7 +3,7 @@ export const COLOR_MAP: Record<string, string> = {
     // Colores principales
     'blanco': '#FFFFFF',
     'negro': '#000000',
-    'gris': '#808080',
+    'gris': '#E4E4E5',
     'gris oscuro': '#36454F',
     'azul': '#0000FF',
     'azul marino': '#000080',
