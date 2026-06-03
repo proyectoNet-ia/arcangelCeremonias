@@ -389,7 +389,7 @@ export const ProductsManager: React.FC<ProductsManagerProps> = ({ products, cate
                                                 <div className="flex flex-wrap gap-1 md:gap-2 items-center">
                                                     <span className="text-[10px] md:text-[11px] text-slate-800 font-medium border border-slate-300 bg-white px-1.5 py-0.5 cursor-text hover:border-gold" onClick={() => handleInlineEditStart(prod)} title="Clic para editar rápido">
                                                         <span className="font-bold text-slate-500 mr-1">ID:</span>
-                                                        {[prod.model_code, prod.size_variants?.map(v => v.sku).filter(Boolean).join(', ')].filter(Boolean).join(' ') || 'S/M'}
+                                                        {(prod.size_variants?.map(v => v.sku).filter(Boolean).join(', ') || prod.model_code) || 'S/M'}
                                                     </span>
                                                     <span className="md:hidden text-[10px] text-gold font-bold">{(prod as any).categories?.name}</span>
                                                 </div>
