@@ -194,9 +194,7 @@ export const ProductsManager: React.FC<ProductsManagerProps> = ({ products, cate
         setEditingProduct({ 
             ...rest, 
             name: duplicatedName,
-            slug: generateSlug(duplicatedName),
-            main_image: '',
-            gallery: []
+            slug: generateSlug(duplicatedName)
         });
         setIsModalOpen(true);
         setErrors({});
