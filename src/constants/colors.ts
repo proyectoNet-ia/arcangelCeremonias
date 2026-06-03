@@ -13,7 +13,7 @@ export const COLOR_MAP: Record<string, string> = {
     'rosa': '#FFC0CB',
     'verde': '#008000',
     'verde militar': '#556B2F',
-    'kaki': '#C3B091',
+    'kaki': '#D2B48C',
     'beige': '#FAF0E6',
     'café': '#4B3621',
     'naranja': '#FFA500',
