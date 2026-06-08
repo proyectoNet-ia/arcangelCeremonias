@@ -2,25 +2,46 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
-import { PageHero } from '@/components/common/PageHero';
-import { ScrollToTopButton } from '@/components/common/ScrollToTopButton';
 
 const PrivacyPolicy: React.FC = () => {
     return (
         <div className="min-h-screen bg-cream flex flex-col font-sans">
             <Header variant="light" />
 
-            <PageHero 
-                title="Aviso de Privacidad" 
-                subtitle="Protección y tratamiento de datos personales"
-                image="https://images.unsplash.com/photo-1575424909138-46b05e5919ec?q=80&w=2000&auto=format&fit=crop"
-            />
+            <div className="relative w-full h-[40vh] md:h-[50vh] bg-chocolate flex items-center justify-center overflow-hidden">
+                <div className="absolute inset-0 z-0">
+                    <img 
+                        src="https://images.unsplash.com/photo-1575424909138-46b05e5919ec?q=80&w=2000&auto=format&fit=crop" 
+                        alt="Aviso de Privacidad" 
+                        className="w-full h-full object-cover opacity-30"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-chocolate via-chocolate/50 to-transparent" />
+                </div>
+                <div className="relative z-10 text-center px-4 space-y-4">
+                    <motion.p 
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.8 }}
+                        className="text-gold text-xs md:text-sm uppercase tracking-[0.3em] font-bold"
+                    >
+                        Protección y tratamiento de datos personales
+                    </motion.p>
+                    <motion.h1 
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.8, delay: 0.2 }}
+                        className="text-4xl md:text-6xl text-cream font-serif"
+                    >
+                        Aviso de Privacidad
+                    </motion.h1>
+                </div>
+            </div>
 
             <main className="flex-grow max-w-4xl mx-auto w-full px-6 py-20 md:py-32">
                 <motion.div 
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.8 }}
+                    transition={{ duration: 0.8, delay: 0.4 }}
                     className="prose prose-sm md:prose-base prose-slate max-w-none 
                                prose-headings:font-serif prose-headings:text-chocolate 
                                prose-p:text-chocolate/80 prose-li:text-chocolate/80
@@ -115,7 +136,6 @@ const PrivacyPolicy: React.FC = () => {
             </main>
 
             <Footer />
-            <ScrollToTopButton />
         </div>
     );
 };
