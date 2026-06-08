@@ -36,6 +36,7 @@ const Catalog = lazyWithRetry(() => import('./pages/Catalog'));
 const ProductDetail = lazyWithRetry(() => import('./pages/ProductDetail'));
 const About = lazyWithRetry(() => import('./pages/About'));
 const Contact = lazyWithRetry(() => import('./pages/Contact'));
+const PrivacyPolicy = lazyWithRetry(() => import('./pages/PrivacyPolicy'));
 
 // Component to handle scroll to top on route change and track page views
 const ScrollToTop = () => {
@@ -125,6 +126,10 @@ const AppRoutes = () => {
         <Route
           path="/contacto"
           element={!loading && isMaintenance ? <Navigate to="/" replace /> : <Contact />}
+        />
+        <Route
+          path="/aviso-de-privacidad"
+          element={!loading && isMaintenance ? <Navigate to="/" replace /> : <PrivacyPolicy />}
         />
 
         {/* Fallback general */}

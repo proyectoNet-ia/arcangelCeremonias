@@ -208,7 +208,7 @@ export const Footer: React.FC = () => {
                     <p>© 2026. Grupo Espinoza Baez S.A. de C.V. Todos los derechos reservados.</p>
                     <div className="flex flex-wrap gap-x-8 gap-y-4 items-center">
                         <Link to="#" className="hover:text-gold transition-colors">Términos & Condiciones</Link>
-                        <Link to="#" className="hover:text-gold transition-colors">Aviso de Privacidad</Link>
+                        <Link to="/aviso-de-privacidad" className="hover:text-gold transition-colors">Aviso de Privacidad</Link>
                         <Link
                             to="/admin/login"
                             className="text-[#D4C3A3]/10 hover:text-gold transition-colors duration-500 flex items-center gap-1 group"
