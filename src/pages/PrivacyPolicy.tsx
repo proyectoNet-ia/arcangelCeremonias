@@ -2,6 +2,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
+import heroBg from '@/assets/fondo-pc.jpg';
 
 const PrivacyPolicy: React.FC = () => {
     return (
@@ -11,7 +12,7 @@ const PrivacyPolicy: React.FC = () => {
             <div className="relative w-full h-[40vh] md:h-[50vh] bg-chocolate flex items-center justify-center overflow-hidden">
                 <div className="absolute inset-0 z-0">
                     <img 
-                        src="https://images.unsplash.com/photo-1575424909138-46b05e5919ec?q=80&w=2000&auto=format&fit=crop" 
+                        src={heroBg} 
                         alt="Aviso de Privacidad" 
                         className="w-full h-full object-cover opacity-30"
                     />
