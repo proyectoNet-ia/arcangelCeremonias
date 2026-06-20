@@ -16,7 +16,8 @@ import {
     faDiamond,
     faBars,
     faInbox,
-    faUsersCog
+    faUsersCog,
+    faFileInvoice
 } from '@fortawesome/free-solid-svg-icons';
 
 interface AdminLayoutProps {
@@ -40,6 +41,7 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
         ] : []),
         { name: 'Galería Media', path: '/admin/galeria', icon: faImage },
         ...(isAdmin || profile?.role === 'admin' ? [
+            { name: 'Cotizaciones', path: '/admin/cotizaciones', icon: faFileInvoice },
             { name: 'Mensajes', path: '/admin/mensajes', icon: faInbox },
             { name: 'Configuración', path: '/admin/configuracion', icon: faPalette },
             { name: 'Usuarios', path: '/admin/usuarios', icon: faUsersCog }

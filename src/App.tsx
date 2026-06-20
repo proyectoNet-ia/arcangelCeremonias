@@ -6,6 +6,9 @@ import { ConfigProvider, useConfig } from './context/ConfigContext';
 import { AuthProvider } from './context/AuthContext';
 import { ProtectedRoute } from './components/auth/ProtectedRoute';
 import { statsService } from './services/statsService';
+import { QuoteProvider } from './context/QuoteContext';
+
+import { QuoteDrawer } from './components/quote/QuoteDrawer';
 
 // Resilient lazy loading to handle ChunkLoadError (common after redeploys)
 const lazyWithRetry = (componentImport: () => Promise<any>) =>
@@ -136,6 +139,8 @@ const AppRoutes = () => {
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
       <FloatingActions />
+
+      <QuoteDrawer />
     </React.Suspense>
   );
 };
@@ -144,44 +149,46 @@ const App: React.FC = () => {
   return (
     <AuthProvider>
       <ConfigProvider>
-        <Router>
-          <Toaster
-            position="bottom-right"
-            reverseOrder={false}
-            toastOptions={{
-              duration: 4000,
-              style: {
-                background: '#ffffff',
-                color: '#3E2723',
-                borderRadius: '0px',
-                border: '1px solid #C5A05920',
-                boxShadow: '0 10px 30px -10px rgba(62, 39, 35, 0.15)',
-                padding: '16px 24px',
-                fontSize: '11px',
-                fontWeight: '700',
-                letterSpacing: '0.1em',
-                textTransform: 'uppercase',
-                maxWidth: '400px'
-              },
-              success: {
-                iconTheme: {
-                  primary: '#C5A059',
-                  secondary: '#ffffff',
-                },
-              },
-              error: {
-                iconTheme: {
-                  primary: '#ef4444',
-                  secondary: '#ffffff',
-                },
+        <QuoteProvider>
+          <Router>
+            <Toaster
+              position="bottom-right"
+              reverseOrder={false}
+              toastOptions={{
+                duration: 4000,
                 style: {
-                  border: '1px solid #ef444420',
+                  background: '#ffffff',
+                  color: '#3E2723',
+                  borderRadius: '0px',
+                  border: '1px solid #C5A05920',
+                  boxShadow: '0 10px 30px -10px rgba(62, 39, 35, 0.15)',
+                  padding: '16px 24px',
+                  fontSize: '11px',
+                  fontWeight: '700',
+                  letterSpacing: '0.1em',
+                  textTransform: 'uppercase',
+                  maxWidth: '400px'
+                },
+                success: {
+                  iconTheme: {
+                    primary: '#C5A059',
+                    secondary: '#ffffff',
+                  },
+                },
+                error: {
+                  iconTheme: {
+                    primary: '#ef4444',
+                    secondary: '#ffffff',
+                  },
+                  style: {
+                    border: '1px solid #ef444420',
+                  }
                 }
-              }
-            }}
-          />
-          <AppRoutes />
-        </Router>
+              }}
+            />
+            <AppRoutes />
+          </Router>
+        </QuoteProvider>
       </ConfigProvider>
     </AuthProvider>
   );

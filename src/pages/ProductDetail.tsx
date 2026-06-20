@@ -23,6 +23,9 @@ import { CTABanner } from '@/components/common/CTABanner';
 import { SEO } from '@/components/common/SEO';
 import { ProductDetailSkeleton } from '@/components/common/Skeleton';
 import { COLOR_MAP } from '@/constants/colors';
+import { useQuote } from '@/context/QuoteContext';
+import { FileText } from 'lucide-react';
+import toast from 'react-hot-toast';
 
 const ProductDetail: React.FC = () => {
     const { slug } = useParams<{ slug: string }>();
@@ -36,49 +39,45 @@ const ProductDetail: React.FC = () => {
     const [selectedColor, setSelectedColor] = useState<string | null>(null);
 
     const sizeOptions = React.useMemo(() => {
-        if (!product?.size_variants) return [];
+        if (!product) return [];
         const options: { label: string; variantIndex: number }[] = [];
-        product.size_variants.forEach((v, idx) => {
-            const sizeStr = v.size.trim();
-            const rangeMatch = sizeStr.match(/^(\d+)\s*-\s*(\d+)$/);
-            if (rangeMatch) {
-                const start = parseInt(rangeMatch[1], 10);
-                const end = parseInt(rangeMatch[2], 10);
-                if (start <= end && end - start <= 50) {
-                    for (let i = start; i <= end; ) {
-                        options.push({ label: i.toString(), variantIndex: idx });
-                        if (i < 4) {
-                            i += 1;
-                        } else {
-                            i += 2;
+        
+        if (product.size_variants && product.size_variants.length > 0) {
+            product.size_variants.forEach((v, idx) => {
+                const sizeStr = v.size.trim();
+                const rangeMatch = sizeStr.match(/^(\d+)\s*-\s*(\d+)$/);
+                if (rangeMatch) {
+                    const start = parseInt(rangeMatch[1], 10);
+                    const end = parseInt(rangeMatch[2], 10);
+                    if (start <= end && end - start <= 50) {
+                        for (let i = start; i <= end; ) {
+                            options.push({ label: i.toString(), variantIndex: idx });
+                            if (i < 4) i += 1;
+                            else i += 2;
                         }
+                    } else {
+                        options.push({ label: sizeStr, variantIndex: idx });
                     }
+                } else if (sizeStr.includes(',')) {
+                    sizeStr.split(',').forEach(part => options.push({ label: part.trim(), variantIndex: idx }));
                 } else {
                     options.push({ label: sizeStr, variantIndex: idx });
                 }
-            } else {
-                if (sizeStr.includes(',')) {
-                    sizeStr.split(',').forEach(part => {
-                        options.push({ label: part.trim(), variantIndex: idx });
-                    });
-                } else {
-                    options.push({ label: sizeStr, variantIndex: idx });
-                }
-            }
-        });
-        return options;
-    }, [product?.size_variants]);
-
-    useEffect(() => {
-        if (sizeOptions.length > 0 && !selectedSpecificSize) {
-            setSelectedSpecificSize(sizeOptions[0].label);
-            setSelectedVariant(sizeOptions[0].variantIndex);
+            });
+        } else if (product.sizes && product.sizes.length > 0) {
+            product.sizes.forEach(size => {
+                options.push({ label: size.trim(), variantIndex: 0 });
+            });
         }
-    }, [sizeOptions, selectedSpecificSize]);
+        return options;
+    }, [product]);
+
+    // Se elimina el auto-select para obligar al usuario a elegir
     const [relatedProducts, setRelatedProducts] = useState<Product[]>([]);
     const [historyProducts, setHistoryProducts] = useState<Product[]>([]);
     const [showSizeGuide, setShowSizeGuide] = useState(false);
     const { config } = useConfig();
+    const { addItem } = useQuote();
     const whatsapp = config?.whatsapp || '523521681197';
     const phone = config?.phone || '352 52 62502';
 
@@ -442,10 +441,15 @@ const ProductDetail: React.FC = () => {
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ duration: 0.5, delay: 0.6 }}
                             >
-                                <span className="text-[10px] uppercase tracking-[0.2em] text-chocolate/40 font-bold block">Seleccionar Color</span>
+                                <span className="text-[10px] uppercase tracking-[0.2em] text-chocolate/40 font-bold block">
+                                    Seleccionar Color {product.color && product.color.split(/[,/\-]| y /).filter(c => c.trim()).length > 1 ? <span className="text-red-500 font-bold">(Obligatorio)</span> : ''}
+                                </span>
                                 <div className="flex flex-wrap gap-4">
-                                    {product.color ? (
-                                        product.color.split(/[,/\-]| y /).filter(c => c.trim()).map((color: string, idx: number) => {
+                                    {product.color ? (() => {
+                                        const colorOptions = product.color.split(/[,/\-]| y /).filter(c => c.trim());
+                                        const isColorMandatory = colorOptions.length > 1;
+
+                                        return colorOptions.map((color: string, idx: number) => {
                                             const cName = color.trim().toLowerCase();
                                             
                                             // Lógica para detectar bicolores (ej: "Azul con Kaki")
@@ -473,8 +477,10 @@ const ProductDetail: React.FC = () => {
                                                     whileHover={{ y: -3 }}
                                                     whileTap={{ scale: 0.95 }}
                                                     className={`flex items-center gap-3 px-5 py-2.5 transition-all duration-500 rounded-full border ${selectedColor === color.trim()
-                                                        ? 'border-gold bg-gold/5 shadow-md'
-                                                        : 'border-gold/10 bg-white/40 hover:border-gold/30'
+                                                        ? 'border-gold bg-gold/5 shadow-md font-bold'
+                                                        : isColorMandatory && !selectedColor
+                                                            ? 'border-red-500/60 bg-white/60 hover:border-red-500 shadow-sm shadow-red-50'
+                                                            : 'border-gold/15 bg-white/40 hover:border-gold/35'
                                                         }`}
                                                 >
                                                     <div className="flex -space-x-1.5 items-center">
@@ -494,35 +500,41 @@ const ProductDetail: React.FC = () => {
                                                     </span>
                                                 </motion.button>
                                             );
-                                        })
-                                    ) : (
+                                        });
+                                    })() : (
                                         <span className="text-xs italic text-chocolate/40">Color Único</span>
                                     )}
                                 </div>
                             </motion.div>
 
                             {/* Size Selection */}
-                            {product.size_variants && product.size_variants.length > 0 && (
+                            {sizeOptions.length > 0 && (
                                 <motion.div
                                     className="space-y-4 pt-4"
                                     initial={{ opacity: 0, y: 16 }}
                                     animate={{ opacity: 1, y: 0 }}
                                     transition={{ duration: 0.5, delay: 0.65 }}
                                 >
-                                    <span className="text-[10px] uppercase tracking-[0.2em] text-chocolate/40 font-bold block">Selecciona la talla (El precio varía según la talla)</span>
-                                    <div className="relative max-w-[200px]">
-                                        <select
-                                            value={selectedSpecificSize || ''}
-                                            onChange={(e) => {
-                                                const val = e.target.value;
-                                                const opt = sizeOptions.find(o => o.label === val);
-                                                if (opt) {
-                                                    setSelectedSpecificSize(val);
-                                                    setSelectedVariant(opt.variantIndex);
-                                                }
-                                            }}
-                                            className="w-full bg-white/40 border border-gold/30 text-chocolate px-6 py-4 text-xs uppercase tracking-widest outline-none focus:border-gold focus:ring-1 focus:ring-gold/30 transition-all appearance-none cursor-pointer hover:bg-white/80"
-                                        >
+                                    <span className="text-[10px] uppercase tracking-[0.2em] text-chocolate/40 font-bold block mb-4">
+                                        Talla <span className="text-red-500 font-bold">(Obligatorio)</span>
+                                    </span>
+                                    <div className="relative w-full max-w-sm">
+                                            <select
+                                                value={selectedSpecificSize || ''}
+                                                onChange={(e) => {
+                                                    const val = e.target.value;
+                                                    const opt = sizeOptions.find(o => o.label === val);
+                                                    if (opt) {
+                                                        setSelectedSpecificSize(val);
+                                                        setSelectedVariant(opt.variantIndex);
+                                                    } else {
+                                                        setSelectedSpecificSize(null);
+                                                        setSelectedVariant(null);
+                                                    }
+                                                }}
+                                                className={`w-full bg-white/60 border ${!selectedSpecificSize ? 'border-red-500 shadow-sm shadow-red-100' : 'border-gold/30 focus:border-gold'} text-chocolate px-6 py-4 text-xs uppercase tracking-widest outline-none focus:ring-1 focus:ring-gold/30 transition-all appearance-none cursor-pointer hover:bg-white`}
+                                            >
+                                                <option value="" disabled>SELECCIONAR TALLA</option>
                                             {sizeOptions.map((opt, idx) => (
                                                 <option key={idx} value={opt.label}>
                                                     TALLA {opt.label}
@@ -641,6 +653,45 @@ const ProductDetail: React.FC = () => {
                                         <FontAwesomeIcon icon={faShareNodes} className="text-lg group-hover:scale-110 transition-transform" />
                                     </motion.button>
                                 </div>
+                                
+                                {/* Añadir a Cotización Button */}
+                                <motion.button
+                                    whileHover={{ y: -2, boxShadow: '0 10px 30px rgba(197,160,89,0.2)' }}
+                                    whileTap={{ scale: 0.98 }}
+                                    onClick={() => {
+                                        const colorOptions = product.color ? product.color.split(/[,/\-]| y /).filter(c => c.trim()) : [];
+                                        
+                                        if (sizeOptions.length > 0 && !selectedSpecificSize) {
+                                            toast.error('Por favor selecciona una talla.');
+                                            return;
+                                        }
+                                        
+                                        if (colorOptions.length > 1 && !selectedColor) {
+                                            toast.error('Por favor selecciona un color.');
+                                            return;
+                                        }
+
+                                        const finalColor = selectedColor || (colorOptions.length === 1 ? colorOptions[0] : product.color) || '';
+
+                                        const baseCode = product.model_code || product.slug.toUpperCase();
+                                        const sku = (selectedVariant !== null && product.size_variants?.[selectedVariant]?.sku) || '';
+                                        const finalCode = sku ? `${baseCode}${sku}` : baseCode;
+
+                                        addItem({
+                                            id: product.id,
+                                            name: product.name,
+                                            price: currentPrice || 0,
+                                            image_url: product.main_image,
+                                            size: selectedSpecificSize || product.size_variants?.[selectedVariant || 0]?.size || '',
+                                            color: finalColor,
+                                            code: finalCode
+                                        });
+                                    }}
+                                    className="w-full bg-white border-2 border-[#C5A059] text-[#C5A059] py-4 px-8 flex items-center justify-center gap-3 group transition-all duration-300 rounded hover:bg-[#C5A059] hover:text-white"
+                                >
+                                    <FileText size={18} className="group-hover:scale-110 transition-transform" />
+                                    <span className="text-[11px] uppercase tracking-[0.3em] font-bold">Añadir a Cotización</span>
+                                </motion.button>
 
                                 {/* Trust badges */}
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-[10px] uppercase tracking-[0.2em] text-chocolate/70 font-semibold">

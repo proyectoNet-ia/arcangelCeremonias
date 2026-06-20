@@ -227,7 +227,7 @@ export const Header: React.FC<HeaderProps> = ({ variant = 'light' }) => {
 
             {/* --- TOP BAR (Desktop Only) --- */}
             <div className="hidden md:block bg-white text-chocolate py-2.5 px-12 border-b border-gold/10">
-                <div className="max-w-[1600px] mx-auto flex justify-between items-center text-[9px] uppercase tracking-[0.2em] font-semibold">
+                <div className="w-full flex justify-between items-center text-[9px] uppercase tracking-[0.2em] font-semibold">
                     <div className="flex gap-10">
                         <a
                             href={`https://wa.me/${whatsapp.replace(/\D/g, '')}?text=${encodeURIComponent("Hola me gustaría recibir más información de los productos")}`}
@@ -269,7 +269,7 @@ export const Header: React.FC<HeaderProps> = ({ variant = 'light' }) => {
 
             {/* --- MAIN HEADER --- */}
             <header className="w-full bg-white py-3 md:py-4 px-6 md:px-12 border-b border-gold/10 shadow-sm">
-                <div className="max-w-[1600px] mx-auto flex justify-between items-center">
+                <div className="w-full flex justify-between items-center">
                     <Link to="/" className="w-44 md:w-56 hover:scale-105 transition-transform duration-500">
                         <Logo variant="light" />
                     </Link>

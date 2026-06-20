@@ -16,6 +16,7 @@ const HeroManager = lazy(() => import('@/components/admin/sections/HeroManager')
 const ConfigManager = lazy(() => import('@/components/admin/sections/ConfigManager').then(m => ({ default: m.ConfigManager })));
 const MessagesManager = lazy(() => import('@/components/admin/sections/MessagesManager').then(m => ({ default: m.MessagesManager })));
 const UsersManager = lazy(() => import('@/components/admin/sections/UsersManager').then(m => ({ default: m.UsersManager })));
+const QuotesManager = lazy(() => import('@/components/admin/sections/QuotesManager').then(m => ({ default: m.QuotesManager })));
 
 const LoadingSection = () => (
     <div className="h-96 flex items-center justify-center bg-white/50 backdrop-blur-sm rounded-xl border border-slate-100 shadow-sm">
@@ -81,6 +82,12 @@ const Admin: React.FC = () => {
                         <Route path="mensajes" element={
                             <ProtectedRoute requireAdmin>
                                 <MessagesManager />
+                            </ProtectedRoute>
+                        } />
+
+                        <Route path="cotizaciones" element={
+                            <ProtectedRoute requireAdmin>
+                                <QuotesManager />
                             </ProtectedRoute>
                         } />
 
