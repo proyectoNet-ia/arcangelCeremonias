@@ -13,7 +13,7 @@ export const FloatingActions: React.FC = () => {
     const { pathname } = useLocation();
     const [isVisible, setIsVisible] = useState(false);
     const { config } = useConfig();
-    const { totalItems, setDrawerOpen } = useQuote();
+    const { totalItems, setDrawerOpen, isDrawerOpen } = useQuote();
 
     // Show button when page is scrolled down
     const toggleVisibility = () => {
@@ -45,8 +45,8 @@ export const FloatingActions: React.FC = () => {
         window.open(url, 'whatsapp_contact', 'noopener,noreferrer');
     };
 
-    // No mostrar en el panel de administración
-    if (pathname.startsWith('/admin')) {
+    // No mostrar en el panel de administración o cuando el drawer de cotización está abierto
+    if (pathname.startsWith('/admin') || isDrawerOpen) {
         return null;
     }
 

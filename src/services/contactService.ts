@@ -32,8 +32,8 @@ export const contactService = {
                         'Authorization': `Bearer ${resendApiKey}`,
                     },
                     body: JSON.stringify({
-                        from: 'Arcangel Ceremonias <onboarding@resend.dev>',
-                        to: ['ventasesbasa@hotmail.com'],
+                        from: import.meta.env.VITE_RESEND_FROM_EMAIL || 'Arcangel Ceremonias <onboarding@resend.dev>',
+                        to: ['ventasesbasa@gmail.com'],
                         subject: `Nuevo Mensaje: ${message.subject}`,
                         html: `
                             <h1>Nuevo mensaje de contacto</h1>

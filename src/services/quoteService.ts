@@ -1,5 +1,5 @@
 import { supabase } from '../lib/supabase';
-import { SiteConfig } from './configService';
+import { configService, SiteConfig } from './configService';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { QuoteItem } from '../context/QuoteContext';
@@ -241,6 +241,126 @@ export const quoteService = {
                 .insert(quoteItemsInsert);
 
             if (itemsError) throw itemsError;
+
+            // 5. Enviar correo de notificación via Resend (Opcional - Lado Cliente)
+            const resendApiKey = import.meta.env.VITE_RESEND_API_KEY;
+            if (resendApiKey) {
+                try {
+                    // Obtener el correo configurado en el sistema
+                    let businessEmail = 'ventasesbasa@gmail.com';
+                    try {
+                        const config = await configService.getConfig();
+                        if (config?.email) {
+                            businessEmail = config.email;
+                        }
+                    } catch (err) {
+                        console.error("Error fetching config for email notification:", err);
+                    }
+
+                    const cleanPhone = user.phone.replace(/\D/g, '');
+                    const waPhone = cleanPhone.length === 10 ? `52${cleanPhone}` : cleanPhone;
+                    const waMessage = encodeURIComponent(`Hola ${user.name}, gracias por cotizar con nosotros. Recibimos tu cotización por un total de $${totalAmount.toLocaleString('es-MX', { minimumFractionDigits: 2 })}.`);
+                    const waLink = `https://wa.me/${waPhone}?text=${waMessage}`;
+
+                    const itemsHtml = items.map(item => {
+                        let nameWithDetails = item.name;
+                        if (item.size || item.color) {
+                            nameWithDetails += ` (${item.size ? 'Talla: ' + item.size : ''}${item.size && item.color ? ' | ' : ''}${item.color ? 'Color: ' + item.color : ''})`;
+                        }
+                        return `
+                            <tr>
+                                <td style="padding: 10px; border-bottom: 1px solid #EAEAEA; font-size: 14px; color: #333333;">${item.code || '-'}</td>
+                                <td style="padding: 10px; border-bottom: 1px solid #EAEAEA; font-size: 14px; color: #333333;">${nameWithDetails}</td>
+                                <td style="padding: 10px; border-bottom: 1px solid #EAEAEA; font-size: 14px; color: #333333; text-align: center;">${item.quantity}</td>
+                                <td style="padding: 10px; border-bottom: 1px solid #EAEAEA; font-size: 14px; color: #333333; text-align: right;">$${item.price.toLocaleString('es-MX', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                                <td style="padding: 10px; border-bottom: 1px solid #EAEAEA; font-size: 14px; color: #333333; text-align: right;">$${(item.price * item.quantity).toLocaleString('es-MX', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                            </tr>
+                        `;
+                    }).join('');
+
+                    await fetch('https://api.resend.com/emails', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${resendApiKey}`,
+                        },
+                        body: JSON.stringify({
+                            from: import.meta.env.VITE_RESEND_FROM_EMAIL || 'Arcangel Ceremonias <onboarding@resend.dev>',
+                            to: [businessEmail],
+                            subject: `Nueva Cotización: ${user.name} - $${totalAmount.toLocaleString('es-MX', { minimumFractionDigits: 2 })}`,
+                            html: `
+                                <div style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #EAEAEA; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
+                                    <!-- Header -->
+                                    <div style="background-color: #3E2723; padding: 30px; text-align: center;">
+                                        <h1 style="color: #C5A059; margin: 0; font-size: 24px; letter-spacing: 2px; font-weight: bold; text-transform: uppercase;">Arcángel Ceremonias</h1>
+                                        <p style="color: #FFFFFF; margin: 5px 0 0 0; font-size: 14px; opacity: 0.8; text-transform: uppercase; letter-spacing: 1px;">Notificación de Nueva Cotización</p>
+                                    </div>
+                                    
+                                    <!-- Content -->
+                                    <div style="padding: 30px; background-color: #FFFFFF;">
+                                        <h2 style="color: #3E2723; font-size: 18px; margin-top: 0; border-bottom: 2px solid #C5A059; padding-bottom: 10px;">Datos del Cliente</h2>
+                                        <table style="width: 100%; border-collapse: collapse; margin-bottom: 25px;">
+                                            <tr>
+                                                <td style="padding: 6px 0; font-size: 14px; color: #666666; width: 120px;"><strong>Nombre:</strong></td>
+                                                <td style="padding: 6px 0; font-size: 14px; color: #333333;">${user.name}</td>
+                                            </tr>
+                                            \${user.company ? \`
+                                            <tr>
+                                                <td style="padding: 6px 0; font-size: 14px; color: #666666;"><strong>Empresa:</strong></td>
+                                                <td style="padding: 6px 0; font-size: 14px; color: #333333;">\${user.company}</td>
+                                            </tr>
+                                            \` : ''}
+                                            <tr>
+                                                <td style="padding: 6px 0; font-size: 14px; color: #666666;"><strong>Teléfono:</strong></td>
+                                                <td style="padding: 6px 0; font-size: 14px; color: #333333;">${user.phone}</td>
+                                            </tr>
+                                            <tr>
+                                                <td style="padding: 6px 0; font-size: 14px; color: #666666;"><strong>Email:</strong></td>
+                                                <td style="padding: 6px 0; font-size: 14px; color: #333333;">${user.email}</td>
+                                            </tr>
+                                        </table>
+
+                                        <h2 style="color: #3E2723; font-size: 18px; border-bottom: 2px solid #C5A059; padding-bottom: 10px;">Detalle de la Cotización</h2>
+                                        <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
+                                            <thead>
+                                                <tr style="background-color: #F9F9F9;">
+                                                    <th style="padding: 10px; text-align: left; font-size: 12px; color: #666666; text-transform: uppercase; border-bottom: 2px solid #EAEAEA;">Mod.</th>
+                                                    <th style="padding: 10px; text-align: left; font-size: 12px; color: #666666; text-transform: uppercase; border-bottom: 2px solid #EAEAEA;">Producto</th>
+                                                    <th style="padding: 10px; text-align: center; font-size: 12px; color: #666666; text-transform: uppercase; border-bottom: 2px solid #EAEAEA;">Cant.</th>
+                                                    <th style="padding: 10px; text-align: right; font-size: 12px; color: #666666; text-transform: uppercase; border-bottom: 2px solid #EAEAEA;">P. Unit</th>
+                                                    <th style="padding: 10px; text-align: right; font-size: 12px; color: #666666; text-transform: uppercase; border-bottom: 2px solid #EAEAEA;">Total</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                \${itemsHtml}
+                                            </tbody>
+                                        </table>
+
+                                        <div style="text-align: right; margin-bottom: 30px;">
+                                            <p style="font-size: 16px; color: #666666; margin: 0;">Total Cotizado:</p>
+                                            <p style="font-size: 24px; color: #3E2723; font-weight: bold; margin: 5px 0 0 0;">$${totalAmount.toLocaleString('es-MX', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
+                                        </div>
+
+                                        <!-- Acciones -->
+                                        <div style="text-align: center; margin-top: 35px; margin-bottom: 10px;">
+                                            <a href="\${pdfUrl}" target="_blank" style="display: block; padding: 14px 20px; background-color: #C5A059; color: #FFFFFF; text-decoration: none; font-size: 13px; font-weight: bold; border-radius: 4px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px;">Descargar PDF de Cotización</a>
+                                            
+                                            <a href="\${waLink}" target="_blank" style="display: block; padding: 14px 20px; background-color: #25D366; color: #FFFFFF; text-decoration: none; font-size: 13px; font-weight: bold; border-radius: 4px; text-transform: uppercase; letter-spacing: 1px;">Contactar al Cliente por WhatsApp</a>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Footer -->
+                                    <div style="background-color: #F9F9F9; padding: 20px; text-align: center; border-top: 1px solid #EAEAEA;">
+                                        <p style="color: #999999; font-size: 12px; margin: 0;">Este es un correo automático generado por el sitio web Arcángel Ceremonias.</p>
+                                    </div>
+                                </div>
+                            `,
+                        }),
+                    });
+                } catch (err) {
+                    console.error('Error enviando email de cotización via Resend:', err);
+                }
+            }
 
             return true;
         } catch (error) {

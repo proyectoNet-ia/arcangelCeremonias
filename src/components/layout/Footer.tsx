@@ -15,7 +15,7 @@ export const Footer: React.FC = () => {
     // Default values if config is not yet loaded
     const whatsapp = config?.whatsapp || '523521681197';
     const phone = config?.phone || '352 52 62502';
-    const email = config?.email || 'ventasesbasa@hotmail.com';
+    const email = config?.email || 'ventasesbasa@gmail.com';
     const facebook = config?.facebook_url || 'https://www.facebook.com/arcangel.ceremonias/';
     const instagram = config?.instagram_url || 'https://www.instagram.com/ceremonias.arcangel/';
     const address = config?.address || 'Igualdad #200, Ejido de Potrerillos, La Piedad, Michoacán, México';
