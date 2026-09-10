@@ -26,6 +26,7 @@ export const QuoteDrawer: React.FC = () => {
     const [company, setCompany] = useState('');
     const [phone, setPhone] = useState('');
     const [email, setEmail] = useState('');
+    const [errors, setErrors] = useState<{ name?: boolean; phone?: boolean; email?: boolean }>({});
     
     const [isGenerating, setIsGenerating] = useState(false);
     const [isSuccess, setIsSuccess] = useState(false);
@@ -46,6 +47,7 @@ export const QuoteDrawer: React.FC = () => {
     useEffect(() => {
         if (isDrawerOpen) {
             generateCaptcha();
+            setErrors({});
         }
     }, [isDrawerOpen]);
 
@@ -59,18 +61,58 @@ export const QuoteDrawer: React.FC = () => {
             formatted = `(${cleaned.slice(0, 3)}) ${cleaned.slice(3)}`;
         }
         setPhone(formatted);
+        if (errors.phone) setErrors(prev => ({ ...prev, phone: false }));
+    };
+
+    const validateForm = (): boolean => {
+        const newErrors: { name?: boolean; phone?: boolean; email?: boolean } = {};
+        
+        if (!name.trim() || name.trim().length < 2) {
+            newErrors.name = true;
+        }
+        
+        const cleanPhone = phone.replace(/\D/g, '');
+        if (cleanPhone.length < 10) {
+            newErrors.phone = true;
+        }
+        
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!email.trim() || !emailRegex.test(email.trim())) {
+            newErrors.email = true;
+        }
+        
+        setErrors(newErrors);
+        
+        if (newErrors.name) {
+            toast.error('Por favor ingresa tu Nombre o Boutique (Obligatorio)');
+            return false;
+        }
+        if (newErrors.phone) {
+            toast.error('Por favor ingresa un Teléfono a 10 dígitos (Obligatorio)');
+            return false;
+        }
+        if (newErrors.email) {
+            toast.error('Por favor ingresa un Correo Electrónico válido (Obligatorio)');
+            return false;
+        }
+        
+        return true;
     };
 
     const handleSendWhatsApp = (e?: React.FormEvent) => {
         if (e) e.preventDefault();
         if (items.length === 0) return;
 
+        if (!validateForm()) return;
+
         const waNumber = (config?.whatsapp || '523521681197').replace(/\D/g, '');
         
         let text = `*¡Hola! Deseo cotizar el siguiente pedido en Arcángel Ceremonias:*\n\n`;
-        if (name.trim()) text += `*Cliente:* ${name.trim()}\n`;
+        text += `*Cliente:* ${name.trim()}\n`;
+        text += `*Teléfono:* ${phone.trim()}\n`;
+        text += `*Email:* ${email.trim()}\n`;
         if (company.trim()) text += `*Empresa/Boutique:* ${company.trim()}\n`;
-        if (phone.trim()) text += `*Teléfono:* ${phone.trim()}\n\n`;
+        text += `\n`;
         
         text += `*Detalle de Prendas (${items.length} piezas):*\n`;
         items.forEach((item, index) => {
@@ -93,6 +135,8 @@ export const QuoteDrawer: React.FC = () => {
     const handleGenerate = async (e: React.FormEvent) => {
         e.preventDefault();
         if (items.length === 0) return;
+
+        if (!validateForm()) return;
 
         // Captcha Validation
         if (parseInt(captchaAnswer) !== (captchaNum1 + captchaNum2)) {
@@ -310,7 +354,7 @@ export const QuoteDrawer: React.FC = () => {
                                     ))}
                                 </div>
 
-                                {/* Formulario y Dual CTA */}
+                                {/* Formulario y Acciones */}
                                 <div className="p-5 bg-white border-t border-gold/15 shadow-lg space-y-4">
                                     <div className="flex justify-between items-baseline border-b border-gold/10 pb-3">
                                         <span className="text-[10px] font-bold text-chocolate/50 uppercase tracking-widest">Total Estimado</span>
@@ -319,47 +363,73 @@ export const QuoteDrawer: React.FC = () => {
                                         </span>
                                     </div>
 
+                                    {/* Formulario de Datos del Cliente (Obligatorios) */}
+                                    <div className="space-y-2.5">
+                                        <div className="flex justify-between items-center">
+                                            <span className="text-[9px] font-bold uppercase tracking-wider text-chocolate/70">Datos para tu Pedido</span>
+                                            <span className="text-[8px] text-amber-800 font-bold uppercase tracking-wider">* Obligatorios</span>
+                                        </div>
+
+                                        <div>
+                                            <input
+                                                type="text"
+                                                placeholder="Nombre Completo o Boutique *"
+                                                value={name}
+                                                onChange={e => {
+                                                    setName(e.target.value.toUpperCase());
+                                                    if (errors.name) setErrors(prev => ({ ...prev, name: false }));
+                                                }}
+                                                className={`w-full text-xs p-2.5 rounded-sm bg-cream/20 border ${errors.name ? 'border-red-500 bg-red-50/40' : 'border-gold/20 focus:border-gold'} outline-none uppercase placeholder:text-chocolate/40 transition-colors`}
+                                            />
+                                            {errors.name && <span className="text-[9px] text-red-500 font-semibold block mt-0.5">Nombre o Boutique obligatorio</span>}
+                                        </div>
+
+                                        <div className="grid grid-cols-2 gap-2">
+                                            <div>
+                                                <input
+                                                    type="tel"
+                                                    placeholder="Teléfono (10 dígitos) *"
+                                                    value={phone}
+                                                    onChange={handlePhoneChange}
+                                                    maxLength={14}
+                                                    className={`w-full text-xs p-2.5 rounded-sm bg-cream/20 border ${errors.phone ? 'border-red-500 bg-red-50/40' : 'border-gold/20 focus:border-gold'} outline-none placeholder:text-chocolate/40 transition-colors`}
+                                                />
+                                                {errors.phone && <span className="text-[9px] text-red-500 font-semibold block mt-0.5">10 dígitos requeridos</span>}
+                                            </div>
+                                            <div>
+                                                <input
+                                                    type="email"
+                                                    placeholder="Email *"
+                                                    value={email}
+                                                    onChange={e => {
+                                                        setEmail(e.target.value);
+                                                        if (errors.email) setErrors(prev => ({ ...prev, email: false }));
+                                                    }}
+                                                    className={`w-full text-xs p-2.5 rounded-sm bg-cream/20 border ${errors.email ? 'border-red-500 bg-red-50/40' : 'border-gold/20 focus:border-gold'} outline-none placeholder:text-chocolate/40 transition-colors`}
+                                                />
+                                                {errors.email && <span className="text-[9px] text-red-500 font-semibold block mt-0.5">Email válido requerido</span>}
+                                            </div>
+                                        </div>
+                                    </div>
+
                                     {/* Primary Fast WhatsApp CTA */}
                                     <button
                                         type="button"
                                         onClick={handleSendWhatsApp}
-                                        className="w-full py-3.5 bg-[#25D366] hover:bg-[#1EBE5D] text-white text-[10px] md:text-[11px] font-bold uppercase tracking-[0.2em] transition-all flex justify-center items-center gap-2.5 shadow-md hover:shadow-lg rounded-sm"
+                                        className="w-full py-3.5 bg-[#25D366] hover:bg-[#1EBE5D] text-white text-[10px] md:text-[11px] font-bold uppercase tracking-[0.2em] transition-all flex justify-center items-center gap-2.5 shadow-md hover:shadow-lg rounded-sm cursor-pointer active:scale-[0.99]"
                                     >
                                         <FontAwesomeIcon icon={faWhatsapp} className="text-base" />
                                         Enviar Pedido por WhatsApp
                                     </button>
 
-                                    {/* Collapsible / Optional PDF form */}
-                                    <form onSubmit={handleGenerate} className="space-y-3 pt-1">
-                                        <div className="space-y-2">
-                                            <input
-                                                type="text"
-                                                placeholder="Nombre o Boutique *"
-                                                value={name}
-                                                onChange={e => setName(e.target.value.toUpperCase())}
-                                                className="w-full text-xs p-2.5 rounded-sm bg-cream/20 border border-gold/20 focus:border-gold outline-none uppercase placeholder:text-chocolate/30"
-                                            />
-                                            <div className="grid grid-cols-2 gap-2">
-                                                <input
-                                                    type="tel"
-                                                    placeholder="Teléfono"
-                                                    value={phone}
-                                                    onChange={handlePhoneChange}
-                                                    maxLength={14}
-                                                    className="w-full text-xs p-2.5 rounded-sm bg-cream/20 border border-gold/20 focus:border-gold outline-none placeholder:text-chocolate/30"
-                                                />
-                                                <input
-                                                    type="email"
-                                                    placeholder="Email"
-                                                    value={email}
-                                                    onChange={e => setEmail(e.target.value)}
-                                                    className="w-full text-xs p-2.5 rounded-sm bg-cream/20 border border-gold/20 focus:border-gold outline-none placeholder:text-chocolate/30"
-                                                />
-                                            </div>
+                                    {/* Option to download formal PDF */}
+                                    <form onSubmit={handleGenerate} className="pt-2 border-t border-slate-100 space-y-2">
+                                        <div className="flex items-center justify-between text-[9px] text-chocolate/50 font-bold uppercase tracking-wider">
+                                            <span>O descarga tu cotización formal</span>
+                                            <span>Verificación</span>
                                         </div>
 
-                                        {/* Security Verification (Captcha) for PDF */}
-                                        <div className="flex items-center gap-2.5 pt-1">
+                                        <div className="flex items-center gap-2">
                                             <div className="bg-cream/40 border border-gold/20 text-chocolate px-3 py-2 rounded-sm text-[10px] font-bold select-none whitespace-nowrap">
                                                 ¿{captchaNum1} + {captchaNum2}?
                                             </div>
@@ -377,8 +447,8 @@ export const QuoteDrawer: React.FC = () => {
                                             <button 
                                                 type="submit" 
                                                 disabled={isGenerating}
-                                                className="px-4 py-2 bg-chocolate text-cream hover:bg-gold text-[9px] font-bold uppercase tracking-widest transition-all rounded-sm flex items-center gap-1.5 flex-shrink-0 disabled:opacity-50"
-                                                title="Descargar PDF formal"
+                                                className="px-4 py-2 bg-chocolate text-cream hover:bg-gold text-[9px] font-bold uppercase tracking-widest transition-all rounded-sm flex items-center gap-1.5 flex-shrink-0 disabled:opacity-50 cursor-pointer"
+                                                title="Descargar PDF formal y TXT Ensamblex"
                                             >
                                                 {isGenerating ? <FontAwesomeIcon icon={faSpinner} className="animate-spin text-xs" /> : <FontAwesomeIcon icon={faFilePdf} className="text-gold" />}
                                                 <span>PDF</span>
