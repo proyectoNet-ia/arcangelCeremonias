@@ -7,7 +7,7 @@ import { Link } from 'react-router-dom';
 import { useConfig } from '@/context/ConfigContext';
 import { faFilePdf, faLock } from '@fortawesome/free-solid-svg-icons';
 import { statsService } from '@/services/statsService';
-import bgMobile from '@/assets/modelo_medio.png';
+import bgMobile from '@/assets/modelo_medio.jpg';
 import bgDesktop from '@/assets/fondo-pc.jpg';
 
 const Home: React.FC = () => {

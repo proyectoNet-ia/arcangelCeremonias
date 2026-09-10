@@ -1,0 +1,26 @@
+# Reglas de Proyecto: Arcángel Ceremonias
+
+## 1. Stack Tecnológico y Arquitectura
+- **Frontend:** React 19 + TypeScript + Vite + Tailwind CSS + Framer Motion.
+- **Iconografía:** Font Awesome (`@fortawesome/react-fontawesome`) exclusivamente. Prohibido usar Lucide u otras librerías para nuevos componentes.
+- **Backend & Auth:** Supabase (PostgreSQL).
+- **Gestión de Estado:** React Context API (`ConfigContext`).
+
+## 2. Reglas de Despliegue y Git
+- **PROHIBIDO TOCAR MAIN:** No hacer `git push` a `main` ni despliegues a producción (`vercel --prod`) sin autorización explícita.
+- El trabajo activo se realiza y verifica en entorno local (`http://localhost:3000`).
+
+## 3. UI/UX y Estándares de Diseño
+- **Tailwind CSS Estricto:** Prohibido el uso de diálogos nativos del navegador (`alert()`, `confirm()`, `prompt()`). Usar componentes modales y toasts (`react-hot-toast` / Tailwind UI).
+- **Tipografía:** Tipografías premium importadas (Google Fonts) adaptadas a la identidad de marca.
+- **Consistencia:** Mantener paleta de colores y componentes reactivos al `ConfigContext`.
+
+## 4. Eficiencia y Supabase
+- Consultas selectivas (evitar `select=*` innecesarios).
+- RLS (Row Level Security) activo y verificado en todas las tablas y políticas.
+- No exponer `SUPABASE_SERVICE_ROLE_KEY` ni secretos en el cliente.
+- Manejo de canales en tiempo real (`supabase.channel()`) con limpieza estricta en desmontaje (`useEffect cleanup`).
+
+## 5. Integridad de Código y Ahorro de Tokens
+- Prohibido eliminar o resumir lógica existente al editar archivos.
+- Generar cambios modulares y precisos (snippets) evitando reimpresiones completas innecesarias.

@@ -191,7 +191,16 @@ export const Header: React.FC<HeaderProps> = ({ variant = 'light' }) => {
                                             }}
                                         >
                                             <div className="w-16 h-20 bg-chocolate flex-shrink-0 overflow-hidden">
-                                                <img src={product.main_image} alt={product.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                                                <img
+                                                    src={product.main_image}
+                                                    alt={product.name}
+                                                    loading="lazy"
+                                                    decoding="async"
+                                                    onError={(e) => {
+                                                        e.currentTarget.src = 'https://placehold.co/200x300/f8f5f2/8b643c?text=Prenda';
+                                                    }}
+                                                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                                                />
                                             </div>
                                             <div className="flex flex-col justify-center min-w-0">
                                                 <h4 className="text-xs font-bold text-cream uppercase tracking-widest truncate">{product.name}</h4>

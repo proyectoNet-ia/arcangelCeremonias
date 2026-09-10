@@ -77,34 +77,29 @@ Este archivo es un resumen actualizado para mantener la continuidad del desarrol
 | B-12 | Bundle size excesivo | Implementado **Lazy Loading** en `App.tsx` para separar el CMS de la parte pública. |
 | B-13 | Hangs en subida de medios (móvil) | Solucionado con optimizador de imágenes robusto, paralelismo, timeouts y avisos visuales (batch upload). |
 | B-14 | Guía de Tallas (Size Guide) | Implementada URL de guía de tallas por categoría con visualización dinámica en productos. |
+| B-15 | Erradicación de Diálogos Nativos | Reemplazados `alert()` y `confirm()` por `react-hot-toast` y `ConfirmModal`. |
+| B-16 | Asset móvil sobrepeso (2.95 MB) | Optimizado a JPEG/WebP de 164 KB (ahorro del 94.4% en LCP móvil). |
+| B-17 | Dual CTA de Conversión & FontAwesome | Implementado pedido directo a WhatsApp formateado + PDF en `QuoteDrawer` y 100% Font Awesome. |
 
 ---
 
-## 🛠️ Próximos Pasos (Ordenados por Prioridad)
+## 🛠️ Próximos Pasos (Fase de Lanzamiento)
 
-1. **🟡 ALTA:** Implementar barra de búsqueda de productos en el catálogo principal.
-2. **🟡 ALTA:** Revisar optimización de imágenes en el catálogo (formato WebP y límites de resolución).
-3. **🟢 BAJO:** Mejorar diseño de los mensajes de error en formularios de contacto.
-4. **⏳ LANZAMIENTO:** Solicitar aprobación final para eliminar el modo mantenimiento por defecto.
-
----
-
-## 🛠️ Notas Técnicas Importantes
-
--   **Code Splitting:** Se utiliza `React.lazy` para todas las rutas. El bundle inicial se redujo un ~25%.
--   **RBAC (Role Based Access Control):** Los editores solo ven inventario y galería. Los admins ven todo.
--   **Media Optimization:** Las imágenes móviles ahora tienen fallback y timeout para evitar bloqueos infinitos.
--   **Batch Uploads:** Soporte para subida masiva de imágenes con barra de progreso en tiempo real.
--   **Supabase Sessions:** Bypass de locks activo para estabilidad en Chrome/Edge.
+1. **🟡 VERIFICACIÓN:** Comprobar en previsualización local (`http://localhost:3000/inicio` o desactivando mantenimiento) la fluidez de todas las vistas.
+2. **⏳ LANZAMIENTO OFICIAL:** Desactivar modo mantenimiento desde `/admin/configuracion` y solicitar aprobación explícita del usuario para sincronizar con producción (`main`).
 
 ---
 
 ## 🛠️ Archivos Recientemente Modificados:
-- `src/App.tsx` (Lazy loading implementation)
-- `src/pages/Admin.tsx` (Role access restriction for editors)
-- `src/components/admin/AdminLayout.tsx` (Sidebar dynamic visibility per role)
-- `sql_migration_fix_schema.sql` (Final RLS and token fixes)
+- `.cursorrules` (Reglas y estándares del proyecto)
+- `src/components/quote/QuoteDrawer.tsx` (Dual CTA WhatsApp + PDF y Font Awesome)
+- `src/components/common/FloatingActions.tsx` (Mensajes dinámicos contextuales)
+- `src/components/admin/sections/QuotesManager.tsx` (Migración a Font Awesome)
+- `src/pages/Catalog.tsx` (Debounced search & URL sync)
+- `src/pages/ProductDetail.tsx` (Lazy loading, fallbacks y Font Awesome)
+- `src/pages/Home.tsx` (Asset móvil optimizado)
+- `src/services/mediaService.ts` (Compresión WebP calibrada)
 
 ---
 
-*Actualizado por Antigravity — Agente IA de desarrollo. Última actualización: 11/03/2026 23:05 hrs*
+*Actualizado por Antigravity — Agente IA de desarrollo.*

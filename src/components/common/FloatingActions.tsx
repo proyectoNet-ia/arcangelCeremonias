@@ -2,8 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faWhatsapp } from '@fortawesome/free-brands-svg-icons';
-import { faChevronUp } from '@fortawesome/free-solid-svg-icons';
-import { ShoppingBag } from 'lucide-react';
+import { faChevronUp, faBagShopping } from '@fortawesome/free-solid-svg-icons';
 import { useLocation } from 'react-router-dom';
 import { useConfig } from '@/context/ConfigContext';
 import { useQuote } from '@/context/QuoteContext';
@@ -13,7 +12,7 @@ export const FloatingActions: React.FC = () => {
     const { pathname } = useLocation();
     const [isVisible, setIsVisible] = useState(false);
     const { config } = useConfig();
-    const { totalItems, setDrawerOpen, isDrawerOpen } = useQuote();
+    const { items, totalItems, totalAmount, setDrawerOpen, isDrawerOpen } = useQuote();
 
     // Show button when page is scrolled down
     const toggleVisibility = () => {
@@ -37,11 +36,41 @@ export const FloatingActions: React.FC = () => {
     }, []);
 
     const whatsappNumber = config?.whatsapp || "523521681197";
-    const whatsappMessage = encodeURIComponent("Hola, me gustaría recibir más información sobre sus servicios.");
+
+    const getContextualWhatsAppMessage = () => {
+        if (items.length > 0) {
+            let msg = `*¡Hola! Deseo cotizar las siguientes prendas en Arcángel Ceremonias:*\n\n`;
+            items.forEach((item, index) => {
+                msg += `*${index + 1}. ${item.name}*\n`;
+                if (item.code) msg += `   - *Código/Modelo:* ${item.code}\n`;
+                if (item.size) msg += `   - *Talla:* ${item.size}\n`;
+                if (item.color) msg += `   - *Color:* ${item.color}\n`;
+                msg += `   - *Cantidad:* ${item.quantity} pieza(s)\n`;
+                if (item.price > 0) {
+                    msg += `   - *Subtotal:* $${(item.price * item.quantity).toLocaleString('es-MX', { minimumFractionDigits: 2 })} MXN\n`;
+                }
+                msg += `\n`;
+            });
+            if (totalAmount > 0) {
+                msg += `*TOTAL ESTIMADO: $${totalAmount.toLocaleString('es-MX', { minimumFractionDigits: 2 })} MXN*\n\n`;
+            }
+            msg += `_¿Me podrían confirmar disponibilidad, existencias y costos de envío/mayoreo? Gracias._`;
+            return encodeURIComponent(msg);
+        }
+
+        if (pathname.includes('/producto/')) {
+            return encodeURIComponent(`¡Hola! Estoy viendo esta prenda en su catálogo en línea (${window.location.href}) y me gustaría consultar disponibilidad de modelo, tallas y precios.`);
+        }
+        if (pathname.includes('/catalogo')) {
+            return encodeURIComponent("¡Hola! Estoy explorando su catálogo editorial y me gustaría recibir información sobre compras por mayoreo, mínimos y existencias.");
+        }
+        return encodeURIComponent("¡Hola! Me gustaría recibir más información y catálogo de ceremonias de Arcángel.");
+    };
 
     const handleWhatsAppClick = () => {
         statsService.trackWhatsAppClick(window.location.href);
-        const url = `https://wa.me/${whatsappNumber.replace(/\D/g, '')}?text=${whatsappMessage}`;
+        const message = getContextualWhatsAppMessage();
+        const url = `https://wa.me/${whatsappNumber.replace(/\D/g, '')}?text=${message}`;
         window.open(url, 'whatsapp_contact', 'noopener,noreferrer');
     };
 
@@ -82,15 +111,19 @@ export const FloatingActions: React.FC = () => {
                         whileHover={{ scale: 1.1 }}
                         whileTap={{ scale: 0.95 }}
                         onClick={() => setDrawerOpen(true)}
-                        className="w-14 h-14 bg-[#C5A059] text-white rounded-full shadow-2xl flex items-center justify-center relative"
+                        className="w-14 h-14 bg-chocolate text-gold border-2 border-gold/40 rounded-full shadow-2xl flex items-center justify-center relative hover:bg-gold hover:text-chocolate transition-all duration-300"
                         aria-label="Ver Cotización"
                         title="Ver Cotización"
                     >
-                        <div className="relative">
-                            <ShoppingBag size={24} />
-                            <span className="absolute -top-3 -right-3 bg-red-500 text-white text-xs font-bold w-6 h-6 flex items-center justify-center rounded-full border-2 border-white shadow-sm">
+                        <div className="relative flex items-center justify-center">
+                            <FontAwesomeIcon icon={faBagShopping} className="text-xl" />
+                            <motion.span
+                                initial={{ scale: 0 }}
+                                animate={{ scale: 1 }}
+                                className="absolute -top-3 -right-3 bg-gold text-chocolate text-[10px] font-bold w-6 h-6 flex items-center justify-center rounded-full border-2 border-white shadow-md"
+                            >
                                 {totalItems}
-                            </span>
+                            </motion.span>
                         </div>
                     </motion.button>
                 )}

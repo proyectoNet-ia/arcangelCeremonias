@@ -1,4 +1,5 @@
 import { supabase } from '../lib/supabase';
+import { EnsamblexColor, DEFAULT_OFFICIAL_COLORS } from '../constants/ensamblexColors';
 
 export interface SiteConfig {
     id?: string;
@@ -54,10 +55,12 @@ export interface SiteConfig {
     footer_logos_url?: string;
     maintenance_mode?: boolean;
     show_prices?: boolean;
+    // ── Colores Oficiales Ensamblex ERP ───────────────
+    ensamblex_colors?: EnsamblexColor[];
 }
 
 export const configService = {
-    async getConfig() {
+    async getConfig(): Promise<SiteConfig | null> {
         try {
             const { data, error } = await supabase
                 .from('site_config')
@@ -67,28 +70,87 @@ export const configService = {
 
             if (error) {
                 console.error('Error fetching config:', error);
-                return null;
             }
-            return data as SiteConfig | null;
+
+            let loadedColors: EnsamblexColor[] = DEFAULT_OFFICIAL_COLORS;
+            try {
+                if (data && (data as any).ensamblex_colors && Array.isArray((data as any).ensamblex_colors)) {
+                    loadedColors = (data as any).ensamblex_colors;
+                } else {
+                    const localSaved = localStorage.getItem('arcangel_ensamblex_colors');
+                    if (localSaved) {
+                        loadedColors = JSON.parse(localSaved);
+                    }
+                }
+            } catch (err) {
+                console.warn('Error reading ensamblex_colors:', err);
+            }
+
+            if (!data) {
+                return {
+                    company_name: 'Arcángel Ceremonias',
+                    whatsapp: '523521681197',
+                    phone: '3521681197',
+                    email: '',
+                    facebook_url: '',
+                    instagram_url: '',
+                    address: '',
+                    google_maps_url: '',
+                    ensamblex_colors: loadedColors
+                } as SiteConfig;
+            }
+
+            return {
+                ...(data as SiteConfig),
+                ensamblex_colors: loadedColors
+            };
         } catch (err) {
             console.error('Config Service Error:', err);
             return null;
         }
     },
 
-    async updateConfig(config: Partial<SiteConfig>) {
+    async updateConfig(config: Partial<SiteConfig>): Promise<SiteConfig> {
         const { id, ...configData } = config;
 
-        const { data, error } = await supabase
-            .from('site_config')
-            .upsert({ id: 'config_1', ...configData })
-            .select()
-            .single();
+        // Persistir siempre en localStorage para disponibilidad inmediata y offline
+        if (configData.ensamblex_colors) {
+            try {
+                localStorage.setItem('arcangel_ensamblex_colors', JSON.stringify(configData.ensamblex_colors));
+            } catch (e) {
+                console.warn('Error saving to localStorage:', e);
+            }
+        }
 
-        if (error) {
+        try {
+            const { data, error } = await supabase
+                .from('site_config')
+                .upsert({ id: 'config_1', ...configData })
+                .select()
+                .single();
+
+            if (error) {
+                // Si la columna ensamblex_colors no existe aún en la tabla, reintentar sin ella
+                if (error.message && error.message.includes('ensamblex_colors')) {
+                    const { ensamblex_colors, ...cleanData } = configData;
+                    const { data: fallbackData, error: fallbackError } = await supabase
+                        .from('site_config')
+                        .upsert({ id: 'config_1', ...cleanData })
+                        .select()
+                        .single();
+
+                    if (fallbackError) throw fallbackError;
+                    return {
+                        ...(fallbackData as SiteConfig),
+                        ensamblex_colors: configData.ensamblex_colors || DEFAULT_OFFICIAL_COLORS
+                    };
+                }
+                throw error;
+            }
+            return data as SiteConfig;
+        } catch (error) {
             console.error('Update Config Error details:', error);
             throw error;
         }
-        return data as SiteConfig;
     }
 };

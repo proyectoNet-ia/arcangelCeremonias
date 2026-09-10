@@ -4,6 +4,7 @@ import { Product } from '@/types/product';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faShareNodes, faLeaf, faGem, faScissors, faCloud, faAward, faEye } from '@fortawesome/free-solid-svg-icons';
 import { Link } from 'react-router-dom';
+import toast from 'react-hot-toast';
 import { useConfig } from '@/context/ConfigContext';
 
 interface ProductCardProps {
@@ -91,7 +92,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, index }) => {
                                     }).catch(console.error);
                                 } else {
                                     navigator.clipboard.writeText(`${window.location.origin}/producto/${product.slug}`);
-                                    alert('¡Enlace copiado al portapapeles!');
+                                    toast.success('¡Enlace copiado al portapapeles!');
                                 }
                             }}
                             className="bg-white/95 backdrop-blur-sm text-chocolate w-9 h-9 flex items-center justify-center rounded-full hover:bg-gold hover:text-white transition-all duration-300 shadow-md border border-gold/5"

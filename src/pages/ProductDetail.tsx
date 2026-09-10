@@ -3,7 +3,7 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faWhatsapp } from '@fortawesome/free-brands-svg-icons';
-import { faArrowLeft, faChevronRight, faChevronLeft, faShareNodes, faDiamond, faHands, faTruckFast, faStore, faTag, faPalette, faLayerGroup, faScissors, faStar, faPhone, faRulerHorizontal, faTimes, faCertificate, faMap, faQuoteLeft, faAward } from '@fortawesome/free-solid-svg-icons';
+import { faArrowLeft, faChevronRight, faChevronLeft, faShareNodes, faDiamond, faHands, faTruckFast, faStore, faTag, faPalette, faLayerGroup, faScissors, faStar, faPhone, faRulerHorizontal, faTimes, faCertificate, faMap, faQuoteLeft, faAward, faFileLines } from '@fortawesome/free-solid-svg-icons';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
 import { Logo } from '@/components/Logo';
@@ -24,11 +24,11 @@ import { SEO } from '@/components/common/SEO';
 import { ProductDetailSkeleton } from '@/components/common/Skeleton';
 import { COLOR_MAP } from '@/constants/colors';
 import { useQuote } from '@/context/QuoteContext';
-import { FileText } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 const ProductDetail: React.FC = () => {
     const { slug } = useParams<{ slug: string }>();
+    const { config, colorMap } = useConfig();
     const navigate = useNavigate();
     const [product, setProduct] = useState<Product | null>(null);
     const [loading, setLoading] = useState(true);
@@ -76,7 +76,6 @@ const ProductDetail: React.FC = () => {
     const [relatedProducts, setRelatedProducts] = useState<Product[]>([]);
     const [historyProducts, setHistoryProducts] = useState<Product[]>([]);
     const [showSizeGuide, setShowSizeGuide] = useState(false);
-    const { config } = useConfig();
     const { addItem } = useQuote();
     const whatsapp = config?.whatsapp || '523521681197';
     const phone = config?.phone || '352 52 62502';
@@ -295,6 +294,10 @@ const ProductDetail: React.FC = () => {
                                         key={activeImage}
                                         src={images[activeImage]}
                                         alt={product.name}
+                                        decoding="async"
+                                        onError={(e) => {
+                                            e.currentTarget.src = 'https://placehold.co/800x1200/f8f5f2/8b643c?text=Imagen+No+Disponible';
+                                        }}
                                         initial={{ opacity: 0 }}
                                         animate={{ opacity: 1 }}
                                         exit={{ opacity: 0 }}
@@ -327,7 +330,16 @@ const ProductDetail: React.FC = () => {
                                             whileHover={{ y: -3 }}
                                             className={`relative flex-shrink-0 w-24 aspect-[3/4] bg-white transition-all duration-300 ${activeImage === idx ? 'ring-1 ring-gold opacity-100' : 'opacity-40 hover:opacity-100'}`}
                                         >
-                                            <img src={img} className="w-full h-full object-cover" alt="" />
+                                            <img
+                                                src={img}
+                                                className="w-full h-full object-cover"
+                                                alt=""
+                                                loading="lazy"
+                                                decoding="async"
+                                                onError={(e) => {
+                                                    e.currentTarget.src = 'https://placehold.co/200x300/f8f5f2/8b643c?text=Arcangel';
+                                                }}
+                                            />
                                         </motion.button>
                                     ))}
                                 </motion.div>
@@ -451,6 +463,7 @@ const ProductDetail: React.FC = () => {
 
                                         return colorOptions.map((color: string, idx: number) => {
                                             const cName = color.trim().toLowerCase();
+                                            const activeColorMap: Record<string, string> = { ...COLOR_MAP, ...(colorMap || {}) };
                                             
                                             // Lógica para detectar bicolores (ej: "Azul con Kaki")
                                             const isCombined = cName.includes(' con ');
@@ -459,13 +472,13 @@ const ProductDetail: React.FC = () => {
 
                                             if (isCombined) {
                                                 const parts = cName.split(' con ').map(p => p.trim());
-                                                const color1 = COLOR_MAP[parts[0]] || Object.entries(COLOR_MAP).find(([key]) => parts[0].includes(key))?.[1] || '#E5E7EB';
-                                                const color2 = COLOR_MAP[parts[1]] || Object.entries(COLOR_MAP).find(([key]) => parts[1].includes(key))?.[1] || '#E5E7EB';
+                                                const color1 = activeColorMap[parts[0]] || Object.entries(activeColorMap).find(([key]) => parts[0].includes(key))?.[1] || '#E5E7EB';
+                                                const color2 = activeColorMap[parts[1]] || Object.entries(activeColorMap).find(([key]) => parts[1].includes(key))?.[1] || '#E5E7EB';
                                                 bgColor = color1;
                                                 secondColor = color2;
                                             } else {
-                                                const matchedKey = Object.keys(COLOR_MAP).find(key => cName.includes(key));
-                                                bgColor = COLOR_MAP[cName] || (matchedKey ? COLOR_MAP[matchedKey] : '#E5E7EB');
+                                                const matchedKey = Object.keys(activeColorMap).find(key => cName.includes(key));
+                                                bgColor = activeColorMap[cName] || (matchedKey ? activeColorMap[matchedKey] : '#E5E7EB');
                                             }
 
                                             const isWhite = bgColor.toLowerCase() === '#ffffff' || bgColor.toLowerCase() === '#f9f6ee' || bgColor.toLowerCase() === '#fffff0';
@@ -644,7 +657,7 @@ const ProductDetail: React.FC = () => {
                                                 }).catch(console.error);
                                             } else {
                                                 navigator.clipboard.writeText(window.location.href);
-                                                alert('¡Enlace copiado al portapapeles!');
+                                                toast.success('¡Enlace copiado al portapapeles!');
                                             }
                                         }}
                                         className="w-16 md:w-20 bg-white border border-gold/20 text-chocolate flex items-center justify-center hover:bg-gold hover:text-white transition-all duration-500 hover:shadow-xl group"
@@ -689,7 +702,7 @@ const ProductDetail: React.FC = () => {
                                     }}
                                     className="w-full bg-white border-2 border-[#C5A059] text-[#C5A059] py-4 px-8 flex items-center justify-center gap-3 group transition-all duration-300 rounded hover:bg-[#C5A059] hover:text-white"
                                 >
-                                    <FileText size={18} className="group-hover:scale-110 transition-transform" />
+                                    <FontAwesomeIcon icon={faFileLines} className="text-lg group-hover:scale-110 transition-transform" />
                                     <span className="text-[11px] uppercase tracking-[0.3em] font-bold">Añadir a Cotización</span>
                                 </motion.button>
 
@@ -858,6 +871,8 @@ const ProductDetail: React.FC = () => {
                                 <img
                                     src={(product as any).categories.size_guide_url}
                                     alt="Guía de Tallas"
+                                    loading="lazy"
+                                    decoding="async"
                                     className="w-full h-auto shadow-sm rounded-sm mx-auto"
                                 />
                                 <div className="mt-8 p-6 bg-gold/5 border border-gold/10 rounded-sm">

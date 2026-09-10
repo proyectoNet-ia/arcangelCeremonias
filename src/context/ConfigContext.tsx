@@ -1,16 +1,25 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useEffect, useState, useMemo } from 'react';
 import { configService, SiteConfig } from '@/services/configService';
+import { EnsamblexColor, DEFAULT_OFFICIAL_COLORS, getDynamicColorMap, getEnsamblexColorCode } from '@/constants/ensamblexColors';
 
 interface ConfigContextType {
     config: SiteConfig | null;
     loading: boolean;
     refresh: () => Promise<void>;
+    colors: EnsamblexColor[];
+    colorMap: Record<string, string>;
+    getColorHex: (colorName?: string) => string;
+    getColorCode: (colorName?: string) => string;
 }
 
 const ConfigContext = createContext<ConfigContextType>({
     config: null,
     loading: true,
-    refresh: async () => { }
+    refresh: async () => { },
+    colors: DEFAULT_OFFICIAL_COLORS,
+    colorMap: getDynamicColorMap(),
+    getColorHex: () => '#5B84B1',
+    getColorCode: () => 'BC'
 });
 
 export const ConfigProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -19,10 +28,7 @@ export const ConfigProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
     const fetchConfig = async () => {
         try {
-            // Solo activamos loading si no tenemos configuración previa 
-            // para evitar parpadeos (preloaders) al recuperar foco o refrescar
             if (!config) setLoading(true);
-
             const data = await configService.getConfig();
             if (data) setConfig(data);
         } catch (error) {
@@ -35,6 +41,26 @@ export const ConfigProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     useEffect(() => {
         fetchConfig();
     }, []);
+
+    const colors = useMemo<EnsamblexColor[]>(() => {
+        return config?.ensamblex_colors && config.ensamblex_colors.length > 0 
+            ? config.ensamblex_colors 
+            : DEFAULT_OFFICIAL_COLORS;
+    }, [config?.ensamblex_colors]);
+
+    const colorMap = useMemo(() => {
+        return getDynamicColorMap(colors);
+    }, [colors]);
+
+    const getColorHex = (colorName?: string): string => {
+        if (!colorName) return '#E5E7EB';
+        const clean = colorName.toLowerCase().trim();
+        return colorMap[clean] || '#5B84B1';
+    };
+
+    const getColorCode = (colorName?: string): string => {
+        return getEnsamblexColorCode(colorName, colors);
+    };
 
     useEffect(() => {
         if (config) {
@@ -53,13 +79,19 @@ export const ConfigProvider: React.FC<{ children: React.ReactNode }> = ({ childr
                 }
                 link.href = config.favicon_url;
             }
-
-            // Also set derived colors if needed, or just let Tailwind handle it via CSS variables
         }
     }, [config]);
 
     return (
-        <ConfigContext.Provider value={{ config, loading, refresh: fetchConfig }}>
+        <ConfigContext.Provider value={{
+            config,
+            loading,
+            refresh: fetchConfig,
+            colors,
+            colorMap,
+            getColorHex,
+            getColorCode
+        }}>
             {children}
         </ConfigContext.Provider>
     );

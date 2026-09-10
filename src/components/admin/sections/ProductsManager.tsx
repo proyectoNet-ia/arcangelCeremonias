@@ -7,11 +7,12 @@ import {
 import { productService } from '@/services/productService';
 import { Product, Category } from '@/types/product';
 import { useAuth } from '@/context/AuthContext';
+import { useConfig } from '@/context/ConfigContext';
 import { MediaSelectorModal } from '../MediaSelectorModal';
 import { ConfirmModal } from '../ConfirmModal';
 import { generateSlug, smartFormatTitle } from '@/lib/adminUtils';
-import toast from 'react-hot-toast';
 import { COLOR_NAMES, COLOR_MAP } from '@/constants/colors';
+import { OFFICIAL_ENSAMBLEX_COLORS } from '@/constants/ensamblexColors';
 
 interface ProductsManagerProps {
     products: Product[];
@@ -21,6 +22,7 @@ interface ProductsManagerProps {
 
 export const ProductsManager: React.FC<ProductsManagerProps> = ({ products, categories, refresh }) => {
     const { profile } = useAuth();
+    const { colors: availableColors } = useConfig();
     const isAdmin = profile?.role === 'admin';
 
     const [editingProduct, setEditingProduct] = useState<Partial<Product> | null>(null);
@@ -593,7 +595,47 @@ export const ProductsManager: React.FC<ProductsManagerProps> = ({ products, cate
                                                 </div>
 
                                                 <div className="space-y-2">
-                                                    <label className="text-[9px] uppercase tracking-widest font-bold text-slate-400 pl-1">Colores Disponibles (Enter o coma para agregar)</label>
+                                                    <div className="flex items-center justify-between">
+                                                        <label className="text-[9px] uppercase tracking-widest font-bold text-slate-400 pl-1">
+                                                            Colores Oficiales Ensamblex ERP (Haz clic para activar/desactivar)
+                                                        </label>
+                                                    </div>
+
+                                                    {/* Chips Rápidos de los Colores Oficiales Ensamblex */}
+                                                    <div className="flex flex-wrap gap-1.5 p-2.5 bg-slate-50 border border-slate-100 rounded-sm">
+                                                        {(availableColors && availableColors.length > 0 ? availableColors : OFFICIAL_ENSAMBLEX_COLORS).map(col => {
+                                                            const currentColors = editingProduct.color ? editingProduct.color.split(',').map(c => c.trim().toLowerCase()) : [];
+                                                            const isSelected = currentColors.includes(col.name);
+
+                                                            return (
+                                                                <button
+                                                                    key={col.code}
+                                                                    type="button"
+                                                                    onClick={() => {
+                                                                        let updated: string[];
+                                                                        if (isSelected) {
+                                                                            updated = currentColors.filter(c => c !== col.name);
+                                                                        } else {
+                                                                            updated = [...currentColors, col.name];
+                                                                        }
+                                                                        setEditingProduct({ ...editingProduct, color: updated.join(',') });
+                                                                    }}
+                                                                    className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-sm text-[9px] font-bold uppercase tracking-wider transition-all border ${
+                                                                        isSelected 
+                                                                            ? 'bg-chocolate text-cream border-chocolate shadow-sm ring-1 ring-gold/40' 
+                                                                            : 'bg-white text-slate-600 border-slate-200 hover:border-gold/50'
+                                                                    }`}
+                                                                >
+                                                                    <span 
+                                                                        className="w-2.5 h-2.5 rounded-full border border-slate-300 shadow-2xs flex-shrink-0" 
+                                                                        style={{ backgroundColor: col.hex }} 
+                                                                    />
+                                                                    <span>{col.label}</span>
+                                                                </button>
+                                                            );
+                                                        })}
+                                                    </div>
+
                                                     <div className="flex flex-wrap gap-2 p-3 border border-slate-100 bg-slate-50/30 min-h-[50px]">
                                                         {editingProduct.color?.split(',').filter(c => c.trim()).map((c, i) => (
                                                             <span key={i} className="flex items-center gap-1.5 px-3 py-1 bg-gold/10 text-gold text-[10px] uppercase tracking-widest font-bold border border-gold/20 rounded-full">

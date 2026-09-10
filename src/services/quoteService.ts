@@ -3,6 +3,7 @@ import { configService, SiteConfig } from './configService';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { QuoteItem } from '../context/QuoteContext';
+import { formatEnsamblexSku } from '../constants/ensamblexColors';
 
 // Helper para convertir una URL de imagen a base64
 async function getBase64ImageFromUrl(imageUrl: string): Promise<string> {
@@ -162,16 +163,53 @@ export const quoteService = {
         return doc.output('blob');
     },
 
+    async getNextConsecutiveNumber(): Promise<number> {
+        try {
+            const { count, error } = await supabase
+                .from('quotes')
+                .select('*', { count: 'exact', head: true });
+            if (error) throw error;
+            return (count || 0) + 1;
+        } catch {
+            const saved = localStorage.getItem('ensamblex_consecutive') || '1';
+            const next = parseInt(saved, 10) || 1;
+            localStorage.setItem('ensamblex_consecutive', String(next + 1));
+            return next;
+        }
+    },
+
+    generateEnsamblexTXT(
+        items: QuoteItem[],
+        consecutiveNumber: number
+    ): { filename: string; content: string; blob: Blob } {
+        const paddedNumber = String(consecutiveNumber).padStart(3, '0');
+        const filename = `QWEB${paddedNumber}.TXT`;
+        
+        // Estructura Ensamblex ERP:
+        // Renglón 1: 101010 (ID Web Cliente)
+        // Renglón 2+: [CODIGO_BASE][COLOR]-[TALLA]\t[CANTIDAD]
+        let content = "101010\r\n";
+        items.forEach(item => {
+            const sku = formatEnsamblexSku(item.code, item.color, item.size);
+            content += `${sku}\t${item.quantity}\r\n`;
+        });
+
+        const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+        return { filename, content, blob };
+    },
+
     async submitQuote(
         user: QuoteUserData,
         items: QuoteItem[],
         totalAmount: number,
-        pdfBlob: Blob
-    ): Promise<boolean> {
+        pdfBlob: Blob,
+        txtBlob?: Blob,
+        consecutiveNumber?: number
+    ): Promise<{ success: boolean; txtUrl?: string }> {
         try {
             // 1. Subir PDF al Storage
             const fileName = `cotizacion_${user.name.replace(/\\s+/g, '_')}_${Date.now()}.pdf`;
-            const { data: storageData, error: storageError } = await supabase
+            const { error: storageError } = await supabase
                 .storage
                 .from('quotes_pdfs')
                 .upload(fileName, pdfBlob, {
@@ -185,13 +223,34 @@ export const quoteService = {
                 throw storageError;
             }
 
-            // 2. Obtener la URL pública
+            // 2. Obtener la URL pública del PDF
             const { data: publicUrlData } = supabase
                 .storage
                 .from('quotes_pdfs')
                 .getPublicUrl(fileName);
 
             const pdfUrl = publicUrlData.publicUrl;
+
+            // Subir TXT Ensamblex si se proporciona
+            let txtUrl: string | undefined;
+            if (txtBlob && consecutiveNumber) {
+                const txtFileName = `QWEB${String(consecutiveNumber).padStart(3, '0')}_${Date.now()}.TXT`;
+                const { error: txtStorageError } = await supabase
+                    .storage
+                    .from('quotes_pdfs')
+                    .upload(txtFileName, txtBlob, {
+                        contentType: 'text/plain',
+                        cacheControl: '3600',
+                        upsert: false
+                    });
+                if (!txtStorageError) {
+                    const { data: txtPublicUrlData } = supabase
+                        .storage
+                        .from('quotes_pdfs')
+                        .getPublicUrl(txtFileName);
+                    txtUrl = txtPublicUrlData.publicUrl;
+                }
+            }
 
             // Generar UUID en el cliente
             const quoteId = typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function'
@@ -203,18 +262,20 @@ export const quoteService = {
                 });
 
             // 3. Guardar en la tabla quotes (sin .select().single() para evitar error 401 por falta de permisos SELECT para anon)
+            const insertPayload: Record<string, any> = {
+                id: quoteId,
+                user_name: user.name,
+                user_company: user.company,
+                user_phone: user.phone,
+                user_email: user.email,
+                total_amount: totalAmount,
+                pdf_url: pdfUrl,
+                status: 'pending'
+            };
+
             const { error: quoteError } = await supabase
                 .from('quotes')
-                .insert({
-                    id: quoteId,
-                    user_name: user.name,
-                    user_company: user.company,
-                    user_phone: user.phone,
-                    user_email: user.email,
-                    total_amount: totalAmount,
-                    pdf_url: pdfUrl,
-                    status: 'pending'
-                });
+                .insert(insertPayload);
 
             if (quoteError) throw quoteError;
 
@@ -362,10 +423,10 @@ export const quoteService = {
                 }
             }
 
-            return true;
+            return { success: true, txtUrl };
         } catch (error) {
             console.error("Error submitting quote:", error);
-            return false;
+            return { success: false };
         }
     }
 };

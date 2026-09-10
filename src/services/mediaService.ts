@@ -89,13 +89,13 @@ export const mediaService = {
         // 2. Optimización automática por carpeta
         if (file.type.startsWith('image/') && !file.type.includes('svg')) {
             try {
-                let options = {};
+                let options: any = {};
                 if (folder === 'products') {
-                    options = { maxWidth: 800, maxHeight: 1100, fit: 'cover', format: 'image/webp' };
+                    options = { maxWidth: 800, maxHeight: 1100, fit: 'cover', format: 'image/webp', quality: 0.82 };
                 } else if (folder === 'hero') {
                     options = { maxWidth: 1920, maxHeight: 1080, fit: 'none', format: 'image/webp', quality: 0.85 };
                 } else {
-                    options = { maxWidth: 1200, maxHeight: 1200, fit: 'none', format: 'image/webp' };
+                    options = { maxWidth: 1200, maxHeight: 1200, fit: 'none', format: 'image/webp', quality: 0.82 };
                 }
 
                 const optimizedBlob = await optimizeImage(file, options);

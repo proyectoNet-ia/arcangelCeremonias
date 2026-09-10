@@ -1,17 +1,20 @@
 import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
-    faInbox, faTrash, faEnvelope, faCheckCircle
+    faInbox, faTrash, faEnvelope, faCheckCircle, faExclamationTriangle, faTimes
 } from '@fortawesome/free-solid-svg-icons';
 import { faWhatsapp } from '@fortawesome/free-brands-svg-icons';
 import { contactService, ContactMessage } from '@/services/contactService';
 import toast from 'react-hot-toast';
+import { ConfirmModal } from '../ConfirmModal';
 
 export const MessagesManager: React.FC = () => {
     const [messages, setMessages] = useState<ContactMessage[]>([]);
     const [loading, setLoading] = useState(true);
     const [selectedMessage, setSelectedMessage] = useState<ContactMessage | null>(null);
+    const [messageIdToDelete, setMessageIdToDelete] = useState<string | null>(null);
+    const [isDeleting, setIsDeleting] = useState(false);
 
     const fetchMessages = async () => {
         try {
@@ -42,15 +45,19 @@ export const MessagesManager: React.FC = () => {
         }
     };
 
-    const handleDelete = async (id: string) => {
-        if (!confirm('¿Seguro que deseas eliminar este mensaje?')) return;
+    const confirmDelete = async () => {
+        if (!messageIdToDelete) return;
         try {
-            await contactService.deleteMessage(id);
-            setMessages(prev => prev.filter(m => m.id !== id));
-            if (selectedMessage?.id === id) setSelectedMessage(null);
+            setIsDeleting(true);
+            await contactService.deleteMessage(messageIdToDelete);
+            setMessages(prev => prev.filter(m => m.id !== messageIdToDelete));
+            if (selectedMessage?.id === messageIdToDelete) setSelectedMessage(null);
             toast.success('Mensaje eliminado');
         } catch (error) {
             toast.error('Error al eliminar mensaje');
+        } finally {
+            setIsDeleting(false);
+            setMessageIdToDelete(null);
         }
     };
 
@@ -115,8 +122,9 @@ export const MessagesManager: React.FC = () => {
                             </div>
                             <div className="flex gap-2">
                                 <button
-                                    onClick={() => handleDelete(selectedMessage.id!)}
+                                    onClick={() => setMessageIdToDelete(selectedMessage.id!)}
                                     className="p-3 text-slate-300 hover:text-red-500 transition-colors"
+                                    title="Eliminar mensaje"
                                 >
                                     <FontAwesomeIcon icon={faTrash} />
                                 </button>
@@ -170,6 +178,17 @@ export const MessagesManager: React.FC = () => {
                     </div>
                 )}
             </div>
+
+            <ConfirmModal
+                isOpen={!!messageIdToDelete}
+                title="¿Eliminar mensaje?"
+                message="Esta acción no se puede deshacer y el mensaje se borrará permanentemente."
+                confirmLabel={isDeleting ? "Eliminando..." : "Eliminar"}
+                cancelLabel="Cancelar"
+                variant="danger"
+                onConfirm={confirmDelete}
+                onCancel={() => setMessageIdToDelete(null)}
+            />
         </div>
     );
 };

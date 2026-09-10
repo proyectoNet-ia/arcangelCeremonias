@@ -26,17 +26,41 @@ const Catalog: React.FC = () => {
     const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
     const [selectedSubcategory, setSelectedSubcategory] = useState<string | null>(null);
     const [searchTerm, setSearchTerm] = useState(searchParams.get('search') || '');
+    const [debouncedSearchTerm, setDebouncedSearchTerm] = useState(searchTerm);
     const [isMegamenuOpen, setIsMegamenuOpen] = useState(false);
     const { config } = useConfig();
 
+    // Debounce search input and sync with search tracking & URL
     useEffect(() => {
-        const queryTerm = searchParams.get('search');
-        if (queryTerm !== null) {
+        const handler = setTimeout(() => {
+            setDebouncedSearchTerm(searchTerm);
+            if (searchTerm.trim().length >= 2) {
+                trackSearch(searchTerm.trim());
+            }
+
+            const currentParam = searchParams.get('search') || '';
+            if (searchTerm.trim() !== currentParam) {
+                const newParams = new URLSearchParams(searchParams);
+                if (searchTerm.trim()) {
+                    newParams.set('search', searchTerm.trim());
+                } else {
+                    newParams.delete('search');
+                }
+                setSearchParams(newParams, { replace: true });
+            }
+        }, 250);
+
+        return () => clearTimeout(handler);
+    }, [searchTerm]);
+
+    // Sync state if URL search query changes externally
+    useEffect(() => {
+        const queryTerm = searchParams.get('search') || '';
+        if (queryTerm !== searchTerm) {
             setSearchTerm(queryTerm);
-            // Track the search in cookies if non-empty
-            if (queryTerm.trim().length >= 2) trackSearch(queryTerm.trim());
+            setDebouncedSearchTerm(queryTerm);
         }
-    }, [searchParams]);
+    }, [searchParams.get('search')]);
 
     // --- Drag to Scroll Logic for PC ---
     const scrollRef = useRef<HTMLDivElement>(null);
@@ -122,8 +146,8 @@ const Catalog: React.FC = () => {
         const matchesCategory = selectedCategory ? p.category_id === selectedCategory : true;
         const matchesSubcategory = selectedSubcategory ? p.subcategory === selectedSubcategory : true;
 
-        const searchLower = searchTerm.toLowerCase();
-        const matchesSearch = !searchTerm ||
+        const searchLower = debouncedSearchTerm.toLowerCase().trim();
+        const matchesSearch = !searchLower ||
             p.name.toLowerCase().includes(searchLower) ||
             (p.model_code?.toLowerCase().includes(searchLower) ?? false) ||
             (p.material?.toLowerCase().includes(searchLower) ?? false) ||

@@ -1,20 +1,28 @@
 // ─── Biblioteca Centralizada de Colores ───────────────────────────────────────────
 export const COLOR_MAP: Record<string, string> = {
-    // Colores principales
+    // Colores Oficiales Ensamblex ERP (Calibrados a tonos textiles reales)
     'blanco': '#FFFFFF',
-    'negro': '#000000',
-    'gris': '#E4E4E5',
+    'beige': '#EADDC7',
+    'negro': '#1A1A1A',
+    'kaki': '#C4A47C',
+    'marino': '#1B2A4A',
+    'gris': '#B0B7BC',
+    'azul': '#5B84B1',
+    'champagne': '#DFCA9F',
+    'rey': '#1B4F9B',
+
+    // Variantes adicionales y sinónimos
     'gris oscuro': '#36454F',
-    'azul': '#0000FF',
-    'azul marino': '#071A35',
-    'azul celeste': '#C5D4EB',
+    'azul marino': '#1B2A4A',
+    'azul celeste': '#7CA3CC',
+    'azul rey': '#1B4F9B',
+    'champan': '#DFCA9F',
+    'caqui': '#C4A47C',
     'rojo': '#FF0000',
     'vino': '#800020',
     'rosa': '#FFC0CB',
     'verde': '#008000',
     'verde militar': '#556B2F',
-    'kaki': '#D2B48C',
-    'beige': '#FAF0E6',
     'café': '#4B3621',
     'naranja': '#FFA500',
     'mostaza': '#FFDB58',
@@ -26,11 +34,9 @@ export const COLOR_MAP: Record<string, string> = {
     'perla': '#EAE0C8',
     'crema': '#FFFDD0',
     'rosa pastel': '#FFD1DC',
-    'azul rey': '#0041C2',
     'oro': '#D4AF37',
     'dorado': '#D4AF37',
     'plata': '#C0C0C0',
-    'champan': '#F7E7CE',
     'arena': '#C2B280',
     'menta': '#98FF98',
     'hielo': '#F0F8FF'

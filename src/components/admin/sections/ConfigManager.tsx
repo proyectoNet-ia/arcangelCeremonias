@@ -2,11 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
-    faDiamond, faPhone, faUsers, faChartBar, faCog, faSave, faImage, faImages, faGlobe, faEnvelope, faFilePdf, faFileUpload, faEye
+    faDiamond, faPhone, faUsers, faChartBar, faCog, faSave, faImage, faImages, faGlobe, faEnvelope, faFilePdf, faFileUpload, faEye,
+    faPalette, faPlus, faTrash, faRotateLeft, faCheck, faEyeDropper, faWandMagicSparkles, faLayerGroup
 } from '@fortawesome/free-solid-svg-icons';
 import { faWhatsapp, faFacebook, faInstagram } from '@fortawesome/free-brands-svg-icons';
 import { configService, SiteConfig } from '@/services/configService';
 import { productService } from '@/services/productService';
+import { EnsamblexColor, DEFAULT_OFFICIAL_COLORS } from '@/constants/ensamblexColors';
+import { TEXTILE_FAMILIES, ALL_TEXTILE_PRESETS, TextilePreset, findMatchingPreset } from '@/constants/textilePresets';
 import { MediaSelectorModal } from '../MediaSelectorModal';
 import toast from 'react-hot-toast';
 
@@ -51,10 +54,20 @@ export const ConfigManager: React.FC = () => {
         footer_logos_url: '',
         maintenance_mode: false,
         show_prices: true,
+        ensamblex_colors: DEFAULT_OFFICIAL_COLORS,
     });
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
-    const [activeTab, setActiveTab] = useState<'identity' | 'contact' | 'about' | 'marketing'>('identity');
+    const [activeTab, setActiveTab] = useState<'identity' | 'colors' | 'contact' | 'about' | 'marketing'>('identity');
+    
+    // Estados para gestión de nuevos colores
+    const [newColorName, setNewColorName] = useState('');
+    const [newColorCode, setNewColorCode] = useState('');
+    const [newColorHex, setNewColorHex] = useState('#5B84B1');
+    const [isAddingColor, setIsAddingColor] = useState(false);
+    const [selectedFamily, setSelectedFamily] = useState<string>('todos');
+    const [presetSearch, setPresetSearch] = useState<string>('');
+
     const [mediaSelector, setMediaSelector] = useState<{
         isOpen: boolean,
         field: 'logo_light' | 'logo_dark' | 'favicon' | 'pdf' | 'about' | 'cta_bg' | 'footer_logos'
@@ -108,6 +121,9 @@ export const ConfigManager: React.FC = () => {
                         footer_logos_url: data.footer_logos_url || '',
                         maintenance_mode: data.maintenance_mode ?? false,
                         show_prices: data.show_prices ?? true,
+                        ensamblex_colors: data.ensamblex_colors && data.ensamblex_colors.length > 0
+                            ? data.ensamblex_colors
+                            : DEFAULT_OFFICIAL_COLORS
                     });
                 }
             } catch (error) {
@@ -118,6 +134,126 @@ export const ConfigManager: React.FC = () => {
         };
         load();
     }, []);
+
+    // Funciones de gestión de colores
+    const handleColorHexChange = (index: number, newHex: string) => {
+        const current = [...(config.ensamblex_colors || DEFAULT_OFFICIAL_COLORS)];
+        current[index] = { ...current[index], hex: newHex };
+        setConfig({ ...config, ensamblex_colors: current });
+    };
+
+    const handleColorCodeChange = (index: number, newCode: string) => {
+        const cleanCode = newCode.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 2);
+        const current = [...(config.ensamblex_colors || DEFAULT_OFFICIAL_COLORS)];
+        const name = current[index].name;
+        const capitalized = name.charAt(0).toUpperCase() + name.slice(1);
+        current[index] = { ...current[index], code: cleanCode, label: `${capitalized} (${cleanCode})` };
+        setConfig({ ...config, ensamblex_colors: current });
+    };
+
+    const handleColorNameChange = (index: number, newName: string) => {
+        const current = [...(config.ensamblex_colors || DEFAULT_OFFICIAL_COLORS)];
+        const code = current[index].code;
+        const cleanName = newName.toLowerCase().trim();
+        const capitalized = newName.trim() ? newName.trim().charAt(0).toUpperCase() + newName.trim().slice(1) : '';
+        current[index] = { ...current[index], name: cleanName, label: `${capitalized} (${code})` };
+        setConfig({ ...config, ensamblex_colors: current });
+    };
+
+    // Auto-sugerencia inteligente al escribir el nombre
+    const handleNameChangeWithSmartPreset = (val: string) => {
+        setNewColorName(val);
+        const matched = findMatchingPreset(val);
+        if (matched) {
+            setNewColorCode(matched.code);
+            setNewColorHex(matched.hex);
+        }
+    };
+
+    // Aplicar preset textil directamente (1 Clic)
+    const handleApplyPreset = (preset: TextilePreset, targetIndex?: number) => {
+        if (targetIndex !== undefined) {
+            handleColorHexChange(targetIndex, preset.hex);
+            toast.success(`Tono "${preset.label}" aplicado`, { icon: '🎨' });
+        } else {
+            setNewColorName(preset.name);
+            setNewColorCode(preset.code);
+            setNewColorHex(preset.hex);
+            setIsAddingColor(true);
+            toast.success(`Tono "${preset.label}" seleccionado`, { icon: '✨' });
+        }
+    };
+
+    // Herramienta Cuentagotas digital nativa (EyeDropper API)
+    const handleEyeDropper = async (target: 'new' | number) => {
+        if (typeof window !== 'undefined' && 'EyeDropper' in window) {
+            try {
+                const eyeDropper = new (window as any).EyeDropper();
+                const result = await eyeDropper.open();
+                if (result?.sRGBHex) {
+                    const hexUpper = result.sRGBHex.toUpperCase();
+                    if (target === 'new') {
+                        setNewColorHex(hexUpper);
+                    } else {
+                        handleColorHexChange(target, hexUpper);
+                    }
+                    toast.success(`Color ${hexUpper} absorbido con éxito`, { icon: '✨' });
+                }
+            } catch {
+                // Usuario canceló la selección con ESC o clic fuera
+            }
+        } else {
+            toast.error('Tu navegador no soporta el cuentagotas directo. Puedes elegir desde la paleta de telas.', { duration: 4000 });
+        }
+    };
+
+    const handleAddColor = () => {
+        if (!newColorName.trim() || !newColorCode.trim()) {
+            toast.error('Nombre y Código ERP son obligatorios');
+            return;
+        }
+
+        const cleanName = newColorName.toLowerCase().trim();
+        const cleanCode = newColorCode.toUpperCase().trim().replace(/[^A-Z0-9]/g, '').slice(0, 2);
+        const capitalized = cleanName.charAt(0).toUpperCase() + cleanName.slice(1);
+        const current = [...(config.ensamblex_colors || DEFAULT_OFFICIAL_COLORS)];
+
+        if (current.some(c => c.code.toUpperCase() === cleanCode)) {
+            toast.error(`Ya existe un color con el código ERP "${cleanCode}"`);
+            return;
+        }
+
+        const newEntry: EnsamblexColor = {
+            code: cleanCode,
+            name: cleanName,
+            label: `${capitalized} (${cleanCode})`,
+            hex: newColorHex || '#5B84B1'
+        };
+
+        setConfig({ ...config, ensamblex_colors: [...current, newEntry] });
+        setNewColorName('');
+        setNewColorCode('');
+        setNewColorHex('#5B84B1');
+        setIsAddingColor(false);
+        toast.success(`Color ${capitalized} (${cleanCode}) agregado a la lista`);
+    };
+
+    const handleRemoveColor = (index: number) => {
+        const current = [...(config.ensamblex_colors || DEFAULT_OFFICIAL_COLORS)];
+        if (current.length <= 1) {
+            toast.error('Debe haber al menos 1 color configurado');
+            return;
+        }
+        const removed = current[index];
+        const updated = current.filter((_, i) => i !== index);
+        setConfig({ ...config, ensamblex_colors: updated });
+        toast.success(`Color "${removed.label}" eliminado`);
+    };
+
+    const handleResetColors = () => {
+        setConfig({ ...config, ensamblex_colors: DEFAULT_OFFICIAL_COLORS });
+        toast.success('Lista de colores restaurada a los 9 oficiales de fábrica');
+    };
 
     const handlePdfUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
@@ -181,6 +317,7 @@ export const ConfigManager: React.FC = () => {
                     <div className="flex lg:flex-col gap-2 overflow-x-auto lg:overflow-x-visible no-scrollbar pb-2 lg:pb-0">
                         {[
                             { id: 'identity', label: 'Identidad Visual', icon: faDiamond },
+                            { id: 'colors', label: 'Colores ERP', icon: faPalette },
                             { id: 'contact', label: 'Contacto & Redes', icon: faPhone },
                             { id: 'about', label: 'Sección Nosotros', icon: faUsers },
                             { id: 'marketing', label: 'Marketing & PDF', icon: faChartBar },
@@ -206,12 +343,14 @@ export const ConfigManager: React.FC = () => {
                         <div>
                             <h2 className="text-2xl font-serif text-slate-800">
                                 {activeTab === 'identity' && 'Identidad de Marca'}
+                                {activeTab === 'colors' && 'Colores Oficiales Ensamblex ERP'}
                                 {activeTab === 'contact' && 'Canales de Comunicación'}
                                 {activeTab === 'about' && 'Contenido "Nosotros"'}
                                 {activeTab === 'marketing' && 'Estrategia & Catálogo'}
                             </h2>
                             <p className="text-[10px] uppercase tracking-widest text-slate-400 font-bold mt-1">
                                 {activeTab === 'identity' && 'Logos, colores y esencia visual del sitio'}
+                                {activeTab === 'colors' && 'Configura los nombres, claves ERP para el archivo .TXT y tonos HEX de las prendas'}
                                 {activeTab === 'contact' && 'Atención al cliente, redes sociales y ubicación'}
                                 {activeTab === 'about' && 'Personaliza la historia y estadísticas de tu empresa'}
                                 {activeTab === 'marketing' && 'Configura el catálogo descargable y banners promocionales'}
@@ -273,9 +412,21 @@ export const ConfigManager: React.FC = () => {
                                         {['primary_color', 'secondary_color', 'accent_color'].map((key) => (
                                             <div key={key} className="space-y-2">
                                                 <label className="text-[10px] uppercase tracking-widest font-bold text-slate-400">{key.replace('_', ' ')}</label>
-                                                <div className="flex gap-2">
-                                                    <input type="color" value={(config as any)[key]} onChange={e => setConfig({ ...config, [key]: e.target.value })} className="h-12 w-12 border border-slate-200 cursor-pointer" />
-                                                    <input type="text" value={(config as any)[key]} onChange={e => setConfig({ ...config, [key]: e.target.value })} className="flex-grow p-4 border border-slate-100 outline-none text-xs font-mono" />
+                                                <div className="flex gap-2 items-center">
+                                                    <label
+                                                        className="relative h-12 w-12 rounded-sm border border-slate-200 shadow-2xs cursor-pointer overflow-hidden flex-shrink-0 transition-transform hover:scale-105"
+                                                        style={{ backgroundColor: (config as any)[key] || '#000000' }}
+                                                        title="Seleccionar color"
+                                                    >
+                                                        <span className="absolute inset-0 ring-1 ring-inset ring-black/10 pointer-events-none" />
+                                                        <input
+                                                            type="color"
+                                                            value={(config as any)[key] || '#000000'}
+                                                            onChange={e => setConfig({ ...config, [key]: e.target.value })}
+                                                            className="absolute inset-0 opacity-0 w-full h-full cursor-pointer"
+                                                        />
+                                                    </label>
+                                                    <input type="text" value={(config as any)[key] || ''} onChange={e => setConfig({ ...config, [key]: e.target.value })} className="flex-grow p-3.5 border border-slate-100 outline-none text-xs font-mono uppercase" />
                                                 </div>
                                             </div>
                                         ))}
@@ -400,6 +551,327 @@ export const ConfigManager: React.FC = () => {
                                 </div>
                             </div>
                         )}
+
+                        {activeTab === 'colors' && (() => {
+                            const filteredPresets = ALL_TEXTILE_PRESETS.filter(p => {
+                                const matchesFamily = selectedFamily === 'todos' || p.family === selectedFamily;
+                                const matchesSearch = !presetSearch.trim() || 
+                                    p.name.toLowerCase().includes(presetSearch.toLowerCase()) || 
+                                    p.label.toLowerCase().includes(presetSearch.toLowerCase()) ||
+                                    p.code.toLowerCase().includes(presetSearch.toLowerCase()) ||
+                                    p.description.toLowerCase().includes(presetSearch.toLowerCase());
+                                return matchesFamily && matchesSearch;
+                            });
+
+                            const smartMatchedPreset = newColorName.trim() ? findMatchingPreset(newColorName) : null;
+
+                            return (
+                                <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                                    {/* Encabezado del Módulo */}
+                                    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 p-5 bg-slate-50 border border-slate-100 rounded-xl">
+                                        <div>
+                                            <h3 className="text-xs uppercase tracking-widest font-bold text-chocolate flex items-center gap-2">
+                                                <FontAwesomeIcon icon={faPalette} className="text-gold" />
+                                                Gestor de Colores y Claves Ensamblex ERP
+                                            </h3>
+                                            <p className="text-xs text-slate-500 mt-1">Configura los tonos de las telas y la clave de 2 letras para exportar los pedidos en formato .TXT.</p>
+                                        </div>
+                                        <div className="flex items-center gap-2 flex-wrap">
+                                            <button
+                                                type="button"
+                                                onClick={handleResetColors}
+                                                className="px-3 py-2 text-[10px] font-bold uppercase tracking-wider bg-white border border-slate-200 text-slate-600 hover:text-chocolate hover:border-gold transition-colors rounded-sm flex items-center gap-1.5 shadow-2xs cursor-pointer"
+                                                title="Restaurar a los 9 colores oficiales estándar"
+                                            >
+                                                <FontAwesomeIcon icon={faRotateLeft} className="text-slate-400" />
+                                                <span>Restaurar 9 Oficiales</span>
+                                            </button>
+                                            <button
+                                                type="button"
+                                                onClick={() => setIsAddingColor(!isAddingColor)}
+                                                className="px-4 py-2 text-[10px] font-bold uppercase tracking-wider bg-chocolate text-cream hover:bg-gold hover:text-chocolate transition-colors rounded-sm flex items-center gap-1.5 shadow-sm cursor-pointer"
+                                            >
+                                                <FontAwesomeIcon icon={faPlus} />
+                                                <span>{isAddingColor ? 'Cerrar Formulario' : 'Añadir Color Manual'}</span>
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    {/* Formulario para agregar nuevo color */}
+                                    {isAddingColor && (
+                                        <div className="p-5 bg-amber-50/40 border border-amber-200/70 rounded-xl space-y-4 shadow-2xs">
+                                            <div className="flex items-center justify-between">
+                                                <h4 className="text-xs font-bold font-serif text-chocolate uppercase tracking-wider flex items-center gap-2">
+                                                    <FontAwesomeIcon icon={faWandMagicSparkles} className="text-gold text-xs" />
+                                                    Nuevo Color para Catálogo y ERP
+                                                </h4>
+                                                <span className="text-[10px] text-slate-400">Escribe el nombre o usa el cuentagotas</span>
+                                            </div>
+
+                                            <div className="grid grid-cols-1 sm:grid-cols-4 gap-3 items-end">
+                                                <div>
+                                                    <label className="text-[9px] uppercase tracking-widest font-bold text-slate-500 block mb-1">Nombre (ej: Vino, Marfil, Olivo)</label>
+                                                    <input
+                                                        type="text"
+                                                        placeholder="Nombre del color"
+                                                        value={newColorName}
+                                                        onChange={e => handleNameChangeWithSmartPreset(e.target.value)}
+                                                        className="w-full text-xs p-2.5 bg-white border border-slate-200 rounded-sm focus:border-gold outline-none"
+                                                    />
+                                                </div>
+                                                <div>
+                                                    <label className="text-[9px] uppercase tracking-widest font-bold text-slate-500 block mb-1">Código ERP (2 letras, ej: VN)</label>
+                                                    <input
+                                                        type="text"
+                                                        maxLength={2}
+                                                        placeholder="Código ERP"
+                                                        value={newColorCode}
+                                                        onChange={e => setNewColorCode(e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, ''))}
+                                                        className="w-full text-xs p-2.5 bg-white border border-slate-200 rounded-sm focus:border-gold outline-none uppercase font-mono font-bold text-center"
+                                                    />
+                                                </div>
+                                                <div>
+                                                    <label className="text-[9px] uppercase tracking-widest font-bold text-slate-500 block mb-1">Tono Visual & Cuentagotas</label>
+                                                    <div className="flex items-center gap-2 bg-white border border-slate-200 rounded-sm p-1.5">
+                                                        <label
+                                                            className="relative w-7 h-7 rounded-full border border-black/10 shadow-sm cursor-pointer overflow-hidden flex-shrink-0 transition-transform hover:scale-105"
+                                                            style={{ backgroundColor: newColorHex }}
+                                                            title="Seleccionar color en paleta"
+                                                        >
+                                                            <span className="absolute inset-0 rounded-full ring-1 ring-inset ring-black/10 pointer-events-none" />
+                                                            <input
+                                                                type="color"
+                                                                value={newColorHex}
+                                                                onChange={e => setNewColorHex(e.target.value)}
+                                                                className="absolute inset-0 opacity-0 w-full h-full cursor-pointer"
+                                                            />
+                                                        </label>
+
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => handleEyeDropper('new')}
+                                                            className="p-1.5 text-slate-400 hover:text-chocolate hover:bg-slate-100 rounded transition-colors text-xs"
+                                                            title="Absorber color de cualquier imagen en pantalla"
+                                                        >
+                                                            <FontAwesomeIcon icon={faEyeDropper} />
+                                                        </button>
+
+                                                        <input
+                                                            type="text"
+                                                            value={newColorHex}
+                                                            onChange={e => setNewColorHex(e.target.value)}
+                                                            className="text-xs font-mono w-20 outline-none uppercase"
+                                                        />
+                                                    </div>
+                                                </div>
+                                                <div>
+                                                    <button
+                                                        type="button"
+                                                        onClick={handleAddColor}
+                                                        className="w-full py-2.5 bg-[#C5A059] hover:bg-chocolate text-white text-[10px] font-bold uppercase tracking-wider rounded-sm transition-colors shadow-sm cursor-pointer"
+                                                    >
+                                                        Agregar a la Lista
+                                                    </button>
+                                                </div>
+                                            </div>
+
+                                            {smartMatchedPreset && (
+                                                <div className="flex items-center gap-2 p-2 bg-white border border-amber-200 rounded-md text-xs text-chocolate">
+                                                    <span className="w-3 h-3 rounded-full border border-black/10 flex-shrink-0" style={{ backgroundColor: smartMatchedPreset.hex }} />
+                                                    <span className="font-bold">✨ Sugerencia detectada:</span>
+                                                    <span>{smartMatchedPreset.label} (Código ERP: <strong>{smartMatchedPreset.code}</strong>, HEX: <code className="font-mono text-[10px]">{smartMatchedPreset.hex}</code>)</span>
+                                                </div>
+                                            )}
+                                        </div>
+                                    )}
+
+                                    {/* BANDEJA DE PRESETS TEXTILES CEREMONIALES (1 CLIC) */}
+                                    <div className="p-5 bg-gradient-to-br from-slate-50 to-amber-50/30 border border-slate-200/80 rounded-2xl space-y-4">
+                                        <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
+                                            <div>
+                                                <h4 className="text-xs font-bold uppercase tracking-widest text-chocolate flex items-center gap-2">
+                                                    <FontAwesomeIcon icon={faWandMagicSparkles} className="text-gold" />
+                                                    Catálogo de Telas y Tonos Ceremoniales (Selección Rápida a 1 Clic)
+                                                </h4>
+                                                <p className="text-[11px] text-slate-500 mt-0.5">Haz clic en cualquier muestra para auto-rellenar el tono y código ERP sin necesidad de saber códigos HEX.</p>
+                                            </div>
+
+                                            {/* Buscador de Telas */}
+                                            <div className="w-full md:w-64">
+                                                <input
+                                                    type="text"
+                                                    placeholder="Buscar tela (ej. Vino, Lino, Marino)..."
+                                                    value={presetSearch}
+                                                    onChange={e => setPresetSearch(e.target.value)}
+                                                    className="w-full text-xs p-2 bg-white border border-slate-200 rounded-sm focus:border-gold outline-none shadow-2xs"
+                                                />
+                                            </div>
+                                        </div>
+
+                                        {/* Filtros por Familia */}
+                                        <div className="flex items-center gap-1.5 flex-wrap border-b border-slate-200/60 pb-3">
+                                            <button
+                                                type="button"
+                                                onClick={() => setSelectedFamily('todos')}
+                                                className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider transition-all cursor-pointer ${
+                                                    selectedFamily === 'todos'
+                                                        ? 'bg-chocolate text-cream shadow-xs'
+                                                        : 'bg-white text-slate-600 border border-slate-200 hover:border-gold'
+                                                }`}
+                                            >
+                                                Todos ({ALL_TEXTILE_PRESETS.length})
+                                            </button>
+                                            {TEXTILE_FAMILIES.map(family => (
+                                                <button
+                                                    key={family.id}
+                                                    type="button"
+                                                    onClick={() => setSelectedFamily(family.id)}
+                                                    className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider transition-all cursor-pointer ${
+                                                        selectedFamily === family.id
+                                                            ? 'bg-chocolate text-cream shadow-xs'
+                                                            : 'bg-white text-slate-600 border border-slate-200 hover:border-gold'
+                                                    }`}
+                                                >
+                                                    {family.name}
+                                                </button>
+                                            ))}
+                                        </div>
+
+                                        {/* Cuadrícula de Muestras Textiles */}
+                                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2.5 pt-1">
+                                            {filteredPresets.map((preset) => (
+                                                <button
+                                                    key={preset.code + preset.name}
+                                                    type="button"
+                                                    onClick={() => handleApplyPreset(preset)}
+                                                    className="p-2.5 bg-white border border-slate-200/90 rounded-xl hover:border-gold hover:shadow-md hover:scale-[1.02] active:scale-[0.98] transition-all text-left group flex flex-col justify-between cursor-pointer"
+                                                    title={`Haz clic para seleccionar ${preset.label} (${preset.code})`}
+                                                >
+                                                    <div className="flex items-center justify-between mb-2">
+                                                        <div
+                                                            className="w-7 h-7 rounded-full border border-black/10 shadow-xs flex-shrink-0"
+                                                            style={{ backgroundColor: preset.hex }}
+                                                        />
+                                                        <span className="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 group-hover:bg-gold/20 group-hover:text-chocolate transition-colors">
+                                                            {preset.code}
+                                                        </span>
+                                                    </div>
+                                                    <div>
+                                                        <span className="text-[11px] font-bold text-chocolate block truncate group-hover:text-gold transition-colors">
+                                                            {preset.label}
+                                                        </span>
+                                                        <span className="text-[9px] text-slate-400 block truncate mt-0.5">
+                                                            {preset.description}
+                                                        </span>
+                                                    </div>
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </div>
+
+                                    {/* Tabla / Lista de Colores Configurados Actualmente */}
+                                    <div className="space-y-2">
+                                        <div className="flex justify-between items-center px-1">
+                                            <h4 className="text-xs uppercase tracking-widest font-bold text-chocolate">
+                                                Colores Registrados en el Sistema ({config.ensamblex_colors?.length || DEFAULT_OFFICIAL_COLORS.length})
+                                            </h4>
+                                            <span className="text-[10px] text-slate-400">Guarda los cambios arriba para aplicar en el catálogo y exportaciones</span>
+                                        </div>
+
+                                        <div className="border border-slate-100 rounded-xl overflow-hidden shadow-2xs">
+                                            <table className="w-full text-left text-xs whitespace-nowrap">
+                                                <thead className="bg-slate-50 text-slate-500 font-bold border-b border-slate-100 text-[9px] uppercase tracking-wider">
+                                                    <tr>
+                                                        <th className="px-4 py-3">Muestra & Cuentagotas</th>
+                                                        <th className="px-4 py-3">Nombre Color</th>
+                                                        <th className="px-4 py-3 text-center">Código ERP (TXT)</th>
+                                                        <th className="px-4 py-3">Código HEX</th>
+                                                        <th className="px-4 py-3">Vista Previa Prenda</th>
+                                                        <th className="px-4 py-3 text-right">Acción</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody className="divide-y divide-slate-100">
+                                                    {(config.ensamblex_colors || DEFAULT_OFFICIAL_COLORS).map((colorItem, index) => (
+                                                        <tr key={index} className="hover:bg-slate-50/70 transition-colors">
+                                                            <td className="px-4 py-3">
+                                                                <div className="flex items-center gap-2">
+                                                                    <label
+                                                                        className="relative flex items-center justify-center w-8 h-8 rounded-full border border-black/10 shadow-sm cursor-pointer overflow-hidden transition-transform hover:scale-110 active:scale-95 group"
+                                                                        style={{ backgroundColor: colorItem.hex }}
+                                                                        title="Haz clic para abrir el selector de color"
+                                                                    >
+                                                                        <span className="absolute inset-0 rounded-full ring-1 ring-inset ring-black/10 pointer-events-none" />
+                                                                        <input
+                                                                            type="color"
+                                                                            value={colorItem.hex}
+                                                                            onChange={e => handleColorHexChange(index, e.target.value)}
+                                                                            className="absolute inset-0 opacity-0 w-full h-full cursor-pointer"
+                                                                        />
+                                                                    </label>
+
+                                                                    <button
+                                                                        type="button"
+                                                                        onClick={() => handleEyeDropper(index)}
+                                                                        className="p-1.5 text-slate-300 hover:text-chocolate hover:bg-slate-100 rounded transition-colors text-xs cursor-pointer"
+                                                                        title="Absorber color de cualquier foto en pantalla con cuentagotas"
+                                                                    >
+                                                                        <FontAwesomeIcon icon={faEyeDropper} />
+                                                                    </button>
+                                                                </div>
+                                                            </td>
+                                                            <td className="px-4 py-3">
+                                                                <input
+                                                                    type="text"
+                                                                    value={colorItem.name}
+                                                                    onChange={e => handleColorNameChange(index, e.target.value)}
+                                                                    className="text-xs font-medium p-1.5 bg-transparent border-b border-transparent focus:border-gold focus:bg-white rounded outline-none capitalize w-32"
+                                                                />
+                                                            </td>
+                                                            <td className="px-4 py-3 text-center">
+                                                                <input
+                                                                    type="text"
+                                                                    maxLength={2}
+                                                                    value={colorItem.code}
+                                                                    onChange={e => handleColorCodeChange(index, e.target.value)}
+                                                                    className="text-xs font-mono font-bold text-center p-1.5 bg-slate-50 border border-slate-200 rounded focus:border-gold outline-none uppercase w-14"
+                                                                />
+                                                            </td>
+                                                            <td className="px-4 py-3">
+                                                                <input
+                                                                    type="text"
+                                                                    value={colorItem.hex}
+                                                                    onChange={e => handleColorHexChange(index, e.target.value)}
+                                                                    className="text-xs font-mono text-slate-600 p-1.5 bg-slate-50 border border-slate-200 rounded focus:border-gold outline-none uppercase w-24"
+                                                                />
+                                                            </td>
+                                                            <td className="px-4 py-3">
+                                                                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-slate-200 bg-white text-slate-800 text-[10px] font-bold shadow-2xs">
+                                                                    <span 
+                                                                        className="w-3.5 h-3.5 rounded-full border border-black/10 shadow-2xs flex-shrink-0" 
+                                                                        style={{ backgroundColor: colorItem.hex }} 
+                                                                    />
+                                                                    <span>{colorItem.name.toUpperCase()}</span>
+                                                                </div>
+                                                            </td>
+                                                            <td className="px-4 py-3 text-right">
+                                                                <button
+                                                                    type="button"
+                                                                    onClick={() => handleRemoveColor(index)}
+                                                                    className="text-slate-300 hover:text-red-500 p-1.5 transition-colors cursor-pointer"
+                                                                    title={`Eliminar color ${colorItem.name}`}
+                                                                >
+                                                                    <FontAwesomeIcon icon={faTrash} className="text-xs" />
+                                                                </button>
+                                                            </td>
+                                                        </tr>
+                                                    ))}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            );
+                        })()}
 
                         {activeTab === 'contact' && (
                             <div className="space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-500">
@@ -542,8 +1014,20 @@ export const ConfigManager: React.FC = () => {
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8 p-6 bg-slate-50 border border-slate-100 rounded-xl">
                                         <div className="space-y-4">
                                             <label className="text-[10px] uppercase tracking-widest font-bold text-slate-400">Color/Opacidad</label>
-                                            <div className="flex gap-4">
-                                                <input type="color" value={config.cta_banner_bg_color || '#1B1411'} onChange={e => setConfig({ ...config, cta_banner_bg_color: e.target.value })} className="w-12 h-12 rounded cursor-pointer" />
+                                            <div className="flex gap-4 items-center">
+                                                <label
+                                                    className="relative w-12 h-12 rounded-sm border border-slate-200 shadow-2xs cursor-pointer overflow-hidden flex-shrink-0 transition-transform hover:scale-105"
+                                                    style={{ backgroundColor: config.cta_banner_bg_color || '#1B1411' }}
+                                                    title="Seleccionar color de fondo"
+                                                >
+                                                    <span className="absolute inset-0 ring-1 ring-inset ring-black/10 pointer-events-none" />
+                                                    <input
+                                                        type="color"
+                                                        value={config.cta_banner_bg_color || '#1B1411'}
+                                                        onChange={e => setConfig({ ...config, cta_banner_bg_color: e.target.value })}
+                                                        className="absolute inset-0 opacity-0 w-full h-full cursor-pointer"
+                                                    />
+                                                </label>
                                                 <input
                                                     type="range"
                                                     min="0"
